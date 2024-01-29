@@ -16,7 +16,7 @@ public class Player2_Controller : PlayerController
     }
     private void Update()
     {
-        ControllKey();
+        //ControllKey();
         
         if (Input.GetKeyDown(KeyCode.B))
         {

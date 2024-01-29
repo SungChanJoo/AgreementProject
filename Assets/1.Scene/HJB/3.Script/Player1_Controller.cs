@@ -13,7 +13,7 @@ public class Player1_Controller : PlayerController
     }
     private void Update()
     {
-        ControllKey();        
+        //ControllKey();        
     }
 
     public override void ControllKey()
