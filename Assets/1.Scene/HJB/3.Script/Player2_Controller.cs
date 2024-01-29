@@ -17,7 +17,7 @@ public class Player2_Controller : PlayerController
     private void Update()
     {
         ControllKey();
-        Debug.Log("22222 ¿‘¥œ¥Ÿ. :::  "+capsulation.Speed);
+        
         if (Input.GetKeyDown(KeyCode.B))
         {
             capsulation.Speed = 20;

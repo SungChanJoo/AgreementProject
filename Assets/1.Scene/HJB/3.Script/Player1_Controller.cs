@@ -13,8 +13,7 @@ public class Player1_Controller : PlayerController
     }
     private void Update()
     {
-        ControllKey();
-        Debug.Log("1111 ¿‘¥œ¥Ÿ. :::  " + capsulation.Speed);
+        ControllKey();        
     }
 
     public override void ControllKey()
