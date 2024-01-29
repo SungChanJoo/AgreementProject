@@ -153,7 +153,9 @@ PlayerSettings:
   resetResolutionOnWindowResize: 0
   androidSupportedAspectRatio: 1
   androidMaxAspectRatio: 2.1
-  applicationIdentifier: {}
+  applicationIdentifier:
+    Android: com.DefaultCompany.Unity3D_3DProject_Team
+    Standalone: com.DefaultCompany.Unity3D-3D-Project-Team
   buildNumber:
     Standalone: 0
     iPhone: 0
@@ -303,62 +305,86 @@ PlayerSettings:
     - m_Textures: []
       m_Width: 192
       m_Height: 192
+
       m_Kind: 0
+
       m_SubKind: 
     - m_Textures: []
       m_Width: 144
       m_Height: 144
+
       m_Kind: 0
+
       m_SubKind: 
     - m_Textures: []
       m_Width: 96
       m_Height: 96
+
       m_Kind: 0
+
       m_SubKind: 
     - m_Textures: []
       m_Width: 72
       m_Height: 72
+
       m_Kind: 0
+
       m_SubKind: 
     - m_Textures: []
       m_Width: 48
       m_Height: 48
+
       m_Kind: 0
+
       m_SubKind: 
     - m_Textures: []
       m_Width: 36
       m_Height: 36
+
       m_Kind: 0
+
       m_SubKind: 
     - m_Textures: []
       m_Width: 192
       m_Height: 192
+
       m_Kind: 1
+
       m_SubKind: 
     - m_Textures: []
       m_Width: 144
       m_Height: 144
+
       m_Kind: 1
+
       m_SubKind: 
     - m_Textures: []
       m_Width: 96
       m_Height: 96
+
       m_Kind: 1
+
       m_SubKind: 
     - m_Textures: []
       m_Width: 72
       m_Height: 72
+
       m_Kind: 1
+
       m_SubKind: 
     - m_Textures: []
       m_Width: 48
       m_Height: 48
+
       m_Kind: 1
+
       m_SubKind: 
     - m_Textures: []
       m_Width: 36
       m_Height: 36
+
       m_Kind: 1
+
       m_SubKind: 
   m_BuildTargetBatching:
   - m_BuildTarget: Standalone
@@ -725,7 +751,10 @@ PlayerSettings:
   metroTileBackgroundColor: {r: 0.13333334, g: 0.17254902, b: 0.21568628, a: 0}
   metroSplashScreenBackgroundColor: {r: 0.12941177, g: 0.17254902, b: 0.21568628, a: 1}
   metroSplashScreenUseBackgroundColor: 0
-  platformCapabilities: {}
+  platformCapabilities:
+    WindowsStoreApps:
+      WebCam: False
+      Microphone: False
   metroTargetDeviceFamilies: {}
   metroFTAName: 
   metroFTAFileTypes: []
