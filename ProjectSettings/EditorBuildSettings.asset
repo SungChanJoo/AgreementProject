@@ -5,10 +5,13 @@ EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Scenes:
-  - enabled: 1
+  - enabled: 0
     path: Assets/1.Scene/MainGame.unity
     guid: 9fc0d4010bbf28b4594072e72b8655ab
-  - enabled: 1
+  - enabled: 0
     path: Assets/1.Scene/JSC/1.Scene/JSC_Test_ShutDown.unity
     guid: d73a4781e139b8843b34b0628a76b03b
+  - enabled: 1
+    path: Assets/1.Scene/JSC/1.Scene/UsingCamera.unity
+    guid: 5c70c5a30fdc9954f8781d92061e8d65
   m_configObjects: {}
