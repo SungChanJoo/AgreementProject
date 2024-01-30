@@ -45,7 +45,7 @@ public class ObjectPooling : MonoBehaviour
 
     private void Click_Obj()
     {
-        if (Input.GetMouseButtonDown(0))
+        if (Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Began)
         {
             Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
             RaycastHit hit;
@@ -53,6 +53,7 @@ public class ObjectPooling : MonoBehaviour
             if (Physics.Raycast(ray, out hit) && !hit.collider.gameObject.CompareTag("Ground"))
             {
                 print(hit.collider.gameObject.name);
+                Score.Instance.Get_Score();
                 cubePool.Add(hit.collider.gameObject);
                 hit.collider.gameObject.SetActive(false);
             }
