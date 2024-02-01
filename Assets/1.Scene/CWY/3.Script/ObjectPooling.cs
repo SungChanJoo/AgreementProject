@@ -64,7 +64,7 @@ public class ObjectPooling : MonoBehaviour
     {
         while (cubePool.Count > 0)
         {
-            float randomValue = Random.Range(-10, 11);
+            float randomValue = Random.Range(-30, 31);
             Vector3 offset = new Vector3(randomValue, 0, 0); // 좌우 변경을위한 랜덤값
             cubePool[0].transform.position = Pool_Position.transform.position + offset;
             cubePool[0].SetActive(true);
