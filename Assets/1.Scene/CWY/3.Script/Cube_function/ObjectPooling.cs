@@ -28,6 +28,7 @@ public class ObjectPooling : MonoBehaviour
         {
             GameObject cube = Instantiate(CubePrefab); //풀링할 오브잭트 생성
             cube.SetActive(false);
+            cube.transform.SetParent(Pool_Position);
             cubePool.Add(cube);
         }
     }
