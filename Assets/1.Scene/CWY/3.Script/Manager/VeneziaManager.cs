@@ -9,7 +9,7 @@ public class VeneziaManager : MonoBehaviour
 
     private void Update()
     {
-        GameStop();
+      //  GameStop();
     }
 
 

@@ -14,6 +14,9 @@ public class ObjectPooling : MonoBehaviour
     //생성할 큐브 갯수
     public int CubeCount;
     public List<GameObject> cubePool = new List<GameObject>();
+
+    //큐브의 최대 반경거리 제한
+    public float MaxDistance;
     private void Awake()
     {
         if (Instance == null)
@@ -65,7 +68,7 @@ public class ObjectPooling : MonoBehaviour
     {
         while (cubePool.Count > 0)
         {
-            float randomValue = Random.Range(-30, 31);
+            float randomValue = Random.Range(-100, 101);
             Vector3 offset = new Vector3(randomValue, 0, 0); // 좌우 변경을위한 랜덤값
             cubePool[0].transform.position = Pool_Position.transform.position + offset;
             cubePool[0].SetActive(true);
