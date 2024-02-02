@@ -21,7 +21,7 @@ public class Cube : MonoBehaviour
         {
             Cube_StartMove();
         }
-
+        //Translate로 움직이기 때문에 가끔 물리판정이 무시되어 벽을 뚫는경우를 고려
         if(gameObject.transform.position.x >= ObjectPooling.Instance.MaxDistance || gameObject.transform.position.x <= -ObjectPooling.Instance.MaxDistance)
         {
             ObjectPooling.Instance.cubePool.Remove(gameObject);
@@ -35,6 +35,7 @@ public class Cube : MonoBehaviour
     }
     private void OnTriggerEnter(Collider other)
     {
+        //각 오브젝트들이 충돌하는 colider 이름을 기준으로 gameobj의 방향결정
         if(other.gameObject.name == "Floor")
         {
             isStart = false;
