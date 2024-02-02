@@ -46,10 +46,10 @@ public class ObjectPooling : MonoBehaviour
         Click_Obj();
         print(cubePool.Count);
     }
-
+    //Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Began
     private void Click_Obj()
     {
-        if (Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Began)
+        if (Input.GetMouseButtonDown(0))
         {
             Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
             RaycastHit hit;

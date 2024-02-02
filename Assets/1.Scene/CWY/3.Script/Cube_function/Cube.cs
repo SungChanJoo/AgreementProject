@@ -8,14 +8,16 @@ public class Cube : MonoBehaviour
     
     public float StartSpeed; // 공을 움직일 속도
     public float MaxSpeed; // 최대 속도 제한
-    private bool isStart = true;
+    [SerializeField]private bool isStart = true;
     private bool isFloor = false;
     private bool isLeftWall = false;
     private bool isRightWall = false;
     private bool isCeiling = false;
     private void Update()
     {
-        if (isStart)
+        if (!gameObject.activeSelf) isStart = false;
+        if (gameObject.activeSelf) isStart = true;
+        if (isStart && gameObject.activeSelf)
         {
             Cube_StartMove();
         }
@@ -33,7 +35,6 @@ public class Cube : MonoBehaviour
     }
     private void OnTriggerEnter(Collider other)
     {
-        print(other.gameObject.name);
         if(other.gameObject.name == "Floor")
         {
             isStart = false;
