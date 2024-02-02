@@ -12,12 +12,15 @@ EditorBuildSettings:
     path: Assets/1.Scene/JSC/1.Scene/JSC_Test_ShutDown.unity
     guid: d73a4781e139b8843b34b0628a76b03b
   - enabled: 0
-    path: Assets/1.Scene/JSC/1.Scene/UsingCamera.unity
-    guid: 5c70c5a30fdc9954f8781d92061e8d65
-  - enabled: 0
     path: 
     guid: 00000000000000000000000000000000
   - enabled: 1
     path: Assets/1.Scene/HJB/1.Scene/HJB_MainMenu.unity
     guid: 884356d94b037e940bf40c5d104fbc29
+  - enabled: 0
+    path: Assets/1.Scene/JSC/1.Scene/UsingCamera.unity
+    guid: 5c70c5a30fdc9954f8781d92061e8d65
+  - enabled: 1
+    path: Assets/1.Scene/JSC/1.Scene/JSC_Test_MetaWorld.unity
+    guid: 2a179970b1c7b074f82c9d5d8c7d8a1c
   m_configObjects: {}
