@@ -6,9 +6,9 @@ public class Cube : MonoBehaviour
 {
     //공이 처음 시작할 때 사방에서 날라올 수 있게 끔..
     
-    public float StartSpeed; // 공을 움직일 속도
-    public float MaxSpeed; // 최대 속도 제한
-    [SerializeField]private bool isStart = true;
+    public float StartSpeed; // 공을 움직일 속도  1 
+    public float MaxSpeed; // 최대 속도 제한    
+    [SerializeField] private bool isStart = true;
     private bool isFloor = false;
     private bool isLeftWall = false;
     private bool isRightWall = false;
@@ -111,6 +111,9 @@ public class Cube : MonoBehaviour
         //천장을 터치했으니 바닥으로 y값은 -값으로 고정
         float moveY = -1 * StartSpeed * Time.deltaTime;
         float moveX = StartSpeed * Time.deltaTime;
+
+        //어딘가에 닿았을때 가속 시켜야함
+        // 엑셀레이트 <
 
         // 랜덤으로 좌우 방향 선택
         if (!isCeiling) // 처음 천장에 닿았을때 방향을 정해준 후 , 중복실행(방향x축방향을바꾸는) 방지

@@ -17,11 +17,23 @@ public class GuGUDan_Fnc : MonoBehaviour
     [SerializeField] private Button[] buttons; // 0~9 버튼 
 
 
-    bool isStart = false;
 
+    //게임 진행 순서 
+    bool isStart = false;
     bool isFirst_Click = true;
     bool isSecond_Click = false;
+    bool isGameOver = false;
 
+    //확인버튼을 눌렀는지 안눌렀는지 확인
+    bool isAnswerCheck = false;
+    //확인버튼을 누른것이 정답인지 아닌지 확인
+    bool isAnswerCorrect = false;
+
+    //정답 맞춘 갯수
+    private int TrueAnswerCount = 0;
+    //문제 출제 후 반응속도 시간 재기 정답만
+    float trueReactionTime = 0f; //정답을 맞췄을때의 반응속도
+    float totalReactionTime = 0f;
     string buttonText;
     private void Awake()
     {
@@ -29,7 +41,20 @@ public class GuGUDan_Fnc : MonoBehaviour
         Second_num.text = "";
         Answer_num.text = "??";
         buttonText = "";
+        
+    }
+
+    private void Start()
+    {
         GameStart();
+    }
+
+    private void Update()
+    {
+        if (!isGameOver)
+        {
+            Reaction_speed();
+        }
     }
 
 
@@ -61,6 +86,9 @@ public class GuGUDan_Fnc : MonoBehaviour
         Answer_num.text = "??";
         //첫번째 클릭 초기화
         isFirst_Click = true;
+
+        //정답확인 초기화
+        isAnswerCheck = false;
     }
 
     private void GameOver()
@@ -69,6 +97,10 @@ public class GuGUDan_Fnc : MonoBehaviour
         if(TimeSlider.Instance.slider.value == 0)
         {
             //Todo : 게임 종료 로직 구현해주세요 > 게임화면 종료하고 결과창? 띄워줄듯
+            //반응속도 쳌
+            print(trueReactionTime / TrueAnswerCount);
+            isGameOver = true;
+            totalReactionTime = 0;
         }  
     }
 
@@ -80,13 +112,20 @@ public class GuGUDan_Fnc : MonoBehaviour
         if (Answer_num.text == $"{result}")
         {
             Score.Instance.Get_Score();
+            TrueAnswerCount++; //정답 갯수 증가 -> 정답률 반영에 사용할거
+            isAnswerCheck = true;
+            isAnswerCorrect = true;
+            //누적시간 변수에 저장.
         }
         else //오답일경우
         {
             //Todo: 기획팀에서 어떻게 할 계획인지 말해주면 그냥 리턴하던지
             //점수를 깍던지 시간을 깍던지... 
+            //누적된 시간 날리기
+            isAnswerCheck = true;
+            isAnswerCorrect = false;
         }
-        GameProgress();
+        if(!isGameOver) GameProgress();
     }
 
     //num파라미터를 받아서 입력한 숫자 판정하는 메서드
@@ -105,4 +144,26 @@ public class GuGUDan_Fnc : MonoBehaviour
         }        
     }
 
+
+
+    //성찬이가 시킨 반응속도 계산...
+    //우선.. 정답만 기준으로 계산....
+    //문제 출제 -> 시간 똑딱똑딱 -> 정답을 맞추면 잰 시간을 저장
+    // ex) 6개를 맞추면 각각의 정답맞춘 속도를 잰 후 나눠줄것.. 
+
+    public void Reaction_speed()
+    {
+        // 게임시간이 끝날 때 까지 정답을 몇개나 맞췄는지 반응속도 잴것.
+        totalReactionTime += Time.deltaTime; // 코루틴XXXX
+     //   trueReactionTime = (isAnswerCorrect) ? (trueReactionTime += totalReactionTime) : (trueReactionTime += 0); // 정답을 맞춘 경우에는 시간을 더해줄것 아닌경우에는 0을더함(반응속도에 영향x)
+        if(isAnswerCorrect)
+        {
+            trueReactionTime += totalReactionTime;
+            totalReactionTime = 0;
+        }
+        else if (!isAnswerCorrect)
+        {
+            totalReactionTime = 0;
+        }
+    }
 }
