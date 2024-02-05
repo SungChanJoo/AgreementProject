@@ -48,7 +48,7 @@ public class PlayerMod_Toggle : MonoBehaviour
         
         float currntTime = 0f;
         
-        // 설정한 시간 값으로 PlayMod 이미지 이동
+        //설정한 시간 값으로 PlayMod 이미지 이동
         while (currntTime<setTime)
         {
             currntTime += Time.deltaTime;            
