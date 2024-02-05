@@ -1,3 +1,4 @@
+using Mirror;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -10,22 +11,28 @@ public enum ButtonState
     Left
 }
 
-public class PlayerMovement : MonoBehaviour
+public class PlayerMovement : NetworkBehaviour
 {
+    [Header("PlayerMovement")]
+    public float MoveSpeed = 0f;
     public float acceleration = 10f;
     public float decceleration = 1f;
     public float velPower = 1f;
 
     float moveInput;
 
-    public float MoveSpeed = 0f;
     public bool IsPress = false;
     ButtonState buttonState = ButtonState.None;
 
+    public GameObject PlayerInputUI;
     Rigidbody _rb;
     private void Awake()
     {
         _rb = GetComponent<Rigidbody>();
+    }
+    public override void OnStartLocalPlayer()
+    {
+        PlayerInputUI.SetActive(true);
     }
     //버튼을 눌렀을 때
     public void OnRightButtonDown()
@@ -51,6 +58,9 @@ public class PlayerMovement : MonoBehaviour
 
     private void Update()
     {
+        //로컬 플레이어가 아니면 실행 안함
+        if (!isLocalPlayer) return;
+
         //이동하고자 하는 방향과 목표 속도를 계산
         float targetSpeed = moveInput * MoveSpeed;
         //현재 속도와 목표 속도 사이의 차이를 계산
