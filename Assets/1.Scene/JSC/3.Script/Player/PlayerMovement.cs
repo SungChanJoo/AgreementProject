@@ -87,4 +87,10 @@ public class PlayerMovement : NetworkBehaviour
             _rb.velocity = Vector3.zero;
         }
     }
+    public void InteractableUI(GameObject UI, bool value)
+    {
+        if (!isLocalPlayer) return;
+
+        UI.SetActive(value);
+    }
 }

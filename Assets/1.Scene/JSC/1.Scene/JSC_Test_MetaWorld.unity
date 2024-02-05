@@ -440,8 +440,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c4607a2e918bf6647bb660a8c5551b49, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  type: 2
-  InitServerIP: 54.180.92.129
+  type: 0
+  InitServerIP: 127.0.0.1
 --- !u!4 &953525170
 Transform:
   m_ObjectHideFlags: 0
@@ -514,7 +514,8 @@ MonoBehaviour:
   playerPrefab: {fileID: 8817371571305558288, guid: 8096e02ac8209b64bb7a9b975a165059, type: 3}
   autoCreatePlayer: 1
   playerSpawnMethod: 0
-  spawnPrefabs: []
+  spawnPrefabs:
+  - {fileID: 7181498164969116611, guid: bd27581ef9f80624a9cc3f01fa7d4e48, type: 3}
   snapshotSettings:
     bufferTimeMultiplier: 2
     bufferLimit: 32
@@ -1014,7 +1015,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1973564542}
-  - component: {fileID: 1973564541}
   m_Layer: 0
   m_Name: CM vcam1
   m_TagString: Untagged
@@ -1022,18 +1022,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &1973564541
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1973564540}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 45e653bab7fb20e499bda25e1b646fea, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!4 &1973564542
 Transform:
   m_ObjectHideFlags: 0
@@ -1122,6 +1110,10 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 2542414766832706515, guid: bd27581ef9f80624a9cc3f01fa7d4e48, type: 3}
+      propertyPath: sceneId
+      value: 2675368864
+      objectReference: {fileID: 0}
     - target: {fileID: 7181498164969116611, guid: bd27581ef9f80624a9cc3f01fa7d4e48, type: 3}
       propertyPath: m_Name
       value: InteratableObject

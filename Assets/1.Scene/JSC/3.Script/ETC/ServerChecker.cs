@@ -109,6 +109,7 @@ public class ServerChecker : MonoBehaviour
         //LicenseType에 따라 서버 또는 클라이언트 실행
         if (type.Equals(Type.Server))
         {
+            Debug.Log("서버실행");
             StartServer();
         }
         else
@@ -119,7 +120,7 @@ public class ServerChecker : MonoBehaviour
 
     public void StartServer()
     {
-        //웹은 서버가 될 수 없음
+        //웹은 서버 지원안함
         if (Application.platform == RuntimePlatform.WebGLPlayer)
         {
             Debug.Log("WebGL cannot be Server");
