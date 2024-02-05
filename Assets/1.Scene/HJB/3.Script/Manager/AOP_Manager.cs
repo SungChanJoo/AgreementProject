@@ -20,6 +20,7 @@ public class AOP_Manager : MonoBehaviour
     public int first_num;
     public int second_num;    
     private int result;
+    
     public TextMeshPro result_text;    
 
     private void Awake()
@@ -35,7 +36,7 @@ public class AOP_Manager : MonoBehaviour
     }
     public float Calculator_Random()
     {
-        operator_Ran = Random.Range(0, 4);
+        operator_Ran = Random.Range(0, 3);
         switch (operator_Ran)
         {
             case (int)Operator.Add:
@@ -57,10 +58,9 @@ public class AOP_Manager : MonoBehaviour
 
         return result;
     }
-    public int Aswer_Random()
-    {
-        int aswer_random = Random.Range(0, 3);
-        return aswer_random;
+    public void Show_Result(float result)
+    {        
+        result_text.text = result.ToString();
     }
     
 
