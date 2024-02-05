@@ -58,7 +58,8 @@ public class Cube : MonoBehaviour
         }
     }
 
-    //처음 시작 했을 때는 아래로 움직이게 할것 * 좌우로 움직여야하나? 
+    //처음 시작 했을 때는 아래로 움직이게 
+    //Todo : ㅇ
     private void Cube_StartMove()
     {
         float moveY = -1 * StartSpeed * Time.deltaTime;
