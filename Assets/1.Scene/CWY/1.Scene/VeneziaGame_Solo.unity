@@ -4962,6 +4962,8 @@ MonoBehaviour:
   sliderVar_Image: {fileID: 773295635}
   ChangeTime: 0.99
   changeDuration: 10
+  startTime: 6
+  duration: 6
 --- !u!114 &8356539231705555584
 MonoBehaviour:
   m_ObjectHideFlags: 0
