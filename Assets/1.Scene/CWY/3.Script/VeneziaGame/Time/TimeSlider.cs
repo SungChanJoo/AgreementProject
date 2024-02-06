@@ -12,6 +12,8 @@ public class TimeSlider : MonoBehaviour
     [SerializeField] private float ChangeTime;
     [SerializeField] private float changeDuration;
 
+    public float startTime = 6f; //Todo : 추후 재백이에게 데이터값을 받아와서 그값으로 변경
+    public float duration = 6f;  //Todo : 위와동일 => 
 
     private void Awake()
     {
@@ -25,11 +27,9 @@ public class TimeSlider : MonoBehaviour
         }
     }
 
-    private IEnumerator timeSlider()
+    private IEnumerator timeSlider() //추후 메인 UI에서 시간설정하면 값을 받아올 것
     {
-        float startTime = 6f; // 시작 시간을 60으로 설정 재백이가 넘겨주는 시간 받아오면 그걸 받아올 변수로 변경 일단 60으로 .
-        float duration = 6f; // 마찬가지로 재백이가 넘겨주면 변경.
-        float endTime = 0f;    // 종료 시간을 0으로 설정
+        float endTime = 0f;
         Color startColor = sliderVar_Image.color; // 시작 색상
         while (startTime > endTime)
         {

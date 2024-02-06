@@ -6,9 +6,9 @@ public class Cube : MonoBehaviour
 {
     //공이 처음 시작할 때 사방에서 날라올 수 있게 끔..
     
-    public float StartSpeed; // 공을 움직일 속도
-    public float MaxSpeed; // 최대 속도 제한
-    [SerializeField]private bool isStart = true;
+    public float StartSpeed; // 공을 움직일 속도  1 
+    public float MaxSpeed; // 최대 속도 제한    
+    [SerializeField] private bool isStart = true;
     private bool isFloor = false;
     private bool isLeftWall = false;
     private bool isRightWall = false;
@@ -21,7 +21,7 @@ public class Cube : MonoBehaviour
         {
             Cube_StartMove();
         }
-
+        //Translate로 움직이기 때문에 가끔 물리판정이 무시되어 벽을 뚫는경우를 고려
         if(gameObject.transform.position.x >= ObjectPooling.Instance.MaxDistance || gameObject.transform.position.x <= -ObjectPooling.Instance.MaxDistance)
         {
             ObjectPooling.Instance.cubePool.Remove(gameObject);
@@ -35,6 +35,7 @@ public class Cube : MonoBehaviour
     }
     private void OnTriggerEnter(Collider other)
     {
+        //각 오브젝트들이 충돌하는 colider 이름을 기준으로 gameobj의 방향결정
         if(other.gameObject.name == "Floor")
         {
             isStart = false;
@@ -57,7 +58,8 @@ public class Cube : MonoBehaviour
         }
     }
 
-    //처음 시작 했을 때는 아래로 움직이게 할것 * 좌우로 움직여야하나? 
+    //처음 시작 했을 때는 아래로 움직이게 
+    //Todo : 기획팀 기획안 넘어오면 처음 시작했을때 움직이는 로직은 변경할 예정
     private void Cube_StartMove()
     {
         float moveY = -1 * StartSpeed * Time.deltaTime;
@@ -109,6 +111,9 @@ public class Cube : MonoBehaviour
         //천장을 터치했으니 바닥으로 y값은 -값으로 고정
         float moveY = -1 * StartSpeed * Time.deltaTime;
         float moveX = StartSpeed * Time.deltaTime;
+
+        //어딘가에 닿았을때 가속 시켜야함
+        // 엑셀레이트 <
 
         // 랜덤으로 좌우 방향 선택
         if (!isCeiling) // 처음 천장에 닿았을때 방향을 정해준 후 , 중복실행(방향x축방향을바꾸는) 방지
