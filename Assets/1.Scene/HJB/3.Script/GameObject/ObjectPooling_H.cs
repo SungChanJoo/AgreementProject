@@ -26,9 +26,11 @@ public class ObjectPooling_H : MonoBehaviour
     {        
         Click_Obj();
     }
+    //Input.GetMouseButtonDown(0)
+    //Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Began
     private void Click_Obj()
     {
-        if (Input.GetMouseButtonDown(0))
+        if (Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Began)
         {
             Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
             RaycastHit hit;
@@ -54,16 +56,14 @@ public class ObjectPooling_H : MonoBehaviour
             MovingCube movingcube = cubePool[i].GetComponent<MovingCube>();
             movingcube.result = AOP_Manager.Instance.Calculator_Random();
             if (i.Equals(randomResult))
-            {                
-                answer = movingcube.result;   
-                AOP_Manager.Instance.Show_Result(movingcube.result);
+            {
+                TakeResult(movingcube.result);
             }
             int firstNum = AOP_Manager.Instance.first_num;
             int secondNum = AOP_Manager.Instance.second_num;
             string _operator = AOP_Manager.Instance.operator_ran;
             movingcube.Start_Obj(firstNum,_operator , secondNum);
-        }
-        Debug.Log(randomResult);
+        }        
     }
     private void  Next_Result()
     {
@@ -76,8 +76,7 @@ public class ObjectPooling_H : MonoBehaviour
                 if (cubePool[i].activeSelf)
                 {
                     MovingCube movingCube = cubePool[i].GetComponent<MovingCube>();
-                    answer = movingCube.result;
-                    AOP_Manager.Instance.Show_Result(movingCube.result);
+                    TakeResult(movingCube.result);
                     return;
                 }
             }
@@ -89,8 +88,7 @@ public class ObjectPooling_H : MonoBehaviour
                 if (cubePool[i].activeSelf)
                 {
                     MovingCube movingCube = cubePool[i].GetComponent<MovingCube>();
-                    answer = movingCube.result;
-                    AOP_Manager.Instance.Show_Result(movingCube.result);
+                    TakeResult(movingCube.result);
                     return;
                 }
             }
@@ -111,6 +109,13 @@ public class ObjectPooling_H : MonoBehaviour
             Debug.Log("틀렸습니다.");
             //시간 감소
         }        
+    }
+
+    private float TakeResult(float result)
+    {
+        answer = result;
+        AOP_Manager.Instance.Show_Result(result);
+        return result;
     }
     
 }
