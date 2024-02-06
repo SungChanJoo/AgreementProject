@@ -20,7 +20,7 @@ public class Score : MonoBehaviour
 
 
 
-
+    //싱글톤패턴 생성
     private void Awake()
     {
         if(Instance == null)
@@ -34,11 +34,13 @@ public class Score : MonoBehaviour
         }
     }
 
+    //기본값 초기화
     private void Start()
     {
         score_text.text = "0";
     }
 
+    //Todo : 정답을 맞췄을 경우 정답 실행 > 추후 기획팀에서 점수관련 조직도 보내주면 그에 맞게 로직 구성 할 것.
     public void Get_Score()
     {
         Count++;

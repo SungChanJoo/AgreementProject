@@ -55,6 +55,8 @@ public class GuGUDan_Fnc : MonoBehaviour
         {
             Reaction_speed();
         }
+
+        GameOver();
     }
 
 
@@ -101,12 +103,17 @@ public class GuGUDan_Fnc : MonoBehaviour
             print(trueReactionTime / TrueAnswerCount);
             isGameOver = true;
             totalReactionTime = 0;
+        }
+        else
+        {
+            return;
         }  
     }
 
     //정답 판단 함수
     public void AnswerCheck()
     {
+        if (TimeSlider.Instance.slider.value == 0) return; // 타임오버시 리턴
         //정답일경우
         int result = int.Parse(First_num.text) * int.Parse(Second_num.text);
         if (Answer_num.text == $"{result}")

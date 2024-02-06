@@ -13,7 +13,7 @@ public class TimeSlider : MonoBehaviour
     [SerializeField] private float changeDuration;
 
     public float startTime = 6f; //Todo : 추후 재백이에게 데이터값을 받아와서 그값으로 변경
-    public float duration = 6f;  //Todo : 위와동일
+    public float duration = 6f;  //Todo : 위와동일 => 
 
     private void Awake()
     {
@@ -27,7 +27,7 @@ public class TimeSlider : MonoBehaviour
         }
     }
 
-    private IEnumerator timeSlider()
+    private IEnumerator timeSlider() //추후 메인 UI에서 시간설정하면 값을 받아올 것
     {
         float endTime = 0f;
         Color startColor = sliderVar_Image.color; // 시작 색상
