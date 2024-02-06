@@ -59,7 +59,7 @@ public class Cube : MonoBehaviour
     }
 
     //처음 시작 했을 때는 아래로 움직이게 
-    //Todo : ㅇ
+    //Todo : 기획팀 기획안 넘어오면 처음 시작했을때 움직이는 로직은 변경할 예정
     private void Cube_StartMove()
     {
         float moveY = -1 * StartSpeed * Time.deltaTime;
