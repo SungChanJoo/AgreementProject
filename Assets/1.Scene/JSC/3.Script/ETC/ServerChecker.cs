@@ -33,7 +33,7 @@ public class Item
 //서버인지 클라이언트인지 판별해주는 클래스
 public class ServerChecker : MonoBehaviour
 {
-    public Type type;
+    public Type type = Type.Client;
     public string InitServerIP = "54.180.92.129";
     private NetworkManager _manager;
     private KcpTransport _kcp;
@@ -109,7 +109,6 @@ public class ServerChecker : MonoBehaviour
         //LicenseType에 따라 서버 또는 클라이언트 실행
         if (type.Equals(Type.Server))
         {
-            Debug.Log("서버실행");
             StartServer();
         }
         else
