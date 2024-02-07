@@ -30,18 +30,27 @@ public class ObjectPooling_H : MonoBehaviour
     //Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Began
     private void Click_Obj()
     {
+        //if (Input.GetMouseButton(0))
+        //{
+        //    Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+        //    RaycastHit hit;
+
+        //    if (Physics.Raycast(ray, out hit) && !hit.collider.gameObject.CompareTag("Ground"))
+        //    {
+        //        hit.collider.gameObject.SetActive(false);
+        //        Answer_Check(hit.collider.gameObject);
+        //        return;
+        //    }
+        //}
         if (Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Began)
-        {
+        {            
             Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
             RaycastHit hit;
 
             if (Physics.Raycast(ray, out hit) && !hit.collider.gameObject.CompareTag("Ground"))
             {
                 hit.collider.gameObject.SetActive(false);
-                Answer_Check(hit.collider.gameObject);
-                                
-                //cubePool.Add(hit.collider.gameObject);                
-                
+                Answer_Check(hit.collider.gameObject);                
             }
         }
     }

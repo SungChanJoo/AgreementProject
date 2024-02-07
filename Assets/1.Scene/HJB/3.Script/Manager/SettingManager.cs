@@ -8,6 +8,7 @@ public class SettingManager : MonoBehaviour
 	public static SettingManager Instance = null;
 
     [SerializeField] private GameObject setting_Btn;
+    
 
     private void Awake()
     {
@@ -21,7 +22,7 @@ public class SettingManager : MonoBehaviour
             Destroy(gameObject);
         }
     }
-
+    
     //환경설정 UI Off
     public void Setting_Btn()
     {

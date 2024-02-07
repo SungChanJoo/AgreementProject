@@ -6,15 +6,18 @@ using UnityEngine.SceneManagement;
 public class MainMenuManager : MonoBehaviour
 {
     [SerializeField] private GameObject MainMenuCanvas;
-    [SerializeField] private GameObject StartMenuCanvas;
+    [SerializeField] private GameObject StartRegistCanvas;
+    [SerializeField] private GameObject TitleCancas;
     [SerializeField] private GameObject PetSelectCavas;
     [SerializeField] private GameObject CollectionCavas;
     [SerializeField] private GameObject LevelCavas;
+    [SerializeField] private GameObject CameraCavas;
 
+        
     public void OnMainMenuSet_Btn()
     {
         MainMenuCanvas.SetActive(!MainMenuCanvas.activeSelf);
-        StartMenuCanvas.SetActive(!StartMenuCanvas.activeSelf);
+        StartRegistCanvas.SetActive(!StartRegistCanvas.activeSelf);
     }
     public void SceneGame_1()
     {
@@ -39,13 +42,16 @@ public class MainMenuManager : MonoBehaviour
 
     public void Select_Level(int level)
     {
-        SceneGame_1();   
+        SceneGame_1();
     }
     public void Level_UI()
     {
         LevelCavas.SetActive(!LevelCavas.activeSelf);
     }
-
+    public void Camera_UI()
+    {
+        CameraCavas.SetActive(!CameraCavas.activeSelf);
+    }
     public void MetaWorldSceneLoad_Btn()
     {
         PetSelectCavas.SetActive(!PetSelectCavas.activeSelf);

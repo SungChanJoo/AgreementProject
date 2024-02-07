@@ -9,18 +9,14 @@ using System.IO;
 
 public class NativeCameraManager : MonoBehaviour
 {
-    public Button camOnBtn;
+    
     public Image captureImage;
     public Texture2D captureTexture;
 
     int CaptureCounter = 0;
 
     // Start is called before the first frame update
-    void Start()
-    {
-        camOnBtn.onClick.AddListener(NativeCameraOpen);
-
-    }
+   
 
     public void NativeCameraOpen()
     {
@@ -35,10 +31,10 @@ public class NativeCameraManager : MonoBehaviour
     void TakePicture()
     {
 
-        string SavePath = Application.persistentDataPath;
+        string SavePath = Application.persistentDataPath;        
 
         NativeCamera.Permission permission = NativeCamera.TakePicture((path) =>
-        {
+        {            
             string galaryPath = SavePath.Substring(0, SavePath.IndexOf("Android")) + "/DCIM/UnityCamera/";
             if (false == string.IsNullOrEmpty("UnityCamera") && false == Directory.Exists("UnityCamera"))
             {
@@ -58,8 +54,7 @@ public class NativeCameraManager : MonoBehaviour
                 GameObject quad = GameObject.CreatePrimitive(PrimitiveType.Quad);
                 quad.transform.position = Camera.main.transform.position + Camera.main.transform.forward * 2.5f;
                 quad.transform.forward = Camera.main.transform.forward;
-                quad.transform.localScale = new Vector3(1f, texture.height / (float)texture.width, 1f);
-
+                quad.transform.localScale = new Vector3(1f, texture.height / (float)texture.width, 1f);                
                 Material material = quad.GetComponent<Renderer>().material;
                 if (!material.shader.isSupported)
                 {
