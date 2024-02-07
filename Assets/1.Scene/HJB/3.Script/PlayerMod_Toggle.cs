@@ -44,8 +44,7 @@ public class PlayerMod_Toggle : MonoBehaviour
         {
             onFilter = true;
             nextVector3 = rects[1].position;
-        }
-        Debug.Log(nextVector3);
+        }        
         filter_Canvas.SetActive(!filter_Canvas.activeSelf);
         nonfilter_Canvas.SetActive(!nonfilter_Canvas.activeSelf);
         StartCoroutine(MoveSelect_Obj(nextVector3));

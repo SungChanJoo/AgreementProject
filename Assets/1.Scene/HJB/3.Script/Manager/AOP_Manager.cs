@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using UnityEngine.SceneManagement;
 public enum Operator
 {
     Add,
@@ -82,5 +83,9 @@ public class AOP_Manager : MonoBehaviour
                 break;
         }
         return result;
+    }
+    public void ExitGame()
+    {
+        SceneManager.LoadScene("HJB_MainMenu");
     }
 }
