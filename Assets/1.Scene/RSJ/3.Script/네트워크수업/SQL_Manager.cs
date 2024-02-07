@@ -120,7 +120,7 @@ public class SQL_Manager : MonoBehaviour
             }
 
             string SQL_command =
-                string.Format(@"SELECT User_name,User_Password FROM user_info
+                string.Format(@"SELECT User_name,User_Password FROM User_Info
                                 WHERE User_name = '{0}' AND User_Password = '{1}';", id,password); //골뱅이는 줄바꿈이 있어도 한줄로 인식한다는 뜻, 쿼리문에 문제가 없다는 것을 확인 후 복붙하기
             MySqlCommand cmd = new MySqlCommand(SQL_command, connection);
             reader = cmd.ExecuteReader();
