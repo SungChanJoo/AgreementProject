@@ -30,15 +30,13 @@ public class PlayerMovement : NetworkBehaviour
     public bool IsUseEmti = false;
     [Header("ETC")]
     public bool IsPress = false;
-
     public GameObject PlayerInputUI;
     private Rigidbody _rb;
     private CinemachineVirtualCamera CVcam;
     private void Awake()
     {
         _rb = GetComponent<Rigidbody>();
-
-        if(PlayerInputUI.activeSelf)
+        if (PlayerInputUI.activeSelf)
             PlayerInputUI.SetActive(false);
 
     }
@@ -84,6 +82,7 @@ public class PlayerMovement : NetworkBehaviour
         } 
         #endregion
     }
+
     //상호작용 가능한 UI show or hide 
     public void InteractableUI(GameObject UI, bool value)
     {
