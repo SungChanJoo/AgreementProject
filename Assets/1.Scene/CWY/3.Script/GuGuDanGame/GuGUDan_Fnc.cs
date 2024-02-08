@@ -10,6 +10,13 @@ public class GuGUDan_Fnc : MonoBehaviour
     //결과는 맞추던 못맞추던 공개하고 맞출경우 O , 틀릴경우 X 표시?
     //정답은 버튼 1 ~ 9 를 눌러서 입력 
 
+    //변경사항 
+    //clear 버튼 추가 및 0~9버튼을 제외한 영역을 눌렀을때도 clear 효과 발생해야함
+    //xyz 에서 z값(정답)이 고정이 아니라 , 역산기능도 넣어서 x,y도 랜덤하게 정답일 경우가 있어야함
+    //2~9단이 아니라 2~ 19단까지 
+    //level & step 단계 추가
+    //오답 처리시 시간감소
+
     [SerializeField] private Text First_num;  // 첫번째 칸에 들어갈 숫자
     [SerializeField] private Text Second_num; // 두번째 칸에 들어갈 숫자.
     [SerializeField] private Text Answer_num; // 정답을 입력받을 칸 
@@ -29,7 +36,7 @@ public class GuGUDan_Fnc : MonoBehaviour
     bool isGameOver = false;
 
     //정답의 자릿수 확인
-    int FistNumDigit;
+    int FirstNumDigit;
     int SecondNumDigit;
     int AnswerNumDigit;
     //정답 자릿수에 맞게 입력했는지 확인하는 장치
@@ -94,8 +101,6 @@ public class GuGUDan_Fnc : MonoBehaviour
         // 1. x 가 비어있을 경우 ?? x Y = z  
         // 2. Y가 비어있을 경우 X x ?? = z
         // 3. z가 비어있을 경우 X x Y = ??
-
-
     }
     #region Level , Step별 문제 제작 메서드 
     private void Lv1_RandomNum()
@@ -122,7 +127,9 @@ public class GuGUDan_Fnc : MonoBehaviour
         int First = int.Parse(First_num.text);
         int Second = int.Parse(Second_num.text);
         int result = int.Parse(First_num.text) * int.Parse(Second_num.text);
-        switch (Random.Range(0, 2))
+
+        //정답이 될 숫자 위치 랜덤으로 선택.
+        switch (Random.Range(0, 3))
         {
             case 0: // x 쪽을 역산
                 First_num.text = "?";
@@ -221,10 +228,12 @@ public class GuGUDan_Fnc : MonoBehaviour
     {
         if (TimeSlider.Instance.slider.value == 0) return; // 타임오버시 리턴
         //정답일경우
-        if(CaseNum == 0) //x 쪽 역산
-        {
-            int result = int.Parse(Answer_num.text) / int.Parse(Second_num.text);
-            if (Second_num.text == $"{result}")
+        int resultx = int.Parse(Answer_num.text) / int.Parse(Second_num.text);
+        int resulty = int.Parse(Answer_num.text) / int.Parse(First_num.text);
+        int resultz = int.Parse(First_num.text) * int.Parse(Second_num.text);
+        if (CaseNum == 0) //x 쪽 역산
+        {          
+            if (First_num.text == $"{resultx}")
             {
                 Score.Instance.Get_Score();
                 TrueAnswerCount++; //정답 갯수 증가 -> 정답률 반영에 사용할거
@@ -243,8 +252,7 @@ public class GuGUDan_Fnc : MonoBehaviour
         }
         else if(CaseNum == 1) // y쪽을 역산
         {
-            int result = int.Parse(Answer_num.text) / int.Parse(First_num.text);
-            if (Answer_num.text == $"{result}")
+            if (Second_num.text == $"{resulty}")
             {
                 Score.Instance.Get_Score();
                 TrueAnswerCount++; //정답 갯수 증가 -> 정답률 반영에 사용할거
@@ -263,8 +271,7 @@ public class GuGUDan_Fnc : MonoBehaviour
         }
         else if (CaseNum == 2)
         {
-            int result = int.Parse(First_num.text) * int.Parse(Second_num.text);
-            if (Answer_num.text == $"{result}")
+            if (Answer_num.text == $"{resultz}")
             {
                 Score.Instance.Get_Score();
                 TrueAnswerCount++; //정답 갯수 증가 -> 정답률 반영에 사용할거
@@ -282,7 +289,9 @@ public class GuGUDan_Fnc : MonoBehaviour
             }
         }
 
-
+        //초기화 필요
+        Clear_btn();
+        
         if (!isGameOver) GameProgress();
     }
 
@@ -295,7 +304,8 @@ public class GuGUDan_Fnc : MonoBehaviour
 
         switch (CaseNum)
         {
-            case 0:
+            case 0: //x 칸이 ?? 로 출력되는 경우 클릭시 x쪽에 답이 입력되고, 자릿수에 맞게 답을 입력 해야 함.
+                    //19단 까지만 고려하기 때문에 x ,y 는 최대 2자리  z는 3자리까지 체크. 따라서, 입력도 최대 3번(19x19가 최대 3자리)
                 if (isFirst_Click)
                 {
                     First_num.text = num.ToString();
@@ -309,22 +319,63 @@ public class GuGUDan_Fnc : MonoBehaviour
                     isSecond_Click = false;
                     Click_Count++;
                 }
+                break;
+            case 1:
+                if (isFirst_Click)
+                {
+                    Second_num.text = num.ToString();
+                    isFirst_Click = false;
+                    isSecond_Click = true;
+                    Click_Count++;
+                }
                 else if (isSecond_Click)
                 {
-                    First_num.text += num.ToString();
+                    Second_num.text += num.ToString();
                     isSecond_Click = false;
                     Click_Count++;
                 }
                 break;
-
+            case 2:
+                if (isFirst_Click)
+                {
+                    Answer_num.text = num.ToString();
+                    isFirst_Click = false;
+                    isSecond_Click = true;
+                    Click_Count++;
+                }
+                else if (isSecond_Click)
+                {
+                    Answer_num.text += num.ToString();
+                    isSecond_Click = false;
+                    isThird_Click = true;
+                    Click_Count++;
+                }
+                else if (isThird_Click)
+                {
+                    Answer_num.text += num.ToString();
+                    isThird_Click = false;
+                    Click_Count++;
+                }
+                break;
             default:
                 break;
         }
+
+
         //정답의 자릿수와 클릭의 횟수가 일치하면 정답채크 후 클릭 카운트 초기화
-        if (AnswerNumDigit == Click_Count)
+        switch (CaseNum)
         {
-            AnswerCheck();
-            Click_Count = 0;
+            case 0:
+                if (FirstNumDigit == Click_Count) AnswerCheck();
+                break;
+            case 1:
+                if (SecondNumDigit == Click_Count) AnswerCheck();
+                break;
+            case 2:
+                if (AnswerNumDigit == Click_Count) AnswerCheck();
+                break;
+            default:
+                break;
         }
 
     }
@@ -333,29 +384,46 @@ public class GuGUDan_Fnc : MonoBehaviour
     {
         //문제가 출제 되었을때 정답의 자릿수를 받아오고
         //정답이 1자리라면 1번 클릭 , 2자리라면 2번클릭 3자리라면 3번클릭한 값을 이용할것.
-        int AnswerNum = int.Parse(First_num.text) * int.Parse(Second_num.text);
-        if(AnswerNum > 99)
+        //문제의 자리가 x y z 일 경우를 고려해야함
+        switch (CaseNum)
         {
-            AnswerNumDigit = 3;
-        }
-        else if(AnswerNum < 100 && AnswerNum > 9)
-        {
-            AnswerNumDigit = 2;
-        }
-        else if (AnswerNum < 10)
-        {
-            AnswerNumDigit = 1;
-        }
+            case 0: //x에 들어가는 최대 자릿수
+                int firstnum = int.Parse(Answer_num.text) / int.Parse(Second_num.text);
+                FirstNumDigit = firstnum.ToString().Length;
+                break;
+            case 1: //y에 들어가는 최대 자릿수
+                int secondnum = int.Parse(Answer_num.text) / int.Parse(First_num.text);
+                SecondNumDigit = secondnum.ToString().Length;
+                break;
+            case 2: //z에 들어가는 최대 자릿수
+                int AnswerNum = int.Parse(First_num.text) * int.Parse(Second_num.text);
+                AnswerNumDigit = AnswerNum.ToString().Length;
+                break;
 
-        FistNumDigit = (int.Parse(First_num.text) > 9) ? 2 : 1;
-        SecondNumDigit = (int.Parse(Second_num.text) > 9) ? 2 : 1;
+            default:
+                break;
+        }
+        print(CaseNum);
     }
 
     public void Clear_btn()
     {
-        Answer_num.text = "??";
+        switch (CaseNum)
+        {
+            case 0: First_num.text = "?";
+                    break;
+            case 1:
+                Second_num.text = "?";
+                break;
+            case 2:
+                Answer_num.text = "??";
+                break;
+            default:
+                break;
+        }
         isFirst_Click = true;
         isSecond_Click = false;
+        isThird_Click = false;
         Click_Count = 0;
     }
 
@@ -388,7 +456,7 @@ public class GuGUDan_Fnc : MonoBehaviour
             Vector2 canvasSize = canvasRectTransform.sizeDelta;
             Vector2 canvasPosition = canvasRectTransform.position;
             Vector2 canvasMousePosition = new Vector2(mousePosition.x / Screen.width * canvasSize.x, mousePosition.y / Screen.height * canvasSize.y) - (canvasSize / 2f);
-            print(mousePosition.y / Screen.height * canvasSize.y);
+            //print(mousePosition.y / Screen.height * canvasSize.y);
             //이 영역 위로 클릭시 Clear
             if (mousePosition.y / Screen.height * canvasSize.y > 255f) Clear_btn();
         }
