@@ -12,6 +12,10 @@ public class TilteManager : MonoBehaviour
     [SerializeField] private TextMeshProUGUI inputError_text;
     [SerializeField] private TMP_InputField name_text;
 
+    private void Awake()
+    {
+        
+    }
 
     public void Registration_UI()
     {
