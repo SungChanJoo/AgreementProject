@@ -33,9 +33,13 @@ public class PlayerMovement : NetworkBehaviour
     public GameObject PlayerInputUI;
     private Rigidbody _rb;
     private CinemachineVirtualCamera CVcam;
+    private NetworkIdentity _netId;
+    //public GameObject playerPrefeb;
+
     private void Awake()
     {
         _rb = GetComponent<Rigidbody>();
+        _netId = GetComponent<NetworkIdentity>();
         if (PlayerInputUI.activeSelf)
             PlayerInputUI.SetActive(false);
 
@@ -46,6 +50,8 @@ public class PlayerMovement : NetworkBehaviour
         CVcam = GameObject.FindGameObjectWithTag("CVcam").GetComponent<CinemachineVirtualCamera>();
         CVcam.Follow = transform;
         PlayerInputUI.SetActive(true);
+
+        //QueueManager.Instance.SwitchPlayerPrefeb(_netId.connectionToClient, playerPrefeb);
     }
 
     private void Update()
