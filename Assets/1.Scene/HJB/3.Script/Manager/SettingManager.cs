@@ -7,7 +7,7 @@ public class SettingManager : MonoBehaviour
 {
 	public static SettingManager Instance = null;
 
-    [SerializeField] private GameObject setting_Btn;
+    [SerializeField] private GameObject setting_Canvas;
     
 
     private void Awake()
@@ -26,7 +26,7 @@ public class SettingManager : MonoBehaviour
     //환경설정 UI Off
     public void Setting_Btn()
     {
-        setting_Btn.SetActive(!setting_Btn.activeSelf);
+        setting_Canvas.SetActive(!setting_Canvas.activeSelf);
     }
     public void MetaWorldSceneLoad_Btn()
     {

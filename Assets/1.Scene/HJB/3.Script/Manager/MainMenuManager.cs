@@ -6,19 +6,15 @@ using UnityEngine.SceneManagement;
 public class MainMenuManager : MonoBehaviour
 {
     [SerializeField] private GameObject MainMenuCanvas;
-    [SerializeField] private GameObject StartRegistCanvas;
-    [SerializeField] private GameObject TitleCancas;
+    
     [SerializeField] private GameObject PetSelectCavas;
     [SerializeField] private GameObject CollectionCavas;
     [SerializeField] private GameObject LevelCavas;
     [SerializeField] private GameObject CameraCavas;
+    [SerializeField] private GameObject ProfileCanvas;
 
-        
-    public void OnMainMenuSet_Btn()
-    {
-        MainMenuCanvas.SetActive(!MainMenuCanvas.activeSelf);
-        StartRegistCanvas.SetActive(!StartRegistCanvas.activeSelf);
-    }
+
+
     public void SceneGame_1()
     {
         SceneManager.LoadScene("HJB_ArithmeticOperationsGame");
@@ -35,7 +31,7 @@ public class MainMenuManager : MonoBehaviour
     {
         SettingManager.Instance.ApplicationExit_Btn();
     }
-    public void CollectionShop_Btn()
+    public void CollectionShop_UI()
     {
         CollectionCavas.SetActive(!CollectionCavas.activeSelf);
     }
@@ -52,9 +48,12 @@ public class MainMenuManager : MonoBehaviour
     {
         CameraCavas.SetActive(!CameraCavas.activeSelf);
     }
-    public void MetaWorldSceneLoad_Btn()
+    public void MetaWorldPetSelect_UI()
     {
-        PetSelectCavas.SetActive(!PetSelectCavas.activeSelf);
-        //SettingManager.Instance.MetaWorldSceneLoad_Btn();
+        PetSelectCavas.SetActive(!PetSelectCavas.activeSelf);        
+    }
+    public void Profile_UI()
+    {
+        ProfileCanvas.SetActive(!ProfileCanvas.activeSelf);
     }
 }

@@ -10,7 +10,7 @@ using System.IO;
 public class NativeCameraManager : MonoBehaviour
 {
     
-    public Image captureImage;
+    public Image captureImage;    
     public Texture2D captureTexture;
 
     int CaptureCounter = 0;
@@ -20,17 +20,18 @@ public class NativeCameraManager : MonoBehaviour
 
     public void NativeCameraOpen()
     {
+        //Cemearar가 실행중이라면
         if (NativeCamera.IsCameraBusy())
         {
             return;
         }
-        TakePicture();
 
+        TakePicture();
     }
 
     void TakePicture()
     {
-
+        //영구 파일 경로 저장
         string SavePath = Application.persistentDataPath;        
 
         NativeCamera.Permission permission = NativeCamera.TakePicture((path) =>
@@ -38,7 +39,7 @@ public class NativeCameraManager : MonoBehaviour
             string galaryPath = SavePath.Substring(0, SavePath.IndexOf("Android")) + "/DCIM/UnityCamera/";
             if (false == string.IsNullOrEmpty("UnityCamera") && false == Directory.Exists("UnityCamera"))
             {
-                // 해당 디렉토리 없을 시 생성.
+                //해당 디렉토리 없을 시 생성.
                 Directory.CreateDirectory(galaryPath);
             }
             Debug.Log("Image path : " + galaryPath);
@@ -66,8 +67,8 @@ public class NativeCameraManager : MonoBehaviour
                 captureImage.sprite = Sprite.Create(captureTexture, rect, new Vector2(0.5f, 0.5f));
 
 
-                // texture.GetPixels(); 사용 시 texture is not readable error 발생하여
-                // GetReadableTexture(texture); 로 readable한 Texture 만들어야 함.
+                //texture.GetPixels(); 사용 시 texture is not readable error 발생하여
+                //GetReadableTexture(texture); 로 readable한 Texture 만들어야 함.
                 Texture2D readableTexture = GetReadableTexture(texture);
                 Texture2D snap = new Texture2D(readableTexture.width, readableTexture.height);
                 snap.SetPixels(readableTexture.GetPixels());
@@ -78,9 +79,8 @@ public class NativeCameraManager : MonoBehaviour
                     galaryPath + "UnityCamera" + time + CaptureCounter.ToString() + ".png", snap.EncodeToPNG()
                     );
                 ++CaptureCounter;
-                Destroy(quad, 5f);
-                //Destroy(texture, 5f);
-            }
+                Destroy(quad, 5f);                
+            }            
         }, 2048, true, NativeCamera.PreferredCamera.Front);
     }
 
