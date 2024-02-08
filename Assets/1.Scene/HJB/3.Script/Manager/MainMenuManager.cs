@@ -20,11 +20,7 @@ public class MainMenuManager : MonoBehaviour
         SceneManager.LoadScene("HJB_ArithmeticOperationsGame");
     }
 
-    //환경설정 창 On
-    public void OnSetting_Btn()
-    {
-        SettingManager.Instance.Setting_Btn();
-    }
+    
 
     //Application 종료 버튼
     public void Exit_Btn()
@@ -51,6 +47,11 @@ public class MainMenuManager : MonoBehaviour
     public void MetaWorldPetSelect_UI()
     {
         PetSelectCavas.SetActive(!PetSelectCavas.activeSelf);        
+    }
+    //환경설정 창 On
+    public void Setting_UI()
+    {
+        SettingManager.Instance.Setting_Btn();
     }
     public void Profile_UI()
     {

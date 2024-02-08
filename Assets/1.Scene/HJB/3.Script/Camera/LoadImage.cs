@@ -16,8 +16,8 @@ public class LoadImage : MonoBehaviour
     private Texture2D[] texture2Ds;
 
     public void ImageFileLoad()
-    {        
-        
+    {
+        SettingManager.Instance.Re_AppSetPermission();
         string pathFolder = Application.persistentDataPath;
         string galaryPath = pathFolder.Substring(0, pathFolder.IndexOf("Android")) + "/DCIM/UnityCamera/";
         string[] pngFiles = Directory.GetFiles(galaryPath,"*.png");
