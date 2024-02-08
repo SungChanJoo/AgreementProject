@@ -94,36 +94,13 @@ public class GuGUDan_Fnc : MonoBehaviour
 
     //표기해 주는 위치를 랜덤으로 표시 해줄 메서드
     // 스탭 1 ~ 3  / 4 ~ 6 에서의 난이도는 동일함
-    private void Random_ShowText(Text First, Text Second, Text Answer)
+    private void Random_ShowText()
     {
         //문제 생성 => x , y를 생성한후 곱셈 
         //단 , UI에 표기하는 것은 랜덤 * 역산 시스템이 있어야함 해당 메서드는 표기 순서만 변경
         // 1. x 가 비어있을 경우 ?? x Y = z  
         // 2. Y가 비어있을 경우 X x ?? = z
         // 3. z가 비어있을 경우 X x Y = ??
-    }
-    #region Level , Step별 문제 제작 메서드 
-    private void Lv1_RandomNum()
-    {
-        if (Step < 4)
-        {
-            First_num.text = Random.Range(2, 7).ToString();
-            Second_num.text = Random.Range(1, 10).ToString();
-        }
-        else
-        {
-            First_num.text = Random.Range(2, 10).ToString();
-            Second_num.text = Random.Range(1, 10).ToString();
-        }
-    }
-    //lv1게임 로직 구현
-    private void Lv1()
-    {
-        Lv1_RandomNum();
-        //lv 1 > 2~9단까지
-        //스탭1~3
-
-        //택스트의 위치를 랜덤으로 바꿔준 후 정답을 판단
         int First = int.Parse(First_num.text);
         int Second = int.Parse(Second_num.text);
         int result = int.Parse(First_num.text) * int.Parse(Second_num.text);
@@ -152,6 +129,64 @@ public class GuGUDan_Fnc : MonoBehaviour
             default:
                 break;
         }
+    }
+    #region Level , Step별 문제 제작 메서드 
+    private void Lv1_RandomNum()
+    {
+        if (Step < 4)
+        {
+            First_num.text = Random.Range(2, 7).ToString();
+            Second_num.text = Random.Range(1, 10).ToString();
+        }
+        else
+        {
+            First_num.text = Random.Range(2, 10).ToString();
+            Second_num.text = Random.Range(1, 10).ToString();
+        }
+    }
+    private void Lv2_RandomNum()
+    {
+        if (Step < 4)
+        {
+            First_num.text = Random.Range(2, 10).ToString();
+            Second_num.text = Random.Range(1, 15).ToString();
+        }
+        else
+        {
+            First_num.text = Random.Range(2, 10).ToString();
+            Second_num.text = Random.Range(1, 20).ToString();
+        }
+    }
+    private void Lv3_RandomNum()
+    {
+        if (Step < 4)
+        {
+            First_num.text = Random.Range(2, 15).ToString();
+            Second_num.text = Random.Range(1, 20).ToString();
+        }
+        else
+        {
+            First_num.text = Random.Range(2, 20).ToString();
+            Second_num.text = Random.Range(1, 20).ToString();
+        }
+    }
+    //lv1게임 로직 구현
+    private void Lv1()
+    {
+        Lv1_RandomNum();
+        Random_ShowText();
+
+    }
+    private void Lv2()
+    {
+        Lv2_RandomNum();
+        Random_ShowText();
+
+    }
+    private void Lv3()
+    {
+        Lv3_RandomNum();
+        Random_ShowText();
 
     }
 
@@ -170,8 +205,10 @@ public class GuGUDan_Fnc : MonoBehaviour
                 Lv1();
                 break;
             case 2: //레벨 2 선택
+                Lv2();
                 break;
             case 3: //레벨 3 선택
+                Lv3();
 
                 break;
             default:
@@ -190,10 +227,10 @@ public class GuGUDan_Fnc : MonoBehaviour
                     Lv1();
                     break;
                 case 2:
-                    //Lv2();
+                    Lv2();
                     break;
                 case 3:
-                    //Lv3()
+                    Lv3();
                     break;
                 default:
                     break;
@@ -248,6 +285,7 @@ public class GuGUDan_Fnc : MonoBehaviour
                 //누적된 시간 날리기
                 isAnswerCheck = true;
                 isAnswerCorrect = false;
+                TimeSlider.Instance.DecreaseTime();
             }
         }
         else if(CaseNum == 1) // y쪽을 역산
@@ -267,6 +305,7 @@ public class GuGUDan_Fnc : MonoBehaviour
                 //누적된 시간 날리기
                 isAnswerCheck = true;
                 isAnswerCorrect = false;
+                TimeSlider.Instance.DecreaseTime();
             }
         }
         else if (CaseNum == 2)
@@ -286,6 +325,7 @@ public class GuGUDan_Fnc : MonoBehaviour
                 //누적된 시간 날리기
                 isAnswerCheck = true;
                 isAnswerCorrect = false;
+                TimeSlider.Instance.DecreaseTime();
             }
         }
 
@@ -403,7 +443,6 @@ public class GuGUDan_Fnc : MonoBehaviour
             default:
                 break;
         }
-        print(CaseNum);
     }
 
     public void Clear_btn()
@@ -433,16 +472,12 @@ public class GuGUDan_Fnc : MonoBehaviour
     {
         // 게임시간이 끝날 때 까지 정답을 몇개나 맞췄는지 반응속도 잴것.
         totalReactionTime += Time.deltaTime; // 코루틴XXXX
-     //   trueReactionTime = (isAnswerCorrect) ? (trueReactionTime += totalReactionTime) : (trueReactionTime += 0); // 정답을 맞춘 경우에는 시간을 더해줄것 아닌경우에는 0을더함(반응속도에 영향x)
-        if(isAnswerCorrect)
+       //   trueReactionTime = (isAnswerCorrect) ? (trueReactionTime += totalReactionTime) : (trueReactionTime += 0); // 정답을 맞춘 경우에는 시간을 더해줄것 아닌경우에는 0을더함(반응속도에 영향x)
+        if (isAnswerCorrect)
         {
             trueReactionTime += totalReactionTime;
-            totalReactionTime = 0;
         }
-        else if (!isAnswerCorrect)
-        {
-            totalReactionTime = 0;
-        }
+        totalReactionTime = 0;
     }
 
     //버튼이 아닌 다른 영역을 클릭하면 초기화 시켜주기

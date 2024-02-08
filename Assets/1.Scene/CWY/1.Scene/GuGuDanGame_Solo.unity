@@ -618,7 +618,7 @@ MonoBehaviour:
   - {fileID: 587765135}
   canvas: {fileID: 1215284665}
   Level: 1
-  Step: 1
+  Step: 3
 --- !u!4 &287009998
 Transform:
   m_ObjectHideFlags: 0
@@ -3766,8 +3766,9 @@ MonoBehaviour:
   sliderVar_Image: {fileID: 8836855194716140459}
   ChangeTime: 0.35
   changeDuration: 3
-  startTime: 60
-  duration: 60
+  startTime: 100
+  duration: 100
+  Decreasetime: 5
 --- !u!222 &7739086947249468360
 CanvasRenderer:
   m_ObjectHideFlags: 0

@@ -14,6 +14,7 @@ public class TimeSlider : MonoBehaviour
 
     public float startTime = 6f; //Todo : 추후 재백이에게 데이터값을 받아와서 그값으로 변경
     public float duration = 6f;  //Todo : 위와동일 => 
+    public float Decreasetime;
 
     private void Awake()
     {
@@ -75,5 +76,10 @@ public class TimeSlider : MonoBehaviour
         }
         // 변경 완료 후 최종 색상 설정
         sliderVar_Image.color = Color.red;
+    }
+
+    public void DecreaseTime()
+    {
+        TimeSlider.Instance.startTime -= Decreasetime;
     }
 }
