@@ -7,11 +7,12 @@ using UnityEngine;
 using UnityEngine.UI;
 using System;
 using System.IO;
+using System.Threading.Tasks;
 
 public class Server : MonoBehaviour
 {
     private const int port = 2421;
-
+                      
     // 클라이언트 여러명 받을 수 있도록 리스트
     private List<TcpClient> clients;
     private List<TcpClient> disconnectList;
@@ -34,9 +35,10 @@ public class Server : MonoBehaviour
     {
         if (!isServerStarted) return;
         //Debug.Log("Client가 들어오지 않으면 실행이 되지 않을것");
+        if (clients.Count == 0) return;
 
         CheckClientsState();
-        Receive();
+        ReceiveDataFromClients();
         
     }
 
@@ -50,8 +52,8 @@ public class Server : MonoBehaviour
         {
             Debug.Log("Try server create");
             server = new TcpListener(IPAddress.Any, port);
-            server.Start(); // 동기적으로 클라이언트 연결 -> 클라이언트이 안들어오면 다음 코드라인으로 진행이 안됨
-            Debug.Log("server.Start() 실행");
+            server.Start(); // 서버 시작
+            Debug.Log("server.Start()");
 
             StartListening();
             isServerStarted = true;
@@ -65,15 +67,17 @@ public class Server : MonoBehaviour
     // 비동기로 클라이언트 연결요청 받기 시작
     private async void StartListening()
     {
-        Debug.Log("Server is Listening");
+        Debug.Log("Server is listening until client is comming");
         // 비동기 클라이언트 연결 / await 키워드는 비동기 호출이 완료될 때까지 대기
         TcpClient client = await server.AcceptTcpClientAsync();
-        // 클라이언트가 연결되면 콜백 호출
-        AcceptTcpClient(client);
+        Debug.Log("Asynchronously server accept client's request");
+
+        // 클라이언트가 연결되면 다음 메서드 호출
+        HandleClient(client);
     }
 
-    // 콜백불러와지면 실행
-    private void AcceptTcpClient(TcpClient client)
+    // 재귀 메서드, 클라이언트 연결되면 다시 연결요청 받음
+    private void HandleClient(TcpClient client)
     {
         Debug.Log("Client connected");
         clients.Add(client);
@@ -83,21 +87,66 @@ public class Server : MonoBehaviour
             Debug.Log($"Connected client's IP : {((IPEndPoint)clients[i].Client.RemoteEndPoint).Address}");
         }
 
+        // 연결된 클라이언트 -> 데이터받을준비
+        ReceiveDataFromClient(client);
+
         StartListening(); // 클라이언트 받고 다시 실행    
     }
 
-    bool IsConnected(TcpClient client)
+    private void CheckClientsState()
+    {
+        debugTimer += Time.deltaTime;
+
+        while(debugTimer > debugTime)
+        {
+            Debug.Log($"Present Connected Clients : {clients.Count}");
+            
+            foreach(TcpClient client in clients)
+            {
+                Debug.Log($"Connected Clients's IP : {((IPEndPoint)client.Client.RemoteEndPoint).Address}");
+            }
+
+            debugTimer = 0f;
+        }
+
+        //foreach (TcpClient client in clients)
+        //{
+        //    // 클라이언트 연결이 끊어졌다면
+        //    if (!CheckConnectState(client))
+        //    {
+        //        Debug.Log($"Disconnected client's IP {((IPEndPoint)client.Client.RemoteEndPoint).Address}");
+        //        client.Close();
+        //        disconnectList.Add(client);
+        //        continue;
+        //    }
+        //    // 클라이언트로부터 체크 메시지 받기
+        //    else
+        //    {
+
+        //        //NetworkStream stream = client.tcp.GetStream();
+        //        //if(stream.DataAvailable)
+        //        //{
+        //        //    string data = new StreamReader(stream, true).ReadLine();
+
+        //        //    if(data != null)
+        //        //    {
+        //        //        On
+        //        //    }
+        //        //}
+        //    }
+        //}
+    }
+
+    // 클라이언트와 연결이 끊겼는지 체크
+    bool CheckConnectState(TcpClient client)
     {
         try
         {
-            if (client != null && client.Client != null && client.Client.Connected)
+            // 
+            if (client.Client.Poll(0, SelectMode.SelectRead))
             {
-                if (client.Client.Poll(0, SelectMode.SelectRead))
-                {
-                    return !(client.Client.Receive(new byte[1], SocketFlags.Peek) == 0); // 1byte씩 보내는데, 반응없으면 끊어진거
+                return !(client.Client.Receive(new byte[1], SocketFlags.Peek) == 0); // 1byte씩 보내는데, 반응없으면 끊어진거
 
-                }
-                return true;
             }
             else return false;
         }
@@ -107,51 +156,40 @@ public class Server : MonoBehaviour
         }
     }
 
-    private void CheckClientsState()
+    private async void ReceiveDataFromClient(TcpClient client)
     {
-        debugTimer += Time.deltaTime;
-
-        while(debugTimer > debugTime)
+        while(true)
         {
-            Debug.Log($"현재 연결중인 Clients : {clients.Count}");
-            
-            foreach(TcpClient client in clients)
+            try
             {
-                Debug.Log($"연결중인 Clients's IP : {((IPEndPoint)client.Client.RemoteEndPoint).Address}");
+                NetworkStream stream = client.GetStream();
+
+                // 클라이언트로부터 메시지 받음
+                byte[] buffer = new byte[1024];
+                int bytesRead = await stream.ReadAsync(buffer, 0, buffer.Length); // 메세지 받을때까지 대기
+                string receivedMessage = Encoding.UTF8.GetString(buffer, 0, bytesRead); // 데이터 변환
+                Debug.Log($"Received Message from client : {receivedMessage}");
+
+                // 클라이언트한테 메시지 보냄 // todo. 메세지안에 클라이언트에게 어떤 요청에 대한 결과값 보내줘야함
+                string sendMessage = "Get a message from client And I Give you respond Message";
+                byte[] data = Encoding.UTF8.GetBytes(sendMessage); // 데이터 변환
+                stream.Write(data, 0, data.Length); // 메세지 보냄
+                Debug.Log($"Sent Message to client");
             }
-
-            debugTimer = 0f;
-        }
-
-        foreach (TcpClient client in clients)
-        {
-            // 클라이언트 연결이 끊어졌다면
-            if (!IsConnected(client))
+            catch (Exception e)
             {
-                Debug.Log($"Disconnected client's IP {((IPEndPoint)client.Client.RemoteEndPoint).Address}");
-                client.Close();
-                disconnectList.Add(client);
-                continue;
-            }
-            // 클라이언트로부터 체크 메시지 받기
-            else
-            {
-
-                //NetworkStream stream = client.tcp.GetStream();
-                //if(stream.DataAvailable)
-                //{
-                //    string data = new StreamReader(stream, true).ReadLine();
-
-                //    if(data != null)
-                //    {
-                //        On
-                //    }
-                //}
+                Debug.Log($"Data Communicate error : {e.Message}");
+                break;
             }
         }
     }
 
-    private void Receive()
+    private void SendMessageToClient(TcpClient client)
+    {
+
+    }
+
+    private void ReceiveDataFromClients()
     {
 
     }

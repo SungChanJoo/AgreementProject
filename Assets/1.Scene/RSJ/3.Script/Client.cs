@@ -6,15 +6,17 @@ using System.Text;
 using UnityEngine;
 using UnityEngine.UI;
 using System.IO;
+using System.Threading.Tasks;
 
 public class Client : MonoBehaviour
 {
     // IP, Port 고정됨
-    [SerializeField] private string server_IP = "15.165.159.141";
+    [SerializeField] private string server_IP = "15.165.159.141"; // aws EC2 IP : 15.165.159.141
     [SerializeField] private int server_Port = 2421;
 
     bool socketReady;
     private TcpClient client;
+    private NetworkStream stream; 
 
     // Login
     public InputField login_ID_Input;
@@ -28,10 +30,10 @@ public class Client : MonoBehaviour
     // 클라이언트가 실행할 때 서버 연결 시도
     private void Start()
     {
-        ConnectedToServer();
+        ConnectToServer();
     }
 
-    public void ConnectedToServer()
+    public void ConnectToServer()
     {
         // 이미 연결되었다면 함수 무시
         if (socketReady) return;
@@ -47,6 +49,8 @@ public class Client : MonoBehaviour
             client.Connect(server_IP, server_Port);
             Debug.Log("Success Connect to Server!");
             socketReady = true;
+
+            stream = client.GetStream();// 연결에 성공하면 stream도 계속 연결할 수 있도록
         }
         catch (Exception e)
         {
@@ -91,14 +95,20 @@ public class Client : MonoBehaviour
     // 버튼 눌러서 서버에 메시지 보내기
     public void OnCilckSendMessage()
     {
-        string hello = "Hello World";
+        SendMessageToServer();
+    }
+
+    private void SendMessageToServer()
+    {
+        string sendMessage = "Hello World";
         try
         {
+            
+            byte[] data = Encoding.UTF8.GetBytes(sendMessage);
+            stream.Write(data, 0, data.Length); // 데이터를 보낼때 까지 대기? 그냥 보내면 되잖어
+            Debug.Log($"Sent message to server : {sendMessage}");
 
-            NetworkStream stream = client.GetStream();
-            byte[] data = Encoding.UTF8.GetBytes(hello);
-            stream.Write(data, 0, data.Length);
-            Debug.Log($"Sent message to server : {hello}");
+            ReceiveMessageFromServer(stream); // 메서드가 실행될때 까지 대기 / 대기시키기 위해 메서드 앞에 await을 붙여서 실행시키려면 메서드가 Task 붙여야하는듯?
         }
         catch (Exception e)
         {
@@ -106,13 +116,27 @@ public class Client : MonoBehaviour
         }
     }
 
-    //private void OnDestroy()
-    //{
-    //    if(client != null)
-    //    {
-    //        client.Close();
-    //    }
-    //}
+    private async void ReceiveMessageFromServer(NetworkStream stream)
+    {
+        try
+        {
+            byte[] buffer = new byte[1024];
+            int bytesRead = await stream.ReadAsync(buffer, 0, buffer.Length); // 데이터를 읽어올때까지 대기
+            string receivedMessage = Encoding.UTF8.GetString(buffer, 0, bytesRead); // 데이터 변환
+            Debug.Log($"Received message from server : {receivedMessage}");
+        }
+        catch(Exception e)
+        {
+            Debug.Log($"Error receiving message from server : {e.Message}");
+            Debug.LogError($"Error receiving message from server : {e.Message}");
+        }
+
+    }
+
+    private void OnDestroy()
+    {
+        CloseSocket();
+    }
 
     private void OnApplicationQuit()
     {
@@ -122,6 +146,7 @@ public class Client : MonoBehaviour
 
     private void CloseSocket()
     {
+        Debug.Log("Close Socket으로 들어오는가");
         if (!socketReady) return;
 
         //writer.Close();
