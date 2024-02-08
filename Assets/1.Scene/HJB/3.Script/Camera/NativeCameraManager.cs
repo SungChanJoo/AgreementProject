@@ -20,6 +20,8 @@ public class NativeCameraManager : MonoBehaviour
 
     public void NativeCameraOpen()
     {
+        SettingManager.Instance.Re_AppSetPermission();
+        
         //Cemearar가 실행중이라면
         if (NativeCamera.IsCameraBusy())
         {
