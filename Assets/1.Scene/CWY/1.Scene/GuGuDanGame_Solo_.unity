@@ -617,6 +617,7 @@ MonoBehaviour:
   - {fileID: 1851963246}
   - {fileID: 587765135}
   canvas: {fileID: 1215284665}
+  canvasPlayer: 1
   Level: 1
   Step: 3
 --- !u!4 &287009998
@@ -626,8 +627,8 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 287009996}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 694.4643, y: 492.10107, z: -7.714528}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 694.4643, y: 492.10107, z: -7.7145386}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -3766,7 +3767,7 @@ MonoBehaviour:
   sliderVar_Image: {fileID: 8836855194716140459}
   ChangeTime: 0.35
   changeDuration: 3
-  startTime: 100
+  startTime: 180
   duration: 100
   Decreasetime: 5
 --- !u!222 &7739086947249468360

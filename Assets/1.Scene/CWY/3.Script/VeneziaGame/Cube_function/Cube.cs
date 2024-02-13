@@ -2,10 +2,21 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+public enum ObjectType
+{
+    Before,
+    After,
+    CorrectAnswer,
+    Wronganswer,
+}
+
+
 public class Cube : MonoBehaviour
 {
     //공이 처음 시작할 때 사방에서 날라올 수 있게 끔..
-    
+    public static ObjectType objectType;
+
+
     public float StartSpeed; // 공을 움직일 속도  1 
     public float MaxSpeed; // 최대 속도 제한    
     [SerializeField] private bool isStart = true;
@@ -13,6 +24,7 @@ public class Cube : MonoBehaviour
     private bool isLeftWall = false;
     private bool isRightWall = false;
     private bool isCeiling = false;
+
     private void Update()
     {
         if (!gameObject.activeSelf) isStart = false;

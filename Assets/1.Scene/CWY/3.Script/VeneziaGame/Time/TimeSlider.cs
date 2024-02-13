@@ -3,8 +3,17 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class TimeSlider : MonoBehaviour
+public interface ITimeSlider
 {
+    void DecreaseTime()
+    {
+        //나중에 리팩토링시 인터페이스로 전체게임 시간 관리 가능하게 변경 *
+    }
+}
+
+    public class TimeSlider : MonoBehaviour, ITimeSlider
+{
+
     public static TimeSlider Instance = null;
 
     [SerializeField] public Slider slider;
@@ -81,5 +90,10 @@ public class TimeSlider : MonoBehaviour
     public void DecreaseTime()
     {
         TimeSlider.Instance.startTime -= Decreasetime;
+    }
+
+    public void DecreaseTime_Item(int Decreasetime)
+    {
+        startTime -= Decreasetime;
     }
 }

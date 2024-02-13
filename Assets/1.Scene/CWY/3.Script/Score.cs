@@ -3,14 +3,24 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
+public enum PlayMode
+{
+    Solo,
+    Couple
+}
 public class Score : MonoBehaviour
 {
     //점수는 모든게임에서 공통적으로 사용해야 할 요소기 때문에 접근용이성을 위해 싱글톤 패턴을 이용
+    [SerializeField]private PlayMode playMode;
 
     public static Score Instance = null;
     [SerializeField] private Text score_text;
+    [SerializeField] private Text Firstscore_text;
+    [SerializeField] private Text Secondscore_text;
 
     private int Count;
+    private int FirstCount;
+    private int SecondCount;
 
     private bool isOk; // 이걸통해서 관리할것 (isOk true면 겜오브젝트삭제 아니면 말고.) <- 나중에 변경 
 
@@ -30,6 +40,7 @@ public class Score : MonoBehaviour
         }
         else
         {
+            if (playMode == PlayMode.Couple) return;
             Destroy(gameObject);
         }
     }
@@ -37,16 +48,31 @@ public class Score : MonoBehaviour
     //기본값 초기화
     private void Start()
     {
-        score_text.text = "0";
+        if (playMode == PlayMode.Solo)
+        {
+            Firstscore_text.text = "0";
+        }
+        else
+        {
+            Firstscore_text.text = "0";
+            Secondscore_text.text = "0";
+        }
     }
-
-    //Todo : 정답을 맞췄을 경우 정답 실행 > 추후 기획팀에서 점수관련 조직도 보내주면 그에 맞게 로직 구성 할 것.
-    public void Get_Score()
+    public void Get_FirstScore()
     {
-        Count++;
-        score_text.text = Count.ToString();
+        if (true)//playMode == PlayMode.Solo)
+        {
+            FirstCount++;
+            Firstscore_text.text = FirstCount.ToString();
+        }
     }
 
-
-
+    public void Get_SecondScore()
+    {
+        if (true)//playMode == PlayMode.Solo)
+        {
+            SecondCount++;
+            Secondscore_text.text = SecondCount.ToString();
+        }
+    }
 }
