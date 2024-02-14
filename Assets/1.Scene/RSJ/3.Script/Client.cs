@@ -7,6 +7,14 @@ using UnityEngine;
 using UnityEngine.UI;
 using System.IO;
 using System.Threading.Tasks;
+using LitJson;
+
+// 처음 접속하는 유저인지(First), 접속했었던 유저인지(Continue) 
+public enum ClientLoginStatus
+{
+    First,
+    Continue
+}
 
 public class Client : MonoBehaviour
 {
@@ -16,7 +24,12 @@ public class Client : MonoBehaviour
 
     bool socketReady;
     private TcpClient client;
-    private NetworkStream stream; 
+    private NetworkStream stream;
+
+    // login - license
+    public static ClientLoginStatus loginStatus;
+    public static string clientLicenseNumber;
+    public string licensePath = string.Empty;
 
     // Login
     public InputField login_ID_Input;
@@ -27,12 +40,18 @@ public class Client : MonoBehaviour
     public InputField create_ID_Input;
     public InputField create_PW_Input;
 
-    // 클라이언트가 실행할 때 서버 연결 시도
+    private void Awake()
+    {
+        
+    }
+
     private void Start()
     {
         ConnectToServer();
+        ClientLoginSet();
     }
 
+    // 클라이언트가 실행할 때 서버 연결 시도
     public void ConnectToServer()
     {
         // 이미 연결되었다면 함수 무시
@@ -59,38 +78,67 @@ public class Client : MonoBehaviour
 
     }
 
-    // 버튼 눌러서 로그인
-    public void OnClickLogin()
+    public void ClientLoginSet()
     {
-        // id, password를 입력하지 않았으면 return;
-        if (login_ID_Input.text == null || login_PW_Input.text == null)
+        // 연결되지 않았다면 return
+        if (!client.Connected) return;
+
+        licensePath = Application.dataPath + "/License";
+
+        Debug.Log($"File.Exists(licensePath) value ? {File.Exists(licensePath)}");
+        // 경로에 파일이 존재하지 않는다면 라이센스넘버가 없다는것이고, 처음 접속한다는 뜻
+        if (!Directory.Exists(licensePath))
         {
-            loginLog.text = "아이디와 비밀번호를 입력하세요";
-            return;
+            Directory.CreateDirectory(licensePath);
+            loginStatus = ClientLoginStatus.First;
+            // 서버에서 라이센스 넘버를 받아와야함, 그러기 위해 서버에 요청 todo
+            string requestName = "LicenseNumber";
+            RequestToServer(requestName);
+            Debug.Log($"[Client] Is Create licensenumber?");
+            Debug.Log($"[Client] This client's licensenumber : {clientLicenseNumber}");
+            return; // 처음 접속이라면 폴더 및 파일 저장하고 return
         }
 
-        // id, password를 DB에 있는 User_Name과 User_Password 비교
-        // id_Input.text == DBManager.instance.user_Info.user_Name && password_Input.text == DBManager.instance.user_Info.user_Password
-        if (DBManager.instance.Login(login_ID_Input.text, login_PW_Input.text))
-        {
-            loginLog.text = "로그인에 성공했습니다.";
-
-            // todo.. 씬이동하던지, 재화 불러오던지 등등 할거 
-
-            User_Info user = DBManager.instance.user_Info;
-            Debug.Log(user.user_Name + "|" + user.user_Password);
-        }
-        else // 로그인 실패
-        {
-            loginLog.text = "아이디 또는 비밀번호를 확인해주세요";
-        }
+        // 해당 경로에 있는 파일을 읽어 클라이언트 라이센스 넘버를 불러옴
+        string jsonStringFromFile = File.ReadAllText(licensePath + "/clientlicense.json");
+        JsonData licenseNumber_JsonFile = JsonMapper.ToObject(jsonStringFromFile);
+        clientLicenseNumber = licenseNumber_JsonFile["LicenseNumber"].ToString();
+        Debug.Log($"[Client] Use created licensenumber?");
+        Debug.Log($"[Client] This client's licensenumber : {clientLicenseNumber}");
     }
 
-    // 버튼 눌러서 계정생성
-    public void OnClickCreateAccount()
-    {
-        DBManager.instance.CreateAccount(create_ID_Input.text, create_PW_Input.text);
-    }
+    //// 버튼 눌러서 로그인
+    //public void OnClickLogin()
+    //{
+    //    // id, password를 입력하지 않았으면 return;
+    //    if (login_ID_Input.text == null || login_PW_Input.text == null)
+    //    {
+    //        loginLog.text = "아이디와 비밀번호를 입력하세요";
+    //        return;
+    //    }
+
+    //    // id, password를 DB에 있는 User_Name과 User_Password 비교
+    //    // id_Input.text == DBManager.instance.user_Info.user_Name && password_Input.text == DBManager.instance.user_Info.user_Password
+    //    if (DBManager.instance.Login(login_ID_Input.text, login_PW_Input.text))
+    //    {
+    //        loginLog.text = "로그인에 성공했습니다.";
+
+    //        // todo.. 씬이동하던지, 재화 불러오던지 등등 할거 
+
+    //        User_Info user = DBManager.instance.user_Info;
+    //        Debug.Log(user.user_Name + "|" + user.user_Password);
+    //    }
+    //    else // 로그인 실패
+    //    {
+    //        loginLog.text = "아이디 또는 비밀번호를 확인해주세요";
+    //    }
+    //}
+
+    //// 버튼 눌러서 계정생성
+    //public void OnClickCreateAccount()
+    //{
+    //    DBManager.instance.CreateAccount(create_ID_Input.text, create_PW_Input.text);
+    //}
 
     // 버튼 눌러서 서버에 메시지 보내기
     public void OnCilckSendMessage()
@@ -133,12 +181,77 @@ public class Client : MonoBehaviour
 
     }
 
+    // 서버에 요청할때 string으로 보내는데, 서버에서 받을 때 string case로 구분해서 처리
+    private void RequestToServer(string requestName)
+    {
+        try
+        {
+            byte[] data = Encoding.UTF8.GetBytes(requestName);
+            stream.Write(data, 0, data.Length); // 데이터를 보낼때 까지 대기? 그냥 보내면 되잖어
+            Debug.Log($"Request to server : {requestName}");
+
+            ReceiveRequestFromServer(stream, requestName); // 메서드가 실행될때 까지 대기 / 대기시키기 위해 메서드 앞에 await을 붙여서 실행시키려면 메서드가 Task 붙여야하는듯?
+        }
+        catch (Exception e)
+        {
+            Debug.Log($"Fail Request to sever : + {e.Message}");
+        }
+    }
+
+    // 서버에 요청보낸거 받음, 받은 string, case로 구분해서 처리
+    private async void ReceiveRequestFromServer(NetworkStream stream, string requestName)
+    {
+        try
+        {
+            byte[] buffer = new byte[1024];
+            int bytesRead = await stream.ReadAsync(buffer, 0, buffer.Length); // 데이터를 읽어올때까지 대기
+            string receivedRequestMessage = Encoding.UTF8.GetString(buffer, 0, bytesRead); // 데이터 변환
+            Debug.Log($"Received request message from server : {receivedRequestMessage}");
+            HandleRequestMessage(requestName, receivedRequestMessage);
+        }
+        catch (Exception e)
+        {
+            Debug.Log($"Error receiving message from server : {e.Message}");
+        }
+    }
+
+    // 서버로부터 받은 메세지 처리
+    private void HandleRequestMessage(string requestname, string requestmessage)
+    {
+        switch(requestname)
+        {
+            case "LicenseNumber":
+                clientLicenseNumber = requestmessage;
+                SaveLicenseNumberToJsonFile();
+                break;
+            default:
+                Debug.Log("HandleRequestMessage Method Something Happend");
+                break;
+        }
+    }
+
+    // Json파일에 LicenseNumber 등록 / 비동기로 호출된 것이 끝났을때 동기적으로 호출시키기 위해
+    private void SaveLicenseNumberToJsonFile()
+    {
+        // JsonData 생성
+        JsonData licenseNumber_Json = new JsonData();
+        licenseNumber_Json["LicenseNumber"] = clientLicenseNumber;
+        // Json 데이터를 문자열로 변환하여 파일에 저장
+        string jsonString = JsonMapper.ToJson(licenseNumber_Json);
+        File.WriteAllText(licensePath + "/clientlicense.json", jsonString);
+    }
+
     private void OnDestroy()
     {
         CloseSocket();
     }
 
     private void OnApplicationQuit()
+    {
+        CloseSocket();
+    }
+
+    public void OnClickCheckCloseSocket()
     {
         CloseSocket();
     }
