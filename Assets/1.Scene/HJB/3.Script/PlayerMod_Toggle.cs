@@ -24,8 +24,7 @@ public class PlayerMod_Toggle : MonoBehaviour
         for (int i = 0; i < next_obj.Length; i++)
         {
             rects[i] = next_obj[i].GetComponent<RectTransform>();
-        }
-        
+        }        
     }
 
     public void NextVector()
@@ -44,7 +43,7 @@ public class PlayerMod_Toggle : MonoBehaviour
         {
             onFilter = true;
             nextVector3 = rects[1].position;
-        }        
+        }
         filter_Canvas.SetActive(!filter_Canvas.activeSelf);
         nonfilter_Canvas.SetActive(!nonfilter_Canvas.activeSelf);
         StartCoroutine(MoveSelect_Obj(nextVector3));
@@ -76,9 +75,7 @@ public class PlayerMod_Toggle : MonoBehaviour
     }
     
     private IEnumerator MoveSelect_Obj(Vector3 nextVector)
-    {
-
-        //Vector3 nextTransform = new Vector3(rectTransform.position.x + nextVector, rectTransform.position.y);
+    {        
         Vector3 nextTransform = nextVector3;
 
         float currntTime = 0f;

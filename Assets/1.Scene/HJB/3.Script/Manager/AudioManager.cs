@@ -48,13 +48,11 @@ public class AudioManager : MonoBehaviour
     public void Master_VolumeSet()
     {
         audioMixer.SetFloat("Master", Mathf.Log10(master_slider.value) * 20);
-
     }
 
     public void BGM_VolumeSet()
     {
         audioMixer.SetFloat("BGM", Mathf.Log10(bgm_slider.value) * 20);
-
     }
     public void SFX_VolumeSet()
     {
