@@ -6,19 +6,20 @@ public enum VeneziaItem
 {
     Pause,
     Meteor,
-    
+     
 }
 
 public class ItemFnc : MonoBehaviour
 {
     //아이템 타입에 따라 게임에 영향을 줄 예정
-    public VeneziaItem veneziaItem;
+    public  VeneziaItem veneziaItem;
     public float Speed;
+
     public int Decreasetime;
 
     private void Update()
     {
-        ItemMove();
+        if(!VeneziaManager.isStop) ItemMove();
     }
 
     private void ItemMove()
@@ -30,11 +31,12 @@ public class ItemFnc : MonoBehaviour
         }
     }
 
-    private void OnCollisionEnter(Collision collision)
+    private void OnTriggerEnter(Collider other)
     {
-        if (collision.gameObject.CompareTag("Ground") && veneziaItem == VeneziaItem.Meteor)
+        if (other.gameObject.CompareTag("Ground"))
         {
-            TimeSlider.Instance.DecreaseTime_Item(Decreasetime);
+            gameObject.SetActive(false);
+            ObjectPooling.Instance.ItemPool.Add(gameObject);
         }
     }
 

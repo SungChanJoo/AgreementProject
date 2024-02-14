@@ -14,9 +14,11 @@ public class Score : MonoBehaviour
     [SerializeField]private PlayMode playMode;
 
     public static Score Instance = null;
+    //Todo : 추후에 게임모드별로 참조하도록 설정 변경 필요 => 현재는 개인모드여도 3개다 참조해야함 (기능구현에 문제는 없으나 불필요한 참조 발생)
     [SerializeField] private Text score_text;
     [SerializeField] private Text Firstscore_text;
     [SerializeField] private Text Secondscore_text;
+    
 
     private int Count;
     private int FirstCount;

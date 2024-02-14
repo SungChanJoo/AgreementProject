@@ -393,7 +393,7 @@ public class GuGUDan_Fnc : MonoBehaviour
                     Click_Count++;
                 }
                 else if (isSecond_Click)
-                {
+                { 
                     Answer_num.text += num.ToString();
                     isSecond_Click = false;
                     isThird_Click = true;

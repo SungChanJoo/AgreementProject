@@ -128,4 +128,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   StartSpeed: 5
+  CurrentSpeed: 0
   MaxSpeed: 0
+  AccelerationSpeed: 1.2
+  isStart: 1

@@ -28,7 +28,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3133072286338926989}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -12.7, y: 62.7, z: -89}
+  m_LocalPosition: {x: -60, y: 57.4, z: 0}
   m_LocalScale: {x: 9, y: 9, z: 9}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -112,3 +112,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   veneziaItem: 0
   Speed: 5
+  Decreasetime: 0
