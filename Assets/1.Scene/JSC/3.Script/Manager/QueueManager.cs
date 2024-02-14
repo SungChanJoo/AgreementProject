@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Mirror;
 using kcp2k;
+using Mirror.Examples.Basic;
 
 public class PlayerInfo
 {
@@ -21,17 +22,21 @@ public class PlayerInfo
 public class QueueManager : NetworkBehaviour
 {
     public static QueueManager Instance = null;
-    Queue<PlayerInfo> _waitingQueue = new Queue<PlayerInfo>();
-    
+    Queue<PlayerInfo> _waitingQueue = new Queue<PlayerInfo>(); //대기열
+
     List<PlayerInfo> _roomPlayerList1 = new List<PlayerInfo>();
     List<PlayerInfo> _roomPlayerList2 = new List<PlayerInfo>();
     //List<int> _roomPlayerList3 = new List<int>();
-    List<int> _exitPlayerList = new List<int>();
-    private int _peopleLimitCount = 1;
-    public GameObject NonePlayer;
-    public List<GameObject> TestPetPrefebs;
-    public List<Transform> PlayerSpawnPos = new List<Transform>();
+    
+    List<int> _exitPlayerList = new List<int>(); //나간 플레이어 목록
 
+    private int _peopleLimitCount = 1; //한 방에 들어갈 수 있는 인원
+    public GameObject NonePlayer;
+    
+    public List<GameObject> PlayerPetList;
+    public int SelectedPetIndex = 0;
+
+    public List<Transform> PlayerSpawnPos = new List<Transform>();
     private void Awake()
     {
         if(Instance == null)
@@ -42,22 +47,27 @@ public class QueueManager : NetworkBehaviour
         {
             Destroy(gameObject);
         }
-        NetworkServer.OnConnectedEvent += (NetworkConnectionToClient) =>
-        {
-            OnEnterPlayer(NetworkConnectionToClient);
-        };
+
+        //클라이언트 연결해제시 이벤트
         NetworkServer.OnDisconnectedEvent += (NetworkConnectionToClient) =>
         {
             OnExitPlayer(NetworkConnectionToClient);
         };
     }
-
-
-    //플레이어가 서버에 접속했을 때 처리
-    public void OnEnterPlayer(NetworkConnectionToClient playerId)
+    private void Start()
     {
-        var playerInfo = new PlayerInfo(playerId, NonePlayer, "NoNamed");
-
+        if (isClient)
+        {
+            if (SelectPetManager.Instance != null)
+                CmdEnterPlayer(SelectPetManager.Instance.SelectedPetIndex);
+        }
+    }
+    //플레이어가 서버에 접속했을 때 처리
+    [Command(requiresAuthority = false)]
+    public void CmdEnterPlayer(int selectedPetIndex, NetworkConnectionToClient playerId = null)
+    {
+        var playerInfo = new PlayerInfo(playerId, PlayerPetList[selectedPetIndex], "NoNamed");
+        
         //대기열에 사람이 없다면 바로 방에 들어감
         if (_waitingQueue.Count <= 0)
         {
@@ -66,13 +76,14 @@ public class QueueManager : NetworkBehaviour
             {
                 //플레이어 추가
                 _roomPlayerList1.Add(playerInfo);
-                StartCoroutine(SwitchPlayerPrefeb_co(playerId, TestPetPrefebs[0], PlayerSpawnPos[0].position));
+                //플레이어 펫
+                SwitchPlayerPrefeb(playerId, PlayerPetList[selectedPetIndex], PlayerSpawnPos[0].position);
             }
-            else if (_roomPlayerList2.Count < _peopleLimitCount)
+/*            else if (_roomPlayerList2.Count < _peopleLimitCount)
             {
                 _roomPlayerList2.Add(playerInfo);
-                StartCoroutine(SwitchPlayerPrefeb_co(playerId, TestPetPrefebs[1], PlayerSpawnPos[1].position));
-            }
+                SwitchPlayerPrefeb(playerId, PlayerPetList[selectedPetIndex], PlayerSpawnPos[1].position);
+            }*/
             /*            else if (_roomPlayerList3.Count < _peopleLimitCount)
                         {
                             _roomPlayerList3.Add(playerId.connectionId);
@@ -81,16 +92,18 @@ public class QueueManager : NetworkBehaviour
             else
             {
                 _waitingQueue.Enqueue(playerInfo);
+                playerId.identity.gameObject.GetComponent<MetaWorldLoadingUI>().OnQueueMetaWorld?.Invoke(_waitingQueue.Count);
             }
         }
         //대기열에 사람이 있다면
         else
         {
             _waitingQueue.Enqueue(playerInfo);
+            playerId.identity.gameObject.GetComponent<MetaWorldLoadingUI>().OnQueueMetaWorld?.Invoke(_waitingQueue.Count);
+
             Debug.Log($"{playerInfo.PlayerConnection}/{playerInfo.PlayerName}/{playerInfo.PlayerPrefeb.name} add Queue");
         }
         ViewPlayerList();
-
     }
     public void ViewPlayerList()
     {
@@ -108,6 +121,7 @@ public class QueueManager : NetworkBehaviour
         }*/
 
     }
+    //방에 있는 플레이어제거 메서드
     public bool RemovePlayerInRoom(List<PlayerInfo> PlayerList, NetworkConnectionToClient playerId)
     {
         for (int i = 0; i < PlayerList.Count; i++)
@@ -127,10 +141,10 @@ public class QueueManager : NetworkBehaviour
         {
             Debug.Log($"RemovePlayer in Room1 {playerId}");
         }
-        else if (RemovePlayerInRoom(_roomPlayerList2, playerId))
+/*        else if (RemovePlayerInRoom(_roomPlayerList2, playerId))
         { 
             Debug.Log($"RemovePlayer in Room2 {playerId}");
-        }
+        }*/
         //대기열에 있는 플레이어가 나가면 exitPlayerList에 등록
         else
         {
@@ -148,6 +162,8 @@ public class QueueManager : NetworkBehaviour
                 if(_waitingQueue.Count>0)
                 {
                     player = _waitingQueue.Dequeue();
+                    playerId.identity.gameObject.GetComponent<MetaWorldLoadingUI>().OnQueueMetaWorld?.Invoke(_waitingQueue.Count);
+                    
                 }
                 //대기열에 사람이 없을때
                 else
@@ -164,11 +180,11 @@ public class QueueManager : NetworkBehaviour
                 _roomPlayerList1.Add(player);
                 playerSpawnPos = PlayerSpawnPos[0];
             }
-            else if (_roomPlayerList2.Count < _peopleLimitCount)
+/*            else if (_roomPlayerList2.Count < _peopleLimitCount)
             {
                 _roomPlayerList2.Add(player);
                 playerSpawnPos = PlayerSpawnPos[1];
-            }
+            }*/
             else
             {
                 Debug.Log("Unbelievable error");
@@ -181,7 +197,7 @@ public class QueueManager : NetworkBehaviour
                     //플레이어 프리펩 교체
                     if (NetworkManager.singleton is PetSwitchNetworkManager manager)
                     {
-                        StartCoroutine(SwitchPlayerPrefeb_co(playerList.Value, player.PlayerPrefeb, playerSpawnPos.position));
+                        SwitchPlayerPrefeb(playerList.Value, player.PlayerPrefeb, playerSpawnPos.position);
                     }
                 }
             }
@@ -195,12 +211,12 @@ public class QueueManager : NetworkBehaviour
         ViewPlayerList();
     }
     
-    IEnumerator SwitchPlayerPrefeb_co(NetworkConnectionToClient playerId, GameObject playerPrefeb, Vector3 SpawnPos)
+    private void SwitchPlayerPrefeb(NetworkConnectionToClient playerId, GameObject playerPrefeb, Vector3 SpawnPos)
     {
-        yield return new WaitForSeconds(1.4f);
         if (NetworkManager.singleton is PetSwitchNetworkManager manager)
         {
             manager.ReplacePlayer(playerId, playerPrefeb, SpawnPos);
+            //플레이어 로딩화면 끝나는 이벤트 호출
         }
     }
 }

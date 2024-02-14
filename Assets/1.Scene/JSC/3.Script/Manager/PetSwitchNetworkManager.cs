@@ -5,12 +5,13 @@ using Mirror;
 
 public class PetSwitchNetworkManager : NetworkManager
 {
-    private int _PlayerCount = 0;
     public void ReplacePlayer(NetworkConnectionToClient conn, GameObject newPrefab, Vector3 spawnPos)
     {
 
         GameObject oldPlayer = conn.identity.gameObject;
-        NetworkServer.ReplacePlayerForConnection(conn, Instantiate(newPrefab, spawnPos, Quaternion.identity), true);
+        NetworkServer.ReplacePlayerForConnection(conn, Instantiate(newPrefab, spawnPos, Quaternion.Euler(0f,180f,0f)), true);
         Destroy(oldPlayer, 0.1f);
+        Debug.Log("newPlayer" + conn.identity.gameObject.name);
+        conn.identity.gameObject.GetComponent<MetaWorldLoadingUI>().OnEnterMetaWorld?.Invoke();
     }
 }
