@@ -3,14 +3,27 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class TimeSlider : MonoBehaviour
+public interface ITimeSlider
 {
+    void DecreaseTime()
+    {
+        //나중에 리팩토링시 인터페이스로 전체게임 시간 관리 가능하게 변경 *
+    }
+}
+
+    public class TimeSlider : MonoBehaviour, ITimeSlider
+{
+
     public static TimeSlider Instance = null;
 
     [SerializeField] public Slider slider;
     [SerializeField] private Image sliderVar_Image;
     [SerializeField] private float ChangeTime;
     [SerializeField] private float changeDuration;
+
+    public float time=0;
+
+    public bool isStop = false;
 
     public float startTime = 6f; //Todo : 추후 재백이에게 데이터값을 받아와서 그값으로 변경
     public float duration = 6f;  //Todo : 위와동일 => 
@@ -37,7 +50,7 @@ public class TimeSlider : MonoBehaviour
             //슬라이더 max value가 1이므로 제한시간에 맞게 감소할 수 있도록 값을 계산
             float normalizedTime = (startTime - endTime) / duration;
             slider.value = normalizedTime;
-            startTime -= Time.deltaTime;
+            startTime -= time;
             if (slider.value <= ChangeTime)
             {
                 StartCoroutine(ChangeColorOverTime(startColor));
@@ -50,6 +63,11 @@ public class TimeSlider : MonoBehaviour
     private void Start()
     {
         StartCoroutine(timeSlider());
+    }
+
+    private void Update()
+    {
+        TimeControl();
     }
 
     private IEnumerator ChangeColorOverTime(Color startColor)
@@ -81,5 +99,22 @@ public class TimeSlider : MonoBehaviour
     public void DecreaseTime()
     {
         TimeSlider.Instance.startTime -= Decreasetime;
+    }
+
+    public void DecreaseTime_Item(int Decreasetime)
+    {
+        startTime -= Decreasetime;
+    }
+
+    public void TimeControl()
+    {
+        if (!isStop)
+        {
+            time = Time.deltaTime;
+        }
+        else
+        {
+            time = Time.unscaledDeltaTime;
+        }
     }
 }

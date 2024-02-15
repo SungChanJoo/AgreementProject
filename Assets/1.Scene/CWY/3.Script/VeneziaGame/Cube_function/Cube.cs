@@ -2,25 +2,47 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Cube : MonoBehaviour
+public enum ObjectType
 {
-    //공이 처음 시작할 때 사방에서 날라올 수 있게 끔..
-    
+    Before,
+    After,
+    CorrectAnswer,
+    Wronganswer,
+}
+
+
+public class Cube : MonoBehaviour
+{ 
+    public static ObjectType objectType;
+
     public float StartSpeed; // 공을 움직일 속도  1 
-    public float MaxSpeed; // 최대 속도 제한    
-    [SerializeField] private bool isStart = true;
+    public float CurrentSpeed; // 공을 움직일 속도  1 
+    public float SaveSpeed; // 속도 저장    
+    public float AccelerationSpeed; // 최대 속도 제한    
+
+    [SerializeField] private bool isStart;
     private bool isFloor = false;
     private bool isLeftWall = false;
     private bool isRightWall = false;
     private bool isCeiling = false;
+
+    public int count = 0;
+
+    private void OnEnable()
+    {
+        isStart = true;
+    }
+
+
     private void Update()
     {
         if (!gameObject.activeSelf) isStart = false;
-        if (gameObject.activeSelf) isStart = true;
+       // if (gameObject.activeSelf) isStart = true;
         if (isStart && gameObject.activeSelf)
         {
             Cube_StartMove();
         }
+        if (!isStart) StartSpeed = 0;
         //Translate로 움직이기 때문에 가끔 물리판정이 무시되어 벽을 뚫는경우를 고려
         if(gameObject.transform.position.x >= ObjectPooling.Instance.MaxDistance || gameObject.transform.position.x <= -ObjectPooling.Instance.MaxDistance)
         {
@@ -29,8 +51,10 @@ public class Cube : MonoBehaviour
             ObjectPooling.Instance.cubePool.Add(gameObject);
             gameObject.SetActive(true);
             gameObject.transform.position = ObjectPooling.Instance.transform.position;
+            StartSpeed = CurrentSpeed;
             isStart = true;
         }
+
 
     }
     private void OnTriggerEnter(Collider other)
@@ -76,9 +100,17 @@ public class Cube : MonoBehaviour
         isLeftWall = false;
         isRightWall = false;
         isCeiling = false;
-
-        float moveY = StartSpeed * Time.deltaTime;
-        float moveX = StartSpeed * Time.deltaTime;
+        if(count == 0)
+        {
+            CurrentSpeed = StartSpeed * AccelerationSpeed;
+        }
+        else
+        {
+            if(count <= 10) CurrentSpeed = CurrentSpeed * AccelerationSpeed;
+        }
+        
+        float moveY = CurrentSpeed * Time.deltaTime ;
+        float moveX = CurrentSpeed * Time.deltaTime ;
 
         // 랜덤으로 좌우 방향 선택
         if (!isFloor)
@@ -94,12 +126,26 @@ public class Cube : MonoBehaviour
             }
         }
         isFloor = true;
-        while (isFloor)
+        count++;
+/*        while (isFloor)
         {
             transform.Translate(moveX, moveY, 0);
             yield return null;
+        }*/
+        while (isFloor)
+        {
+            // Time.timeScale이 0일 때는 즉시 종료
+            if (Time.timeScale == 0)
+            {
+                transform.Translate(0, 0, 0);
+            }
+            else
+            {
+                transform.Translate(moveX, moveY, 0);
+            }
+            yield return null;
         }
-        
+
     }
 
     private IEnumerator Cube_Touch_Ceiling()
@@ -107,13 +153,9 @@ public class Cube : MonoBehaviour
         isFloor = false;
         isLeftWall = false;
         isRightWall = false;
-
-        //천장을 터치했으니 바닥으로 y값은 -값으로 고정
-        float moveY = -1 * StartSpeed * Time.deltaTime;
-        float moveX = StartSpeed * Time.deltaTime;
-
-        //어딘가에 닿았을때 가속 시켜야함
-        // 엑셀레이트 <
+        if (count <= 10) CurrentSpeed = CurrentSpeed * AccelerationSpeed;
+        float moveY = -1 * CurrentSpeed * Time.deltaTime;
+        float moveX = CurrentSpeed * Time.deltaTime;
 
         // 랜덤으로 좌우 방향 선택
         if (!isCeiling) // 처음 천장에 닿았을때 방향을 정해준 후 , 중복실행(방향x축방향을바꾸는) 방지
@@ -129,9 +171,23 @@ public class Cube : MonoBehaviour
             }
         }
         isCeiling = true;
-        while (isCeiling)
+        count++;
+/*        while (isCeiling)
         {
             transform.Translate(moveX, moveY, 0);
+            yield return null;
+        }*/
+        while (isCeiling)
+        {
+            // Time.timeScale이 0일 때는 즉시 종료
+            if (Time.timeScale == 0)
+            {
+                transform.Translate(0, 0, 0);
+            }
+            else
+            {
+                transform.Translate(moveX, moveY, 0);
+            }
             yield return null;
         }
     }
@@ -142,10 +198,10 @@ public class Cube : MonoBehaviour
         isFloor = false;
         isRightWall = false;
         isCeiling = false;
-
+        if (count <= 10) CurrentSpeed = CurrentSpeed * AccelerationSpeed;
         //왼쪽 벽을 터치 =>  x값은 right방향(양수) 값으로 고정
-        float moveY = StartSpeed * Time.deltaTime;
-        float moveX = StartSpeed * Time.deltaTime;
+        float moveY = CurrentSpeed * Time.deltaTime ;
+        float moveX = CurrentSpeed * Time.deltaTime ;
         if (!isLeftWall)
         {
             switch (Random.Range(0,2))
@@ -159,23 +215,38 @@ public class Cube : MonoBehaviour
             }
         }
         isLeftWall = true;
-        while (isLeftWall)
+        count++;
+/*        while (isLeftWall)
         {
             transform.Translate(moveX, moveY, 0);
             yield return null;
+        }*/
+        while (isLeftWall)
+        {
+            // Time.timeScale이 0일 때는 즉시 종료
+            if (Time.timeScale == 0)
+            {
+                transform.Translate(0, 0, 0);
+            }
+            else
+            {
+                transform.Translate(moveX, moveY, 0);
+            }
+            yield return null;
         }
-        
+
     }
 
     private IEnumerator Cube_Touch_RightWall()
     {
+
         isFloor = false;
         isLeftWall = false;
         isCeiling = false;
-
+        if (count <= 10) CurrentSpeed = CurrentSpeed * AccelerationSpeed;
         //오른쪽 벽을 터치 =>  x값은 Left방향(음수) 값으로 고정
-        float moveY = StartSpeed * Time.deltaTime;
-        float moveX = -1 * StartSpeed * Time.deltaTime;
+        float moveY = CurrentSpeed * Time.deltaTime * AccelerationSpeed;
+        float moveX = -1 * CurrentSpeed * Time.deltaTime * AccelerationSpeed;
         if (!isRightWall)
         {
             switch (Random.Range(0, 2))
@@ -189,12 +260,28 @@ public class Cube : MonoBehaviour
             }
         }
         isRightWall = true;
-        while (isRightWall)
+        count++;
+/*        while (isRightWall)
         {
             transform.Translate(moveX, moveY, 0);
             yield return null;
+        }*/
+        while (isRightWall)
+        {
+            // Time.timeScale이 0일 때는 즉시 종료
+            if (Time.timeScale == 0)
+            {
+                transform.Translate(0, 0, 0);
+            }
+            else
+            {
+                transform.Translate(moveX, moveY, 0);
+            }
+            yield return null;
         }
-        
     }
+
+    
+
 
 }
