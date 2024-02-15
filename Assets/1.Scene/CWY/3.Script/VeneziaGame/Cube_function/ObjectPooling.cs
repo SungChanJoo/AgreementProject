@@ -60,7 +60,8 @@ public class ObjectPooling : MonoBehaviour
     private void Start()
     {
         StartCoroutine(Cube_Co());
-        StartCoroutine(Meteor_Co());
+        StartCoroutine(Item_Co());
+        
     }
 
     private void Update()
@@ -82,7 +83,7 @@ public class ObjectPooling : MonoBehaviour
         }
     }
 
-    public IEnumerator Meteor_Co()
+    public IEnumerator Item_Co()
     {
         while (ItemPool.Count > 0)
         {

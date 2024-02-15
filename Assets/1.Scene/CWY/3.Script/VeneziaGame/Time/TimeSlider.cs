@@ -21,6 +21,10 @@ public interface ITimeSlider
     [SerializeField] private float ChangeTime;
     [SerializeField] private float changeDuration;
 
+    public float time=0;
+
+    public bool isStop = false;
+
     public float startTime = 6f; //Todo : 추후 재백이에게 데이터값을 받아와서 그값으로 변경
     public float duration = 6f;  //Todo : 위와동일 => 
     public float Decreasetime;
@@ -46,7 +50,7 @@ public interface ITimeSlider
             //슬라이더 max value가 1이므로 제한시간에 맞게 감소할 수 있도록 값을 계산
             float normalizedTime = (startTime - endTime) / duration;
             slider.value = normalizedTime;
-            startTime -= Time.deltaTime;
+            startTime -= time;
             if (slider.value <= ChangeTime)
             {
                 StartCoroutine(ChangeColorOverTime(startColor));
@@ -59,6 +63,11 @@ public interface ITimeSlider
     private void Start()
     {
         StartCoroutine(timeSlider());
+    }
+
+    private void Update()
+    {
+        TimeControl();
     }
 
     private IEnumerator ChangeColorOverTime(Color startColor)
@@ -95,5 +104,17 @@ public interface ITimeSlider
     public void DecreaseTime_Item(int Decreasetime)
     {
         startTime -= Decreasetime;
+    }
+
+    public void TimeControl()
+    {
+        if (!isStop)
+        {
+            time = Time.deltaTime;
+        }
+        else
+        {
+            time = Time.unscaledDeltaTime;
+        }
     }
 }

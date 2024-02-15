@@ -51,6 +51,7 @@ public class Cube : MonoBehaviour
             ObjectPooling.Instance.cubePool.Add(gameObject);
             gameObject.SetActive(true);
             gameObject.transform.position = ObjectPooling.Instance.transform.position;
+            StartSpeed = CurrentSpeed;
             isStart = true;
         }
 
@@ -126,12 +127,25 @@ public class Cube : MonoBehaviour
         }
         isFloor = true;
         count++;
-        while (isFloor)
+/*        while (isFloor)
         {
             transform.Translate(moveX, moveY, 0);
             yield return null;
+        }*/
+        while (isFloor)
+        {
+            // Time.timeScale이 0일 때는 즉시 종료
+            if (Time.timeScale == 0)
+            {
+                transform.Translate(0, 0, 0);
+            }
+            else
+            {
+                transform.Translate(moveX, moveY, 0);
+            }
+            yield return null;
         }
-        
+
     }
 
     private IEnumerator Cube_Touch_Ceiling()
@@ -158,9 +172,22 @@ public class Cube : MonoBehaviour
         }
         isCeiling = true;
         count++;
-        while (isCeiling)
+/*        while (isCeiling)
         {
             transform.Translate(moveX, moveY, 0);
+            yield return null;
+        }*/
+        while (isCeiling)
+        {
+            // Time.timeScale이 0일 때는 즉시 종료
+            if (Time.timeScale == 0)
+            {
+                transform.Translate(0, 0, 0);
+            }
+            else
+            {
+                transform.Translate(moveX, moveY, 0);
+            }
             yield return null;
         }
     }
@@ -189,12 +216,25 @@ public class Cube : MonoBehaviour
         }
         isLeftWall = true;
         count++;
-        while (isLeftWall)
+/*        while (isLeftWall)
         {
             transform.Translate(moveX, moveY, 0);
             yield return null;
+        }*/
+        while (isLeftWall)
+        {
+            // Time.timeScale이 0일 때는 즉시 종료
+            if (Time.timeScale == 0)
+            {
+                transform.Translate(0, 0, 0);
+            }
+            else
+            {
+                transform.Translate(moveX, moveY, 0);
+            }
+            yield return null;
         }
-        
+
     }
 
     private IEnumerator Cube_Touch_RightWall()
@@ -221,29 +261,27 @@ public class Cube : MonoBehaviour
         }
         isRightWall = true;
         count++;
-        while (isRightWall)
+/*        while (isRightWall)
         {
             transform.Translate(moveX, moveY, 0);
             yield return null;
+        }*/
+        while (isRightWall)
+        {
+            // Time.timeScale이 0일 때는 즉시 종료
+            if (Time.timeScale == 0)
+            {
+                transform.Translate(0, 0, 0);
+            }
+            else
+            {
+                transform.Translate(moveX, moveY, 0);
+            }
+            yield return null;
         }
-        
     }
 
-    public float CubeStop()
-    {
-        SaveSpeed = CurrentSpeed;
-        
-        if (VeneziaManager.isStop)
-        {
-            CurrentSpeed = 0f;
-            return CurrentSpeed;
-        }
-        else
-        {
-            CurrentSpeed = SaveSpeed;
-            return CurrentSpeed;
-        }
-    }
+    
 
 
 }

@@ -19,7 +19,7 @@ public class ItemFnc : MonoBehaviour
 
     private void Update()
     {
-        if(!VeneziaManager.isStop) ItemMove();
+       if(!TimeSlider.Instance.isStop) ItemMove();
     }
 
     private void ItemMove()
@@ -33,6 +33,7 @@ public class ItemFnc : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
+        print("ø¿¿Ã");
         if (other.gameObject.CompareTag("Ground"))
         {
             gameObject.SetActive(false);

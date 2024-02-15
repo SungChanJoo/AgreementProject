@@ -11,12 +11,13 @@ public class VeneziaManager : MonoBehaviour
     //아이템과의 상호작용도 여기에 구현
 
     //문제 출제를 매니저에서 관리 , 출제 문제의 이미지와 이름을 기준으로 정답의 유무를 판단 할 수 있어야함.
+    [SerializeField] private Image Quset_Img;
     [SerializeField] private Sprite[] sprites;   //한글 및 영어 문제에 사용 할 이미지 sprite
     private string[] KorWord = { "시계" , "안시계"};
 
-    private Dictionary<string, (Sprite, string)> QuestKorean = new Dictionary<string, (Sprite,string)>();
 
-    public static bool isStop = false;
+    public Dictionary<string, (Sprite, string)> QuestKorean = new Dictionary<string, (Sprite,string)>();
+
     private void Start()
     {
         for (int i = 0; i < sprites.Length; i++)
@@ -86,8 +87,10 @@ public class VeneziaManager : MonoBehaviour
 
     IEnumerator Pause_co()
     {
-        isStop = true;
-        yield return new WaitForSeconds(5f);
-        isStop = false;
+        TimeSlider.Instance.isStop = true;
+        Time.timeScale = 0;
+        yield return new WaitForSecondsRealtime(5f);
+        TimeSlider.Instance.isStop = false;
+        Time.timeScale = 1;
     }
 }
