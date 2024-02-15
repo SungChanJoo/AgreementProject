@@ -14,8 +14,10 @@ public abstract class GameSetting : MonoBehaviour
         step = StepManager.Instance.CurrentStep;
         level = StepManager.Instance.CurrentLevel;
         timeSet = StepManager.Instance.CurrentTime;
+        TimeSlider.Instance.startTime = timeSet;
+        TimeSlider.Instance.duration = timeSet;
         SplitLevelAndStep();
-    }    
+    }
     
     //현재 Level Step에 따라 나누기
     public virtual void SplitLevelAndStep()
@@ -25,7 +27,7 @@ public abstract class GameSetting : MonoBehaviour
             case 1:
                 Level_1(step);
                 break;
-            case 2:
+            case 2: 
                 Level_2(step);
                 break;
             case 3:

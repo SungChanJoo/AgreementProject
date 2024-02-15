@@ -13,7 +13,8 @@ public enum Operator
 }
 
 public class AOP_Manager : GameSetting
-{    
+{
+
     public int operator_num;
     public string operator_ran;
 
@@ -149,18 +150,18 @@ public class AOP_Manager : GameSetting
         if (ranResult != 1)
         {
             //result값 범위 설정 해줘야함 0 <= result <= 99
-            while (0 > result || result >= 100)
-            {
-                Answer_Calculator(operator_num);
-            }
+            //while (0 > result || result >= 100)
+            //{
+            //    Answer_Calculator(operator_num);
+            //}
         }
         else
         {
             //result값 범위 설정 해줘야함 100 <= result <= 399
-            while (99 > result || result >= 400)
-            {
-                Answer_Calculator(operator_num);
-            }
+            //while (99 > result || result >= 400)
+            //{
+            //    Answer_Calculator(operator_num);
+            //}
         }
     }
     public override void Level_3(int step)

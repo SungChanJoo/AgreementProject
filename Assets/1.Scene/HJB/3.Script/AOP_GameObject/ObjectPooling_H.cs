@@ -7,16 +7,24 @@ public class ObjectPooling_H : MonoBehaviour
     [SerializeField] private GameObject cube_Obj;
     [SerializeField] private GameObject[] poolPosition;
     
-    private List<GameObject> cubePool = new List<GameObject>();
-
     [SerializeField]private AOP_Manager aopManager;
+    [SerializeField] private Result_Printer result_Printer;
+
+    private List<GameObject> cubePool = new List<GameObject>();
     
     public float answer;
-       
+
+    //
+    private int problom_count=0;
+    private int answer_count = 0;
+
+    
     
     //Start 버튼 이벤트가 콜백되면 실행
     public void ObjectPooling()
     {
+        //기본 값 초기화
+        DataDefaultSetting();
         //문제 오브젝트의 갯수만큼 생성 및 Pool에 담기
         for (int i = 0; i < poolPosition.Length; i++)
         {
@@ -60,15 +68,17 @@ public class ObjectPooling_H : MonoBehaviour
             int firstNum = aopManager.first_num;
             int secondNum = aopManager.second_num;
             char _operator = aopManager._Operator;
-            movingcube.result = aopManager.result;            
+            movingcube.result = aopManager.result;
             if (i.Equals(randomResult))
             {
                 TakeResult(movingcube.result);
             }
-            
             //여기에 숫자 할당
             movingcube.Start_Obj(firstNum,_operator , secondNum);
-        }        
+
+            //문제 개수를 계속 체크
+            problom_count++;
+        }
     }
     private void  Next_Result()
     {
@@ -108,20 +118,35 @@ public class ObjectPooling_H : MonoBehaviour
         if (movingCube.result.Equals(answer))
         {
             Next_Result();
+            answer_count++;
         }
         else
         {
-            Debug.Log("틀렸습니다.");
             //시간 감소
+            Debug.Log("틀렸습니다.");
+            TimeSlider.Instance.DecreaseTime_Item(5);
         }        
     }
 
-    private float TakeResult(float result)
+    //정답 결과 출력 메서드
+    private void TakeResult(float result)
     {
         answer = result;
         aopManager.Show_Result(answer);
-        return result;
     }
+
+    private void DataDefaultSetting()
+    {
+        problom_count = 0;
+        problom_count = 0;
+    }
+
+    private void ResultPrinter_UI()
+    {
+        result_Printer.ShowText(1,answer_count,20,aopManager.timeSet,100);
+    }
+
+    
     
 }
 
