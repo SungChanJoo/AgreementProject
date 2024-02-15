@@ -24,6 +24,7 @@ public interface ITimeSlider
     public float time=0;
 
     public bool isStop = false;
+    public bool isGameOver = false;
 
     public float startTime = 6f; //Todo : 추후 재백이에게 데이터값을 받아와서 그값으로 변경
     public float duration = 6f;  //Todo : 위와동일 => 
@@ -116,5 +117,10 @@ public interface ITimeSlider
         {
             time = Time.unscaledDeltaTime;
         }
+    }
+
+    public void GameOver()
+    {
+        isGameOver = true;
     }
 }

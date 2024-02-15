@@ -60,6 +60,7 @@ public class Score : MonoBehaviour
             Secondscore_text.text = "0";
         }
     }
+    //---------------------------------------------------------
     public void Get_FirstScore()
     {
         if (true)//playMode == PlayMode.Solo)
@@ -71,7 +72,7 @@ public class Score : MonoBehaviour
 
     public void Get_SecondScore()
     {
-        if (true)//playMode == PlayMode.Solo)
+        if (true)//playMode == PlayMode.Ä¿ÇÃ)
         {
             SecondCount++;
             Secondscore_text.text = SecondCount.ToString();

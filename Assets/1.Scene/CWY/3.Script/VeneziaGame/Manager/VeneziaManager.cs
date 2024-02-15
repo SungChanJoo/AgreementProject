@@ -2,6 +2,22 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using TMPro;
+
+
+[System.Serializable]
+public class QuestData
+{
+    public Sprite sprite;
+    public string description;
+
+    public QuestData(Sprite sprite, string description)
+    {
+        this.sprite = sprite;
+        this.description = description;
+    }
+}
+
 
 public class VeneziaManager : MonoBehaviour
 {
@@ -12,18 +28,28 @@ public class VeneziaManager : MonoBehaviour
 
     //문제 출제를 매니저에서 관리 , 출제 문제의 이미지와 이름을 기준으로 정답의 유무를 판단 할 수 있어야함.
     [SerializeField] private Image Quset_Img;
+    [SerializeField] private TextMeshProUGUI Quset_text;
     [SerializeField] private Sprite[] sprites;   //한글 및 영어 문제에 사용 할 이미지 sprite
-    private string[] KorWord = { "시계" , "안시계"};
+    private string[] KorWord = { "ok" , "no"};
 
 
-    public Dictionary<string, (Sprite, string)> QuestKorean = new Dictionary<string, (Sprite,string)>();
+    public Dictionary<string, QuestData> QuestKorean = new Dictionary<string, QuestData>();
 
-    private void Start()
+    private void Awake()
     {
         for (int i = 0; i < sprites.Length; i++)
         {
-            QuestKorean.Add(KorWord[i], (sprites[i], KorWord[i]));
+            string key = KorWord[i];
+            QuestData data = new QuestData(sprites[i], KorWord[i]);
+            QuestKorean.Add(key, data);
+            // 딕셔너리에 입력되는 정보 확인용
+            print("Added Quest Data: Key = " + key + ", Description = " + data.description);
         }
+    }
+
+    private void Start()
+    {
+        DisplayRandomQuest();
     }
 
     private void Update()
@@ -93,4 +119,28 @@ public class VeneziaManager : MonoBehaviour
         TimeSlider.Instance.isStop = false;
         Time.timeScale = 1;
     }
+
+    public void DisplayRandomQuest()
+    {
+        // 랜덤으로 퀘스트 데이터 선택
+        QuestData randomQuest = GetRandomQuest();
+
+        // 선택된 퀘스트 데이터의 이미지와 텍스트를 UI에 표시
+        Quset_Img.sprite = randomQuest.sprite;
+        Quset_text.text = randomQuest.description;
+    }
+
+    private QuestData GetRandomQuest()
+    {
+        // 딕셔너리의 모든 값을 배열로 변환
+        QuestData[] questArray = new QuestData[QuestKorean.Count];
+        QuestKorean.Values.CopyTo(questArray, 0);
+
+        // 랜덤한 인덱스 선택
+        int randomIndex = Random.Range(0, questArray.Length);
+
+        // 랜덤으로 선택된 퀘스트 데이터 반환
+        return questArray[randomIndex];
+    }
+
 }
