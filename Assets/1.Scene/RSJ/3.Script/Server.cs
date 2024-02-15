@@ -8,6 +8,7 @@ using UnityEngine.UI;
 using System;
 using System.IO;
 using System.Threading.Tasks;
+using System.Linq;
 
 public class Server : MonoBehaviour
 {
@@ -219,11 +220,13 @@ public class Server : MonoBehaviour
                 // 클라이언트로부터 요청메세지(이름)을 받음
                 byte[] buffer = new byte[1024];
                 int bytesRead = await stream.ReadAsync(buffer, 0, buffer.Length); // 메세지 받을때까지 대기
-                string receivedRequestName = Encoding.UTF8.GetString(buffer, 0, bytesRead); // 데이터 변환
+                string receivedRequestData = Encoding.UTF8.GetString(buffer, 0, bytesRead); // 데이터 변환
+                List<string> dataList = receivedRequestData.Split('|').ToList(); // 받은 data 분할해서 list에 담음
+                string receivedRequestName = dataList[0]; // dataList[0]은 클라이언트가 요청한 주제, 게임 등의 이름
                 Debug.Log($"Received request name from client : {receivedRequestName}");
 
                 // 클라이언트로부터 요청 받은 제목에 대한 내용을 처리해서 클라이언트에게 보내줘야함
-                string replyRequestMessage = HandleRequestMessage(receivedRequestName);
+                string replyRequestMessage = HandleRequestData(dataList);
                 byte[] data = Encoding.UTF8.GetBytes(replyRequestMessage); // 데이터 변환
                 stream.Write(data, 0, data.Length); // 메세지 보냄
                 Debug.Log($"Reply request message to client");
@@ -237,8 +240,9 @@ public class Server : MonoBehaviour
     }
 
     // 클라이언트로부터 받은 요청을 제목에 맞게 분류해서 처리함
-    private string HandleRequestMessage(string requestName)
+    private string HandleRequestData(List<string> dataList)
     {
+        string requestName = dataList[0]; 
         switch(requestName)
         {
             case "LicenseNumber":
@@ -248,6 +252,9 @@ public class Server : MonoBehaviour
                 clientLicenseNumber = DBManager.instance.CreateLicenseNumber();
                 Debug.Log($"Temp After CreateLicenseNumber");
                 return clientLicenseNumber.ToString();
+            case "venezia_chn":
+                DBManager.instance.SaveGameResultData(dataList);
+                return "";
             default:
                 Debug.Log("Handling error that request from client ");
                 return "";

@@ -8,6 +8,7 @@ using UnityEngine.UI;
 using System.IO;
 using System.Threading.Tasks;
 using LitJson;
+using System.Linq;
 
 // 처음 접속하는 유저인지(First), 접속했었던 유저인지(Continue) 
 public enum ClientLoginStatus
@@ -24,7 +25,7 @@ public class Client : MonoBehaviour
 
     bool socketReady;
     private TcpClient client;
-    private NetworkStream stream;
+    private static NetworkStream stream;
 
     // login - license
     public static ClientLoginStatus loginStatus;
@@ -39,6 +40,18 @@ public class Client : MonoBehaviour
     // Create Account
     public InputField create_ID_Input;
     public InputField create_PW_Input;
+
+    // Test GameData
+    public string testGameName;
+    public int testLevel;
+    public int testStep;
+    public int testScore;
+    public int testTime;
+
+    public Client(NetworkStream _stream)
+    {
+        stream = _stream;
+    }
 
     private void Awake()
     {
@@ -178,17 +191,18 @@ public class Client : MonoBehaviour
             Debug.Log($"Error receiving message from server : {e.Message}");
             Debug.LogError($"Error receiving message from server : {e.Message}");
         }
-
     }
 
     // 서버에 요청할때 string으로 보내는데, 서버에서 받을 때 string case로 구분해서 처리
-    private void RequestToServer(string requestName)
+    private void RequestToServer(string requestData)
     {
         try
         {
-            byte[] data = Encoding.UTF8.GetBytes(requestName);
+            byte[] data = Encoding.UTF8.GetBytes(requestData);
             stream.Write(data, 0, data.Length); // 데이터를 보낼때 까지 대기? 그냥 보내면 되잖어
-            Debug.Log($"Request to server : {requestName}");
+            List<string> requestDataList = requestData.Split('|').ToList();
+            string requestName = requestDataList[0];
+            Debug.Log($"Request to server : {requestData}");
 
             ReceiveRequestFromServer(stream, requestName); // 메서드가 실행될때 까지 대기 / 대기시키기 위해 메서드 앞에 await을 붙여서 실행시키려면 메서드가 Task 붙여야하는듯?
         }
@@ -205,9 +219,9 @@ public class Client : MonoBehaviour
         {
             byte[] buffer = new byte[1024];
             int bytesRead = await stream.ReadAsync(buffer, 0, buffer.Length); // 데이터를 읽어올때까지 대기
-            string receivedRequestMessage = Encoding.UTF8.GetString(buffer, 0, bytesRead); // 데이터 변환
-            Debug.Log($"Received request message from server : {receivedRequestMessage}");
-            HandleRequestMessage(requestName, receivedRequestMessage);
+            string receivedRequestData = Encoding.UTF8.GetString(buffer, 0, bytesRead); // 데이터 변환
+            Debug.Log($"Received request message from server : {receivedRequestData}");
+            HandleRequestData(requestName, receivedRequestData);
         }
         catch (Exception e)
         {
@@ -215,14 +229,17 @@ public class Client : MonoBehaviour
         }
     }
 
-    // 서버로부터 받은 메세지 처리
-    private void HandleRequestMessage(string requestname, string requestmessage)
+    // 서버로부터 받은 데이터 처리
+    private void HandleRequestData(string requestname, string requestdata)
     {
         switch(requestname)
         {
             case "LicenseNumber":
-                clientLicenseNumber = requestmessage;
+                clientLicenseNumber = requestdata;
                 SaveLicenseNumberToJsonFile();
+                break;
+            case "venezia_cha":
+                Debug.Log($"[Client] RequestName : venezia_cha, End handling data");
                 break;
             default:
                 Debug.Log("HandleRequestMessage Method Something Happend");
@@ -241,6 +258,14 @@ public class Client : MonoBehaviour
         File.WriteAllText(licensePath + "/clientlicense.json", jsonString);
     }
 
+    // 게임스크립트에서 점수 및 시간 가져오기 / Enum으로 level step 구분하고있나
+    public static void Game_SaveDataToDB(string gamename, int level, int step, int score, int time)
+    {
+        string requestData = $"{gamename}|{level.ToString()}|{step.ToString()}|{score.ToString()}|{time.ToString()}";
+        Client client = new Client(stream);
+        client.RequestToServer(requestData);
+    }
+
     private void OnDestroy()
     {
         CloseSocket();
@@ -254,6 +279,11 @@ public class Client : MonoBehaviour
     public void OnClickCheckCloseSocket()
     {
         CloseSocket();
+    }
+
+    public void OnClickGameDataTest()
+    {
+        Game_SaveDataToDB(testGameName,testLevel,testStep,testScore,testTime);
     }
 
 

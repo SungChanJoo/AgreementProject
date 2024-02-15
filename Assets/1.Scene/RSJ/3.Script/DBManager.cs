@@ -38,8 +38,14 @@ public class DBManager : MonoBehaviour
     // 연결할때 필요한 정보
     private string str_Connection;
 
-    // LicenseNumber 기본
+    // LicenseNumber 기본, Table 게임명(편의성을 위해)
     private int clientLicenseNumber_Base = 10000;
+    private string licenseNumber_Column = "User_LicenseNumber";
+    public static string venezia_kor = "venezia_kor";
+    public static string venezia_eng = "venezia_eng";
+    public static string venezia_chn = "venezia_chn";
+    public static string calculation = "calculation";
+    public static string gugudan = "gugudan";
 
     public static DBManager instance = null; // 싱글톤 쓸거임
 
@@ -214,22 +220,14 @@ public class DBManager : MonoBehaviour
         List<string> table_List = new List<string>();
         table_List.Add("rank");
         table_List.Add("achievement");
-        table_List.Add("venezia_kor_level1");
-        table_List.Add("venezia_kor_level2");
-        table_List.Add("venezia_kor_level3");
-        table_List.Add("venezia_eng_level1");
-        table_List.Add("venezia_eng_level2");
-        table_List.Add("venezia_eng_level3");
-        table_List.Add("venezia_chn_level1");
-        table_List.Add("venezia_chn_level2");
-        table_List.Add("venezia_chn_level3");
-        table_List.Add("gugudan_level1");
-        table_List.Add("gugudan_level2");
-        table_List.Add("gugudan_level3");
-        table_List.Add("calculation_level1");
-        table_List.Add("calculation_level2");
-        table_List.Add("calculation_level3");
-
+        table_List.Add("pet");
+        table_List.Add("venezia_chn_level_step1");
+        table_List.Add("venezia_chn_level_step2");
+        table_List.Add("venezia_chn_level_step3");
+        table_List.Add("venezia_chn_level_step4");
+        table_List.Add("venezia_chn_level_step5");
+        table_List.Add("venezia_chn_level_step6");
+        
         for(int i = 0; i<table_List.Count; i++)
         {
             string insertLicenseNumber_Command = $"INSERT INTO {table_List[i]} (User_LicenseNumber) VALUES ({licensenumber})";
@@ -237,4 +235,34 @@ public class DBManager : MonoBehaviour
             insert_SqlCmd.ExecuteNonQuery();
         }
     }
+
+    public void SaveGameResultData(List<string> dataList)
+    {
+        // dataList index순으로 게임명[0]/레벨[1]/스텝[2]/점수[3]/시간[4]
+        if (dataList[1] == "0") dataList[1] = null;
+        string table_Name = $"{dataList[0]}_level{dataList[1]}_step{dataList[2]}";
+        string column_Name = $"TotalScore";
+        int score = int.Parse(dataList[3]);
+
+        // DB table에 있는 score 비교해서 더 높은 점수 DB에 저장
+        string selectGameData_Command = $"SELECT {column_Name} FROM {table_Name}";
+        MySqlCommand select_SqlCmd = new MySqlCommand(selectGameData_Command, connection);
+       
+        MySqlDataReader reader = select_SqlCmd.ExecuteReader();
+
+        if (reader.HasRows)
+        {
+            while (reader.Read())
+            {
+                int dbScore = reader.GetInt32("TotalScore");
+                score = score > dbScore ? score : dbScore;
+            }
+        }
+        reader.Close();
+
+        string insertGameData_Command = $"INSERT INTO {table_Name} ({column_Name}) VALUES ({score})";
+        MySqlCommand insert_SqlCmd = new MySqlCommand(insertGameData_Command, connection);
+        insert_SqlCmd.ExecuteNonQuery();
+    }
+
 }
