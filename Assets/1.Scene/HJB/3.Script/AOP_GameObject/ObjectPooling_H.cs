@@ -7,16 +7,29 @@ public class ObjectPooling_H : MonoBehaviour
     [SerializeField] private GameObject cube_Obj;
     [SerializeField] private GameObject[] poolPosition;
     
+    [SerializeField]private AOP_Manager aopManager;
+    [SerializeField] private Result_Printer result_Printer;
+
     private List<GameObject> cubePool = new List<GameObject>();
+    
     public float answer;
 
-    private void Start()
+    //
+    private int problom_count=0;
+    private int answer_count = 0;
+
+    
+    
+    //Start 버튼 이벤트가 콜백되면 실행
+    public void ObjectPooling()
     {
+        //기본 값 초기화
+        DataDefaultSetting();
         //문제 오브젝트의 갯수만큼 생성 및 Pool에 담기
         for (int i = 0; i < poolPosition.Length; i++)
         {
-            GameObject cube = Instantiate(cube_Obj);            
-            cube.transform.position = poolPosition[i].transform.position;            
+            GameObject cube = Instantiate(cube_Obj);
+            cube.transform.position = poolPosition[i].transform.position;
             cube.SetActive(false);
             cubePool.Add(cube);
         }
@@ -25,17 +38,18 @@ public class ObjectPooling_H : MonoBehaviour
     private void Update()
     {        
         Click_Obj();
-    }    
-    
+    }
+    //Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Began
     private void Click_Obj()
     {        
-        if (Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Began)
+        if (Input.GetMouseButtonDown(0)||
+            Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Began)
         {            
             Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
             RaycastHit hit;
 
             if (Physics.Raycast(ray, out hit) && !hit.collider.gameObject.CompareTag("Ground"))
-            {
+            {                
                 hit.collider.gameObject.SetActive(false);
                 Answer_Check(hit.collider.gameObject);                
             }
@@ -50,16 +64,21 @@ public class ObjectPooling_H : MonoBehaviour
         {
             cubePool[i].SetActive(true);
             MovingCube movingcube = cubePool[i].GetComponent<MovingCube>();
-            movingcube.result = AOP_Manager.Instance.Calculator_Random();
+            aopManager.SplitLevelAndStep();
+            int firstNum = aopManager.first_num;
+            int secondNum = aopManager.second_num;
+            char _operator = aopManager._Operator;
+            movingcube.result = aopManager.result;
             if (i.Equals(randomResult))
             {
                 TakeResult(movingcube.result);
             }
-            int firstNum = AOP_Manager.Instance.first_num;
-            int secondNum = AOP_Manager.Instance.second_num;
-            string _operator = AOP_Manager.Instance.operator_ran;
+            //여기에 숫자 할당
             movingcube.Start_Obj(firstNum,_operator , secondNum);
-        }        
+
+            //문제 개수를 계속 체크
+            problom_count++;
+        }
     }
     private void  Next_Result()
     {
@@ -99,20 +118,35 @@ public class ObjectPooling_H : MonoBehaviour
         if (movingCube.result.Equals(answer))
         {
             Next_Result();
+            answer_count++;
         }
         else
         {
-            Debug.Log("틀렸습니다.");
             //시간 감소
+            Debug.Log("틀렸습니다.");
+            TimeSlider.Instance.DecreaseTime_Item(5);
         }        
     }
 
-    private float TakeResult(float result)
+    //정답 결과 출력 메서드
+    private void TakeResult(float result)
     {
         answer = result;
-        AOP_Manager.Instance.Show_Result(result);
-        return result;
+        aopManager.Show_Result(answer);
     }
+
+    private void DataDefaultSetting()
+    {
+        problom_count = 0;
+        problom_count = 0;
+    }
+
+    private void ResultPrinter_UI()
+    {
+        result_Printer.ShowText(1,answer_count,20,aopManager.timeSet,100);
+    }
+
+    
     
 }
 

@@ -3,24 +3,21 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
+
 public class MainMenuManager : MonoBehaviour
-{
+{    
     [SerializeField] private GameObject MainMenuCanvas;
-    
     [SerializeField] private GameObject PetSelectCavas;
     [SerializeField] private GameObject CollectionCavas;
     [SerializeField] private GameObject LevelCavas;
     [SerializeField] private GameObject CameraCavas;
     [SerializeField] private GameObject ProfileCanvas;
-
-
+    [SerializeField] private GameObject StepCanvas;
 
     public void SceneGame_1()
     {
         SceneManager.LoadScene("HJB_ArithmeticOperationsGame");
     }
-
-    
 
     //Application 종료 버튼
     public void Exit_Btn()
@@ -29,13 +26,38 @@ public class MainMenuManager : MonoBehaviour
     }
     public void CollectionShop_UI()
     {
-        CollectionCavas.SetActive(!CollectionCavas.activeSelf);
+        CollectionCavas.SetActive(!CollectionCavas.activeSelf);        
     }
 
-    public void Select_Level(int level)
+    
+    //선택한 Level 할당 이벤트
+    public void SelectLevel_Btn(int level)
     {
+        //StepUI가 비활성화이면..
+        if (!StepCanvas.activeInHierarchy)
+        {
+            //Level 선택 시 StepUI 활성화, LevelUI 비활성화
+            Step_UI();
+            Level_UI();
+        }
+        StepManager.Instance.SelectLevel(level);
+        Debug.Log(level);
+    }
+    
+    
+    //선택한 Step 할당 이벤트
+    public void SelectStep(int step)
+    {
+        StepManager.Instance.SelectStep(step);
         SceneGame_1();
     }
+    public void SelectTime(int time)
+    {
+        StepManager.Instance.SelectTimeSet(time);
+        Debug.Log(time);
+    }
+
+    
     public void Level_UI()
     {
         LevelCavas.SetActive(!LevelCavas.activeSelf);
@@ -56,5 +78,9 @@ public class MainMenuManager : MonoBehaviour
     public void Profile_UI()
     {
         ProfileCanvas.SetActive(!ProfileCanvas.activeSelf);
+    }
+    public void Step_UI()
+    {
+        StepCanvas.SetActive(!StepCanvas.activeSelf);
     }
 }
