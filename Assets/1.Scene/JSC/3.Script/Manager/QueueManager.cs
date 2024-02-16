@@ -3,8 +3,6 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Mirror;
-using kcp2k;
-using Mirror.Examples.Basic;
 
 public class PlayerInfo
 {
@@ -60,6 +58,7 @@ public class QueueManager : NetworkBehaviour
         if (isClient)
         {
             if (SelectPetManager.Instance != null)
+                //SelectedPetIndex에 따라 플레이어 프리펩 변경
                 CmdEnterPlayer(SelectPetManager.Instance.SelectedPetIndex);
         }
     }
@@ -107,22 +106,7 @@ public class QueueManager : NetworkBehaviour
         }
         ViewPlayerList();
     }
-    public void ViewPlayerList()
-    {
-        for(int i = 0; i < _roomPlayerList1.Count;i ++)
-        {
-            Debug.Log($"RoomPlayerList1 : RoomNumber/{i} PlayerNumber/{_roomPlayerList1[i].PlayerConnection.address}");
-        }
-        for (int i = 0; i < _roomPlayerList2.Count; i++)
-        {
-            Debug.Log($"RoomPlayerList2 : RoomNumber/{i} PlayerNumber/{_roomPlayerList2[i].PlayerConnection.address}");
-        }
-/*        for (int i = 0; i < _roomPlayerList3.Count; i++)
-        {
-            Debug.Log($"RoomPlayerList3 : RoomNumber/{i} PlayerNumber/{_roomPlayerList3[i]}");
-        }*/
 
-    }
     //방에 있는 플레이어제거 메서드
     public bool RemovePlayerInRoom(List<PlayerInfo> PlayerList, NetworkConnectionToClient playerId)
     {
@@ -154,8 +138,8 @@ public class QueueManager : NetworkBehaviour
             _exitPlayerList.Add(playerId.connectionId);
         }
         ViewPlayerList();
-        Debug.Log("Exit Player");
     }
+    //나간 플레이어인지 확인
     public PlayerInfo CheckExitPlayer(PlayerInfo player)
     {
         //대기열에 있는 플레이어가 나간 플레이어가 목록에 있으면 다음 대기인원 
@@ -213,13 +197,34 @@ public class QueueManager : NetworkBehaviour
             Debug.Log($"_waitPlayer Add {player}");
         }
     }
-    
+    //플레이어 프리펩 교체요청
     private void SwitchPlayerPrefeb(NetworkConnectionToClient playerId, GameObject playerPrefeb, Vector3 SpawnPos)
     {
         if (NetworkManager.singleton is PetSwitchNetworkManager manager)
         {
             manager.ReplacePlayer(playerId, playerPrefeb, SpawnPos);
-            //플레이어 로딩화면 끝나는 이벤트 호출
         }
+    }
+    
+    public void ViewPlayerList()
+    {
+        for (int i = 0; i < _roomPlayerList1.Count; i++)
+        {
+            Debug.Log($"RoomPlayerList1 : RoomNumber/{i} PlayerNumber/{_roomPlayerList1[i].PlayerConnection.address}");
+        }
+        for (int i = 0; i < _roomPlayerList2.Count; i++)
+        {
+            Debug.Log($"RoomPlayerList2 : RoomNumber/{i} PlayerNumber/{_roomPlayerList2[i].PlayerConnection.address}");
+        }
+        /*        for (int i = 0; i < _roomPlayerList3.Count; i++)
+                {
+                    Debug.Log($"RoomPlayerList3 : RoomNumber/{i} PlayerNumber/{_roomPlayerList3[i]}");
+                }*/
+
+    }
+    //어플 종료 시 연결해제
+    private void OnApplicationQuit()
+    {
+        NetworkClient.Disconnect();
     }
 }

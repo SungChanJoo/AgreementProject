@@ -14,4 +14,5 @@ public class PetSwitchNetworkManager : NetworkManager
         Debug.Log("newPlayer" + conn.identity.gameObject.name);
         conn.identity.gameObject.GetComponent<MetaWorldLoadingUI>().OnEnterMetaWorld?.Invoke();
     }
+
 }
