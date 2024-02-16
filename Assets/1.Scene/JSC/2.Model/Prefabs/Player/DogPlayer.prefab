@@ -18,9 +18,10 @@ GameObject:
   - component: {fileID: 2180110907374331448}
   - component: {fileID: 984022323912271711}
   - component: {fileID: 2267451028067065538}
-  m_Layer: 0
+  - component: {fileID: -2700020901996206483}
+  m_Layer: 6
   m_Name: DogPlayer
-  m_TagString: Untagged
+  m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -243,6 +244,21 @@ MonoBehaviour:
   positionSensitivity: 0.01
   rotationSensitivity: 0.01
   scaleSensitivity: 0.01
+--- !u!114 &-2700020901996206483
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2861885958276034223}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9365358b6e882bd44a371f6703e84bfd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  syncDirection: 0
+  syncMode: 0
+  syncInterval: 0
 --- !u!1 &2861885958384001092
 GameObject:
   m_ObjectHideFlags: 0
@@ -417,7 +433,7 @@ SkinnedMeshRenderer:
   m_Quality: 0
   m_UpdateWhenOffscreen: 0
   m_SkinnedMotionVectors: 1
-  m_Mesh: {fileID: 4300000, guid: e3aca0d396f49ac499f1aca03bf7fd96, type: 3}
+  m_Mesh: {fileID: 4300000, guid: d88b77676f62dc94f8ac5b873cee90ee, type: 3}
   m_Bones:
   - {fileID: 8302218738991126202}
   - {fileID: 8302218738991126178}
@@ -514,7 +530,7 @@ SkinnedMeshRenderer:
   m_Quality: 0
   m_UpdateWhenOffscreen: 0
   m_SkinnedMotionVectors: 1
-  m_Mesh: {fileID: 4300000, guid: 21c10ff87b85ec441aa479847c342cf7, type: 3}
+  m_Mesh: {fileID: 4300000, guid: d88b77676f62dc94f8ac5b873cee90ee, type: 3}
   m_Bones:
   - {fileID: 8302218738991126202}
   - {fileID: 8302218738991126178}
@@ -611,7 +627,7 @@ SkinnedMeshRenderer:
   m_Quality: 0
   m_UpdateWhenOffscreen: 0
   m_SkinnedMotionVectors: 1
-  m_Mesh: {fileID: 4300000, guid: 87dbbfd9f869786488c32d159c997b03, type: 3}
+  m_Mesh: {fileID: 4300000, guid: d88b77676f62dc94f8ac5b873cee90ee, type: 3}
   m_Bones:
   - {fileID: 8302218738991126202}
   - {fileID: 8302218738991126178}
@@ -1103,7 +1119,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2608677591569228253, guid: e5763962cd57fc74ca3252c19a39c98d, type: 3}
       propertyPath: m_LocalPosition.z
-      value: -2.3
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2608677591569228253, guid: e5763962cd57fc74ca3252c19a39c98d, type: 3}
       propertyPath: m_LocalRotation.w
@@ -1111,23 +1127,23 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2608677591569228253, guid: e5763962cd57fc74ca3252c19a39c98d, type: 3}
       propertyPath: m_LocalRotation.x
-      value: -0
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2608677591569228253, guid: e5763962cd57fc74ca3252c19a39c98d, type: 3}
       propertyPath: m_LocalRotation.y
-      value: -0
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2608677591569228253, guid: e5763962cd57fc74ca3252c19a39c98d, type: 3}
       propertyPath: m_LocalRotation.z
-      value: -0
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2608677591569228253, guid: e5763962cd57fc74ca3252c19a39c98d, type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 0.24
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2608677591569228253, guid: e5763962cd57fc74ca3252c19a39c98d, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 0.9999999
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2608677591569228253, guid: e5763962cd57fc74ca3252c19a39c98d, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x

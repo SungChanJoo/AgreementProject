@@ -587,9 +587,10 @@ GameObject:
   - component: {fileID: 4071803896674508395}
   - component: {fileID: 1641884739534128703}
   - component: {fileID: 7252071543258554954}
-  m_Layer: 0
+  - component: {fileID: 9057074988763209025}
+  m_Layer: 6
   m_Name: WolfPlayer
-  m_TagString: Untagged
+  m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -798,6 +799,21 @@ MonoBehaviour:
   positionSensitivity: 0.01
   rotationSensitivity: 0.01
   scaleSensitivity: 0.01
+--- !u!114 &9057074988763209025
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2377433268561859353}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9365358b6e882bd44a371f6703e84bfd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  syncDirection: 0
+  syncMode: 0
+  syncInterval: 0
 --- !u!1 &2377433268864834307
 GameObject:
   m_ObjectHideFlags: 0

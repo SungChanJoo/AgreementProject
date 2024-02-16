@@ -83,13 +83,7 @@ public class PlayerMovement : NetworkBehaviour
         } 
         #endregion
     }
-    //상호작용 가능한 UI show or hide 
-    public void InteractableUI(GameObject UI, bool value)
-    {
-        if (!isLocalPlayer) return;
 
-        UI.SetActive(value);
-    }
     #region PlayerInput (ButtonEvnet)
     //오른쪽 버튼을 누르면 이동방향, 상태변경
     public void OnRightButtonDown()

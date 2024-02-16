@@ -29,6 +29,7 @@ public class QueueManager : NetworkBehaviour
     
     List<int> _exitPlayerList = new List<int>(); //나간 플레이어 목록
 
+    [SerializeField]
     private int _peopleLimitCount = 1; //한 방에 들어갈 수 있는 인원
     public GameObject NonePlayer;
     
