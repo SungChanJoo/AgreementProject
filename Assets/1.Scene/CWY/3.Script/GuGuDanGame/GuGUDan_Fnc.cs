@@ -294,7 +294,7 @@ public class GuGUDan_Fnc : MonoBehaviour
                 //누적된 시간 날리기
                 isAnswerCheck = true;
                 isAnswerCorrect = false;
-                TimeSlider.Instance.DecreaseTime();
+                TimeSlider.Instance.DecreaseTime_Item(5);
             }
         }
         else if(CaseNum == 1) // y쪽을 역산
@@ -314,7 +314,7 @@ public class GuGUDan_Fnc : MonoBehaviour
                 //누적된 시간 날리기
                 isAnswerCheck = true;
                 isAnswerCorrect = false;
-                TimeSlider.Instance.DecreaseTime();
+                TimeSlider.Instance.DecreaseTime_Item(5);
             }
         }
         else if (CaseNum == 2)
@@ -334,7 +334,7 @@ public class GuGUDan_Fnc : MonoBehaviour
                 //누적된 시간 날리기
                 isAnswerCheck = true;
                 isAnswerCorrect = false;
-                TimeSlider.Instance.DecreaseTime();
+                TimeSlider.Instance.DecreaseTime_Item(5);
             }
         }
 
