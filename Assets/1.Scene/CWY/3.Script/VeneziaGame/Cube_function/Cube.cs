@@ -4,16 +4,22 @@ using UnityEngine;
 
 public enum ObjectType
 {
-    Before,
-    After,
-    CorrectAnswer,
     Wronganswer,
+    CorrectAnswer,
+}
+
+public enum Quset_exam
+{
+    Before,
+    Current,
+    After,
 }
 
 
 public class Cube : MonoBehaviour
 { 
     public static ObjectType objectType;
+    public static Quset_exam quset_Exam;
 
     public float StartSpeed; // 공을 움직일 속도  1 
     public float CurrentSpeed; // 공을 움직일 속도  1 
@@ -21,6 +27,7 @@ public class Cube : MonoBehaviour
     public float AccelerationSpeed; // 최대 속도 제한    
 
     [SerializeField] private bool isStart;
+    [SerializeField] private Sprite sprite;
     private bool isFloor = false;
     private bool isLeftWall = false;
     private bool isRightWall = false;
@@ -55,6 +62,10 @@ public class Cube : MonoBehaviour
             isStart = true;
         }
 
+        JudgeCubeObjType();
+
+        print(quset_Exam);
+        print(objectType);
 
     }
     private void OnTriggerEnter(Collider other)
@@ -283,5 +294,17 @@ public class Cube : MonoBehaviour
 
     
 
+    private void JudgeCubeObjType()
+    {
+        if(VeneziaManager.Instance.Quest_Img.sprite == sprite)
+        {
+            objectType = ObjectType.CorrectAnswer;
+            quset_Exam = Quset_exam.Current;
+        }
+        else
+        {
+            objectType = ObjectType.Wronganswer;
+        }
+    }
 
 }
