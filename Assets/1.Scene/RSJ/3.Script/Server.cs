@@ -24,6 +24,9 @@ public class Server : MonoBehaviour
     // 클라이언트에게 라이센스번호를 부여하기위한 변수
     private int clientLicenseNumber;
 
+    // Rank용 Timer 변수, 5분마다 실시간 갱신(DB데이터 불러와서) 그 후 클라이언트한테 쏴줘야함(UDP) todo
+    private float rankTime = 300f;
+
     // Debug용
     private float debugTime = 5f;
     private float debugTimer;
@@ -31,7 +34,7 @@ public class Server : MonoBehaviour
     // 서버는 한번만 실행
     private void Start()
     {
-        Debug.Log("Server start callback function");
+        Debug.Log("[Server] Server start callback function");
         ServerCreate();
     }
 
@@ -54,27 +57,27 @@ public class Server : MonoBehaviour
 
         try
         {
-            Debug.Log("Try server create");
+            Debug.Log("[Server] Try server create");
             server = new TcpListener(IPAddress.Any, port);
             server.Start(); // 서버 시작
-            Debug.Log("server.Start()");
+            Debug.Log("[Server] server.Start()");
 
             StartListening();
             isServerStarted = true;
         }
         catch(Exception e)
         {
-            Debug.Log($"Server-Client Connect Error! : {e.Message}");
+            Debug.Log($"[Server] Server-Client Connect Error! : {e.Message}");
         }
     }
 
     // 비동기로 클라이언트 연결요청 받기 시작
     private async void StartListening()
     {
-        Debug.Log("Server is listening until client is comming");
+        Debug.Log("[Server] Server is listening until client is comming");
         // 비동기 클라이언트 연결 / await 키워드는 비동기 호출이 완료될 때까지 대기
         TcpClient client = await server.AcceptTcpClientAsync();
-        Debug.Log("Asynchronously server accept client's request");
+        Debug.Log("[Server] Asynchronously server accept client's request");
 
         // 클라이언트가 연결되면 다음 메서드 호출
         HandleClient(client);
@@ -83,12 +86,12 @@ public class Server : MonoBehaviour
     // 재귀 메서드, 클라이언트 연결되면 다시 연결요청 받음
     private void HandleClient(TcpClient client)
     {
-        Debug.Log("Client connected");
+        Debug.Log("[Server] Client connected");
         clients.Add(client);
 
         for (int i = 0; i < clients.Count; i++)
         {
-            Debug.Log($"Connected client's IP : {((IPEndPoint)clients[i].Client.RemoteEndPoint).Address}");
+            Debug.Log($"[Server] Connected client's IP : {((IPEndPoint)clients[i].Client.RemoteEndPoint).Address}");
         }
 
         // 연결된 클라이언트 -> 데이터받을준비
@@ -104,11 +107,11 @@ public class Server : MonoBehaviour
 
         while(debugTimer > debugTime)
         {
-            Debug.Log($"Present Connected Clients : {clients.Count}");
+            Debug.Log($"[Server] Present Connected Clients : {clients.Count}");
             
             foreach(TcpClient client in clients)
             {
-                Debug.Log($"Connected Clients's IP : {((IPEndPoint)client.Client.RemoteEndPoint).Address}");
+                Debug.Log($"[Server] Connected Clients's IP : {((IPEndPoint)client.Client.RemoteEndPoint).Address}");
             }
 
             debugTimer = 0f;
@@ -118,14 +121,15 @@ public class Server : MonoBehaviour
         {
             if (!IsConnected(client))
             {
-                Debug.Log("Client connection is closed");
-                Debug.Log($"Disconnected clients's IP : {((IPEndPoint)client.Client.RemoteEndPoint).Address}");
+                Debug.Log("[Server] Client connection is closed");
+                Debug.Log($"[Server] Disconnected clients's IP : {((IPEndPoint)client.Client.RemoteEndPoint).Address}");
                 client.Close();
                 disconnectList.Add(client);
                 Debug.Log($"[Server] After client.Close(), Test check client.Connected bool value : {client.Connected}");
                 clients.Remove(client);
                 continue;
             }
+            #region etc
             //// 클라이언트 연결이 끊어졌다면
             //if (!CheckConnectState(client))
             //{
@@ -149,56 +153,7 @@ public class Server : MonoBehaviour
             //    //    }
             //    //}
             //}
-        }
-    }
-
-    //// 클라이언트와 연결이 끊겼는지 체크 todo
-    //bool CheckConnectState(TcpClient client)
-    //{
-    //    try
-    //    {
-    //        if (client.Client.Poll(0, SelectMode.SelectRead))
-    //        {
-    //            byte[] checkConnection = new byte[1];
-    //            if (client.Client.Receive(checkConnection, SocketFlags.Peek) == 0) // 1byte씩 보내는데, 반응없으면 끊어진거
-    //            {
-    //                // 클라이언트 연결 끊김
-    //                throw new IOException();
-    //            }
-    //        }
-    //        else return false;
-    //    }
-    //    catch
-    //    {
-    //        return false;
-    //    }
-    //}
-
-    private async void ReceiveDataFromClient(TcpClient client)
-    {
-        while(true)
-        {
-            try
-            {
-                NetworkStream stream = client.GetStream();
-
-                // 클라이언트로부터 메시지 받음
-                byte[] buffer = new byte[1024];
-                int bytesRead = await stream.ReadAsync(buffer, 0, buffer.Length); // 메세지 받을때까지 대기
-                string receivedMessage = Encoding.UTF8.GetString(buffer, 0, bytesRead); // 데이터 변환
-                Debug.Log($"Received Message from client : {receivedMessage}");
-
-                // 클라이언트한테 메시지 보냄 // todo. 메세지안에 클라이언트에게 어떤 요청에 대한 결과값 보내줘야함
-                string sendMessage = "Get a message from client And I Give you respond Message";
-                byte[] data = Encoding.UTF8.GetBytes(sendMessage); // 데이터 변환
-                stream.Write(data, 0, data.Length); // 메세지 보냄
-                Debug.Log($"Sent Message to client");
-            }
-            catch (Exception e)
-            {
-                Debug.Log($"Data Communicate error : {e.Message}");
-                break;
-            }
+            #endregion
         }
     }
 
@@ -213,7 +168,7 @@ public class Server : MonoBehaviour
                 // 연결이 끊겼으면 break
                 if (!IsConnected(client))
                 {
-                    Debug.Log("Client connection is closed");
+                    Debug.Log("[Server] Client connection is closed");
                     break;
                 }
 
@@ -223,18 +178,39 @@ public class Server : MonoBehaviour
                 string receivedRequestData = Encoding.UTF8.GetString(buffer, 0, bytesRead); // 데이터 변환
                 List<string> dataList = receivedRequestData.Split('|').ToList(); // 받은 data 분할해서 list에 담음
                 string receivedRequestName = dataList[0]; // dataList[0]은 클라이언트가 요청한 주제, 게임 등의 이름
-                Debug.Log($"Received request name from client : {receivedRequestName}");
+                Debug.Log($"[Server] Received request name from client : {receivedRequestName}");
 
                 // 클라이언트로부터 요청 받은 제목에 대한 내용을 처리해서 클라이언트에게 보내줘야함
-                string replyRequestMessage = HandleRequestData(dataList);
-                byte[] data = Encoding.UTF8.GetBytes(replyRequestMessage); // 데이터 변환
-                stream.Write(data, 0, data.Length); // 메세지 보냄
-                Debug.Log($"Reply request message to client");
+                if(receivedRequestName == "LoadPlayerData")
+                {
+                    Debug.Log($"[Server] receivedRequestName : {receivedRequestName}");
+
+                    int newClientLicenseNumber = Int32.Parse(dataList[1]);
+                    List<string> replyMassiveRequestMessage = DBManager.instance.LoadPlayerData(ClientLoginStatus.New, newClientLicenseNumber); // 새 플레이어 정보 불러오기
+
+                    for(int i = 0; i < replyMassiveRequestMessage.Count; i++)
+                    {
+                        byte[] data = Encoding.UTF8.GetBytes(replyMassiveRequestMessage[i]);
+                        stream.Write(data, 0, data.Length);
+                        Debug.Log("[Server] Replying... massive request message to client");
+                    }
+
+                    byte[] finishData = Encoding.UTF8.GetBytes("Finish");
+                    stream.Write(finishData, 0, finishData.Length);
+                    Debug.Log("[Server] End reply massive request message to client");
+                }
+                else
+                {
+                    string replyRequestMessage = HandleRequestData(dataList);
+                    byte[] data = Encoding.UTF8.GetBytes(replyRequestMessage); // 데이터 변환
+                    stream.Write(data, 0, data.Length); // 메세지 보냄
+                    Debug.Log($"[Server] Reply request message to client");
+                }
             }
         }
         catch (Exception e)
         {
-            Debug.Log($"Data Communicate error : {e.Message}");
+            Debug.Log($"[Server] Data Communicate error : {e.Message}");
         }
 
     }
@@ -242,21 +218,26 @@ public class Server : MonoBehaviour
     // 클라이언트로부터 받은 요청을 제목에 맞게 분류해서 처리함
     private string HandleRequestData(List<string> dataList)
     {
-        string requestName = dataList[0]; 
+        string requestName = dataList[0];
+        string requestData; // DB로부터 가져온 data, client한테 보낼 data
+        Debug.Log($"[Server] HandleRequestData name : {dataList[0]}");
+
         switch(requestName)
         {
             case "LicenseNumber":
                 // 클라이언트가 LicenseNumber를 요청하는건 처음 접속하기때문에 LicenseNumber가 없는것
                 // 따라서 DB에 연결해 LicenseNumber가 몇개있는지 확인(Count)하고 클라이언트에게 LicenseNumber 부여
-                Debug.Log($"Temp Before CreateLicenseNumber");
-                clientLicenseNumber = DBManager.instance.CreateLicenseNumber();
-                Debug.Log($"Temp After CreateLicenseNumber");
+                Debug.Log($"[Server] Temp Before CreateLicenseNumber");
+                clientLicenseNumber = DBManager.instance.CreateLicenseNumber(); // 새 라이센스 발급
+                Debug.Log($"[Server] DBManager.instance.CreateLicenseNumber() complete.");
+                DBManager.instance.CreateNewPlayerData(clientLicenseNumber); // 새 플레이어 정보 생성
+                Debug.Log($"[Server] Temp After CreateLicenseNumber");
                 return clientLicenseNumber.ToString();
             case "venezia_chn":
                 DBManager.instance.SaveGameResultData(dataList);
                 return "";
             default:
-                Debug.Log("Handling error that request from client ");
+                Debug.Log($"[Server] Handling error that request from client, request name : {requestName}");
                 return "";
         }
     }
@@ -287,6 +268,56 @@ public class Server : MonoBehaviour
         server.Stop();
     }
 
+
+    //private async void ReceiveDataFromClient(TcpClient client)
+    //{
+    //    while(true)
+    //    {
+    //        try
+    //        {
+    //            NetworkStream stream = client.GetStream();
+
+    //            // 클라이언트로부터 메시지 받음
+    //            byte[] buffer = new byte[1024];
+    //            int bytesRead = await stream.ReadAsync(buffer, 0, buffer.Length); // 메세지 받을때까지 대기
+    //            string receivedMessage = Encoding.UTF8.GetString(buffer, 0, bytesRead); // 데이터 변환
+    //            Debug.Log($"Received Message from client : {receivedMessage}");
+
+    //            // 클라이언트한테 메시지 보냄 // todo. 메세지안에 클라이언트에게 어떤 요청에 대한 결과값 보내줘야함
+    //            string sendMessage = "Get a message from client And I Give you respond Message";
+    //            byte[] data = Encoding.UTF8.GetBytes(sendMessage); // 데이터 변환
+    //            stream.Write(data, 0, data.Length); // 메세지 보냄
+    //            Debug.Log($"Sent Message to client");
+    //        }
+    //        catch (Exception e)
+    //        {
+    //            Debug.Log($"Data Communicate error : {e.Message}");
+    //            break;
+    //        }
+    //    }
+    //}
+
+    //// 클라이언트와 연결이 끊겼는지 체크 todo
+    //bool CheckConnectState(TcpClient client)
+    //{
+    //    try
+    //    {
+    //        if (client.Client.Poll(0, SelectMode.SelectRead))
+    //        {
+    //            byte[] checkConnection = new byte[1];
+    //            if (client.Client.Receive(checkConnection, SocketFlags.Peek) == 0) // 1byte씩 보내는데, 반응없으면 끊어진거
+    //            {
+    //                // 클라이언트 연결 끊김
+    //                throw new IOException();
+    //            }
+    //        }
+    //        else return false;
+    //    }
+    //    catch
+    //    {
+    //        return false;
+    //    }
+    //}
 
     #region Server 입력 Test
     //// 포트 적는 칸 (서버는 IP 필요없음)

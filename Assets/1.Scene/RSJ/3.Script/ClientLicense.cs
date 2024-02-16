@@ -24,7 +24,6 @@ public class ClientLicense : MonoBehaviour
         if(!File.Exists(path))
         {
             Directory.CreateDirectory(path);
-            loginStatus = ClientLoginStatus.First;
             // 서버에서 라이센스 넘버를 받아와야함, 그러기 위해 서버에 요청 todo
             //Client.stream 
             
