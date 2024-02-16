@@ -33,6 +33,7 @@ public class ItemFnc : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
+        print("ø¿¿Ã");
         if (other.gameObject.CompareTag("Ground"))
         {
             gameObject.SetActive(false);
