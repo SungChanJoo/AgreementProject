@@ -4142,7 +4142,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Quset_Img: {fileID: 240970841}
-  Quset_text: {fileID: 1791354007}
+  Quset_text: {fileID: 1885517469}
   sprites:
   - {fileID: 21300000, guid: 893c05464137fa14b9d3c300ba4adac6, type: 3}
   - {fileID: 21300000, guid: 3a6558ea8600aa440aa0f5816bac825f, type: 3}
@@ -5314,6 +5314,7 @@ MonoBehaviour:
   changeDuration: 10
   time: 0
   isStop: 0
+  isGameOver: 0
   startTime: 60
   duration: 60
   Decreasetime: 5
