@@ -12,7 +12,7 @@ public class MovingCube : MonoBehaviour
 
     public float result = 0;
     
-    public void Start_Obj(int _first, string _operator, int _second)
+    public void Start_Obj(int _first, char _operator, int _second)
     {        
         cube_text.text = $"{_first} {_operator} {_second}";
     }    

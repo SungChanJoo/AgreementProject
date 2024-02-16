@@ -602,6 +602,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cf18d909cab1b0b4ea7f92aec5be2ed5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  buttonType: 0
   First_num: {fileID: 1049514533}
   Second_num: {fileID: 1742138324}
   Answer_num: {fileID: 1360984331}
@@ -618,7 +619,7 @@ MonoBehaviour:
   - {fileID: 587765135}
   canvas: {fileID: 1215284665}
   Level: 1
-  Step: 3
+  Step: 1
 --- !u!4 &287009998
 Transform:
   m_ObjectHideFlags: 0
@@ -626,8 +627,8 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 287009996}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 694.4643, y: 492.10107, z: -7.714528}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 694.4643, y: 492.10107, z: -7.7145386}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -848,7 +849,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 313539151}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
   m_Name: 
@@ -1325,6 +1326,7 @@ GameObject:
   - component: {fileID: 646461227}
   - component: {fileID: 646461226}
   - component: {fileID: 646461225}
+  - component: {fileID: 646461228}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -1398,6 +1400,39 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &646461228
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 646461224}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a79441f348de89743a2939f4d699eac1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_RenderShadows: 1
+  m_RequiresDepthTextureOption: 2
+  m_RequiresOpaqueTextureOption: 2
+  m_CameraType: 0
+  m_Cameras: []
+  m_RendererIndex: -1
+  m_VolumeLayerMask:
+    serializedVersion: 2
+    m_Bits: 1
+  m_VolumeTrigger: {fileID: 0}
+  m_VolumeFrameworkUpdateModeOption: 2
+  m_RenderPostProcessing: 0
+  m_Antialiasing: 0
+  m_AntialiasingQuality: 2
+  m_StopNaN: 0
+  m_Dithering: 0
+  m_ClearDepth: 1
+  m_AllowXRRendering: 1
+  m_RequiresDepthTexture: 0
+  m_RequiresColorTexture: 0
+  m_Version: 2
 --- !u!1 &663089170
 GameObject:
   m_ObjectHideFlags: 0
@@ -3766,8 +3801,9 @@ MonoBehaviour:
   sliderVar_Image: {fileID: 8836855194716140459}
   ChangeTime: 0.35
   changeDuration: 3
-  startTime: 100
-  duration: 100
+  isStop: 0
+  startTime: 60
+  duration: 60
   Decreasetime: 5
 --- !u!222 &7739086947249468360
 CanvasRenderer:
@@ -3862,7 +3898,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 483a14515a821e44f9d0963c61168dfc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  playMode: 0
   score_text: {fileID: 7739086947249468361}
+  Firstscore_text: {fileID: 7739086947249468361}
+  Secondscore_text: {fileID: 7739086947249468361}
 --- !u!1 &8836855193422332988
 GameObject:
   m_ObjectHideFlags: 0

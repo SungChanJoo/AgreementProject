@@ -3,8 +3,15 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
+enum ButtonType
+{
+    First,
+    Second
+}
+
 public class GuGUDan_Fnc : MonoBehaviour
 {
+    [SerializeField] private ButtonType buttonType;
     //구구단 게임 기능 관련 스크립트
     //곱셈 숫자 1번,2번에 랜덤으로 숫자가 발생해서 구구단을 진행 
     //결과는 맞추던 못맞추던 공개하고 맞출경우 O , 틀릴경우 X 표시?
@@ -25,6 +32,7 @@ public class GuGUDan_Fnc : MonoBehaviour
 
     [SerializeField] Canvas canvas;
 
+    #region 변수 & 상태 관리
     public int Level;
     public int Step;
 
@@ -56,7 +64,7 @@ public class GuGUDan_Fnc : MonoBehaviour
 
     //스탭별 케이스 선택지 번호 확인
     int CaseNum;
-
+    #endregion
 
     private void Awake()
     {
@@ -66,6 +74,7 @@ public class GuGUDan_Fnc : MonoBehaviour
         buttonText = "";
         
     }
+
 
     private void Start()
     {
@@ -82,6 +91,8 @@ public class GuGUDan_Fnc : MonoBehaviour
         GameOver();
 
         Click();
+
+        print(Click_Count);
     }
 
 
@@ -170,26 +181,24 @@ public class GuGUDan_Fnc : MonoBehaviour
             Second_num.text = Random.Range(1, 20).ToString();
         }
     }
-    //lv1게임 로직 구현
+    #region lv별 게임
+    //lv별 로직
     private void Lv1()
     {
         Lv1_RandomNum();
         Random_ShowText();
-
     }
     private void Lv2()
     {
         Lv2_RandomNum();
         Random_ShowText();
-
     }
     private void Lv3()
     {
         Lv3_RandomNum();
         Random_ShowText();
-
     }
-
+    #endregion
     #endregion
     //
 
@@ -272,7 +281,7 @@ public class GuGUDan_Fnc : MonoBehaviour
         {          
             if (First_num.text == $"{resultx}")
             {
-                Score.Instance.Get_Score();
+                Get_Score();
                 TrueAnswerCount++; //정답 갯수 증가 -> 정답률 반영에 사용할거
                 isAnswerCheck = true;
                 isAnswerCorrect = true;
@@ -292,7 +301,7 @@ public class GuGUDan_Fnc : MonoBehaviour
         {
             if (Second_num.text == $"{resulty}")
             {
-                Score.Instance.Get_Score();
+                Get_Score();
                 TrueAnswerCount++; //정답 갯수 증가 -> 정답률 반영에 사용할거
                 isAnswerCheck = true;
                 isAnswerCorrect = true;
@@ -312,7 +321,7 @@ public class GuGUDan_Fnc : MonoBehaviour
         {
             if (Answer_num.text == $"{resultz}")
             {
-                Score.Instance.Get_Score();
+                Get_Score();
                 TrueAnswerCount++; //정답 갯수 증가 -> 정답률 반영에 사용할거
                 isAnswerCheck = true;
                 isAnswerCorrect = true;
@@ -384,7 +393,7 @@ public class GuGUDan_Fnc : MonoBehaviour
                     Click_Count++;
                 }
                 else if (isSecond_Click)
-                {
+                { 
                     Answer_num.text += num.ToString();
                     isSecond_Click = false;
                     isThird_Click = true;
@@ -412,7 +421,7 @@ public class GuGUDan_Fnc : MonoBehaviour
                 if (SecondNumDigit == Click_Count) AnswerCheck();
                 break;
             case 2:
-                if (AnswerNumDigit == Click_Count) AnswerCheck();
+                if (AnswerNumDigit == Click_Count)  AnswerCheck();
                 break;
             default:
                 break;
@@ -447,6 +456,7 @@ public class GuGUDan_Fnc : MonoBehaviour
 
     public void Clear_btn()
     {
+        //Todo : 2인모드시 클리어버튼 초기화 위치 지정 필요.
         switch (CaseNum)
         {
             case 0: First_num.text = "?";
@@ -468,6 +478,7 @@ public class GuGUDan_Fnc : MonoBehaviour
 
 
 
+
     public void Reaction_speed()
     {
         // 게임시간이 끝날 때 까지 정답을 몇개나 맞췄는지 반응속도 잴것.
@@ -483,6 +494,7 @@ public class GuGUDan_Fnc : MonoBehaviour
     //버튼이 아닌 다른 영역을 클릭하면 초기화 시켜주기
     private void Click()
     {
+
         if (Input.GetMouseButtonDown(0))
         {
             //현재 게임화면에 마우스(손가락터치)를 입력시 그 좌표를 계산
@@ -493,8 +505,19 @@ public class GuGUDan_Fnc : MonoBehaviour
             Vector2 canvasMousePosition = new Vector2(mousePosition.x / Screen.width * canvasSize.x, mousePosition.y / Screen.height * canvasSize.y) - (canvasSize / 2f);
             //print(mousePosition.y / Screen.height * canvasSize.y);
             //이 영역 위로 클릭시 Clear
-            if (mousePosition.y / Screen.height * canvasSize.y > 255f) Clear_btn();
+            //if (mousePosition.y / Screen.height * canvasSize.y > 255f) Clear_btn();
         }
     }
 
+    public void Get_Score()
+    {
+        if(buttonType == ButtonType.First)
+        {
+            Score.Instance.Get_FirstScore();
+        }
+        else
+        {
+            Score.Instance.Get_SecondScore();
+        }
+    }
 }
