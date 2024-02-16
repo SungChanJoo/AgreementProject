@@ -635,19 +635,19 @@ LODGroup:
   - screenRelativeHeight: 0.95
     fadeTransitionWidth: 0
     renderers:
-    - renderer: {fileID: 2377433267950092953, guid: 458aa5a99a21f714ba7e1230b5fc7fec, type: 3}
+    - renderer: {fileID: 2377433267950092953}
   - screenRelativeHeight: 0.7
     fadeTransitionWidth: 0
     renderers:
-    - renderer: {fileID: 2377433267938700473, guid: 458aa5a99a21f714ba7e1230b5fc7fec, type: 3}
+    - renderer: {fileID: 2377433267938700473}
   - screenRelativeHeight: 0.35
     fadeTransitionWidth: 0
     renderers:
-    - renderer: {fileID: 2377433269162974173, guid: 458aa5a99a21f714ba7e1230b5fc7fec, type: 3}
+    - renderer: {fileID: 2377433269162974173}
   - screenRelativeHeight: 0.05
     fadeTransitionWidth: 0
     renderers:
-    - renderer: {fileID: 2377433268864834304, guid: 458aa5a99a21f714ba7e1230b5fc7fec, type: 3}
+    - renderer: {fileID: 2377433268864834304}
   m_Enabled: 1
 --- !u!95 &2377433268561859358
 Animator:

@@ -265,7 +265,7 @@ GameObject:
   m_Component:
   - component: {fileID: 124005503}
   m_Layer: 0
-  m_Name: PlayerSpawnPos (2)
+  m_Name: PlayerSpawnPos
   m_TagString: Untagged
   m_Icon: {fileID: 5132851093641282708, guid: 0000000000000000d000000000000000, type: 0}
   m_NavMeshLayer: 0
@@ -299,7 +299,7 @@ GameObject:
   - component: {fileID: 200405864}
   - component: {fileID: 200405863}
   m_Layer: 0
-  m_Name: Canvas (2)
+  m_Name: WorldNameCanvas
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1376,7 +1376,7 @@ GameObject:
   - component: {fileID: 885866291}
   - component: {fileID: 885866290}
   m_Layer: 0
-  m_Name: Canvas
+  m_Name: WorldNameCanvas
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1501,7 +1501,8 @@ MonoBehaviour:
   PlayerPetList:
   - {fileID: 8817371571305558288, guid: 8096e02ac8209b64bb7a9b975a165059, type: 3}
   - {fileID: 2377433268561859353, guid: e310ff88c303e0945824b3edf3000315, type: 3}
-  - {fileID: 2377433268561859353, guid: 8aa2f7a0557ac894bb52b6fe7fb1dec2, type: 3}
+  - {fileID: 2861885958276034223, guid: 8aa2f7a0557ac894bb52b6fe7fb1dec2, type: 3}
+  - {fileID: 6752947195329775989, guid: de66ba71598d0334b9a8856058f4bc5b, type: 3}
   SelectedPetIndex: 0
   PlayerSpawnPos:
   - {fileID: 8393444}
@@ -1618,8 +1619,9 @@ MonoBehaviour:
   spawnPrefabs:
   - {fileID: 7181498164969116611, guid: bd27581ef9f80624a9cc3f01fa7d4e48, type: 3}
   - {fileID: 2377433268561859353, guid: e310ff88c303e0945824b3edf3000315, type: 3}
-  - {fileID: 2377433268561859353, guid: 8aa2f7a0557ac894bb52b6fe7fb1dec2, type: 3}
+  - {fileID: 2861885958276034223, guid: 8aa2f7a0557ac894bb52b6fe7fb1dec2, type: 3}
   - {fileID: 8817371571305558288, guid: 8096e02ac8209b64bb7a9b975a165059, type: 3}
+  - {fileID: 6752947195329775989, guid: de66ba71598d0334b9a8856058f4bc5b, type: 3}
   snapshotSettings:
     bufferTimeMultiplier: 2
     bufferLimit: 32
@@ -2078,7 +2080,7 @@ GameObject:
   - component: {fileID: 1220130413}
   - component: {fileID: 1220130412}
   m_Layer: 0
-  m_Name: Canvas (1)
+  m_Name: WorldNameCanvas
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2176,7 +2178,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1227125311}
   m_Layer: 0
-  m_Name: PlayerSpawnPos (1)
+  m_Name: 'PlayerSpawnPos '
   m_TagString: Untagged
   m_Icon: {fileID: 5132851093641282708, guid: 0000000000000000d000000000000000, type: 0}
   m_NavMeshLayer: 0

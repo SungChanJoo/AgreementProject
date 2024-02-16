@@ -13,7 +13,7 @@ public class MetaWorldLoadingUI : NetworkBehaviour
     public Text QueueTimeText;
 
     public Action OnEnterMetaWorld;
-    public Action<int> OnQueueMetaWorld;
+    public Action OnQueueMetaWorld;
 
     private void Awake()
     {
@@ -24,9 +24,9 @@ public class MetaWorldLoadingUI : NetworkBehaviour
             StartCoroutine(LoadMetaWorld_co());
         };
         //대기열 상태이면 대기열 카운트다운, 카운트가 0되면 메타월드 불러오기 
-        OnQueueMetaWorld = (Count) =>
+        OnQueueMetaWorld = () =>
         {
-            RpcSyncQueueUI(Count);
+            StartCoroutine(UpdateQueueCount_co());
         };
     }
     public override void OnStartLocalPlayer()
@@ -55,12 +55,12 @@ public class MetaWorldLoadingUI : NetworkBehaviour
     IEnumerator SetTimeQueue_co(int count)
     {
         int time = 0;
-        RpcSyncQueueUI(count);
+        //RpcSyncQueueUI(count);
         while (count>0)
         {
             yield return new WaitForSeconds(1f);
             time++;
-            QueueTimeText.text = $"{time}";
+            QueueTimeText.text = $"대기 시간 : {time}";
         }
         currentSeTimeQueue = null;
     }
@@ -77,11 +77,36 @@ public class MetaWorldLoadingUI : NetworkBehaviour
         //대기열에 사람이 있으면 UI 활성화
         if (count > 0)
         {
+            Debug.Log($"count {count}");
             if (!QueueUI.activeSelf) QueueUI.SetActive(true);
-
-            QueueCountText.text = $"{count}";
+            QueueCountText.text = $"남은 인원 : {count}";
         }
         else QueueUI.SetActive(false);
 
+    }
+    
+    IEnumerator UpdateQueueCount_co(NetworkConnectionToClient playerId = null)
+    {
+        Debug.Log("UpdateQueueCount_co");
+
+        Debug.Log($"{QueueManager.Instance.WaitingQueue.Count}");
+        //Debug.Log($"{playerId.connectionId}");
+        while (QueueManager.Instance.WaitingQueue.Count > 0)
+        {
+            var currentQueue = QueueManager.Instance.WaitingQueue;
+            int i = 1;
+            //현재 대기열에 플레이어를 찾아서 앞에 남은 인원 체크
+            foreach(var playerInfo in currentQueue)
+            {
+                if (playerInfo.PlayerConnection.identity != null)
+                {
+                    Debug.Log("?");
+                    playerInfo.PlayerConnection.identity.gameObject.GetComponent<MetaWorldLoadingUI>().RpcSyncQueueUI(i);
+                    i++;
+                }
+
+            }
+            yield return new WaitForSeconds(1f);
+        }
     }
 }

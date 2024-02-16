@@ -5,20 +5,8 @@ using UnityEngine.SceneManagement;
 
 public class SceneLoader : MonoBehaviour
 {
-    [Header("Scene ¿Ã∏ß")]
-    [SerializeField] private string[] SceneArray;
-
-    private void Start()
+    public void LoadScene(string sceneName)
     {
-        LoadScene(SceneArray);
-    }
-
-    public void LoadScene(string[] SceneArray)
-    {
-        foreach (string name in SceneArray)
-        {
-            SceneManager.LoadScene(name, LoadSceneMode.Additive);
-
-        }
+        SceneManager.LoadScene(sceneName);
     }
 }

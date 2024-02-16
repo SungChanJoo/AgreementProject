@@ -17,12 +17,13 @@ public class PlayerInfo
         PlayerConnection = Connection;
         PlayerPrefeb = Prefeb;
         PlayerName = Name;
+        
     }
 }
 public class QueueManager : NetworkBehaviour
 {
     public static QueueManager Instance = null;
-    Queue<PlayerInfo> _waitingQueue = new Queue<PlayerInfo>(); //대기열
+    public Queue<PlayerInfo> WaitingQueue = new Queue<PlayerInfo>(); //대기열
 
     List<PlayerInfo> _roomPlayerList1 = new List<PlayerInfo>();
     List<PlayerInfo> _roomPlayerList2 = new List<PlayerInfo>();
@@ -41,7 +42,7 @@ public class QueueManager : NetworkBehaviour
     {
         if(Instance == null)
         {
-            Instance = new QueueManager();
+            Instance = this;
         }
         else
         {
@@ -69,7 +70,7 @@ public class QueueManager : NetworkBehaviour
         var playerInfo = new PlayerInfo(playerId, PlayerPetList[selectedPetIndex], "NoNamed");
         
         //대기열에 사람이 없다면 바로 방에 들어감
-        if (_waitingQueue.Count <= 0)
+        if (WaitingQueue.Count <= 0)
         {
             //방인원수가 제한인원보다 적다면 다음방으로 이동
             if (_roomPlayerList1.Count < _peopleLimitCount)
@@ -91,16 +92,17 @@ public class QueueManager : NetworkBehaviour
             //모든 방이 다 찼다면 대기열에 추가
             else
             {
-                _waitingQueue.Enqueue(playerInfo);
-                playerId.identity.gameObject.GetComponent<MetaWorldLoadingUI>().OnQueueMetaWorld?.Invoke(_waitingQueue.Count);
+                WaitingQueue.Enqueue(playerInfo);
+                //플레이어 대기열에 넣는 이벤트 호출
+                playerId.identity.gameObject.GetComponent<MetaWorldLoadingUI>().OnQueueMetaWorld?.Invoke();
             }
         }
         //대기열에 사람이 있다면
         else
         {
-            _waitingQueue.Enqueue(playerInfo);
-            playerId.identity.gameObject.GetComponent<MetaWorldLoadingUI>().OnQueueMetaWorld?.Invoke(_waitingQueue.Count);
-
+            WaitingQueue.Enqueue(playerInfo);
+            //플레이어 대기열에 넣는 이벤트 호출
+            playerId.identity.gameObject.GetComponent<MetaWorldLoadingUI>().OnQueueMetaWorld?.Invoke();
             Debug.Log($"{playerInfo.PlayerConnection}/{playerInfo.PlayerName}/{playerInfo.PlayerPrefeb.name} add Queue");
         }
         ViewPlayerList();
@@ -140,6 +142,7 @@ public class QueueManager : NetworkBehaviour
         if (RemovePlayerInRoom(_roomPlayerList1, playerId))
         {
             Debug.Log($"RemovePlayer in Room1 {playerId}");
+            EnterRoomInQueue(_roomPlayerList1, 0);
         }
 /*        else if (RemovePlayerInRoom(_roomPlayerList2, playerId))
         { 
@@ -150,41 +153,47 @@ public class QueueManager : NetworkBehaviour
         {
             _exitPlayerList.Add(playerId.connectionId);
         }
-
-        //대기열에 플레이어가 있다면 방에 플레이어 넣기
-        if (_waitingQueue.Count >0)
+        ViewPlayerList();
+        Debug.Log("Exit Player");
+    }
+    public PlayerInfo CheckExitPlayer(PlayerInfo player)
+    {
+        //대기열에 있는 플레이어가 나간 플레이어가 목록에 있으면 다음 대기인원 
+        while (_exitPlayerList.Contains(player.PlayerConnection.connectionId))
         {
-            var player = _waitingQueue.Dequeue();
-            //대기열에서 플레이어가 나갔으면 다음번 플레이어 접속
-            while(_exitPlayerList.Contains(player.PlayerConnection.connectionId))
+            Debug.Log("Aleady Exit Player");
+            if (WaitingQueue.Count > 0)
             {
-                Debug.Log("Aleady Exit Player");
-                if(_waitingQueue.Count>0)
-                {
-                    player = _waitingQueue.Dequeue();
-                    playerId.identity.gameObject.GetComponent<MetaWorldLoadingUI>().OnQueueMetaWorld?.Invoke(_waitingQueue.Count);
-                    
-                }
-                //대기열에 사람이 없을때
-                else
-                {
-                    Debug.Log("Queue is Empty");
-                    return;
-                }
+                player = WaitingQueue.Dequeue();
+                _exitPlayerList.Remove(player.PlayerConnection.connectionId);
             }
+            //대기열에 사람이 없을때
+            else
+            {
+                Debug.Log("Queue is Empty");
+                return null;
+            }
+        }
+        return player;
+    }
+    //대기열에서 방으로 들어가는 로직
+    void EnterRoomInQueue(List<PlayerInfo> roomPlayerList, int roomNumber)
+    {
+        //대기열에 플레이어가 있다면 방에 플레이어 넣기
+        if (WaitingQueue.Count > 0)
+        {
+            var player = WaitingQueue.Dequeue();
+            //대기열에서 플레이어가 나갔으면 다음번 플레이어 접속
+            player = CheckExitPlayer(player);
+            if(player == null) return;
             //방인원수가 제한인원보다 적다면 다음방으로 이동
             Transform playerSpawnPos = transform;
-            if (_roomPlayerList1.Count < _peopleLimitCount)
+            if (roomPlayerList.Count < _peopleLimitCount)
             {
                 //플레이어 추가
-                _roomPlayerList1.Add(player);
-                playerSpawnPos = PlayerSpawnPos[0];
+                roomPlayerList.Add(player);
+                playerSpawnPos = PlayerSpawnPos[roomNumber];
             }
-/*            else if (_roomPlayerList2.Count < _peopleLimitCount)
-            {
-                _roomPlayerList2.Add(player);
-                playerSpawnPos = PlayerSpawnPos[1];
-            }*/
             else
             {
                 Debug.Log("Unbelievable error");
@@ -201,14 +210,8 @@ public class QueueManager : NetworkBehaviour
                     }
                 }
             }
-            /*            else if (_roomPlayerList3.Count < _peopleLimitCount)
-                        {
-                            _roomPlayerList3.Add(player);
-                        }*/
-
             Debug.Log($"_waitPlayer Add {player}");
         }
-        ViewPlayerList();
     }
     
     private void SwitchPlayerPrefeb(NetworkConnectionToClient playerId, GameObject playerPrefeb, Vector3 SpawnPos)

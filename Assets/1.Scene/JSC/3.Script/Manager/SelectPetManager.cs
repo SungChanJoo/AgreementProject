@@ -8,7 +8,6 @@ public class SelectPetManager : MonoBehaviour
 {
     public static SelectPetManager Instance = null;
     
-    public List<GameObject> PetPrefebs = new List<GameObject>();
     public int SelectedPetIndex = 0;
     private void Awake()
     {
