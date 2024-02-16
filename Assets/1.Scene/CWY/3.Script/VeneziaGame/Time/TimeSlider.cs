@@ -95,7 +95,7 @@ public interface ITimeSlider
         }
         // 변경 완료 후 최종 색상 설정
         sliderVar_Image.color = Color.red;
-    }
+    }   
 
     public void DecreaseTime()
     {
