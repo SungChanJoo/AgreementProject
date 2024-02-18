@@ -2,11 +2,16 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-
+public enum Game_Type
+{
+    A,
+    B,
+    C
+}
 public abstract class GameSetting : MonoBehaviour
 {
-    public int step;
     public int level;
+    public int step;
     public int timeSet;
     
     private void Start()

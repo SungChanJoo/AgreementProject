@@ -1,19 +1,46 @@
-using System.Collections;
 using System.Collections.Generic;
-using UnityEngine;
 
 
-public class Resut_Data : MonoBehaviour
+public class Result_Data
 {
-    public string playerName;
-    public Dictionary<string, Dictionary<int, Dictionary<int, List<int>>>> gameData;
+    public string playerName { get; private set; }
 
-    private void Start()
+    Game_Type game_type;
+
+    public int Level { get; private set; }
+    public int Step { get; private set; }
+    public string Day { get; private set; }
+    public int TotalAnswers { get; private set; }
+
+    public Dictionary<(Game_Type, int, int), Data_value> Data;
+
+    public Result_Data(int level, int step, string day,
+        Dictionary<(Game_Type, int, int), Data_value> data)
     {
-        gameData = new Dictionary<string, Dictionary<int, Dictionary<int, List<int>>>>();
-
-        var test = new List<int>();        
+        //playerName = name;
+        Level = level;
+        Step = step;
+        Day = day;
+        Data = data;
     }
-
 }
+public class Data_value
+{
+    public int ReactionRate;
+    public int AnswersCount;
+    public int Answers;
+    public int PlayTime;
+    public int TotalScore;
+    public Data_value(int reactionRate, int answersCount, int answers, int playTime, int totalScore)
+    {
+        ReactionRate = reactionRate;
+        AnswersCount = answersCount;
+        Answers = answers;
+        PlayTime = playTime;
+        TotalScore = totalScore;
+    }
+}
+
+
+
 

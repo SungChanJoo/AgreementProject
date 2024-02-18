@@ -40,8 +40,7 @@ public class MainMenuManager : MonoBehaviour
             Step_UI();
             Level_UI();
         }
-        StepManager.Instance.SelectLevel(level);
-        Debug.Log(level);
+        StepManager.Instance.SelectLevel(level);        
     }
     
     

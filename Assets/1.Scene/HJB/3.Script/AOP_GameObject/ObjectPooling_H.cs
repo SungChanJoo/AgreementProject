@@ -65,8 +65,8 @@ public class ObjectPooling_H : MonoBehaviour
             cubePool[i].SetActive(true);
             MovingCube movingcube = cubePool[i].GetComponent<MovingCube>();
             aopManager.SplitLevelAndStep();
-            int firstNum = aopManager.first_num;
-            int secondNum = aopManager.second_num;
+            int firstNum = aopManager.firstNum;
+            int secondNum = aopManager.secondNum;
             char _operator = aopManager._Operator;
             movingcube.result = aopManager.result;
             if (i.Equals(randomResult))
@@ -122,8 +122,7 @@ public class ObjectPooling_H : MonoBehaviour
         }
         else
         {
-            //시간 감소
-            Debug.Log("틀렸습니다.");
+            //시간 감소            
             TimeSlider.Instance.DecreaseTime_Item(5);
         }        
     }
