@@ -254,6 +254,7 @@ public class VeneziaManager : MonoBehaviour
         QuestKorean.Values.CopyTo(questArray, 0);
         // ∑£¥˝«— ¿Œµ¶Ω∫ º±≈√
         randomIndex = Random.Range(min, max);
+        max--;
         if(questArray.Length == 0)
         {
             return null;
