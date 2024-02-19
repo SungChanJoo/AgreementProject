@@ -32,8 +32,17 @@ public class Client : MonoBehaviour
     public static string clientLicenseNumber;
     public string licensePath = string.Empty;
 
-    // player data
-    public List<string> playerdata = new List<string>();
+    // 서버로 부터 받은 data를 1차적으로 거른 List
+    public List<string> playerdata_FromServer = new List<string>();
+
+    // DB Table Name
+    private TableName table;
+
+    // Player data를 사용하기 위한 Dictionary
+    private Dictionary<string, List<string>> playerdata_Dic;
+
+    // 서버-클라이언트 string으로 data 주고받을때 구분하기 위한 문자열
+    private const string separatorString = "E|";
 
     // timer
     private float transmissionTime = 1f;
@@ -66,9 +75,10 @@ public class Client : MonoBehaviour
 
     private void Start()
     {
+        ETCInitSetting();
         ConnectToServer();
         ClientLoginSet();
-        Invoke("LoadPlayerDataFromDB", 10f);
+        Invoke("LoadPlayerDataFromDB", 5f);
     }
 
     // 클라이언트가 실행할 때 서버 연결 시도
@@ -228,11 +238,17 @@ public class Client : MonoBehaviour
                 int bytesRead = await stream.ReadAsync(buffer, 0, buffer.Length); // 데이터를 읽어올때까지 대기
                 string receivedRequestData = Encoding.UTF8.GetString(buffer, 0, bytesRead); // 데이터 변환
 
-                List<string> endCheck = receivedRequestData.Split('|').ToList();
-                if (endCheck[0] == "Finish") break;
-
                 Debug.Log($"[Client] Receiving... massive request message from server : {receivedRequestData}");
                 HandleMassiveRequestData(receivedRequestData);
+
+                // 데이터가 다 불러와졌으면 break;
+                List<string> endCheck = receivedRequestData.Split('|').ToList();
+                if (endCheck.Contains("Finish"))
+                {
+                    FilterPlayerData(); // 플레이어 데이터 정리
+                    ClientPlayerDataToPlayerClassVariable();
+                    break;
+                }
             }
 
         }
@@ -245,7 +261,32 @@ public class Client : MonoBehaviour
     // 서버로부터 받은 대량 데이터 처리
     private void HandleMassiveRequestData(string requestdata)
     {
-        playerdata.Add(requestdata);
+        Debug.Log("[Client] Handling... massive request data");
+        List<string> parts = requestdata.Split(separatorString, StringSplitOptions.RemoveEmptyEntries).ToList();
+
+        foreach(string part in parts)
+        {
+            playerdata_FromServer.Add(part);
+        }
+    }
+
+    // 최종적으로 사용할 수 있는 player data
+    // 서버로부터 받고 1차적으로 정리한 data중 table name을 가지고 최종적으로 data 정리 
+    private void FilterPlayerData()
+    {
+        Debug.Log("[Client] Filtering... player data");
+        for(int i = 0; i < playerdata_FromServer.Count; i++)
+        {
+            for(int j = 0; j < table.list.Count; j++)
+            {
+                if(playerdata_FromServer[i].Contains(table.list[j]))
+                {
+                    List<string> values = playerdata_FromServer[i].Split('|', StringSplitOptions.RemoveEmptyEntries).ToList(); // User테이블기준으로 User|User_Name|User_Profile|User_Coin이 있을것임
+                    values.RemoveAt(0); // 0번째 인덱스는 테이블명이므로 values에 필요하지 않다.
+                    playerdata_Dic.Add(table.list[j], values);
+                }
+            }
+        }
     }
 
     // Json파일에 LicenseNumber 등록 / 비동기로 호출된 것이 끝났을때 동기적으로 호출시키기 위해
@@ -267,7 +308,17 @@ public class Client : MonoBehaviour
         client.RequestToServer(requestData);
     }
 
-    
+    // Start DBTable 세팅
+    private void ETCInitSetting()
+    {
+        Debug.Log("[Client] ETCInitSetting");
+        // DB TableName 생성
+        table = new TableName();
+
+        // Dictionary 생성
+        playerdata_Dic = new Dictionary<string, List<string>>();
+    }
+
 
     // 서버로부터 받은 PlayerData를 게임에서 사용하는 Player Class에 설정
     private void SetPlayer(User_Info user)
@@ -295,11 +346,26 @@ public class Client : MonoBehaviour
         GameResult_SaveDataToDB(testGameName,testLevel,testStep,testScore,testTime);
     }
 
-    public void OnClickLoadPlayerDataTest()
+    public void OnClickLoadPlayerDataFromServerTest()
     {
-        Debug.Log($"[Client] Test... {playerdata}");
+        Debug.Log($"[Client] Test... {playerdata_FromServer}");
+        for(int i=0; i<playerdata_FromServer.Count;i++)
+        {
+            Debug.Log($"playerdata_FromServer[{i}]'s value : {playerdata_FromServer[i]}");
+        }
     }
 
+    public void OnClickLoadFilterPlayerDataTest()
+    {
+        foreach(KeyValuePair<string, List<string>> item in playerdata_Dic)
+        {
+            Debug.Log($"item.Key : {item.Key}, item.Value : {item.Value}");
+            foreach(string value in item.Value)
+            {
+                Debug.Log($"item.Key : {item.Key}, value(string) in item.Value : {value}");
+            }
+        }
+    }
 
     private void CloseSocket()
     {
@@ -310,6 +376,12 @@ public class Client : MonoBehaviour
         //reader.Close();
         client.Close();
         socketReady = false;
+    }
+
+    // 게임 접속시 Player Class Script에 있는 변수(인게임에서 사용할 변수들)에 Client PlayerData 값을 넣는 메서드
+    private void ClientPlayerDataToPlayerClassVariable()
+    {
+
     }
 
     //// 버튼 눌러서 로그인
