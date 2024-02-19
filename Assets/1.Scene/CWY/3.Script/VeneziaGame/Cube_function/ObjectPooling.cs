@@ -8,7 +8,7 @@ public class ObjectPooling : MonoBehaviour
 {
     public static ObjectPooling Instance = null;
 
-    [SerializeField] private GameObject CubePrefab; //풀링할 정답 & 오답 큐브 프리팹
+    [SerializeField] private GameObject[] CubePrefab; //풀링할 정답 & 오답 큐브 프리팹
     [SerializeField] private Transform Pool_Position; //풀의 위치
     [SerializeField] private Transform ParentObject; // 풀링된 오브젝트를 저장할 더미오브젝트
 
@@ -42,13 +42,7 @@ public class ObjectPooling : MonoBehaviour
 
         #region Object Pooling
         //정답 오브젝트 풀링
-        for (int i = 0; i < CubeCount; i++)
-        {
-            GameObject cube = Instantiate(CubePrefab); //풀링할 오브잭트 생성
-            cube.SetActive(false);
-            cube.transform.SetParent(ParentObject);
-            cubePool.Add(cube);
-        }
+        CreateQuestPrefab();
 
         CreateItem();
         //아이템 프리팹 
@@ -60,8 +54,7 @@ public class ObjectPooling : MonoBehaviour
     private void Start()
     {
         StartCoroutine(Cube_Co());
-        StartCoroutine(Item_Co());
-        
+        StartCoroutine(Item_Co());        
     }
 
     private void Update()
@@ -69,17 +62,18 @@ public class ObjectPooling : MonoBehaviour
         print(cubePool.Count);
     }
 
-
+    public int cool;
     public IEnumerator Cube_Co()
     {
         while (cubePool.Count > 0)
         {
+            int Randnum = Random.Range(0, cubePool.Count);
             float randomValue = Random.Range(-100, 101);
             Vector3 offset = new Vector3(randomValue, 0, 0); // 좌우 변경을위한 랜덤값
-            cubePool[0].transform.position = Pool_Position.transform.position + offset;
-            cubePool[0].SetActive(true);
-            cubePool.Remove(cubePool[0]);
-            yield return new WaitForSeconds(10f); //난이도에 따라 재생되는 시간을 바꿀것
+            cubePool[Randnum].transform.position = Pool_Position.transform.position + offset;
+            cubePool[Randnum].SetActive(true);
+            cubePool.Remove(cubePool[Randnum]);
+            yield return new WaitForSeconds(cool); //난이도에 따라 재생되는 시간을 바꿀것
         }
     }
 
@@ -110,6 +104,20 @@ public class ObjectPooling : MonoBehaviour
                 item.SetActive(false); // 활성화하지 않음
                 item.transform.SetParent(ParentObject); // 풀 위치에 부모 설정
                 ItemPool.Add(item); // 아이템 풀 리스트에 추가
+            }
+        }
+    }
+
+    private void CreateQuestPrefab()
+    {
+        for (int i = 0; i < CubePrefab.Length; i++)
+        {
+            for (int j = 0; j < CubeCount; j++)
+            {
+                GameObject QuestPrefab = Instantiate(CubePrefab[i]); //풀링할 오브잭트 생성
+                QuestPrefab.SetActive(false);
+                QuestPrefab.transform.SetParent(ParentObject);
+                cubePool.Add(QuestPrefab);
             }
         }
     }
