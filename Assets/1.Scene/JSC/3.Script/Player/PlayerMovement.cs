@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using Cinemachine;
+using System;
 
 public enum ButtonState
 { 
@@ -33,16 +34,13 @@ public class PlayerMovement : NetworkBehaviour
     public GameObject PlayerInputUI;
     private Rigidbody _rb;
     private CinemachineVirtualCamera CVcam;
-    private NetworkIdentity _netId;
     //public GameObject playerPrefeb;
 
     private void Awake()
     {
         _rb = GetComponent<Rigidbody>();
-        _netId = GetComponent<NetworkIdentity>();
         if (PlayerInputUI.activeSelf)
             PlayerInputUI.SetActive(false);
-
     }
     public override void OnStartLocalPlayer()
     {
@@ -50,10 +48,7 @@ public class PlayerMovement : NetworkBehaviour
         CVcam = GameObject.FindGameObjectWithTag("CVcam").GetComponent<CinemachineVirtualCamera>();
         CVcam.Follow = transform;
         PlayerInputUI.SetActive(true);
-
-        //QueueManager.Instance.SwitchPlayerPrefeb(_netId.connectionToClient, playerPrefeb);
     }
-
     private void Update()
     {
         //로컬 플레이어가 아니면 실행 안함
@@ -72,14 +67,14 @@ public class PlayerMovement : NetworkBehaviour
         {
             //Rigidbody에 힘을 적용하며, Vector2.right를 곱하여 X 축에만 영향을 줍
             _rb.AddForce(movement * Vector3.right);
-            transform.rotation = Quaternion.Euler(0f, -90f, 0f);
+            transform.rotation = Quaternion.Euler(0f, 90f, 0f);
             EmtiCanvas.transform.localRotation = Quaternion.Euler(0f, -90f, 0);
         }
         if (IsPress && buttonState == ButtonState.Left)
         {
             //Rigidbody에 힘을 적용하며, Vector2.right를 곱하여 X 축에만 영향을 줍
             _rb.AddForce(movement * Vector3.right);
-            transform.rotation = Quaternion.Euler(0f, 90f, 0f);
+            transform.rotation = Quaternion.Euler(0f, -90f, 0f);
             EmtiCanvas.transform.localRotation = Quaternion.Euler(0f, 90f, 0);
         }
         if (!IsPress)
@@ -89,13 +84,6 @@ public class PlayerMovement : NetworkBehaviour
         #endregion
     }
 
-    //상호작용 가능한 UI show or hide 
-    public void InteractableUI(GameObject UI, bool value)
-    {
-        if (!isLocalPlayer) return;
-
-        UI.SetActive(value);
-    }
     #region PlayerInput (ButtonEvnet)
     //오른쪽 버튼을 누르면 이동방향, 상태변경
     public void OnRightButtonDown()
@@ -126,6 +114,7 @@ public class PlayerMovement : NetworkBehaviour
     #endregion
 
     #region Emoticon
+    //이모티콘 사용버튼 이벤트
     public void UseEmti(int index)
     {
         if (!IsUseEmti)

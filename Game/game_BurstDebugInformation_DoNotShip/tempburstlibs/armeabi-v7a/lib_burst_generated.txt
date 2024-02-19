@@ -162,11 +162,11 @@ Library: lib_burst_generated
 --root-assembly=C:\Users\KGA\Desktop\Github\AgreementProject\Temp\StagingArea\Data\Managed\Unity.Burst.dll
 --root-assembly=C:\Users\KGA\Desktop\Github\AgreementProject\Temp\StagingArea\Data\Managed\Mirror.Components.dll
 --root-assembly=C:\Users\KGA\Desktop\Github\AgreementProject\Temp\StagingArea\Data\Managed\Unity.TextMeshPro.dll
+--root-assembly=C:\Users\KGA\Desktop\Github\AgreementProject\Temp\StagingArea\Data\Managed\Assembly-CSharp.dll
 --root-assembly=C:\Users\KGA\Desktop\Github\AgreementProject\Temp\StagingArea\Data\Managed\Cinemachine.dll
 --root-assembly=C:\Users\KGA\Desktop\Github\AgreementProject\Temp\StagingArea\Data\Managed\Unity.Timeline.dll
 --root-assembly=C:\Users\KGA\Desktop\Github\AgreementProject\Temp\StagingArea\Data\Managed\Unity.Services.Core.dll
 --root-assembly=C:\Users\KGA\Desktop\Github\AgreementProject\Temp\StagingArea\Data\Managed\Unity.RenderPipeline.Universal.ShaderLibrary.dll
---root-assembly=C:\Users\KGA\Desktop\Github\AgreementProject\Temp\StagingArea\Data\Managed\Assembly-CSharp.dll
 --root-assembly=C:\Users\KGA\Desktop\Github\AgreementProject\Temp\StagingArea\Data\Managed\Unity.Services.Core.Environments.dll
 --root-assembly=C:\Users\KGA\Desktop\Github\AgreementProject\Temp\StagingArea\Data\Managed\Mirror.Transports.dll
 --root-assembly=C:\Users\KGA\Desktop\Github\AgreementProject\Temp\StagingArea\Data\Managed\Telepathy.dll
@@ -178,6 +178,7 @@ Library: lib_burst_generated
 --root-assembly=C:\Users\KGA\Desktop\Github\AgreementProject\Temp\StagingArea\Data\Managed\Unity.Services.Core.Device.dll
 --root-assembly=C:\Users\KGA\Desktop\Github\AgreementProject\Temp\StagingArea\Data\Managed\Unity.Services.Core.Threading.dll
 --root-assembly=C:\Users\KGA\Desktop\Github\AgreementProject\Temp\StagingArea\Data\Managed\Unity.Services.Core.Networking.dll
+--root-assembly=C:\Users\KGA\Desktop\Github\AgreementProject\Temp\StagingArea\Data\Managed\NativeCamera.Runtime.dll
 --root-assembly=C:\Users\KGA\Desktop\Github\AgreementProject\Temp\StagingArea\Data\Managed\Unity.RenderPipelines.Core.ShaderLibrary.dll
 --root-assembly=C:\Users\KGA\Desktop\Github\AgreementProject\Temp\StagingArea\Data\Managed\Unity.Services.Core.Configuration.dll
 --root-assembly=C:\Users\KGA\Desktop\Github\AgreementProject\Temp\StagingArea\Data\Managed\Mirror.Authenticators.dll
