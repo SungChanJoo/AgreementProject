@@ -5000,8 +5000,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: 
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 67886468877f48d49a55aa0cefde33e5, type: 2}
-  m_sharedMaterial: {fileID: -1995945076622891239, guid: 67886468877f48d49a55aa0cefde33e5, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 15fb799ad5ebe4046924938f8511ab77, type: 2}
+  m_sharedMaterial: {fileID: -1571892271189879514, guid: 15fb799ad5ebe4046924938f8511ab77, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -5025,8 +5025,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 36
-  m_fontSizeBase: 36
+  m_fontSize: 60
+  m_fontSizeBase: 60
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
@@ -5335,6 +5335,7 @@ MonoBehaviour:
   SaveSpeed: 0
   AccelerationSpeed: 0
   isStart: 1
+  sprite: {fileID: 0}
   count: 0
 --- !u!135 &8356539231705555585
 SphereCollider:
