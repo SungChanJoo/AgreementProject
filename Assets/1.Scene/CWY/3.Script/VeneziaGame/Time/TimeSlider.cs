@@ -30,6 +30,8 @@ public interface ITimeSlider
     public float duration = 6f;  //Todo : 위와동일 => 
     public float Decreasetime;
 
+    public GameSetting gameSetting;
+    
     private void Awake()
     {
         if(Instance == null)
@@ -59,6 +61,8 @@ public interface ITimeSlider
             yield return null;
         }
         slider.value = 0; // 종료 시간에 맞춰 슬라이더의 값을 설정 약간의 오차를 방지하기위해 값을 한번더 명시.
+        gameSetting.EndGame();
+        yield return null;
     }
 
     private void Start()
@@ -118,7 +122,7 @@ public interface ITimeSlider
             time = Time.unscaledDeltaTime;
         }
     }
-
+    
     public void GameOver()
     {
         isGameOver = true;

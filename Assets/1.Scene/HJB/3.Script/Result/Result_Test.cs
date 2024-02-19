@@ -16,6 +16,7 @@ public class Result_Test : MonoBehaviour
     int answers;
     int playTime;
     int totalScore;
+    
     private void Start()
     {
         PrintResultData();
@@ -30,14 +31,14 @@ public class Result_Test : MonoBehaviour
         Dictionary<(Game_Type, int, int), Data_value> data_
            = new Dictionary<(Game_Type, int, int), Data_value>();
         
-        Result_Data DB_Result = new Result_Data(level, step, day, data_);
+        Result_DB DB_Result = new Result_DB(level, step, day, data_);
         //--------------------------------------------------------
 
         //초기화 및 생성
         Dictionary<(Game_Type, int, int), Data_value> data
         = new Dictionary<(Game_Type, int, int), Data_value>();
 
-        Result_Data result_Data = new Result_Data(level, step, day, data);
+        Result_DB result_Data = new Result_DB(level, step, day, data);
         
         Data_value _data = new Data_value(reactionRate, answersCount, answers, playTime, totalScore);
 
