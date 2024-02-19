@@ -12,13 +12,11 @@ public class Firecracker : ObjInteractable
     public override IEnumerator PlayInterctable()
     {
         //파티클 리스트 만들어서 랜덤 파티클 해줘 todo 02.16
-        Debug.Log("FirecrackerPlay");
         var rand = Random.Range(0, ParticleList.Count);
         ParticleList[rand].SetActive(true);
         yield return new WaitForSeconds(PlayTime);
         ParticleList[rand].SetActive(false);
         yield return new WaitForSeconds(LimitTime);
         currentPlayInterctable = null;
-        Debug.Log("currentPlayInterctable = null");
     }
 }

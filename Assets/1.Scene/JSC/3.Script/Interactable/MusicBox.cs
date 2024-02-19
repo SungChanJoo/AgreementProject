@@ -6,7 +6,6 @@ using Mirror;
 public class MusicBox : ObjInteractable
 {
     public AudioSource audioSource;
-
     //À½¾Ç ½ÇÇà
     public override IEnumerator PlayInterctable()
     {
@@ -15,7 +14,6 @@ public class MusicBox : ObjInteractable
             player.InteractablePlayMusicBox(audioSource, PlayTime);
             yield return new WaitForSeconds(PlayTime + LimitTime);
             currentPlayInterctable = null;
-            Debug.Log("currentPlayInterctable = null");
         }
     }
 }
