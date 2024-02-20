@@ -111,7 +111,7 @@ public class EAG_Manager : GameSetting
             case 3:
             case 4:                
                 step_opreator1 = 3;
-                step_opreator2 = 3;                
+                step_opreator2 = 3;
                 break;
             case 5:
             case 6:
@@ -161,7 +161,7 @@ public class EAG_Manager : GameSetting
         int min = randomValue != 1 ? min1 : max1;
         int max = randomValue != 1 ? max1 : max2;
         //'-' 연산자라면 무한루프 방지를 위해
-        if (_Operator.Equals('-'))
+        if (_Operator.Equals('-')||_Operator.Equals('÷'))
         {
             min = 0;
             max = 100;
@@ -171,7 +171,7 @@ public class EAG_Manager : GameSetting
         
         while (result < min || result >= max)
         {
-            result = AnswerCalculator(selectedOperator);                        
+            result = AnswerCalculator(selectedOperator);            
         }        
         
     }    
