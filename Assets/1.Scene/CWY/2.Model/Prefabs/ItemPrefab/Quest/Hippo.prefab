@@ -15,7 +15,7 @@ GameObject:
   - component: {fileID: 1079827597520798624}
   - component: {fileID: 1079827597520798628}
   m_Layer: 0
-  m_Name: Sphere
+  m_Name: Hippo
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -29,8 +29,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1079827597520798626}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 66, y: 57.4, z: 0}
-  m_LocalScale: {x: 15, y: 15, z: 15}
+  m_LocalPosition: {x: 68, y: 57.4, z: 0}
+  m_LocalScale: {x: 30, y: 30, z: 30}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1079827597864370990}
@@ -112,12 +112,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 97ae06ec4a1744846bf6ddc75ad2b771, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  StartSpeed: 15
+  objectType: 0
+  StartSpeed: 10
   CurrentSpeed: 0
   SaveSpeed: 0
   AccelerationSpeed: 1.05
   isStart: 1
-  sprite: {fileID: 21300000, guid: 893c05464137fa14b9d3c300ba4adac6, type: 3}
+  sprite: {fileID: 21300000, guid: 93c6fe202818cfb46881047d37dfb55e, type: 3}
   count: 0
 --- !u!54 &1079827597520798628
 Rigidbody:
@@ -202,7 +203,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 893c05464137fa14b9d3c300ba4adac6, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 93c6fe202818cfb46881047d37dfb55e, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1

@@ -5,15 +5,15 @@ using UnityEngine;
 public enum VeneziaItem
 {
     Pause,
-    Meteor,
-     
+    Meteor,  
 }
 
 public class ItemFnc : MonoBehaviour
 {
     //아이템 타입에 따라 게임에 영향을 줄 예정
     public  VeneziaItem veneziaItem;
-    public float Speed;
+    public float MeteorSpeed;
+    public float PauseSpeed;
 
     public int Decreasetime;
 
@@ -24,19 +24,34 @@ public class ItemFnc : MonoBehaviour
 
     private void ItemMove()
     {
-        if (gameObject.activeSelf)
+        if (veneziaItem == VeneziaItem.Meteor)
         {
-            float moveY = -1 * Speed * Time.deltaTime;
+            float moveY = -1 * MeteorSpeed * Time.deltaTime;
+            transform.Translate(0, moveY, 0);
+        }
+        else
+        {
+            float moveY = -1 * PauseSpeed * Time.deltaTime;
             transform.Translate(0, moveY, 0);
         }
     }
 
     private void OnTriggerEnter(Collider other)
     {
+        print(other.gameObject.tag);
+        print(other.gameObject.name);
         if (other.gameObject.CompareTag("Ground"))
         {
+            print("닿니?~~@");
             gameObject.SetActive(false);
-            ObjectPooling.Instance.ItemPool.Add(gameObject);
+            if(veneziaItem == VeneziaItem.Pause)
+            {
+                ObjectPooling.Instance.PausePool.Add(gameObject);
+            }
+            else
+            {
+                ObjectPooling.Instance.MeteorPool.Add(gameObject);
+            }
         }
     }
 

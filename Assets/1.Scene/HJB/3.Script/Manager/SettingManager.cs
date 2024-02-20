@@ -50,7 +50,7 @@ public class SettingManager : MonoBehaviour
         Permission.RequestUserPermissions(permissionsToRequest);
 
 
-        //권한이 부여되었는지 확인
+        //권한이 부여되었는지 확인 True를 반환하기 전까지 정지
         yield return new WaitUntil(() =>
             Permission.HasUserAuthorizedPermission(Permission.Camera) &&
             Permission.HasUserAuthorizedPermission(Permission.ExternalStorageRead) &&
