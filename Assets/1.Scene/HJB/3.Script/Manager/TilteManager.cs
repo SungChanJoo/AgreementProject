@@ -12,7 +12,8 @@ public class TilteManager : MonoBehaviour
     [SerializeField] private GameObject RegistrationCanvas;    
     [SerializeField] private TextMeshProUGUI inputError_text;
     [SerializeField] private TMP_InputField name_text;
-        
+
+    
     public void Registration_UI()
     {
         RegistrationCanvas.SetActive(!RegistrationCanvas.activeSelf);
