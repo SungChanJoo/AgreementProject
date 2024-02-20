@@ -104,7 +104,6 @@ public class VeneziaManager : MonoBehaviour
                     {
                         Score.Instance.Get_FirstScore();
                         DisplayRandomQuest();
-                        QuestCount--;
                     }
                     
                     ObjectPooling.Instance.cubePool.Add(hit.collider.gameObject);
@@ -167,7 +166,7 @@ public class VeneziaManager : MonoBehaviour
 
     public void DisplayRandomQuest()
     {
-        if(QuestCount == 1)
+        if(QuestCount == 0)
         {
             Time.timeScale = 0;
             ObjectPooling.Instance.StopAllCoroutines();
@@ -183,7 +182,7 @@ public class VeneziaManager : MonoBehaviour
                     switch (Step)
                     {
                         case 1:
-                            QuestData randomQuest = GetRandomQuest_Kr(0,5);
+                            QuestData randomQuest = GetRandomQuest_Kr();
                             Quest_Img.sprite = randomQuest.sprite;
                             Quest_text.text = randomQuest.description;
                             break;
@@ -248,13 +247,13 @@ public class VeneziaManager : MonoBehaviour
 
     }
 
-    private QuestData GetRandomQuest_Kr(int min, int max)
+    private QuestData GetRandomQuest_Kr()
     {
         QuestData[] questArray = new QuestData[QuestKorean.Count];
         QuestKorean.Values.CopyTo(questArray, 0);
         // 랜덤한 인덱스 선택
-        randomIndex = Random.Range(min, max);
-        max--;
+        randomIndex = Random.Range(0, QuestCount);
+        QuestCount--;
         if(questArray.Length == 0)
         {
             return null;
@@ -269,6 +268,7 @@ public class VeneziaManager : MonoBehaviour
                 break; // 선택된 퀘스트가 한 번만 제거되도록 break설정
             }
         }
+        print("확인");
         return selectedQuest;       
     }
 
