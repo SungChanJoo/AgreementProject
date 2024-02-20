@@ -72,6 +72,7 @@ public class Cube : MonoBehaviour
 
         JudgeCubeObjType();
         GameOver();
+        print(VeneziaManager.Instance.isGameover);
     }
     private void OnTriggerEnter(Collider other)
     {

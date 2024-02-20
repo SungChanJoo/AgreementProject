@@ -20,6 +20,7 @@ public class ItemFnc : MonoBehaviour
     private void Update()
     {
        if(!TimeSlider.Instance.isStop) ItemMove();
+        GameOver();
     }
 
     private void ItemMove()
@@ -38,11 +39,9 @@ public class ItemFnc : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        print(other.gameObject.tag);
-        print(other.gameObject.name);
+        //¹Ù´Ú¿¡ ´êÀ¸¸é Á¦°Å
         if (other.gameObject.CompareTag("Ground"))
         {
-            print("´ê´Ï?~~@");
             gameObject.SetActive(false);
             if(veneziaItem == VeneziaItem.Pause)
             {
@@ -53,6 +52,11 @@ public class ItemFnc : MonoBehaviour
                 ObjectPooling.Instance.MeteorPool.Add(gameObject);
             }
         }
+    }
+
+    private void GameOver()
+    {
+        if (VeneziaManager.Instance.isGameover) gameObject.SetActive(false);
     }
 
 

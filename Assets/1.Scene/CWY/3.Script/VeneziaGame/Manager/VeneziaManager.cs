@@ -40,6 +40,7 @@ public class VeneziaManager : MonoBehaviour
     int randomIndex;
 
     public int QuestCount; // 1분 5개 3분 7개 5분 10개 <
+    public int CorrectAnswer;
     public int LifeTime;
     //한국어 관련 문제 데이터 저장
     public Dictionary<string, QuestData> QuestKorean = new Dictionary<string, QuestData>();
@@ -71,6 +72,7 @@ public class VeneziaManager : MonoBehaviour
         gameover.SetActive(false);
 
         Set_QuestCount();
+        CorrectAnswer = QuestCount;
     }
 
     private void Start()
@@ -82,6 +84,7 @@ public class VeneziaManager : MonoBehaviour
     {
         //  GameStop();
         Click_Obj();
+        print("베네치아매니저" + isGameover);
     }
     //오브젝트 클릭시 입력처리
     //Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Began > 터치입력
@@ -102,11 +105,12 @@ public class VeneziaManager : MonoBehaviour
                     if(QuestCount > -1)
                     {
                         Score.Instance.Get_FirstScore();
+                        CorrectAnswer--;
                         DisplayRandomQuest();
                     }
-                    else
+                    if(CorrectAnswer == 0) // 정답을 모두 맞췄을때 게임 종료
                     {
-                        if (QuestCount == 0) isGameover = true; //이때 남은시간 받아오면 됨.
+                       isGameover = true; //이때 남은시간 받아오면 됨.
                     }
                     
                     ObjectPooling.Instance.cubePool.Add(hit.collider.gameObject);
@@ -140,18 +144,14 @@ public class VeneziaManager : MonoBehaviour
                     }
                 }
             }
+            if (ObjectPooling.Instance.cubePool.Count == 1)
+            {
+                StartCoroutine(ObjectPooling.Instance.ReStartCube_Co());
+            }
         }
+
+
     }
-
-
-    private void GameStop()
-    {
-        if(TimeSlider.Instance.slider.value <= 0)
-        {
-            ObjectPooling.Instance.gameObject.SetActive(false);
-        }
-    }
-
     private void OnDrawGizmos()
     {
         Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
