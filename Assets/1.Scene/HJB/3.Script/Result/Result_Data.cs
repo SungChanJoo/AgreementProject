@@ -5,7 +5,7 @@ public class Result_Data
 {
     public string playerName { get; private set; }
 
-    Game_Type game_type;
+    public Game_Type game_type;
 
     public int Level { get; private set; }
     public int Step { get; private set; }

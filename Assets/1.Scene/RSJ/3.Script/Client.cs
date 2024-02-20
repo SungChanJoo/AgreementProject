@@ -31,6 +31,7 @@ public class Client : MonoBehaviour
     public static ClientLoginStatus loginStatus;
     public static string clientLicenseNumber;
     public string licensePath = string.Empty;
+    public string clientCharactor;
 
     // 서버로 부터 받은 data를 1차적으로 거른 List
     public List<string> playerdata_FromServer = new List<string>();
@@ -39,7 +40,7 @@ public class Client : MonoBehaviour
     private TableName table;
 
     // Player data를 사용하기 위한 Dictionary
-    private Dictionary<string, List<string>> playerdata_Dic;
+    public Dictionary<string, List<string>> playerdata_Dic;
 
     // 서버-클라이언트 string으로 data 주고받을때 구분하기 위한 문자열
     private const string separatorString = "E|";
@@ -47,30 +48,25 @@ public class Client : MonoBehaviour
     // timer
     private float transmissionTime = 1f;
 
-    // Test GameData
-    public string testGameName;
-    public int testLevel;
-    public int testStep;
-    public int testScore;
-    public int testTime;
-
-    //// Login
-    //public InputField login_ID_Input;
-    //public InputField login_PW_Input;
-    //public Text loginLog;
-
-    //// Create Account
-    //public InputField create_ID_Input;
-    //public InputField create_PW_Input;
-
     public Client(NetworkStream _stream)
     {
         stream = _stream;
     }
 
+    public static Client instance = null;
+
     private void Awake()
     {
-        
+        if (instance == null)
+        {
+            instance = this;
+            DontDestroyOnLoad(gameObject);
+        }
+        else
+        {
+            Destroy(gameObject);
+            return;
+        }
     }
 
     private void Start()
@@ -118,7 +114,7 @@ public class Client : MonoBehaviour
             loginStatus = ClientLoginStatus.New;
             Directory.CreateDirectory(licensePath);
             // 서버에서 라이센스 넘버를 받아와야함, 그러기 위해 서버에 요청 todo
-            string requestName = "LicenseNumber";
+            string requestName = "[Create]LicenseNumber";
             RequestToServer(requestName);
             Debug.Log($"[Client] Create licensenumber?");
             Debug.Log($"[Client] This client's licensenumber(first) : {clientLicenseNumber}");
@@ -128,8 +124,9 @@ public class Client : MonoBehaviour
         loginStatus = ClientLoginStatus.Exist;
         // 해당 경로에 있는 파일을 읽어 클라이언트 라이센스 넘버를 불러옴
         string jsonStringFromFile = File.ReadAllText(licensePath + "/clientlicense.json");
-        JsonData licenseNumber_JsonFile = JsonMapper.ToObject(jsonStringFromFile);
-        clientLicenseNumber = licenseNumber_JsonFile["LicenseNumber"].ToString();
+        JsonData client_JsonFile = JsonMapper.ToObject(jsonStringFromFile);
+        clientLicenseNumber = client_JsonFile["LicenseNumber"].ToString();
+        clientCharactor = client_JsonFile["Charactor"].ToString();
         Debug.Log($"[Client] Use already existed licensenumber?");
         Debug.Log($"[Client] This client's licensenumber(existing) : {clientLicenseNumber}");
     }
@@ -137,21 +134,10 @@ public class Client : MonoBehaviour
     // 게임 시작할 때 유저정보 불러오기 - 서버에 요청(서버-DB) // 나중에 Player Class 정리되면 수정해야함. todo
     private void LoadPlayerDataFromDB()
     {
-        string requestData; // 이 메서드에서 requestData는 requestName과 clientLicenseNumber 
-        switch (loginStatus)
-        {
-            case ClientLoginStatus.New:
-                requestData = $"LoadPlayerData|{clientLicenseNumber}";
-                RequestToServer(requestData);
-                break;
-            case ClientLoginStatus.Exist:
-                requestData = $"LoadPlayerData|{clientLicenseNumber}";
-                RequestToServer(requestData);
-                break;
-            default:
-                Debug.Log("[Client] Something unknown happend in LoadPlayer method");
-                break;
-        }
+        Debug.Log("[Clinet] Request LoadPlayerDataFromDB");
+        string requestData; // 이 메서드에서 requestData는 requestName/clientLicenseNumber/clientCharactor
+        requestData = $"[Load]PlayerData|{clientLicenseNumber}|{clientCharactor}";
+        RequestToServer(requestData);
     }
 
     // 서버에 요청할때 string으로 보내는데, 서버에서 받을 때 string case로 구분해서 처리
@@ -167,7 +153,7 @@ public class Client : MonoBehaviour
 
             // MassiveData인지 아닌지 초기에 플레이어 데이터를 받을때 많은 양의 데이터를 받아야해서
             // 따로 처리해야함
-            if(requestName == "LoadPlayerData")
+            if(requestName == "[Load]PlayerData")
             {
                 ReceiveMassiveRequestFromServer(stream);
             }
@@ -191,7 +177,8 @@ public class Client : MonoBehaviour
             int bytesRead = await stream.ReadAsync(buffer, 0, buffer.Length); // 데이터를 읽어올때까지 대기
             string receivedRequestData = Encoding.UTF8.GetString(buffer, 0, bytesRead); // 데이터 변환
             Debug.Log($"[Client] Received request message from server : {receivedRequestData}");
-            HandleRequestData(requestName, receivedRequestData);
+            List<string> dataList = receivedRequestData.Split('|').ToList();
+            HandleRequestData(dataList);
         }
         catch (Exception e)
         {
@@ -200,25 +187,36 @@ public class Client : MonoBehaviour
     }
 
     // 서버로부터 받은 데이터 처리
-    private void HandleRequestData(string requestname, string requestdata)
+    private void HandleRequestData(List<string> dataList)
     {
         // requestname : 클라이언트-서버에서 데이터를 처리하기 위한 구분
         // requestdata : Server에서 requestName으로 처리된 결과를 보낸 data
         // LicenseNumber -> clientLicenseNumber를 server가 보내줌 (Client가 첫 접속인 경우 처리됨)
         // LoadNewPlayerData -> 새 플레이어의 경우 DB에 licenseNumber를 제외한 데이터가 없으므로 모든 테이블에 존재하는 열항목에 0값을 부여한 PlayerData를 가질 것임
         // LoadExistPlayerData -> 기존 플레이어의 경우 DB에 저장된 PlayerData를 가질 것임
-        Debug.Log($"[Client] HandleRequestData method, request name : {requestname}");
+        string requestName = dataList[0];
+        Debug.Log($"[Client] HandleRequestData method, request name : {requestName}");
 
-        switch (requestname)
+        switch (requestName)
         {
-            case "LicenseNumber":
-                clientLicenseNumber = requestdata;
+            case "[Create]LicenseNumber":
+                clientLicenseNumber = dataList[1];
+                clientCharactor = dataList[2];
                 SaveLicenseNumberToJsonFile();
                 Debug.Log($"[Client] RequestName : LicenseNumber, get and save licenseNumber to jsonfile");
                 break;
-            case "venezia_cha":
-                Debug.Log($"[Client] RequestName : venezia_cha, End handling data");
-                break;
+            //case "[Save]venezia_kor":
+            //    break;
+            //case "[Save]venezia_eng":
+            //    break;
+            //case "[Save]venezia_chn":
+            //    Debug.Log($"[Client] RequestName : venezia_chn, End handling data");
+            //    DBManager.instance.SaveGameResultData(dataList);
+            //    break;
+            //case "[Save]gugudan":
+            //    break;
+            //case "[Save]calculation":
+            //    break;
             default:
                 Debug.Log("[Client] HandleRequestMessage Method Something Happend");
                 break;
@@ -246,7 +244,7 @@ public class Client : MonoBehaviour
                 if (endCheck.Contains("Finish"))
                 {
                     FilterPlayerData(); // 플레이어 데이터 정리
-                    ClientPlayerDataToPlayerClassVariable();
+                    //ClientPlayerDataToPlayerClassVariable();
                     break;
                 }
             }
@@ -293,19 +291,12 @@ public class Client : MonoBehaviour
     private void SaveLicenseNumberToJsonFile()
     {
         // JsonData 생성
-        JsonData licenseNumber_Json = new JsonData();
-        licenseNumber_Json["LicenseNumber"] = clientLicenseNumber;
+        JsonData client_Json = new JsonData();
+        client_Json["LicenseNumber"] = clientLicenseNumber;
+        client_Json["Charactor"] = clientCharactor;
         // Json 데이터를 문자열로 변환하여 파일에 저장
-        string jsonString = JsonMapper.ToJson(licenseNumber_Json);
+        string jsonString = JsonMapper.ToJson(client_Json);
         File.WriteAllText(licensePath + "/clientlicense.json", jsonString);
-    }
-
-    // 게임스크립트에서 점수 및 시간 가져오기 / Enum으로 level step 구분하고있나
-    public static void GameResult_SaveDataToDB(string gamename, int level, int step, int score, int time)
-    {
-        string requestData = $"{gamename}|{level.ToString()}|{step.ToString()}|{score.ToString()}|{time.ToString()}";
-        Client client = new Client(stream);
-        client.RequestToServer(requestData);
     }
 
     // Start DBTable 세팅
@@ -341,11 +332,6 @@ public class Client : MonoBehaviour
         CloseSocket();
     }
 
-    public void OnClickGameDataTest()
-    {
-        GameResult_SaveDataToDB(testGameName,testLevel,testStep,testScore,testTime);
-    }
-
     public void OnClickLoadPlayerDataFromServerTest()
     {
         Debug.Log($"[Client] Test... {playerdata_FromServer}");
@@ -378,11 +364,53 @@ public class Client : MonoBehaviour
         socketReady = false;
     }
 
-    // 게임 접속시 Player Class Script에 있는 변수(인게임에서 사용할 변수들)에 Client PlayerData 값을 넣는 메서드
-    private void ClientPlayerDataToPlayerClassVariable()
+    // 재백이가 만든 Result_Data를 매개변수로 받아서 DB에 저장하는 메서드(server에 요청 -> RequestServer)
+    public void SaveResultDataToDB(Result_Data resultdata)
     {
+        // requestData = RequestName[0]/User_Licensenumber[1]/User_Charactor[2]/ReactionRate[3]/.../StarPoint[8]
+        string requestData;
+        string requestName;
+        string values;
+        string gameName;
 
+        switch(resultdata.game_type)
+        {
+            case Game_Type.A:
+                gameName = "calculation";
+                break;
+            case Game_Type.B:
+                gameName = "venezia_chn";
+                break;
+            case Game_Type.C:
+                gameName = "gugudan";
+                break;
+            default:
+                Debug.Log("[Client] Game_Type error");
+                gameName = "error";
+                break;
+        }
+
+        Data_value datavalue = resultdata.Data[(resultdata.game_type, resultdata.Level, resultdata.Step)];
+
+        requestName = $"[Save]{gameName}";
+        values = $"{resultdata.Level}|{resultdata.Step}|{clientLicenseNumber}|{clientCharactor}|{datavalue.ReactionRate}|{datavalue.AnswersCount}|{datavalue.Answers}|{datavalue.PlayTime}|{datavalue.TotalScore}|";
+
+        requestData = $"{requestName}|{values}";
+
+        RequestToServer(requestData);
     }
+
+    //// 게임 접속시 Result_Data에 있는 변수(인게임에서 사용할 변수들)에 Client PlayerData 값을 넣는 메서드
+    //public Result_Data ClientPlayerDataToResultData()
+    //{
+    //    // tablename :  "user_info", "rank", "achievement", "pet", "calculation", "venezia_chn");
+    //    // playerdata_Dic에서 데이터 가져옴
+    //    Result_Data result_data = new Result_Data();
+
+    //    result_data.playerName = playerdata_Dic("user_info", List<string>)
+
+    //    return result_data;
+    //}
 
     //// 버튼 눌러서 로그인
     //public void OnClickLogin()
