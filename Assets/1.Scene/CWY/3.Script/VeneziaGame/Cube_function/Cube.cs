@@ -71,9 +71,7 @@ public class Cube : MonoBehaviour
         }
 
         JudgeCubeObjType();
-
-        print(objectType);
-
+        GameOver();
     }
     private void OnTriggerEnter(Collider other)
     {
@@ -314,4 +312,12 @@ public class Cube : MonoBehaviour
         }
     }
 
+
+    private void GameOver()
+    {
+        if(VeneziaManager.Instance.isGameover)
+        {
+            gameObject.SetActive(false);
+        }
+    }
 }

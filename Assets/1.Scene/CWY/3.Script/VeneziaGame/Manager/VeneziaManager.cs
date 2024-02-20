@@ -25,6 +25,8 @@ public class VeneziaManager : MonoBehaviour
 
     [SerializeField] private GameObject gameover; // 테스트용 게임오버 이미지
 
+    public bool isGameover = false;
+
     //아이템과의 상호작용도 여기에 구현
     public int Level;
     public int Step;
@@ -80,9 +82,6 @@ public class VeneziaManager : MonoBehaviour
     {
         //  GameStop();
         Click_Obj();
-        print("QuestCount = " + QuestCount);
-        print("QuestKorean.Count = " + QuestKorean.Count);
-
     }
     //오브젝트 클릭시 입력처리
     //Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Began > 터치입력
@@ -100,10 +99,14 @@ public class VeneziaManager : MonoBehaviour
                 Cube Questprefab = hit.collider.gameObject.GetComponent<Cube>();
                 if(Questprefab != null && Questprefab.objectType == ObjectType.CorrectAnswer) // 큐브를 눌렀을때 Quest 인지 알아야함
                 {
-                    if(QuestCount > -2)
+                    if(QuestCount > -1)
                     {
                         Score.Instance.Get_FirstScore();
                         DisplayRandomQuest();
+                    }
+                    else
+                    {
+                        if (QuestCount == 0) isGameover = true; //이때 남은시간 받아오면 됨.
                     }
                     
                     ObjectPooling.Instance.cubePool.Add(hit.collider.gameObject);
@@ -123,7 +126,7 @@ public class VeneziaManager : MonoBehaviour
                     if (item.veneziaItem == VeneziaItem.Meteor) // veneziaItem이 메테오인 경우
                     {
                         print("메테오 클릭!"); // 또는 다른 동작을 수행
-                        ObjectPooling.Instance.ItemPool.Add(hit.collider.gameObject);
+                        ObjectPooling.Instance.MeteorPool.Add(hit.collider.gameObject);
                         TimeSlider.Instance.DecreaseTime_Item(5);
                         hit.collider.gameObject.SetActive(false);
                     }
@@ -131,7 +134,7 @@ public class VeneziaManager : MonoBehaviour
                     if (item.veneziaItem == VeneziaItem.Pause) // Pause
                     {
                         print("멈춰!");
-                        ObjectPooling.Instance.ItemPool.Add(hit.collider.gameObject);
+                        ObjectPooling.Instance.PausePool.Add(hit.collider.gameObject);
                         hit.collider.gameObject.SetActive(false);
                         StartCoroutine(Pause_co());
                     }
