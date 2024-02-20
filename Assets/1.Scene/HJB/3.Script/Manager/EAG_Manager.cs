@@ -146,10 +146,10 @@ public class EAG_Manager : GameSetting
     private void EnsureResultInRange(int min, int max)
     {
         result = AnswerCalculator(selectedOperator);        
-        if(result < min || result > max)
+        while(result < min || result > max)
         {
             result = AnswerCalculator(selectedOperator);
-        }
+        }        
     }
 
 
