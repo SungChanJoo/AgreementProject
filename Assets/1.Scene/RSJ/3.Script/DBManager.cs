@@ -47,12 +47,6 @@ public class DBManager : MonoBehaviour
 
     // LicenseNumber 기본, Table 게임명(편의성을 위해)
     private int clientLicenseNumber_Base = 10000;
-    private string licenseNumber_Column = "User_LicenseNumber";
-    public static string venezia_kor = "venezia_kor";
-    public static string venezia_eng = "venezia_eng";
-    public static string venezia_chn = "venezia_chn";
-    public static string calculation = "calculation";
-    public static string gugudan = "gugudan";
 
     public static DBManager instance = null; // 싱글톤 쓸거임
 
@@ -153,6 +147,7 @@ public class DBManager : MonoBehaviour
                 count++;
             }
         }
+        reader.Close(); // DataReader가 열려있는 동안 추가적인 명령 실행 불가
 
         // user_info 변수
         string table_Name = "user_info";
@@ -177,7 +172,6 @@ public class DBManager : MonoBehaviour
         insert_SqlCmd.Parameters.Add("@user_Coin", MySqlDbType.Int32).Value = user_Coin;
         //insert_SqlCmd.ExecuteNonQuery(); 
         
-        reader.Close(); // DataReader가 열려있는 동안 추가적인 명령 실행 불가
         insert_SqlCmd.ExecuteNonQuery(); // command.ExecuteNonQuery()은 DB에서 변경 작업을 수행하는 SQL 명령문을 실행하고, 영향을 받은 행의 수를 반환하는 메서드
 
         string returnData = $"{clientLicenseNumber}|{user_Charactor}";
@@ -201,7 +195,6 @@ public class DBManager : MonoBehaviour
         string rank_TableName = "rank";
         string[] rank_Columns = { "User_LicenseNumber", "User_Charactor", "TotalTime", "TotalScore" };
         int rank_valuepart;
-        //table_List.Add(rank_TableName);
 
         // insert row
         insertCreatePlayerData_Command = $"INSERT INTO {rank_TableName} ({rank_Columns[0]}) VALUES ({clientlicensenumber})";
@@ -224,7 +217,6 @@ public class DBManager : MonoBehaviour
         string achievement_TableName = "achievement";
         string[] achievement_Columns = { "User_LicenseNumber", "User_Charactor", "Something"};
         int achievement_valuepart;
-        //table_List.Add(achievement_TableName);
 
         // insert row
         insertCreatePlayerData_Command = $"INSERT INTO {achievement_TableName} ({achievement_Columns[0]}) VALUES ({clientlicensenumber})";
@@ -247,7 +239,6 @@ public class DBManager : MonoBehaviour
         string pet_TableName = "pet";
         string[] pet_Columns = { "User_LicenseNumber", "User_Charactor", "White" };
         int pet_valuepart;
-        //table_List.Add(pet_TableName);
 
         // insert row
         insertCreatePlayerData_Command = $"INSERT INTO {pet_TableName} ({pet_Columns[0]}) VALUES ({clientlicensenumber})";
@@ -293,7 +284,6 @@ public class DBManager : MonoBehaviour
                     }
                     game_TableName = $"{game_Names[i]}_{levelpart}_step{steps[k]}";
                     game_TableList.Add(game_TableName);
-                    //table_List.Add(game_TableName);
 
                 }
             }
@@ -517,66 +507,4 @@ public class DBManager : MonoBehaviour
         //update_SqlCmd.ExecuteNonQuery();
     }
 
-
-
-    // Login, Client에서 불러올것임, 로그인할때 아이디, 비번 입력
-    //public bool Login(string id, string pw)
-    //{
-    //    // 데이터를 DB에서 가져옴
-    //    // 조회되는 데이터가 없으면 False
-    //    // 조회가 되는 데이터가 있으면 True인데, 위 user_Info에다가 담을거임
-    //    // 1. Connection이 Open인지 확인 - 메서드
-    //    // 2. Reader 상태가 읽고 있는지 확인 - 한 쿼리문당 하나
-    //    // 3. 데이터를 다 읽었으면 Close();
-
-    //    try
-    //    {
-    //        // 1번
-    //        if (!CheckConnection(connection))
-    //        {
-    //            Debug.Log("DB에 연결되지 않았습니다.");
-    //            return false;
-    //        }
-
-    //        string login_Command = string.Format(@"SELECT User_Name, User_Password FROM User_Info WHERE User_Name = '{0}' AND User_Password = '{1}';", id, pw);
-    //        MySqlCommand cmd = new MySqlCommand(login_Command, connection);
-    //        reader = cmd.ExecuteReader(); // SELECT
-
-    //        // Reader가 읽은게 하나이상 존재하면
-    //        if(reader.HasRows)
-    //        {
-    //            // 읽은 데이터를 하나씩 나열
-    //            while (reader.Read())
-    //            {
-    //                string name = (reader.IsDBNull(0)) ? string.Empty : (string)reader["User_Name"].ToString();
-    //                string password = (reader.IsDBNull(1)) ? string.Empty : (string)reader["User_Password"].ToString();
-
-    //                // 둘 다 비어있지 않다면 어떤 값이 되었든 데이터가 불러와졌다는것
-    //                if (!name.Equals(string.Empty) || !password.Equals(string.Empty))
-    //                {
-    //                    user_Info = new User_Info(name, password); // DB에서 해당 유저의 이름과 비밀번호를 가져옴
-
-    //                    // 리더기가 닫혀있지 않다면 닫기
-    //                    if (!reader.IsClosed) reader.Close();
-    //                    return true;
-    //                }
-    //                else
-    //                {
-    //                    break;
-    //                }
-    //            }
-    //        }
-
-    //        // 위에서 제대로 파일을 읽지 못했다면 리더기 종료하고 false 반환
-    //        if (!reader.IsClosed) reader.Close();
-    //        return false;
-    //    }
-    //    catch(Exception e)
-    //    {
-    //        Debug.Log(e.Message);
-    //        // 에러나면 리더기 종료 후 false반환
-    //        if (!reader.IsClosed) reader.Close();
-    //        return false;
-    //    }
-    //}
 }
