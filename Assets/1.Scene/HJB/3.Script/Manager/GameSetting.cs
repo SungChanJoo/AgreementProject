@@ -1,15 +1,20 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public enum Game_Type
 {
     A,
     B,
-    C
+    C,
+    D,
+    E,
 }
 public abstract class GameSetting : MonoBehaviour
 {
+    public Game_Type game_Type;
+
     public int level;
     public int step;
     public int timeSet;
@@ -36,6 +41,7 @@ public abstract class GameSetting : MonoBehaviour
     private void startSet()
     {
         //선택한 레벨, 스텝, 시간 값 초기 설정
+        game_Type = (Game_Type)SceneManager.GetActiveScene().buildIndex-2;
         step = StepManager.Instance.CurrentStep;
         level = StepManager.Instance.CurrentLevel;
         timeSet = StepManager.Instance.CurrentTime;
@@ -47,6 +53,7 @@ public abstract class GameSetting : MonoBehaviour
     }
     private void ResultDataSet()
     {
+        result_data.Game_type = game_Type;
         //레벨, 스텝, 시간 설정값 할당
         result_data.Level = level;
         result_data.Step = step;
@@ -141,6 +148,28 @@ public abstract class GameSetting : MonoBehaviour
         
         //총 점수 십의자리수 날리기
         totalScore = (int)(totalScore / 100f) * 100;
+
+    }
+
+    private void UpdateDatabaseFromData()
+    {
+        Result_DB result_DB = new Result_DB(level,step,"");
+        Data_value data_Value = new Data_value(reactionRate, answersCount, answers, playTime, totalScore);
+        //Reult_DB가 Null일 때 처리
+        if (!result_DB.Data.ContainsKey((game_Type,level,step)))
+        {
+            result_DB.Data.Add((game_Type, level, step), data_Value);
+        }
+        else
+        {
+            //만약 totalScore가 DB에 있는 점수보다 크다면 다시 할당
+            if (result_DB.Data[(game_Type, level, step)].TotalScore < totalScore)
+            {
+                result_DB.Data[(game_Type, level, step)] = data_Value;
+            }
+        }
+
+
 
     }
 

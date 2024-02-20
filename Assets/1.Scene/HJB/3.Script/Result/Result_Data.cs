@@ -5,7 +5,7 @@ using UnityEngine;
 [System.Serializable]
 public class Result_Data
 {
-    Game_Type Game_type;
+    public Game_Type Game_type;
 
     public int Level;
     public int Step;
