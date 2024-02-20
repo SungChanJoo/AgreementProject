@@ -128,14 +128,14 @@ public class DBManager : MonoBehaviour
     }
 
     // 계정등록 // todo 비동기화 생각해봐야함
-    public int CreateLicenseNumber()
+    public string CreateLicenseNumber()
     {
         Debug.Log("[DB] CreateLicenseNumber method");
 
         if(!CheckConnection(connection))
         {
             Debug.Log("[DB] Didn't connect to DB");
-            return -1;
+            return "";
         }
 
         int count = 0;
@@ -180,7 +180,8 @@ public class DBManager : MonoBehaviour
         reader.Close(); // DataReader가 열려있는 동안 추가적인 명령 실행 불가
         insert_SqlCmd.ExecuteNonQuery(); // command.ExecuteNonQuery()은 DB에서 변경 작업을 수행하는 SQL 명령문을 실행하고, 영향을 받은 행의 수를 반환하는 메서드
 
-        return clientLicenseNumber;
+        string returnData = $"{clientLicenseNumber}|{user_Charactor}";
+        return returnData;
     }
 
     // 새 플레이어 데이터 생성
@@ -311,9 +312,6 @@ public class DBManager : MonoBehaviour
                 updatePlayerData_Command = $"UPDATE {game_TableList[i]} SET {game_Columns[j]} = '0'";
                 update_SqlCmd.CommandText = updatePlayerData_Command;
                 update_SqlCmd.ExecuteNonQuery();
-                //insertCreatePlayerData_Command = $"INSERT INTO {game_TableList[i]} ({game_Columns[j]}) VALUES (0)";
-                //insert_SqlCmd.CommandText = insertCreatePlayerData_Command;
-                //insert_SqlCmd.ExecuteNonQuery();
             }
         }
         Debug.Log("[DB] game table complete!");
@@ -420,32 +418,105 @@ public class DBManager : MonoBehaviour
 
     public void SaveGameResultData(List<string> dataList)
     {
-        // dataList index순으로 게임명[0]/레벨[1]/스텝[2]/점수[3]/시간[4]
-        if (dataList[1] == "0") dataList[1] = null;
-        string table_Name = $"{dataList[0]}_level{dataList[1]}_step{dataList[2]}";
-        string column_Name = $"TotalScore";
-        int score = int.Parse(dataList[3]);
+        // DB gametable column순 : User_Licensenumber/User_Charactor/ReactionRate/AnswerCount/AnswerRate/Playtime/TotalScore/StarPoint
+        // dataList는 [0]을 제외하고 value(int)만 있음. index순으로 RequestName[0]/level[1]/step[2]/User_Licensenumber[3]/User_Charactor[4]/ReactionRate[5]/.../TotalScore[9]
+        string gameName = dataList[0].Split("[Save]", StringSplitOptions.RemoveEmptyEntries).ToString();
+        string table_Name = $"{gameName}_level{dataList[1]}_step{dataList[2]}";
+        if(gameName == "venezia_chn") table_Name = $"{gameName}_level_step{dataList[2]}";
 
-        // DB table에 있는 score 비교해서 더 높은 점수 DB에 저장
-        string selectGameData_Command = $"SELECT {column_Name} FROM {table_Name}";
-        MySqlCommand select_SqlCmd = new MySqlCommand(selectGameData_Command, connection);
-       
+        string[] columns_Name = { "User_LicenseNumber", "User_Charactor", "ReactionRate", "AnswerCount", "AnswerRate", "Playtime", "TotalScore", "StarPoint"};
+        // gametable에 저장된 totalscore 가져와서 비교 (한 게임의 최고점수)
+        int gameresult_Score = Int32.Parse(dataList[9]);
+        int db_Score = 0;
+
+        // Score로 StarPoint(0,1,2,3) 할당
+        int starPoint = 0;
+
+        // DB 조회
+        string selectGameTable_Command = $"SELECT ({columns_Name[0]}, {columns_Name[1]}, {columns_Name[6]}) FROM {table_Name}";
+        MySqlCommand select_SqlCmd = new MySqlCommand(selectGameTable_Command, connection);
         MySqlDataReader reader = select_SqlCmd.ExecuteReader();
-
-        if (reader.HasRows)
+        
+        // DB에 있는 licensenumber와 charactor가 저장하려는 데이터의 licensenumber와 charactor가 같다면 (해당 행에 있는 값 가져옴)
+        if(reader.GetInt32(0) == Int32.Parse(dataList[3]) && reader.GetInt32(1) == Int32.Parse(dataList[4]))
         {
-            while (reader.Read())
-            {
-                int dbScore = reader.GetInt32("TotalScore");
-                score = score > dbScore ? score : dbScore;
-            }
+            db_Score = reader.GetInt32(columns_Name[6]);
         }
         reader.Close();
 
-        string insertGameData_Command = $"INSERT INTO {table_Name} ({column_Name}) VALUES ({score})";
-        MySqlCommand insert_SqlCmd = new MySqlCommand(insertGameData_Command, connection);
-        insert_SqlCmd.ExecuteNonQuery();
+        // 새 게임점수와 db 게임점수 비교
+        if(gameresult_Score >= db_Score) // 저장
+        {
+            // gameresult_Score로 StarPoint 할당함
+            if (gameresult_Score >= 25000) starPoint = 3;
+            else if (gameresult_Score >= 12500) starPoint = 2;
+            else if (gameresult_Score >= 6500) starPoint = 1;
+
+            // rank table에 TotalTime과 TotalScore에 점수 누적
+            UpdateRankTable(Int32.Parse(dataList[1]), Int32.Parse(dataList[2]), Int32.Parse(dataList[8]), gameresult_Score);
+        }
+        else // 저장 X
+        {
+            // 저장할 필요가 없으므로 rank table에만 TotalTime과 TotalScore에 점수 누적 후 return
+            UpdateRankTable(Int32.Parse(dataList[1]), Int32.Parse(dataList[2]), Int32.Parse(dataList[8]), gameresult_Score);
+            return;
+        }
+
+        // starpoint value값 list에 추가
+        dataList.Add(starPoint.ToString());
+
+        // 컬럼명-값 Tuple
+        Tuple<string, int>[] columns_Tuple = new Tuple<string, int>[8];
+        for(int i = 0; i < columns_Tuple.Length; i++)
+        {
+            columns_Tuple[i] = new Tuple<string, int>(columns_Name[i], Int32.Parse(dataList[i+3]));
+        }
+
+        // 게임테이블에 values update
+        // i=0 -> licensenumber / i=1 -> charactor ==> table에서 특정조건(라이센스,캐릭터)을 만족하는 column을 업데이트함
+        for(int i = 2; i < columns_Tuple.Length; i++)
+        {
+            string updateGameData_Command = $"UPDATE {table_Name} SET {columns_Tuple[i].Item1} = {columns_Tuple[i].Item2} WHERE {columns_Tuple[0].Item1} = {columns_Tuple[0].Item2} AND {columns_Tuple[1].Item1} = {columns_Tuple[1].Item2}";
+            MySqlCommand update_SqlCmd = new MySqlCommand(updateGameData_Command, connection);
+            update_SqlCmd.ExecuteNonQuery();
+        }
     }
+
+    // 게임이 끝날때마다 rank table에 시간, 점수 누적
+    private void UpdateRankTable(int licensenumber, int charactor, int time, int score)
+    {
+        Debug.Log($"[DB] Updating... rank table, licensenumber : {licensenumber}, characator : {charactor}");
+        string rankTable = "rank";
+        string[] columns = { "User_LicenseNumber", "User_Charactor", "TotalTime", "TotalScore"};
+        int totalTime = 0;
+        int totalScore = 0;
+
+        string selectRankData_Command = $"SELECT * FROM {rankTable}";
+        MySqlCommand select_SqlCmd = new MySqlCommand(selectRankData_Command, connection);
+        MySqlDataReader reader = select_SqlCmd.ExecuteReader();
+
+        if((reader.GetInt32(columns[0]) == licensenumber) && (reader.GetInt32(columns[1]) == charactor))
+        {
+            totalTime = reader.GetInt32(columns[3]);
+            totalScore = reader.GetInt32(columns[4]);
+        }
+        reader.Close();
+
+        totalTime += time;
+        totalScore += score;
+
+        string updateRankData_Command = $"UPDATE {rankTable} SET {columns[3]} = {totalTime} WHERE {columns[0]} = {licensenumber} AND {columns[1]} = {charactor}";
+        MySqlCommand update_SqlCmd = new MySqlCommand(updateRankData_Command, connection);
+        update_SqlCmd.ExecuteNonQuery();
+        update_SqlCmd.CommandText = $"UPDATE {rankTable} SET {columns[4]} = {totalScore} WHERE {columns[0]} = {licensenumber} AND {columns[1]} = {charactor}";
+        update_SqlCmd.ExecuteNonQuery();
+
+        //UPDATE `test`.`rank` SET `TotalTime`= '5' WHERE  `User_LicenseNumber`= 2000 AND `User_Charactor`= 1 AND `TotalTime`= 1 AND `TotalScore`= 1 LIMIT 1;
+        //updatePlayerData_Command = $"UPDATE {achievement_TableName} SET {achievement_Columns[i]} = {achievement_valuepart}";
+        //update_SqlCmd.CommandText = updatePlayerData_Command;
+        //update_SqlCmd.ExecuteNonQuery();
+    }
+
 
 
     // Login, Client에서 불러올것임, 로그인할때 아이디, 비번 입력
