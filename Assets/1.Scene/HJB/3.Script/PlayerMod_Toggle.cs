@@ -1,8 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using TMPro;
-
 
 public class PlayerMod_Toggle : MonoBehaviour
 {
@@ -11,7 +9,6 @@ public class PlayerMod_Toggle : MonoBehaviour
     [SerializeField] private GameObject[] next_obj;
     [SerializeField] private GameObject filter_Canvas;
     [SerializeField] private GameObject nonfilter_Canvas;
-
     private int playerMod = 1;    
     RectTransform rectTransform;
     RectTransform[] rects;
@@ -19,9 +16,6 @@ public class PlayerMod_Toggle : MonoBehaviour
     float nextVector = 0;
     bool onFilter = false;
     bool playing = false;
-
-    [SerializeField] private TMP_Text RightText;
-    [SerializeField] private TMP_Text LeftText;
     
     private void Start()
     {
@@ -68,17 +62,11 @@ public class PlayerMod_Toggle : MonoBehaviour
         {
             playerMod = 2;
             nextVector3 = rects[1].position;
-            //색변경
-            RightText.color = Color.white;
-            LeftText.color = Color.black;
         }
         else
         {
             playerMod = 1;
             nextVector3 = rects[0].position;
-            //색변경
-            RightText.color = Color.black;
-            LeftText.color = Color.white;
         }
         Debug.Log(playerMod);
 

@@ -24,7 +24,6 @@ public enum TimeSet
     _5m = 300,
 }
 
-
 public class StepManager : MonoBehaviour
 {   
 

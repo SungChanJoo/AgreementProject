@@ -16,7 +16,7 @@ public class MainMenuManager : MonoBehaviour
 
     public void SceneGame_1()
     {
-        SceneManager.LoadScene("HJB_ArithmeticOperationsGame");
+        SceneManager.LoadScene("HJB_ElementaryArithmeticGame");
     }
 
     //Application 종료 버튼
