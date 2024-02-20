@@ -17,7 +17,8 @@ public abstract class GameSetting : MonoBehaviour
     public float reactionRate;
     public int answersCount;
     public int answers;
-    public int playTime;
+    public float playTime;
+    public int totalQuestions;
     public int totalScore;
     public float remainingTime;
 
@@ -55,6 +56,8 @@ public abstract class GameSetting : MonoBehaviour
         result_data.Answers = answers;
         result_data.AnswersCount = answersCount;
         result_data.PlayTime = playTime;
+        result_data.RemainingTime = (int)remainingTime;
+        result_data.TotalQuestions = totalQuestions;
         result_data.TotalScore = totalScore;
     }
     //현재 Level Step에 따라 나누기
@@ -83,6 +86,8 @@ public abstract class GameSetting : MonoBehaviour
         ResultCanvas_UI();
         //남은시간
         remainingTime = TimeSlider.Instance.startTime;
+        playTime = TimeSlider.Instance.duration - remainingTime;
+        
         //Result_Data에 게임결과 할당
         ScoreCalculation();
         //결과표 텍스트 출력
@@ -101,10 +106,42 @@ public abstract class GameSetting : MonoBehaviour
     }
 
     protected void ScoreCalculation()
-    { 
+    {
         //여기서 점수 공식 계산할 것.
-        
+        TotalScoreCalculation();
 
         ResultDataSet();
     }
+    private void TotalScoreCalculation()
+    {
+        //기본점수
+        int x = answersCount * 10;
+        //반응속도계수
+        int y = 3 * (30 - (int)reactionRate);
+        //남은시간
+        int z = 180 - (int)reactionRate * totalQuestions;
+        //남은시간 계수
+        int t = 0;
+        switch (timeSet)
+        {
+            case (int)TimeSet._1m:
+                t = z * 3;
+                break;
+            case (int)TimeSet._3m:
+                t = (z * 1) * 3 + 1;
+                break;
+            case (int)TimeSet._5m:
+                t = (z * 3 / 5) * 3 + 1;
+                break;
+        }
+        //난이도 계수
+        float n = 1f + level * step / 10f;
+        totalScore =
+            (answersCount * t + 1) + ((int)n / 100) * ((1 + y) * x);
+        
+        //총 점수 십의자리수 날리기
+        totalScore = (int)(totalScore / 100f) * 100;
+
+    }
+
 }

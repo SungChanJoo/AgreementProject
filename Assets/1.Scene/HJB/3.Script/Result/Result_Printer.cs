@@ -16,9 +16,9 @@ public class Result_Printer : MonoBehaviour
     public void ShowText(Result_Data data)
     {
         reactionRate.text = data.ReactionRate.ToString("F2");
-        answerCount.text = data.AnswersCount.ToString();
-        answers.text = data.Answers.ToString();
-        playTime.text = data.PlayTime.ToString();
+        answerCount.text = $"{data.AnswersCount}/{data.TotalQuestions}";
+        answers.text = $"{data.Answers}%";
+        playTime.text = data.PlayTime.ToString("F2");
         totalScore.text = data.TotalScore.ToString();
     }
 

@@ -14,6 +14,8 @@ public class Result_Data
     public float ReactionRate;
     public int AnswersCount;
     public int Answers;
-    public int PlayTime;
+    public float PlayTime;
+    public int RemainingTime;        
+    public int TotalQuestions;
     public int TotalScore;
 }

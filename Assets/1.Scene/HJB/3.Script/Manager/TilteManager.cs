@@ -12,7 +12,14 @@ public class TilteManager : MonoBehaviour
     [SerializeField] private GameObject RegistrationCanvas;    
     [SerializeField] private TextMeshProUGUI inputError_text;
     [SerializeField] private TMP_InputField name_text;
-        
+
+    int df=6502;
+    private void Start()
+    {
+        int a;
+        a = (int)(df/ 100f) * 100;
+        Debug.Log(a);
+    }
     public void Registration_UI()
     {
         RegistrationCanvas.SetActive(!RegistrationCanvas.activeSelf);

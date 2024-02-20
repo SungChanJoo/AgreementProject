@@ -127,10 +127,6 @@ public class ObjectPooling_H : MonoBehaviour
         {
             //정답오브젝트의 반응속도를 담기
             reactionList.Add(movingCube.reactionRate);
-            for (int i = 0; i < reactionList.Count; i++)
-            {
-                Debug.Log(reactionList[i]);
-            }
             Next_Result();            
             answer_count++;
         }
@@ -166,6 +162,7 @@ public class ObjectPooling_H : MonoBehaviour
         }
         problom_count = problom;
         totalQuestions = problom;
+        aopManager.totalQuestions = totalQuestions;
         answer_count = 0;         
     }
 
@@ -185,7 +182,7 @@ public class ObjectPooling_H : MonoBehaviour
     private void AnswerRate()
     {
         //정답률 계산
-        aopManager.answers = totalQuestions / answer_count * 100;
+        aopManager.answers = answer_count * 100 / totalQuestions;        
     }
 
 
