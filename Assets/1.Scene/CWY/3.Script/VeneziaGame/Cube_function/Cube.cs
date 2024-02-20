@@ -8,18 +8,18 @@ public enum ObjectType
     CorrectAnswer,
 }
 
-public enum Quset_exam
+/*public enum Quset_exam
 {
     Before,
     Current,
     After,
-}
+}*/
 
 
 public class Cube : MonoBehaviour
 { 
-    public static ObjectType objectType;
-    public static Quset_exam quset_Exam;
+    public  ObjectType objectType;
+  //  public  Quset_exam quset_Exam;
 
     public float StartSpeed; // 공을 움직일 속도  1 
     public float CurrentSpeed; // 공을 움직일 속도  1 
@@ -43,7 +43,15 @@ public class Cube : MonoBehaviour
 
     private void Update()
     {
-        if (!gameObject.activeSelf) isStart = false;
+        if (!gameObject.activeSelf) 
+        {
+            isStart = false;
+            isFloor = false;
+            isLeftWall = false;
+            isRightWall = false;
+            isCeiling = false;
+        } 
+
        // if (gameObject.activeSelf) isStart = true;
         if (isStart && gameObject.activeSelf)
         {
@@ -63,10 +71,7 @@ public class Cube : MonoBehaviour
         }
 
         JudgeCubeObjType();
-
-        print(quset_Exam);
-        print(objectType);
-
+        GameOver();
     }
     private void OnTriggerEnter(Collider other)
     {
@@ -97,7 +102,7 @@ public class Cube : MonoBehaviour
     //Todo : 기획팀 기획안 넘어오면 처음 시작했을때 움직이는 로직은 변경할 예정
     private void Cube_StartMove()
     {
-        float moveY = -1 * StartSpeed * Time.deltaTime;
+        float moveY = -1 * 15f * Time.deltaTime;
         transform.Translate(0, moveY, 0);
     }
 
@@ -299,7 +304,7 @@ public class Cube : MonoBehaviour
         if(VeneziaManager.Instance.Quest_Img.sprite == sprite)
         {
             objectType = ObjectType.CorrectAnswer;
-            quset_Exam = Quset_exam.Current;
+            //quset_Exam = Quset_exam.Current;
         }
         else
         {
@@ -307,4 +312,12 @@ public class Cube : MonoBehaviour
         }
     }
 
+
+    private void GameOver()
+    {
+        if(VeneziaManager.Instance.isGameover)
+        {
+            gameObject.SetActive(false);
+        }
+    }
 }
