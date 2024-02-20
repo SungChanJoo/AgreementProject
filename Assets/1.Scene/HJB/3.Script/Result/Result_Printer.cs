@@ -13,13 +13,13 @@ public class Result_Printer : MonoBehaviour
     [SerializeField] private TextMeshProUGUI totalScore;
 
 
-    public void ShowText(int _reactionRate,int _answerCount,int _answers,int _playtime,int _totalScore)
+    public void ShowText(Result_Data data)
     {
-        reactionRate.text = _reactionRate.ToString();
-        answerCount.text = _answerCount.ToString();
-        answers.text = _answers.ToString();
-        playTime.text = _playtime.ToString();
-        totalScore.text = _totalScore.ToString();
+        reactionRate.text = data.ReactionRate.ToString("F2");
+        answerCount.text = $"{data.AnswersCount}/{data.TotalQuestions}";
+        answers.text = $"{data.Answers}%";
+        playTime.text = data.PlayTime.ToString("F2");
+        totalScore.text = data.TotalScore.ToString();
     }
 
 }
