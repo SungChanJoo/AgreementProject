@@ -117,7 +117,7 @@ public abstract class GameSetting : MonoBehaviour
         //기본점수
         int x = answersCount * 10;
         //반응속도계수
-        int y = 3 * (30 - (int)reactionRate);
+        int y = (20 - (int)reactionRate);
         //남은시간
         int z = 180 - (int)reactionRate * totalQuestions;
         //남은시간 계수
@@ -125,10 +125,10 @@ public abstract class GameSetting : MonoBehaviour
         switch (timeSet)
         {
             case (int)TimeSet._1m:
-                t = z * 3;
+                t = z *3 * 3 + 1;
                 break;
             case (int)TimeSet._3m:
-                t = (z * 1) * 3 + 1;
+                t = (z) * 3 + 1;
                 break;
             case (int)TimeSet._5m:
                 t = (z * 3 / 5) * 3 + 1;
@@ -137,7 +137,7 @@ public abstract class GameSetting : MonoBehaviour
         //난이도 계수
         float n = 1f + level * step / 10f;
         totalScore =
-            (answersCount * t + 1) + ((int)n / 100) * ((1 + y) * x);
+            (answersCount * t + 1) + (int)(n*answers / 100f) * (1 + y * x);
         
         //총 점수 십의자리수 날리기
         totalScore = (int)(totalScore / 100f) * 100;
