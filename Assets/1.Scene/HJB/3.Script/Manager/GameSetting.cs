@@ -13,17 +13,53 @@ public abstract class GameSetting : MonoBehaviour
     public int level;
     public int step;
     public int timeSet;
-    
+
+    public float reactionRate;
+    public int answersCount;
+    public int answers;
+    public float playTime;
+    public int totalQuestions;
+    public int totalScore;
+    public float remainingTime;
+
+    public Result_Data result_data;
+
+    public Result_Printer result_Printer;
+
+    [SerializeField] GameObject resultCanvas_UI;
+
     private void Start()
     {
+        startSet();
+    }
+   
+    private void startSet()
+    {
+        //선택한 레벨, 스텝, 시간 값 초기 설정
         step = StepManager.Instance.CurrentStep;
         level = StepManager.Instance.CurrentLevel;
         timeSet = StepManager.Instance.CurrentTime;
         TimeSlider.Instance.startTime = timeSet;
         TimeSlider.Instance.duration = timeSet;
+
+        //로직에 의한 시작
         SplitLevelAndStep();
     }
-    
+    private void ResultDataSet()
+    {
+        //레벨, 스텝, 시간 설정값 할당
+        result_data.Level = level;
+        result_data.Step = step;
+        result_data.TimeSet = timeSet;
+        //반응속도, 정답률, 정답수, 남은시간, 총합 점수 설정값 할당
+        result_data.ReactionRate = reactionRate;
+        result_data.Answers = answers;
+        result_data.AnswersCount = answersCount;
+        result_data.PlayTime = playTime;
+        result_data.RemainingTime = (int)remainingTime;
+        result_data.TotalQuestions = totalQuestions;
+        result_data.TotalScore = totalScore;
+    }
     //현재 Level Step에 따라 나누기
     public virtual void SplitLevelAndStep()
     {
@@ -37,11 +73,75 @@ public abstract class GameSetting : MonoBehaviour
                 break;
             case 3:
                 Level_3(step);
-                break;            
+                break;
         }
-    }  
-    public abstract void Level_1(int step);
-    public abstract void Level_2(int step);
-    public abstract void Level_3(int step);
+    }
+    protected abstract void Level_1(int step);
+    protected abstract void Level_2(int step);
+    protected abstract void Level_3(int step);
+
+    public void EndGame()
+    {
+        //결과창 UI 활성화
+        ResultCanvas_UI();
+        //남은시간
+        remainingTime = TimeSlider.Instance.startTime;
+        playTime = TimeSlider.Instance.duration - remainingTime;
+        
+        //Result_Data에 게임결과 할당
+        ScoreCalculation();
+        //결과표 텍스트 출력
+        ResultPrinter_UI();
+    }
+
+    public void ResultCanvas_UI()
+    {
+        resultCanvas_UI.SetActive(!resultCanvas_UI.activeSelf);
+    }
+
+    protected void ResultPrinter_UI()
+    {
+        //결과표 출력 Result_Data Class 형식으로 넘겨주기
+        result_Printer.ShowText(result_data);
+    }
+
+    protected void ScoreCalculation()
+    {
+        //여기서 점수 공식 계산할 것.
+        TotalScoreCalculation();
+
+        ResultDataSet();
+    }
+    private void TotalScoreCalculation()
+    {
+        //기본점수
+        int x = answersCount * 10;
+        //반응속도계수
+        int y = (20 - (int)reactionRate);
+        //남은시간
+        int z = 180 - (int)reactionRate * totalQuestions;
+        //남은시간 계수
+        int t = 0;
+        switch (timeSet)
+        {
+            case (int)TimeSet._1m:
+                t = z *3 * 3 + 1;
+                break;
+            case (int)TimeSet._3m:
+                t = (z) * 3 + 1;
+                break;
+            case (int)TimeSet._5m:
+                t = (z * 3 / 5) * 3 + 1;
+                break;
+        }
+        //난이도 계수
+        float n = 1f + level * step / 10f;
+        totalScore =
+            (answersCount * t + 1) + (int)(n*answers / 100f) * (1 + y * x);
+        
+        //총 점수 십의자리수 날리기
+        totalScore = (int)(totalScore / 100f) * 100;
+
+    }
 
 }
