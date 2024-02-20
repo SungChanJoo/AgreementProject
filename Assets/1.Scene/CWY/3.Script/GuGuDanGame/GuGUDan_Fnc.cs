@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using TMPro;
 
 enum ButtonType
 {
@@ -24,9 +25,9 @@ public class GuGUDan_Fnc : MonoBehaviour
     //level & step 단계 추가
     //오답 처리시 시간감소
 
-    [SerializeField] private Text First_num;  // 첫번째 칸에 들어갈 숫자
-    [SerializeField] private Text Second_num; // 두번째 칸에 들어갈 숫자.
-    [SerializeField] private Text Answer_num; // 정답을 입력받을 칸 
+    [SerializeField] private TextMeshProUGUI First_num;  // 첫번째 칸에 들어갈 숫자
+    [SerializeField] private TextMeshProUGUI Second_num; // 두번째 칸에 들어갈 숫자.
+    [SerializeField] private TextMeshProUGUI Answer_num; // 정답을 입력받을 칸 
 
     [SerializeField] private Button[] buttons; // 0~9 버튼 
 
