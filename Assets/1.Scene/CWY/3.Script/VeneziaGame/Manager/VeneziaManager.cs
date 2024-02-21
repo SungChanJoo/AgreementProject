@@ -42,6 +42,7 @@ public class VeneziaManager : GameSetting
     public int QuestCount;  // 딕셔너리에 들어갈 퀘스트 갯수
     public int RemainAnswer; // 게임 진행중 남은 정답 갯수
     public int CorrectAnswerCount; // 맞춘 정답 갯수
+    public int ClickCount;
     public int LifeTime; // 게임 진행 시간
 
     //반응속도 측정 시간
@@ -90,6 +91,7 @@ public class VeneziaManager : GameSetting
         totalReactionTime = 0;
         trueReactionTime = 0;
         CorrectAnswerCount = 0;
+        ClickCount = 0;
         DisplayRandomQuest();
         //시간 시작 
         StartTime();
@@ -125,6 +127,7 @@ public class VeneziaManager : GameSetting
                         Score.Instance.Get_FirstScore();
                         RemainAnswer--;
                         CorrectAnswerCount++;
+                        ClickCount++;
                         trueReactionTime += totalReactionTime;
                         totalReactionTime = 0;
                         NextQuest();
@@ -140,6 +143,7 @@ public class VeneziaManager : GameSetting
                 else if (Questprefab != null && Questprefab.objectType != ObjectType.CorrectAnswer)
                 {
                     print("오답클릭!");
+                    ClickCount++;
                     ObjectPooling.Instance.cubePool.Add(hit.collider.gameObject);
                     hit.collider.gameObject.SetActive(false);
                     totalReactionTime = 0;
@@ -310,9 +314,11 @@ public class VeneziaManager : GameSetting
     private void GameOver()
     {
         isGameover = true;
+        totalQuestions = ClickCount;
         ReactionTime = trueReactionTime / CorrectAnswerCount;
         //반응속도 할당
         reactionRate = ReactionTime;
+        answersCount = CorrectAnswerCount;
         //정답률 계산
         AnswerRate();
         //결과표 출력
@@ -335,11 +341,11 @@ public class VeneziaManager : GameSetting
             default:
                 break;
         }
-        totalQuestions = QuestCount;
+        
         Debug.Log(totalQuestions);
     }
     private void AnswerRate()
     {
-        answers = totalQuestions * 100 / CorrectAnswerCount;
+        answers = CorrectAnswerCount * 100 / ClickCount;
     }
 }
