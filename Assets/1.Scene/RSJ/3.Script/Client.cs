@@ -311,7 +311,7 @@ public class Client : MonoBehaviour
     }
 
     // 재백이가 만든 Result_Data를 매개변수로 받아서 DB에 저장하는 메서드(server에 요청 -> RequestServer)
-    public void SaveResultDataToDB(Result_DB resultdata, int level, int step, int day)
+    public void SaveResultDataToDB(Result_DB resultdata, Game_Type game_type, int level, int step)
     {
         // requestData = RequestName[0]/User_Licensenumber[1]/User_Charactor[2]/ReactionRate[3]/.../StarPoint[8]
         string requestData;
@@ -319,7 +319,7 @@ public class Client : MonoBehaviour
         string values;
         string gameName;
 
-        switch(resultdata.game_type)
+        switch(game_type)
         {
             case Game_Type.A:
                 gameName = "venezia_kor";
@@ -345,7 +345,7 @@ public class Client : MonoBehaviour
         Data_value datavalue = resultdata.Data[(resultdata.game_type, resultdata.Level, resultdata.Step)];
 
         requestName = $"[Save]{gameName}";
-        values = $"{resultdata.Level}|{resultdata.Step}|{clientLicenseNumber}|{clientCharactor}|{datavalue.ReactionRate}|{datavalue.AnswersCount}|{datavalue.Answers}|{datavalue.PlayTime}|{datavalue.TotalScore}|";
+        values = $"{level}|{step}|{clientLicenseNumber}|{clientCharactor}|{datavalue.ReactionRate}|{datavalue.AnswersCount}|{datavalue.Answers}|{datavalue.PlayTime}|{datavalue.TotalScore}|";
 
         requestData = $"{requestName}|{values}";
 

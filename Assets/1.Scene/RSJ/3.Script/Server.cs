@@ -31,6 +31,9 @@ public class Server : MonoBehaviour
     private float debugTime = 5f;
     private float debugTimer;
 
+    // Test용 bool
+    private bool testBool = true;
+
     // 서버는 한번만 실행
     private void Start()
     {
@@ -47,7 +50,17 @@ public class Server : MonoBehaviour
 
         CheckClientsState();
         ReceiveDataFromClients();
-        
+
+
+        if (testBool)
+        {
+            Debug.Log("[Server] TestCreatDBTest");
+            testBool = false;
+            Debug.Log($"[Server] TestCreatDBTest, testBool value : {testBool}");
+            Invoke("CreateDBTest", 5f);
+        }
+
+
     }
 
     // 서버 생성
@@ -115,7 +128,9 @@ public class Server : MonoBehaviour
                 Debug.Log($"[Server] Connected Clients's IP : {((IPEndPoint)client.Client.RemoteEndPoint).Address}");
             }
 
-            DayTimer();
+            //DayTimer();
+
+            
 
             debugTimer = 0f;
         }
@@ -305,6 +320,11 @@ public class Server : MonoBehaviour
     private void WeekTimer()
     {
 
+    }
+
+    private void CreateDBTest()
+    {
+        //DBManager.instance.CreateDaysExGameDataDB();
     }
 
     private void SendMessageToClients(TcpClient client)

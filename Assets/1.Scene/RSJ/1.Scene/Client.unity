@@ -3550,9 +3550,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9f29fac38ef4dd5438c4b09831cf93c8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  server_IP: 127.0.0.1
+  server_IP: 15.165.159.141
   server_Port: 2421
-  licensePath: 
+  licenseFolderPath: 
   clientCharactor: 
   playerdata_FromServer: []
 --- !u!4 &1823038814

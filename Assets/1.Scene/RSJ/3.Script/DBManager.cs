@@ -42,6 +42,13 @@ public class DBManager : MonoBehaviour
     private List<string> table_List;
     private TableName table;
 
+    // Table - Columns
+    private string[] userinfo_Columns;
+    private string[] rank_Columns;
+    private string[] achievement_Columns;
+    private string[] pet_Columns;
+    private string[] game_Columns;
+
     // 서버-클라이언트 string으로 data 주고받을때 구분하기 위한 문자열
     private const string separatorString = "E|";
 
@@ -116,9 +123,15 @@ public class DBManager : MonoBehaviour
     // DB Table등 data에 조작할 때 필요한 변수 설정
     private void InitSetting()
     {
-        table_List = new List<string>();
-        table_List.Add("user_info");
-        table = new TableName();
+        // Tables / TableName 객체 생성시 table.list 자동 생성
+        table = new TableName(); 
+
+        // Table - Columns
+        userinfo_Columns = new string[]{ "User_LicenseNumber", "User_Charactor", "User_Name", "User_Profile", "User_Coin" };
+        rank_Columns = new string[] { "User_LicenseNumber", "User_Charactor", "TotalTime", "TotalScore" };
+        achievement_Columns = new string[] { "User_LicenseNumber", "User_Charactor", "Something" };
+        pet_Columns = new string[] { "User_LicenseNumber", "User_Charactor", "White" };
+        game_Columns = new string[]{ "User_LicenseNumber", "User_Charactor", "ReactionRate", "AnswerCount", "AnswerRate", "Playtime", "TotalScore", "StarPoint" };
     }
 
     // 계정등록 // todo 비동기화 생각해봐야함
@@ -187,39 +200,42 @@ public class DBManager : MonoBehaviour
         MySqlCommand insert_SqlCmd = new MySqlCommand();
         insert_SqlCmd.Connection = connection;
 
+        // Update Query
         string updatePlayerData_Command;
         MySqlCommand update_SqlCmd = new MySqlCommand();
         update_SqlCmd.Connection = connection;
 
+        // table.list[0] -> userinfo, [1]->rank, [2]->achievement, [3]->pet
+
         // rank table
-        string rank_TableName = "rank";
-        string[] rank_Columns = { "User_LicenseNumber", "User_Charactor", "TotalTime", "TotalScore" };
+        //string rank_TableName = "rank";
+        //string[] rank_Columns = { "User_LicenseNumber", "User_Charactor", "TotalTime", "TotalScore" };
         int rank_valuepart;
 
         // insert row
-        insertCreatePlayerData_Command = $"INSERT INTO {rank_TableName} ({rank_Columns[0]}) VALUES ({clientlicensenumber})";
+        insertCreatePlayerData_Command = $"INSERT INTO {table.list[1]} ({rank_Columns[0]}) VALUES ({clientlicensenumber})";
         insert_SqlCmd.CommandText = insertCreatePlayerData_Command;
         insert_SqlCmd.ExecuteNonQuery();
 
-        for (int i = 0; i < rank_Columns.Length; i++)
+        for (int i = 0; i < rank_Columns.Length; i++) // 0->licensenumber, 1->charactor
         {
             if (i == 0) rank_valuepart = clientlicensenumber;
             else if (i == 1) rank_valuepart = 1;
             else rank_valuepart = 0;
 
-            updatePlayerData_Command = $"UPDATE {rank_TableName} SET {rank_Columns[i]} = {rank_valuepart}";
+            updatePlayerData_Command = $"UPDATE {table.list[1]} SET {rank_Columns[i]} = {rank_valuepart}";
             update_SqlCmd.CommandText = updatePlayerData_Command;
             update_SqlCmd.ExecuteNonQuery();
         }
         Debug.Log("[DB] Rank table complete!");
 
         // achievement table
-        string achievement_TableName = "achievement";
-        string[] achievement_Columns = { "User_LicenseNumber", "User_Charactor", "Something"};
+        //string achievement_TableName = "achievement";
+        //string[] achievement_Columns = { "User_LicenseNumber", "User_Charactor", "Something"};
         int achievement_valuepart;
 
         // insert row
-        insertCreatePlayerData_Command = $"INSERT INTO {achievement_TableName} ({achievement_Columns[0]}) VALUES ({clientlicensenumber})";
+        insertCreatePlayerData_Command = $"INSERT INTO {table.list[2]} ({achievement_Columns[0]}) VALUES ({clientlicensenumber})";
         insert_SqlCmd.CommandText = insertCreatePlayerData_Command;
         insert_SqlCmd.ExecuteNonQuery();
 
@@ -229,19 +245,19 @@ public class DBManager : MonoBehaviour
             else if (i == 1) achievement_valuepart = 1;
             else achievement_valuepart = 0;
 
-            updatePlayerData_Command = $"UPDATE {achievement_TableName} SET {achievement_Columns[i]} = {achievement_valuepart}";
+            updatePlayerData_Command = $"UPDATE {table.list[2]} SET {achievement_Columns[i]} = {achievement_valuepart}";
             update_SqlCmd.CommandText = updatePlayerData_Command;
             update_SqlCmd.ExecuteNonQuery();
         }
         Debug.Log("[DB] achievement table complete!");
 
         // pet table
-        string pet_TableName = "pet";
-        string[] pet_Columns = { "User_LicenseNumber", "User_Charactor", "White" };
+        //string pet_TableName = "pet";
+        //string[] pet_Columns = { "User_LicenseNumber", "User_Charactor", "White" };
         int pet_valuepart;
 
         // insert row
-        insertCreatePlayerData_Command = $"INSERT INTO {pet_TableName} ({pet_Columns[0]}) VALUES ({clientlicensenumber})";
+        insertCreatePlayerData_Command = $"INSERT INTO {table.list[3]} ({pet_Columns[0]}) VALUES ({clientlicensenumber})";
         insert_SqlCmd.CommandText = insertCreatePlayerData_Command;
         insert_SqlCmd.ExecuteNonQuery();
 
@@ -251,7 +267,7 @@ public class DBManager : MonoBehaviour
             else if (i == 1) pet_valuepart = 1;
             else pet_valuepart = 0;
 
-            updatePlayerData_Command = $"UPDATE {pet_TableName} SET {pet_Columns[i]} = {pet_valuepart}";
+            updatePlayerData_Command = $"UPDATE {table.list[3]} SET {pet_Columns[i]} = {pet_valuepart}";
             update_SqlCmd.CommandText = updatePlayerData_Command;
             update_SqlCmd.ExecuteNonQuery();
         }
@@ -264,7 +280,7 @@ public class DBManager : MonoBehaviour
         int[] levels = { 1, 2, 3 };
         int[] steps = { 1, 2, 3, 4, 5, 6 };
 
-        string[] game_Columns = { "User_LicenseNumber", "User_Charactor", "ReactionRate", "AnswerCount", "AnswerRate", "Playtime", "TotalScore", "StarPoint" };
+        //string[] game_Columns = { "User_LicenseNumber", "User_Charactor", "ReactionRate", "AnswerCount", "AnswerRate", "Playtime", "TotalScore", "StarPoint" };
 
         int user_Charactor = 1;
 
@@ -414,7 +430,6 @@ public class DBManager : MonoBehaviour
         string table_Name = $"{gameName}_level{dataList[1]}_step{dataList[2]}";
         if(gameName == "venezia_chn") table_Name = $"{gameName}_level_step{dataList[2]}";
 
-        string[] columns_Name = { "User_LicenseNumber", "User_Charactor", "ReactionRate", "AnswerCount", "AnswerRate", "Playtime", "TotalScore", "StarPoint"};
         // gametable에 저장된 totalscore 가져와서 비교 (한 게임의 최고점수)
         int gameresult_Score = Int32.Parse(dataList[9]);
         int db_Score = 0;
@@ -423,14 +438,14 @@ public class DBManager : MonoBehaviour
         int starPoint = 0;
 
         // DB 조회
-        string selectGameTable_Command = $"SELECT ({columns_Name[0]}, {columns_Name[1]}, {columns_Name[6]}) FROM {table_Name}";
+        string selectGameTable_Command = $"SELECT ({game_Columns[0]}, {game_Columns[1]}, {game_Columns[6]}) FROM {table_Name}";
         MySqlCommand select_SqlCmd = new MySqlCommand(selectGameTable_Command, connection);
         MySqlDataReader reader = select_SqlCmd.ExecuteReader();
         
         // DB에 있는 licensenumber와 charactor가 저장하려는 데이터의 licensenumber와 charactor가 같다면 (해당 행에 있는 값 가져옴)
         if(reader.GetInt32(0) == Int32.Parse(dataList[3]) && reader.GetInt32(1) == Int32.Parse(dataList[4]))
         {
-            db_Score = reader.GetInt32(columns_Name[6]);
+            db_Score = reader.GetInt32(game_Columns[6]);
         }
         reader.Close();
 
@@ -459,7 +474,7 @@ public class DBManager : MonoBehaviour
         Tuple<string, int>[] columns_Tuple = new Tuple<string, int>[8];
         for(int i = 0; i < columns_Tuple.Length; i++)
         {
-            columns_Tuple[i] = new Tuple<string, int>(columns_Name[i], Int32.Parse(dataList[i+3]));
+            columns_Tuple[i] = new Tuple<string, int>(game_Columns[i], Int32.Parse(dataList[i+3]));
         }
 
         // 게임테이블에 values update
@@ -477,7 +492,6 @@ public class DBManager : MonoBehaviour
     {
         Debug.Log($"[DB] Updating... rank table, licensenumber : {licensenumber}, characator : {charactor}");
         string rankTable = "rank";
-        string[] columns = { "User_LicenseNumber", "User_Charactor", "TotalTime", "TotalScore"};
         int totalTime = 0;
         int totalScore = 0;
 
@@ -485,32 +499,124 @@ public class DBManager : MonoBehaviour
         MySqlCommand select_SqlCmd = new MySqlCommand(selectRankData_Command, connection);
         MySqlDataReader reader = select_SqlCmd.ExecuteReader();
 
-        if((reader.GetInt32(columns[0]) == licensenumber) && (reader.GetInt32(columns[1]) == charactor))
+        if((reader.GetInt32(rank_Columns[0]) == licensenumber) && (reader.GetInt32(rank_Columns[1]) == charactor))
         {
-            totalTime = reader.GetInt32(columns[3]);
-            totalScore = reader.GetInt32(columns[4]);
+            totalTime = reader.GetInt32(rank_Columns[3]);
+            totalScore = reader.GetInt32(rank_Columns[4]);
         }
         reader.Close();
 
         totalTime += time;
         totalScore += score;
 
-        string updateRankData_Command = $"UPDATE {rankTable} SET {columns[3]} = {totalTime} WHERE {columns[0]} = {licensenumber} AND {columns[1]} = {charactor}";
+        string updateRankData_Command = $"UPDATE {rankTable} SET {rank_Columns[3]} = {totalTime} WHERE {rank_Columns[0]} = {licensenumber} AND {rank_Columns[1]} = {charactor}";
         MySqlCommand update_SqlCmd = new MySqlCommand(updateRankData_Command, connection);
         update_SqlCmd.ExecuteNonQuery();
-        update_SqlCmd.CommandText = $"UPDATE {rankTable} SET {columns[4]} = {totalScore} WHERE {columns[0]} = {licensenumber} AND {columns[1]} = {charactor}";
+        update_SqlCmd.CommandText = $"UPDATE {rankTable} SET {rank_Columns[4]} = {totalScore} WHERE {rank_Columns[0]} = {licensenumber} AND {rank_Columns[1]} = {charactor}";
         update_SqlCmd.ExecuteNonQuery();
-
-        //UPDATE `test`.`rank` SET `TotalTime`= '5' WHERE  `User_LicenseNumber`= 2000 AND `User_Charactor`= 1 AND `TotalTime`= 1 AND `TotalScore`= 1 LIMIT 1;
-        //updatePlayerData_Command = $"UPDATE {achievement_TableName} SET {achievement_Columns[i]} = {achievement_valuepart}";
-        //update_SqlCmd.CommandText = updatePlayerData_Command;
-        //update_SqlCmd.ExecuteNonQuery();
     }
 
     // 하루가 지났을 때 presentDB gamedata -> 요일DB 생성하고 gamedata 저장
-    public void CreateDaysDB()
+    public void CreateDaysExGameDataDB()
     {
+        Debug.Log("[DB] CreateDaysExGameDataDB");
+
+        // 생성할 DB 이름
+        string DBName = $"{DateTime.Now.Year}.{DateTime.Now.Month}.{DateTime.Now.Day}";
+        Debug.Log($"DBName : {DBName}");
+        // 게임 테이블 명, TableName은 생성되면 알아서 테이블들이 담김. 게임을 제외한 나머지 테이블 제거
+        TableName gameTable = new TableName();
+        string[] deleteTable = { "user_info", "rank", "achievement", "pet"};
+        for(int i =0; i < deleteTable.Length; i++)
+        {
+            gameTable.list.Remove(deleteTable[i]);
+        }
+
+        // DB생성 명령문
+        string createDB_Command = $"CREATE DATABASE IF NOT EXISTS `{DBName}`;";
+        // DB사용 명령문
+        string useDB_Command = $"USE `{DBName}`;";
+
+        // DB생성
+        MySqlCommand createDB_SqlCmd = new MySqlCommand(createDB_Command, connection);
+        createDB_SqlCmd.ExecuteNonQuery();
+
+        // DB사용
+        MySqlCommand useDB_SqlCmd = new MySqlCommand(useDB_Command, connection);
+        useDB_SqlCmd.ExecuteNonQuery();
+
+        // Table생성 명령문
+        // 한 테이블당 생성하고 컬럼들 생성
+        for(int i = 0; i < gameTable.list.Count; i++)
+        {
+            string createTable_Command = $"CREATE TABLE IF NOT EXISTS {gameTable.list[i]} (";
+            for(int j = 0; j < game_Columns.Length; j++)
+            {
+                createTable_Command += $"{game_Columns[j]} int(11) DEFAULT NULL,";
+            }
+            createTable_Command = createTable_Command.TrimEnd(','); // 마지막 쉼표 제거
+            createTable_Command += $") ENGINE = InnoDB DEFAULT CHARSET = latin1 COLLATE = latin1_swedish_ci;";
+            //ENGINE = InnoDB DEFAULT CHARSET = latin1 COLLATE = latin1_swedish_ci;
+
+            // Table 생성
+            MySqlCommand createTable_SqlCmd = new MySqlCommand(createTable_Command, connection);
+            createTable_SqlCmd.ExecuteNonQuery();
+        }
+
+        // PresentDB 사용
+        useDB_SqlCmd.CommandText = $"USE `PresentDB`";
+        useDB_SqlCmd.ExecuteNonQuery();
+
+        // PresentDB에 있는 gamedata들 불러오기
+        for(int i=0; i<gameTable.list.Count; i++)
+        {
+            string select_Command = $"SELECT * FROM {gameTable.list[i]}";
+            MySqlCommand select_SqlCmd = new MySqlCommand(select_Command, connection);
+            MySqlDataReader reader = select_SqlCmd.ExecuteReader();
+
+            // PresentDB에 있는 row를 받기위한 List
+            List<int[]> values = new List<int[]>();
+
+            while(reader.Read())
+            {
+                int[] rows = new int[reader.FieldCount];
+                //todo List<int>
+                Debug.Log($"[DB] CreateDaysExGameDataDB, rows count : {rows.Length}");
+                for(int j = 0; j< rows.Length; j++)
+                {
+                    int[] columns = new int[game_Columns.Length];
+                    for (int k = 0; k < game_Columns.Length; k++)
+                    {
+                        columns[k] = reader.GetInt32(game_Columns[k]);
+                    }
+                }
+
+                
+            }
+        }
+
+
+        /*
         
+        네, 맞습니다. CREATE DATABASE와 CREATE TABLE은 각각의 명령문이므로, 한꺼번에 넘겨주어서는 안 됩니다. 
+        MariaDB나 MySQL과 같은 데이터베이스 시스템에서는 각각의 명령문을 구분하여 실행해야 합니다.
+        따라서 CREATE DATABASE와 USE 그리고 CREATE TABLE 등 여러 개의 SQL 명령문을 하나의 문자열로 합쳐서 실행하면 문법 오류가 발생할 수 있습니다. 
+         */
+        /*
+         CREATE DATABASE IF NOT EXISTS `test` /*!40100 DEFAULT CHARACTER SET latin1 COLLATE latin1_swedish_ci
+        USE `test`;
+
+        CREATE TABLE IF NOT EXISTS `calculation_level1_step1` (
+          `User_LicenseNumber` int(11) DEFAULT NULL,
+          `User_Charactor` int(11) DEFAULT NULL,
+          `ReactionRate` int(11) DEFAULT NULL,
+          `AnswerCount` int(11) DEFAULT NULL,
+          `AnswerRate` int(11) DEFAULT NULL,
+          `Playtime` int(11) DEFAULT NULL,
+          `TotalScore` int(11) DEFAULT NULL,
+          `StarPoint` int(11) DEFAULT NULL
+        ) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci; */
+
     }
 
 }
