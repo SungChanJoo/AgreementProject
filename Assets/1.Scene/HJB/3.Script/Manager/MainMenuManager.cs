@@ -14,11 +14,16 @@ public class MainMenuManager : MonoBehaviour
     [SerializeField] private GameObject ProfileCanvas;
     [SerializeField] private GameObject StepCanvas;
 
-    public void SceneGame_1()
+    public Game_Type game_Type;
+    
+    public void GameScene()
     {
-        SceneManager.LoadScene("HJB_ElementaryArithmeticGame");
+        SceneManager.LoadScene((int)game_Type+2);
     }
-
+    public void GameType_Btn(int Type)
+    {
+        game_Type = (Game_Type)Type;
+    }
     //Application 종료 버튼
     public void Exit_Btn()
     {
@@ -48,7 +53,7 @@ public class MainMenuManager : MonoBehaviour
     public void SelectStep(int step)
     {
         StepManager.Instance.SelectStep(step);
-        SceneGame_1();
+        GameScene();
     }
     public void SelectTime(int time)
     {

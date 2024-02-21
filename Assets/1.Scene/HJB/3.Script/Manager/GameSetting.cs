@@ -35,7 +35,10 @@ public abstract class GameSetting : MonoBehaviour
     public Result_Printer result_Printer;
 
     [SerializeField] GameObject resultCanvas_UI;
-
+    private void Awake()
+    {
+        
+    }
     private void Start()
     {
         startSet();
@@ -47,10 +50,12 @@ public abstract class GameSetting : MonoBehaviour
         game_Type = (Game_Type)SceneManager.GetActiveScene().buildIndex-2;
         step = StepManager.Instance.CurrentStep;
         level = StepManager.Instance.CurrentLevel;
+        print(step);
         timeSet = StepManager.Instance.CurrentTime;
+        print("1");
         TimeSlider.Instance.startTime = timeSet;
+        print("2");
         TimeSlider.Instance.duration = timeSet;
-
         //로직에 의한 시작
         SplitLevelAndStep();
     }
