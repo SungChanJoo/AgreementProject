@@ -3553,12 +3553,8 @@ MonoBehaviour:
   server_IP: 127.0.0.1
   server_Port: 2421
   licensePath: 
+  clientCharactor: 
   playerdata_FromServer: []
-  testGameName: venezia_chn
-  testLevel: 0
-  testStep: 1
-  testScore: 10
-  testTime: 20
 --- !u!4 &1823038814
 Transform:
   m_ObjectHideFlags: 0

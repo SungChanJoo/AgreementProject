@@ -72,7 +72,15 @@ public class ObjectPooling : MonoBehaviour
             cubePool.Remove(cubePool[Randnum]);
             yield return new WaitForSeconds(cool); //난이도에 따라 재생되는 시간을 바꿀것
         }
+
     }
+
+    public IEnumerator ReStartCube_Co()
+    {
+        yield return new WaitForSeconds(cool);
+        StartCoroutine(Cube_Co());
+    }
+
 
     public IEnumerator Meteor_Co()
     {

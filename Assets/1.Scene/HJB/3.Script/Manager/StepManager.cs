@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public enum Level
 {
@@ -72,6 +73,14 @@ public class StepManager : MonoBehaviour
     public void SelectTimeSet(int time)
     {
         CurrentTime = time;
+    }
+
+    public void NextStep()
+    {
+        //현재 Step에서 다음 Step으로 변경 후 씬 로드        
+        SelectStep(CurrentStep + 1);
+        
+        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
     }
 
 
