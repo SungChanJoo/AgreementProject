@@ -39,13 +39,17 @@ public class VeneziaManager : MonoBehaviour
 
     int randomIndex;
 
-    public int QuestCount; // 1분 5개 3분 7개 5분 10개 <
-    public int RemainAnswer;
-    public int CorrectAnswerCount;
-    public int LifeTime;
+    public int QuestCount;  // 딕셔너리에 들어갈 퀘스트 갯수
+    public int RemainAnswer; // 게임 진행중 남은 정답 갯수
+    public int CorrectAnswerCount; // 맞춘 정답 갯수
+    public int LifeTime; // 게임 진행 시간
 
+    //반응속도 측정 시간
     float trueReactionTime;
     float totalReactionTime;
+
+    //최종 반응속도 저장 변수
+    float ReactionTime;
 
     //한국어 관련 문제 데이터 저장
     public Dictionary<string, QuestData> QuestKorean = new Dictionary<string, QuestData>();
@@ -93,6 +97,10 @@ public class VeneziaManager : MonoBehaviour
         //  GameStop();
         Click_Obj();
         print("베네치아매니저" + isGameover);
+        if(TimeSlider.Instance.startTime == 0)
+        {
+            GameOver();
+        }
     }
     //오브젝트 클릭시 입력처리
     //Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Began > 터치입력
@@ -122,8 +130,7 @@ public class VeneziaManager : MonoBehaviour
                     }
                     if(RemainAnswer == 0) // 정답을 모두 맞췄을때 게임 종료
                     {
-                       isGameover = true; //이때 남은시간 받아오면 됨.
-                        print(trueReactionTime / CorrectAnswerCount);
+                        GameOver();
                     }
                     
                     ObjectPooling.Instance.cubePool.Add(hit.collider.gameObject);
@@ -289,9 +296,10 @@ public class VeneziaManager : MonoBehaviour
         return selectedQuest;       
     }
 
-    private void GetDictionaryRange()
+    private void GameOver()
     {
-
+        isGameover = true;
+        ReactionTime = trueReactionTime / CorrectAnswerCount;
     }
 
     private void Set_QuestCount()
