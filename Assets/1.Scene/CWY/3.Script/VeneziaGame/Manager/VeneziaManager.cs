@@ -17,7 +17,7 @@ public class QuestData
 }
 
 
-public class VeneziaManager : MonoBehaviour
+public class VeneziaManager : GameSetting
 {
     public static VeneziaManager Instance = null;
     //전반적인 배네치아 게임을 관리하기 위한 스크립트
@@ -61,8 +61,7 @@ public class VeneziaManager : MonoBehaviour
     {
         if(Instance == null)
         {
-            Instance = this;
-            DontDestroyOnLoad(gameObject);
+            Instance = this;            
         }
         else
         {
@@ -70,6 +69,11 @@ public class VeneziaManager : MonoBehaviour
             return;
         }
 
+     
+    }    
+    
+    private void StartSet()
+    {
         for (int i = 0; i < sprites_KE.Length; i++)
         {
             string key = KorWord[i];
@@ -81,25 +85,22 @@ public class VeneziaManager : MonoBehaviour
         gameover.SetActive(false);
 
         Set_QuestCount();
-        RemainAnswer = QuestCount;
-    }
 
-    private void Start()
-    {
+        RemainAnswer = QuestCount;
         totalReactionTime = 0;
         trueReactionTime = 0;
         CorrectAnswerCount = 0;
         DisplayRandomQuest();
+        //시간 시작 
+        StartTime();
     }
-
     private void Update()
     {
         //  GameStop();
-        Click_Obj();
-        print("베네치아매니저" + isGameover);
+        Click_Obj();        
         if(TimeSlider.Instance.startTime == 0)
-        {
-            GameOver();
+        {                
+            GameOver();            
         }
     }
     //오브젝트 클릭시 입력처리
@@ -126,7 +127,7 @@ public class VeneziaManager : MonoBehaviour
                         CorrectAnswerCount++;
                         trueReactionTime += totalReactionTime;
                         totalReactionTime = 0;
-                        DisplayRandomQuest();
+                        NextQuest();
                     }
                     if(RemainAnswer == 0) // 정답을 모두 맞췄을때 게임 종료
                     {
@@ -187,88 +188,98 @@ public class VeneziaManager : MonoBehaviour
         TimeSlider.Instance.isStop = false;
         Time.timeScale = 1;
     }
+    private void StartTime()
+    {
+        TimeSlider.Instance.StartTime();
+        TimeSlider.Instance.TimeStop = false;
 
+    }
+    protected override void Level_1(int step)
+    {
+        StartSet();        
+        switch (step)
+        {
+            case 1:
+                NextQuest();
+                break;
+            case 2:
+                break;
+            case 3:
+                break;
+            case 4:
+                break;
+            case 5:
+                break;
+            case 6:
+                break;
+            default:
+                break;
+        }
+    }
+    protected override void Level_2(int step)
+    {
+        switch (Step)
+        {
+            case 1:
+
+                break;
+            case 2:
+                break;
+            case 3:
+                break;
+            case 4:
+                break;
+            case 5:
+                break;
+            case 6:
+                break;
+            default:
+                break;
+        }
+    }
+    protected override void Level_3(int step)
+    {
+        switch (Step)
+        {
+            case 1:
+
+                break;
+            case 2:
+                break;
+            case 3:
+                break;
+            case 4:
+                break;
+            case 5:
+                break;
+            case 6:
+                break;
+            default:
+                break;
+        }
+    }
+
+    
     public void DisplayRandomQuest()
     {
         if(QuestCount == 0)
         {
+
             Time.timeScale = 0;
-            ObjectPooling.Instance.StopAllCoroutines();
-            gameover.SetActive(true);
+            ObjectPooling.Instance.StopAllCoroutines();            
+
+
+            
             return;
-        }
-        else
-        {
-            switch (Level)
-            {
-                case 1:
-  
-                    switch (Step)
-                    {
-                        case 1:
-                            QuestData randomQuest = GetRandomQuest_Kr();
-                            Quest_Img.sprite = randomQuest.sprite;
-                            Quest_text.text = randomQuest.description;
-                            break;
-                        case 2:
-                            break;
-                        case 3:
-                            break;
-                        case 4:
-                            break;
-                        case 5:
-                            break;
-                        case 6:
-                            break;
-                        default:
-                            break;
-                    }
-                    break;
-                case 2:
-                    switch (Step)
-                    {
-                        case 1:
+        }        
 
-                            break;
-                        case 2:
-                            break;
-                        case 3:
-                            break;
-                        case 4:
-                            break;
-                        case 5:
-                            break;
-                        case 6:
-                            break;
-                        default:
-                            break;
-                    }
-                    break;
-                case 3:
-                    switch (Step)
-                    {
-                        case 1:
+    }
 
-                            break;
-                        case 2:
-                            break;
-                        case 3:
-                            break;
-                        case 4:
-                            break;
-                        case 5:
-                            break;
-                        case 6:
-                            break;
-                        default:
-                            break;
-                    }
-                    break;
-                default:
-                    break;
-            }
-        }
-
+    public void NextQuest()
+    {
+        QuestData randomQuest = GetRandomQuest_Kr();
+        Quest_Img.sprite = randomQuest.sprite;
+        Quest_text.text = randomQuest.description;
     }
 
     private QuestData GetRandomQuest_Kr()
@@ -300,11 +311,17 @@ public class VeneziaManager : MonoBehaviour
     {
         isGameover = true;
         ReactionTime = trueReactionTime / CorrectAnswerCount;
+        //반응속도 할당
+        reactionRate = ReactionTime;
+        //정답률 계산
+        AnswerRate();
+        //결과표 출력
+        EndGame();
     }
 
     private void Set_QuestCount()
     {
-        switch (LifeTime)
+        switch (timeSet)
         {
             case 60:
                 QuestCount = 2;
@@ -318,5 +335,11 @@ public class VeneziaManager : MonoBehaviour
             default:
                 break;
         }
+        totalQuestions = QuestCount;
+        Debug.Log(totalQuestions);
+    }
+    private void AnswerRate()
+    {
+        answers = totalQuestions * 100 / CorrectAnswerCount;
     }
 }
