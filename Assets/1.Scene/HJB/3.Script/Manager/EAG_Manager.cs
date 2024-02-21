@@ -21,7 +21,7 @@ public class EAG_Manager : GameSetting
     public int firstNum;
     public int secondNum;
     public int result;
-    public char _Operator;    
+    public char _Operator;
 
     public void Show_Result(float result)
     {
@@ -175,8 +175,6 @@ public class EAG_Manager : GameSetting
         }        
         
     }    
-    public void ExitGame()
-    {
-        SceneManager.LoadScene("HJB_MainMenu");
-    }
+
+    
 }

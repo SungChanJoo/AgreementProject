@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 public enum Game_Type
 {
@@ -13,19 +14,21 @@ public enum Game_Type
 }
 public abstract class GameSetting : MonoBehaviour
 {
-    public Game_Type game_Type;
+    [HideInInspector] public Game_Type game_Type;
 
-    public int level;
-    public int step;
-    public int timeSet;
+    [HideInInspector] public int level;
+    [HideInInspector] public int step;
+    [HideInInspector] public int timeSet;
 
-    public float reactionRate;
-    public int answersCount;
-    public int answers;
-    public float playTime;
-    public int totalQuestions;
-    public int totalScore;
-    public float remainingTime;
+    [HideInInspector] public float reactionRate;
+    [HideInInspector] public int answersCount;
+    [HideInInspector] public int answers;
+    [HideInInspector] public float playTime;
+    [HideInInspector] public int totalQuestions;
+    [HideInInspector] public int totalScore;
+    [HideInInspector] public float remainingTime;
+
+    [SerializeField] private GameObject nextStep_Btn;
 
     public Result_Data result_data;
 
@@ -89,8 +92,15 @@ public abstract class GameSetting : MonoBehaviour
 
     public void EndGame()
     {
+        //시간 정지
+        TimeSlider.Instance.TimeSliderControll();
         //결과창 UI 활성화
         ResultCanvas_UI();
+        //현재 마지막 Step이면 버튼 비활성화
+        if (step == 6)
+        {
+            nextStep_Btn.SetActive(false);
+        }
         //남은시간
         remainingTime = TimeSlider.Instance.startTime;
         playTime = TimeSlider.Instance.duration - remainingTime;
@@ -144,7 +154,7 @@ public abstract class GameSetting : MonoBehaviour
         //난이도 계수
         float n = 1f + level * step / 10f;
         totalScore =
-            (answersCount * t + 1) + (int)(n*answers / 100f) * (1 + y * x);
+            (int)((answersCount * t + 1) + (n*answers / 100f) * (1 + y * x));
         
         //총 점수 십의자리수 날리기
         totalScore = (int)(totalScore / 100f) * 100;
@@ -153,7 +163,7 @@ public abstract class GameSetting : MonoBehaviour
 
     private void UpdateDatabaseFromData()
     {
-        Result_DB result_DB = new Result_DB(level,step,"");
+        Result_DB result_DB = new Result_DB(level,step,"23-02-21");
         Data_value data_Value = new Data_value(reactionRate, answersCount, answers, playTime, totalScore);
         //Reult_DB가 Null일 때 처리
         if (!result_DB.Data.ContainsKey((game_Type,level,step)))
@@ -168,6 +178,22 @@ public abstract class GameSetting : MonoBehaviour
                 result_DB.Data[(game_Type, level, step)] = data_Value;
             }
         }
+    }
+    public void Setting_UI()
+    {        
+        SettingManager.Instance.Setting_Btn();
+    }
+    public void RestartGame()
+    {
+        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+    }
+    public void NextStep_Btn()
+    {        
+        StepManager.Instance.NextStep();
+    }
+    public void ExitGame()
+    {
+        SceneManager.LoadScene("HJB_MainMenu");
     }
 
 }
