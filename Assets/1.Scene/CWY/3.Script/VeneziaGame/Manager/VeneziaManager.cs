@@ -35,7 +35,8 @@ public class VeneziaManager : GameSetting
     [SerializeField] private TextMeshProUGUI Quest_text;
     //한글 및 영어 문제에 사용 할 이미지 sprite 한글과 영어는 공용으로 사용하고 , 한자는 따로 
     [SerializeField] private Sprite[] sprites_KE;    // 1번부터 ~ 5번까지는 step1 ,  step 2는 
-    private string[] KorWord = { "곰" , "닭", "학", "하마", "말"};
+    private string[] KorWord = { "학" , "말", "닭", "곰", "하마", "표범", "팬더",
+            "타조", "쿼카", "치타", "참새", "제비", "젖소", "염소", "여우", "악어", "사자", "사슴", "돼지", "기린"};
 
     int randomIndex;
 
@@ -288,10 +289,35 @@ public class VeneziaManager : GameSetting
 
     private QuestData GetRandomQuest_Kr()
     {
+        //QuestKorean.Count
         QuestData[] questArray = new QuestData[QuestKorean.Count];
         QuestKorean.Values.CopyTo(questArray, 0);
+        /*switch (step)
+        {
+            case 1:
+                randomIndex = Random.Range(0, QuestCount);
+                break;
+            case 2:
+                randomIndex = Random.Range(0, QuestCount);
+                break;
+            case 3:
+                randomIndex = Random.Range(0, QuestCount);
+                break;
+            case 4:
+                randomIndex = Random.Range(0, QuestCount);
+                break;
+            case 5:
+                randomIndex = Random.Range(0, QuestCount);
+                break;
+            case 6:
+                randomIndex = Random.Range(0, QuestCount);
+                break;
+            default:
+                break;
+        }*/
         // 랜덤한 인덱스 선택
-        randomIndex = Random.Range(0, QuestCount);
+
+        
         QuestCount--;
         if(questArray.Length == 0)
         {
@@ -330,13 +356,13 @@ public class VeneziaManager : GameSetting
         switch (timeSet)
         {
             case 60:
-                QuestCount = 2;
+                QuestCount = 5;
                 break;
             case 180:
-                QuestCount = 3; // 예시 값
+                QuestCount = 7; // 예시 값
                 break;
             case 300:
-                QuestCount = 5; // 예시 값
+                QuestCount = 10; // 예시 값
                 break;
             default:
                 break;
