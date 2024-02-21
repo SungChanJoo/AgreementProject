@@ -75,7 +75,7 @@ public class DBManager : MonoBehaviour
     private void SetStringConnection()
     {
         string ip = "127.0.0.1"; // 우선 로컬(127.0.0.1)로, aws EC2 IP : 15.165.159.141
-        string db = "test";
+        string db = "present";
         string uid = "root"; //string.IsNullOrEmpty(user_Info.user_Name)? "" : user_Info.user_Name;
         string pw = "12345678"; //string.IsNullOrEmpty(user_Info.user_Password)? "" : user_Info.user_Password;
         string port = "3306";
@@ -260,7 +260,7 @@ public class DBManager : MonoBehaviour
         // game table
         string game_TableName;
 
-        string[] game_Names = { "calculation", "venezia_chn" };
+        string[] game_Names = { "venezia_kor", "venezia_eng", "venezia_chn", "calculation", "gugudan"};
         int[] levels = { 1, 2, 3 };
         int[] steps = { 1, 2, 3, 4, 5, 6 };
 
@@ -505,6 +505,12 @@ public class DBManager : MonoBehaviour
         //updatePlayerData_Command = $"UPDATE {achievement_TableName} SET {achievement_Columns[i]} = {achievement_valuepart}";
         //update_SqlCmd.CommandText = updatePlayerData_Command;
         //update_SqlCmd.ExecuteNonQuery();
+    }
+
+    // 하루가 지났을 때 presentDB gamedata -> 요일DB 생성하고 gamedata 저장
+    public void CreateDaysDB()
+    {
+        
     }
 
 }

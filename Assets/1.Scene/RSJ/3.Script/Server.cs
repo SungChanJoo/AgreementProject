@@ -42,6 +42,7 @@ public class Server : MonoBehaviour
     {
         if (!isServerStarted) return;
         //Debug.Log("Client가 들어오지 않으면 실행이 되지 않을것");
+        //DayTimer();
         if (clients.Count == 0) return;
 
         CheckClientsState();
@@ -113,6 +114,8 @@ public class Server : MonoBehaviour
             {
                 Debug.Log($"[Server] Connected Clients's IP : {((IPEndPoint)client.Client.RemoteEndPoint).Address}");
             }
+
+            DayTimer();
 
             debugTimer = 0f;
         }
@@ -219,7 +222,7 @@ public class Server : MonoBehaviour
                 Debug.Log($"[Server] Creating... new PlayerData");
                 DBManager.instance.CreateNewPlayerData(clientLicenseNumber); // 새 플레이어 정보 생성
                 Debug.Log($"[Server] Finish Create LicenseNumber and new PlayerData");
-                replyRequestMessage = clientdata;
+                replyRequestMessage =  "[Create]LicenseNumber|" + clientdata;
                 break;
             case "[Create]Charactor":
                 break;
@@ -268,6 +271,41 @@ public class Server : MonoBehaviour
         Debug.Log("[Server] End reply massive request message to client");
     }
 
+    // 하루가 지났을 때 PresentDB에 있는 gamedata들 새 DB(ex) 24-02-21)에 저장
+    private void DayTimer()
+    {
+        // 현재 시간
+        DateTime currentTime = DateTime.Now;
+        // 초기화가 되는 시간 (23시 59분 55초)
+        DateTime criterionTime = new DateTime(currentTime.Year, currentTime.Month, currentTime.Day, 11, 50, 55);
+
+        // TimeSpan, 현재시간과 초기화시간 차이
+        TimeSpan timeDiff = criterionTime - currentTime;
+
+        // uint 양수만 사용
+        uint diffHours = (uint)(timeDiff.Hours >= 0? timeDiff.Hours : 0);
+        uint diffMinutes = (uint)(timeDiff.Minutes >= 0? timeDiff.Minutes : 0);
+        uint diffSeconds = (uint)(timeDiff.Seconds >= 0? timeDiff.Seconds : 0);
+
+        // 현재 시간이 초기화 되는 시간보다 크다면, timeDiff가 음수가 아니고, 0이 아니면
+        if (diffHours == 0 && diffMinutes == 0 && diffSeconds > 0 && diffSeconds <= 5)
+        {
+            // 새 DB 생성 및 저장 / presentDB gamedata초기화
+            Debug.Log("[Server] A day has passed. Create new DB for save data and Reset presentDB some datas");
+
+        }
+
+        Debug.Log($"[Server] currenTime = {currentTime}");
+        Debug.Log($"[Server] criterionTime = {criterionTime}");
+        Debug.Log($"[Server] timeDiff = {timeDiff}");
+
+    }
+
+    // 일주일이 지났을 때 PresentDB에 있는 rankTable data들 새 DB(주간 랭킹 출력용)? or 어떤 DB에 저장
+    private void WeekTimer()
+    {
+
+    }
 
     private void SendMessageToClients(TcpClient client)
     {

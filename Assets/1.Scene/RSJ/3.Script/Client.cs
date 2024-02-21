@@ -30,7 +30,7 @@ public class Client : MonoBehaviour
     // login - license
     public static ClientLoginStatus loginStatus;
     public static string clientLicenseNumber;
-    public string licensePath = string.Empty;
+    public string licenseFolderPath = string.Empty;
     public string clientCharactor;
 
     // 서버로 부터 받은 data를 1차적으로 거른 List
@@ -105,14 +105,14 @@ public class Client : MonoBehaviour
         // 연결되지 않았다면 return
         if (!client.Connected) return;
 
-        licensePath = Application.dataPath + "/License";
+        licenseFolderPath = Application.dataPath + "/License";
+        string licenseFilePath = licenseFolderPath + "/clientlicense.json";
 
-        Debug.Log($"[Client] Directory.Exists(licensePath) value ? {Directory.Exists(licensePath)}");
+        Debug.Log($"[Client] Directory.Exists(licenseFolderPath) value ? {Directory.Exists(licenseFolderPath)}");
         // 경로에 파일이 존재하지 않는다면 라이센스넘버가 없다는것이고, 처음 접속한다는 뜻
-        if (!Directory.Exists(licensePath))
+        if (!File.Exists(licenseFilePath))
         {
             loginStatus = ClientLoginStatus.New;
-            Directory.CreateDirectory(licensePath);
             // 서버에서 라이센스 넘버를 받아와야함, 그러기 위해 서버에 요청 todo
             string requestName = "[Create]LicenseNumber";
             RequestToServer(requestName);
@@ -123,7 +123,7 @@ public class Client : MonoBehaviour
 
         loginStatus = ClientLoginStatus.Exist;
         // 해당 경로에 있는 파일을 읽어 클라이언트 라이센스 넘버를 불러옴
-        string jsonStringFromFile = File.ReadAllText(licensePath + "/clientlicense.json");
+        string jsonStringFromFile = File.ReadAllText(licenseFilePath);
         JsonData client_JsonFile = JsonMapper.ToObject(jsonStringFromFile);
         clientLicenseNumber = client_JsonFile["LicenseNumber"].ToString();
         clientCharactor = client_JsonFile["Charactor"].ToString();
@@ -296,7 +296,7 @@ public class Client : MonoBehaviour
         client_Json["Charactor"] = clientCharactor;
         // Json 데이터를 문자열로 변환하여 파일에 저장
         string jsonString = JsonMapper.ToJson(client_Json);
-        File.WriteAllText(licensePath + "/clientlicense.json", jsonString);
+        File.WriteAllText(licenseFolderPath + "/clientlicense.json", jsonString);
     }
 
     // Start DBTable 세팅
@@ -311,7 +311,7 @@ public class Client : MonoBehaviour
     }
 
     // 재백이가 만든 Result_Data를 매개변수로 받아서 DB에 저장하는 메서드(server에 요청 -> RequestServer)
-    public void SaveResultDataToDB(Result_DB resultdata)
+    public void SaveResultDataToDB(Result_DB resultdata, int level, int step, int day)
     {
         // requestData = RequestName[0]/User_Licensenumber[1]/User_Charactor[2]/ReactionRate[3]/.../StarPoint[8]
         string requestData;
@@ -350,6 +350,13 @@ public class Client : MonoBehaviour
         requestData = $"{requestName}|{values}";
 
         RequestToServer(requestData);
+    }
+
+    // 재백이가 사용할 PlayerData
+    public Result_DB LoadData()
+    {
+        Result_DB resultDB = new Result_DB(1,1,"2");
+        return resultDB;
     }
 
     // 서버로부터 받은 PlayerData를 게임에서 사용하는 Player Class에 설정
