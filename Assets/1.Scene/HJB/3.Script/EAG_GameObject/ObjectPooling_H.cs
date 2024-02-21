@@ -23,6 +23,9 @@ public class ObjectPooling_H : MonoBehaviour
     //Start 버튼 이벤트가 콜백되면 실행
     public void ObjectPooling()
     {
+        //시간 흐르게
+        TimeSlider.Instance.StartTime();
+        TimeSlider.Instance.TimeStop = false;
         //기본 값 초기화
         DataDefaultSetting();
         //문제 오브젝트의 갯수만큼 생성 및 Pool에 담기
