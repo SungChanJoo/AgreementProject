@@ -121,8 +121,6 @@ public interface ITimeSlider
         {
             time = Time.unscaledDeltaTime;
         }
-        Debug.Log(TimeStop);        
-
     }
     public void StartTime()
     {        
@@ -130,6 +128,7 @@ public interface ITimeSlider
     }
     public void TimeSliderControll()
     {
+        Debug.Log("실행");
         //시간 설정 변경을 위한 연산
         TimeStop = TimeStop.Equals(true) ? false : true;
         if (!TimeStop && timeSlider_co == null)

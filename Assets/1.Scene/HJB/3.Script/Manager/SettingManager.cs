@@ -73,7 +73,10 @@ public class SettingManager : MonoBehaviour
     //환경설정 UI Off
     public void Setting_Btn()
     {
-        TimeSlider.Instance.TimeSliderControll();
+        if (TimeSlider.Instance != null)
+        {
+            TimeSlider.Instance.TimeSliderControll();
+        }
         setting_Canvas.SetActive(!setting_Canvas.activeSelf);
     }
     public void MetaWorldSceneLoad_Btn()

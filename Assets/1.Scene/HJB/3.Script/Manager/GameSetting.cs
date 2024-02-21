@@ -180,7 +180,8 @@ public abstract class GameSetting : MonoBehaviour
         }
     }
     public void Setting_UI()
-    {        
+    {
+        
         SettingManager.Instance.Setting_Btn();
     }
     public void RestartGame()
