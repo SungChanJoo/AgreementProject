@@ -40,8 +40,13 @@ public class VeneziaManager : MonoBehaviour
     int randomIndex;
 
     public int QuestCount; // 1분 5개 3분 7개 5분 10개 <
-    public int CorrectAnswer;
+    public int RemainAnswer;
+    public int CorrectAnswerCount;
     public int LifeTime;
+
+    float trueReactionTime;
+    float totalReactionTime;
+
     //한국어 관련 문제 데이터 저장
     public Dictionary<string, QuestData> QuestKorean = new Dictionary<string, QuestData>();
     //영어 관련 문제 데이터 저장
@@ -72,11 +77,14 @@ public class VeneziaManager : MonoBehaviour
         gameover.SetActive(false);
 
         Set_QuestCount();
-        CorrectAnswer = QuestCount;
+        RemainAnswer = QuestCount;
     }
 
     private void Start()
     {
+        totalReactionTime = 0;
+        trueReactionTime = 0;
+        CorrectAnswerCount = 0;
         DisplayRandomQuest();
     }
 
@@ -90,6 +98,7 @@ public class VeneziaManager : MonoBehaviour
     //Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Began > 터치입력
     private void Click_Obj()
     {
+        totalReactionTime += Time.deltaTime; // 반응속도 측정
         if (Input.GetMouseButtonDown(0))
         {
             Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
@@ -105,12 +114,16 @@ public class VeneziaManager : MonoBehaviour
                     if(QuestCount > -1)
                     {
                         Score.Instance.Get_FirstScore();
-                        CorrectAnswer--;
+                        RemainAnswer--;
+                        CorrectAnswerCount++;
+                        trueReactionTime += totalReactionTime;
+                        totalReactionTime = 0;
                         DisplayRandomQuest();
                     }
-                    if(CorrectAnswer == 0) // 정답을 모두 맞췄을때 게임 종료
+                    if(RemainAnswer == 0) // 정답을 모두 맞췄을때 게임 종료
                     {
                        isGameover = true; //이때 남은시간 받아오면 됨.
+                        print(trueReactionTime / CorrectAnswerCount);
                     }
                     
                     ObjectPooling.Instance.cubePool.Add(hit.collider.gameObject);
@@ -121,6 +134,7 @@ public class VeneziaManager : MonoBehaviour
                     print("오답클릭!");
                     ObjectPooling.Instance.cubePool.Add(hit.collider.gameObject);
                     hit.collider.gameObject.SetActive(false);
+                    totalReactionTime = 0;
                     TimeSlider.Instance.DecreaseTime_Item(5);
                 }
                 else
@@ -298,4 +312,13 @@ public class VeneziaManager : MonoBehaviour
         }
     }
 
+    public void Reaction_speed()
+    {
+        totalReactionTime += Time.deltaTime;
+        if (isAnswerCorrect)
+        {
+            trueReactionTime += totalReactionTime;
+        }
+        totalReactionTime = 0;
+    }
 }

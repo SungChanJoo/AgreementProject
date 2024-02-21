@@ -484,7 +484,6 @@ public class GuGUDan_Fnc : MonoBehaviour
     {
         // 게임시간이 끝날 때 까지 정답을 몇개나 맞췄는지 반응속도 잴것.
         totalReactionTime += Time.deltaTime; // 코루틴XXXX
-       //   trueReactionTime = (isAnswerCorrect) ? (trueReactionTime += totalReactionTime) : (trueReactionTime += 0); // 정답을 맞춘 경우에는 시간을 더해줄것 아닌경우에는 0을더함(반응속도에 영향x)
         if (isAnswerCorrect)
         {
             trueReactionTime += totalReactionTime;
