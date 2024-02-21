@@ -482,9 +482,8 @@ public class GuGUDan_Fnc : MonoBehaviour
 
     public void Reaction_speed()
     {
-        // °ÔÀÓ½Ã°£ÀÌ ³¡³¯ ¶§ ±îÁö Á¤´äÀ» ¸î°³³ª ¸ÂÃè´ÂÁö ¹İÀÀ¼Óµµ Àê°Í.
-        totalReactionTime += Time.deltaTime; // ÄÚ·çÆ¾XXXX
-       //   trueReactionTime = (isAnswerCorrect) ? (trueReactionTime += totalReactionTime) : (trueReactionTime += 0); // Á¤´äÀ» ¸ÂÃá °æ¿ì¿¡´Â ½Ã°£À» ´õÇØÁÙ°Í ¾Æ´Ñ°æ¿ì¿¡´Â 0À»´õÇÔ(¹İÀÀ¼Óµµ¿¡ ¿µÇâx)
+        //Á¤´äÀ» ¸Â­ŸÀ» ¶§¿¡¸¸ 
+        totalReactionTime += Time.deltaTime;
         if (isAnswerCorrect)
         {
             trueReactionTime += totalReactionTime;

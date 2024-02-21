@@ -39,8 +39,12 @@ public class VeneziaManager : MonoBehaviour
 
     int randomIndex;
 
+    float trueReactionTime = 0f; //정답을 맞췄을때의 반응속도
+    float totalReactionTime = 0f;
+
     public int QuestCount; // 1분 5개 3분 7개 5분 10개 <
-    public int CorrectAnswer;
+    public int RemainAnswer; // 정답을 맞춰 다음 문제가 출제될때 판단하는 용도
+    public int CorrectAnswerCount = 0; // 정답을 맞춘 갯수
     public int LifeTime;
     //한국어 관련 문제 데이터 저장
     public Dictionary<string, QuestData> QuestKorean = new Dictionary<string, QuestData>();
@@ -72,7 +76,7 @@ public class VeneziaManager : MonoBehaviour
         gameover.SetActive(false);
 
         Set_QuestCount();
-        CorrectAnswer = QuestCount;
+        RemainAnswer = QuestCount;
     }
 
     private void Start()
@@ -87,10 +91,11 @@ public class VeneziaManager : MonoBehaviour
         print("베네치아매니저" + isGameover);
     }
     //오브젝트 클릭시 입력처리
-    //Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Began > 터치입력
+    // > 터치입력
     private void Click_Obj()
     {
-        if (Input.GetMouseButtonDown(0))
+        totalReactionTime += Time.deltaTime; // 반응속도 체크
+        if (Input.GetMouseButtonDown(0) || ( Input.touchCount > 0 && Input.touchCount < 11 && Input.GetTouch(0).phase == TouchPhase.Began))
         {
             Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
             RaycastHit hit;
@@ -102,26 +107,31 @@ public class VeneziaManager : MonoBehaviour
                 Cube Questprefab = hit.collider.gameObject.GetComponent<Cube>();
                 if(Questprefab != null && Questprefab.objectType == ObjectType.CorrectAnswer) // 큐브를 눌렀을때 Quest 인지 알아야함
                 {
-                    if(QuestCount > -1)
+                    if(QuestCount > -1) // 문제가 남아 있는 경우 정답 판정 및 반응속도 확인
                     {
                         Score.Instance.Get_FirstScore();
-                        CorrectAnswer--;
+                        trueReactionTime += totalReactionTime;
+                        totalReactionTime = 0;
+                        RemainAnswer--;
+                        CorrectAnswerCount++;
                         DisplayRandomQuest();
                     }
-                    if(CorrectAnswer == 0) // 정답을 모두 맞췄을때 게임 종료
+                    if(RemainAnswer == 0) // 정답을 모두 맞췄을때 게임 종료
                     {
                        isGameover = true; //이때 남은시간 받아오면 됨.
+                        print(trueReactionTime / CorrectAnswerCount);
                     }
                     
                     ObjectPooling.Instance.cubePool.Add(hit.collider.gameObject);
                     hit.collider.gameObject.SetActive(false);
                 }
-                else if (Questprefab != null && Questprefab.objectType != ObjectType.CorrectAnswer)
+                else if (Questprefab != null && Questprefab.objectType != ObjectType.CorrectAnswer) //오답을 클릭 했을 경우
                 {
                     print("오답클릭!");
                     ObjectPooling.Instance.cubePool.Add(hit.collider.gameObject);
                     hit.collider.gameObject.SetActive(false);
                     TimeSlider.Instance.DecreaseTime_Item(5);
+                    totalReactionTime = 0;
                 }
                 else
                 {
@@ -274,12 +284,6 @@ public class VeneziaManager : MonoBehaviour
         print("확인");
         return selectedQuest;       
     }
-
-    private void GetDictionaryRange()
-    {
-
-    }
-
     private void Set_QuestCount()
     {
         switch (LifeTime)
@@ -297,5 +301,7 @@ public class VeneziaManager : MonoBehaviour
                 break;
         }
     }
+
+    
 
 }
