@@ -49,12 +49,9 @@ public abstract class GameSetting : MonoBehaviour
         //선택한 레벨, 스텝, 시간 값 초기 설정
         game_Type = (Game_Type)SceneManager.GetActiveScene().buildIndex-2;
         step = StepManager.Instance.CurrentStep;
-        level = StepManager.Instance.CurrentLevel;
-        print(step);
-        timeSet = StepManager.Instance.CurrentTime;
-        print("1");
+        level = StepManager.Instance.CurrentLevel;        
+        timeSet = StepManager.Instance.CurrentTime;        
         TimeSlider.Instance.startTime = timeSet;
-        print("2");
         TimeSlider.Instance.duration = timeSet;
         //로직에 의한 시작
         SplitLevelAndStep();
