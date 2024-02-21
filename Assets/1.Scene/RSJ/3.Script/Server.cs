@@ -194,7 +194,7 @@ public class Server : MonoBehaviour
                 byte[] buffer = new byte[1024];
                 int bytesRead = await stream.ReadAsync(buffer, 0, buffer.Length); // 메세지 받을때까지 대기
                 string receivedRequestData = Encoding.UTF8.GetString(buffer, 0, bytesRead); // 데이터 변환
-                List<string> dataList = receivedRequestData.Split('|').ToList(); // 받은 data 분할해서 list에 담음
+                List<string> dataList = receivedRequestData.Split('|', StringSplitOptions.RemoveEmptyEntries).ToList(); // 받은 data 분할해서 list에 담음
                 string receivedRequestName = dataList[0]; // dataList[0]은 클라이언트가 요청한 주제, 게임 등의 이름
                 Debug.Log($"[Server] Received request name from client : {receivedRequestName}");
 

@@ -147,7 +147,7 @@ public class Client : MonoBehaviour
         {
             byte[] data = Encoding.UTF8.GetBytes(requestData);
             stream.Write(data, 0, data.Length); // 데이터를 보낼때 까지 대기? 그냥 보내면 되잖어
-            List<string> requestDataList = requestData.Split('|').ToList();
+            List<string> requestDataList = requestData.Split('|', StringSplitOptions.RemoveEmptyEntries).ToList();
             string requestName = requestDataList[0];
             Debug.Log($"[Client] Request to server : {requestData}");
 
@@ -342,7 +342,7 @@ public class Client : MonoBehaviour
                 break;
         }
 
-        Data_value datavalue = resultdata.Data[(resultdata.game_type, resultdata.Level, resultdata.Step)];
+        Data_value datavalue = resultdata.Data[(game_type, level, step)];
 
         requestName = $"[Save]{gameName}";
         values = $"{level}|{step}|{clientLicenseNumber}|{clientCharactor}|{datavalue.ReactionRate}|{datavalue.AnswersCount}|{datavalue.Answers}|{datavalue.PlayTime}|{datavalue.TotalScore}|";
@@ -362,6 +362,31 @@ public class Client : MonoBehaviour
     // 서버로부터 받은 PlayerData를 게임에서 사용하는 Player Class에 설정
     private void SetPlayer(User_Info user)
     {
+
+    }
+
+    public void OnClickSaveGameDataTest()
+    {
+        Game_Type game_Type = Game_Type.A;
+        int level = 1;
+        int step = 2;
+        Result_DB result_DB = new Result_DB(level, step, "23-02-21");
+        Data_value data_Value = new Data_value(234.21f, 23, 12, 22.44f, 18000);
+        //Reult_DB가 Null일 때 처리
+        if (!result_DB.Data.ContainsKey((game_Type, level, step)))
+        {
+            result_DB.Data.Add((game_Type, level, step), data_Value);
+        }
+        else
+        {
+            //만약 totalScore가 DB에 있는 점수보다 크다면 다시 할당
+            if (result_DB.Data[(game_Type, level, step)].TotalScore < 20000)
+            {
+                result_DB.Data[(game_Type, level, step)] = data_Value;
+            }
+        }
+
+        SaveResultDataToDB(result_DB, game_Type, level, step);
 
     }
 

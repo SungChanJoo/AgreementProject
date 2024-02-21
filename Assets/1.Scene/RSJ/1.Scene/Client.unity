@@ -1101,7 +1101,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 1823038813}
         m_TargetAssemblyTypeName: Client, Assembly-CSharp
-        m_MethodName: OnClickGameDataTest
+        m_MethodName: OnClickSaveGameDataTest
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -1662,7 +1662,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 1
     m_LineSpacing: 1
-  m_Text: GameResult
+  m_Text: SaveGameResult
 --- !u!222 &743334071
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -3550,7 +3550,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9f29fac38ef4dd5438c4b09831cf93c8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  server_IP: 15.165.159.141
+  server_IP: 127.0.0.1
   server_Port: 2421
   licenseFolderPath: 
   clientCharactor: 
