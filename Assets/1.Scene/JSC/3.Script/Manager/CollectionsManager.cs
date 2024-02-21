@@ -1,12 +1,12 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.SceneManagement;
 using TMPro;
 using UnityEngine.UI;
 using System;
-using kcp2k;
-
+using LitJson;
 public class Crew
 {
     public string CrewName { get; private set; }
@@ -47,14 +47,15 @@ public class CollectionsManager : MonoBehaviour
 
     [Header("ViewDetails")]
     public GameObject DetailWindow;
+    public TextAsset CrewDataList;
     public List<Crew> CrewInfo;
     public List<GameObject> CrewModel; 
     public TMP_Text CrewName;
     public TMP_Text CrewDescript;
-    public int seletedDetailModel;
-
-    private Quaternion _modelRotationY;
-    [SerializeField] private float _rotateSpeedModifier = 0.1f;
+    private int seletedDetailModel;
+    private GameObject ModelSpace;
+    public bool IsDrag = false;
+    [SerializeField] private float _rotateSpeedModifier = 1f;
     public Action OnCheckPurchasePossibility; //돈 갱신될때마다 호출
 
     private void Awake()
@@ -119,14 +120,14 @@ public class CollectionsManager : MonoBehaviour
             {
                 CrewModel[crewNumber].SetActive(true);
                 CrewName.text = $"대원이름 : {CrewInfo[crewNumber].CrewName}";
-                CrewDescript.text = $"대원설명 {CrewInfo[crewNumber].CrewDescript}";
+                CrewDescript.text = $"대원설명 : {CrewInfo[crewNumber].CrewDescript}";
                 seletedDetailModel = crewNumber;
 
             }
             else
             {
                 CrewName.text = $"대원이름 : 없음 {crewNumber}";
-                CrewDescript.text = $"대원설명 없음 {crewNumber}";
+                CrewDescript.text = $"대원설명 : 없음 {crewNumber}";
             }
             //모델 회전 코루틴 시작
             if (currentRotateCrewModel_co == null)
@@ -155,38 +156,49 @@ public class CollectionsManager : MonoBehaviour
 
     }
     IEnumerator currentRotateCrewModel_co = null;
+    //Model이 있는 공간에서 드래그 할 시 모델을 좌우로 회전
     IEnumerator RotateCrewModel_co()
     {
-        Ray ray;
         while (currentRotateCrewModel_co != null)
         {
             if (Application.platform == RuntimePlatform.Android)
             {
-                var touch = Input.GetTouch(0);
-                if (Input.touchCount > 0 && touch.phase == TouchPhase.Moved)
+                if (Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Began)
                 {
-                    //if(touch.phase == TouchPhase.Moved)
-                    {
-                        _modelRotationY = Quaternion.Euler(
-                            0f,
-                            -touch.deltaPosition.x * _rotateSpeedModifier,
-                            0f);
-                        CrewModel[seletedDetailModel].transform.rotation = _modelRotationY * transform.rotation;
-                    }
-                    ray = Camera.main.ScreenPointToRay(Input.GetTouch(0).position);
+                    //Model이 있는 공간판단
+                    ModelSpace = EventSystem.current.currentSelectedGameObject;
+                    if(ModelSpace != null && ModelSpace.name.Equals("Crew_Model"))
+                        IsDrag = true;
+                }
+                if(Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Ended)
+                {
+                    IsDrag = false;
+                }
+                //드래그가 가능하다면 모델 드래그에 따라 회전
+                if (IsDrag)
+                {
+                    float _modelRotationY = Input.GetTouch(0).deltaPosition.x * 1f;
+                    CrewModel[seletedDetailModel].transform.Rotate(Vector3.down, _modelRotationY);
                 }
             }
             else
             {
-                //if (Input.GetMouseButtonDown(0))
+                if (Input.GetMouseButtonDown(0))
+                {
+                    //Model이 있는 공간판단
+                    ModelSpace = EventSystem.current.currentSelectedGameObject;
+                    if(ModelSpace != null && ModelSpace.name.Equals( "Crew_Model"))
+                        IsDrag = true;
+                }
+                if(Input.GetMouseButtonUp(0))
+                {
+                    IsDrag = false;
+                }
+                //드래그가 가능하다면 모델 드래그에 따라 회전
+                if (IsDrag)
                 {
                     float _modelRotationY = Input.GetAxis("Mouse X") * 2f;
-
                     CrewModel[seletedDetailModel].transform.Rotate(Vector3.down, _modelRotationY);
-                    ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-
-                    Debug.Log($"{CrewModel[seletedDetailModel].name}Rotate {_modelRotationY}");
-
                 }
             }
             yield return null;
@@ -198,6 +210,7 @@ public class CollectionsManager : MonoBehaviour
     {
         for(int i =0; i < CrewList.Count; i++)
         {
+            //선택된대원이 아니고, 보유중인 대원이 아닐경우 게임오브젝트 활성화 -> 비활성화, 비활성화 -> 활성화
             if (!_crewStatusText[i].text.Equals(_selectedCrew) && !_crewStatusText[i].text.Equals(_ownedCrew))
             {
                 CrewList[i].SetActive(!CrewList[i].activeSelf);
@@ -315,15 +328,15 @@ public class CollectionsManager : MonoBehaviour
     {
         button.color = color;
     }
-
+    //탐원대원 정보(이름, 설명) 불러오기
     public void DetailCrewData()
     {
         CrewInfo = new List<Crew>();
-        CrewInfo.Add(new Crew("바보", "바보에요"));
-        CrewInfo.Add(new Crew("바보1", "바보에요1"));
-        CrewInfo.Add(new Crew("바보2", "바보에요2"));
-        CrewInfo.Add(new Crew("바보3", "바보에요3"));
-        CrewInfo.Add(new Crew("바보4", "바보에요4"));
-        CrewInfo.Add(new Crew("바보5", "바보에요5"));
+        JsonData CrewData = JsonMapper.ToObject(CrewDataList.text);
+        for(int i =0; i < CrewData.Count; i++)
+        {
+            CrewInfo.Add(new Crew(CrewData[i]["name"].ToString(), 
+                                  CrewData[i]["descript"].ToString()));
+        }
     }
 }
