@@ -311,14 +311,4 @@ public class VeneziaManager : MonoBehaviour
                 break;
         }
     }
-
-    public void Reaction_speed()
-    {
-        totalReactionTime += Time.deltaTime;
-        if (isAnswerCorrect)
-        {
-            trueReactionTime += totalReactionTime;
-        }
-        totalReactionTime = 0;
-    }
 }
