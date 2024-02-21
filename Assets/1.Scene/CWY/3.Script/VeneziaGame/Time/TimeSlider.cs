@@ -127,8 +127,7 @@ public interface ITimeSlider
         StartCoroutine(timeSlider_co);
     }
     public void TimeSliderControll()
-    {
-        Debug.Log("실행");
+    {        
         //시간 설정 변경을 위한 연산
         TimeStop = TimeStop.Equals(true) ? false : true;
         if (!TimeStop && timeSlider_co == null)
