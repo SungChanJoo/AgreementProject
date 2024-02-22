@@ -205,18 +205,21 @@ public class Client : MonoBehaviour
                 SaveClientDataToJsonFile();
                 Debug.Log($"[Client] RequestName : LicenseNumber, get and save licenseNumber to jsonfile");
                 break;
-            //case "[Save]venezia_kor":
-            //    break;
-            //case "[Save]venezia_eng":
-            //    break;
-            //case "[Save]venezia_chn":
-            //    Debug.Log($"[Client] RequestName : venezia_chn, End handling data");
-            //    DBManager.instance.SaveGameResultData(dataList);
-            //    break;
-            //case "[Save]gugudan":
-            //    break;
-            //case "[Save]calculation":
-            //    break;
+            case "[Save]venezia_kor":
+                Debug.Log($"[Client] RequestName : {requestName}, End handling data");
+                break;
+            case "[Save]venezia_eng":
+                Debug.Log($"[Client] RequestName : {requestName}, End handling data");
+                break;
+            case "[Save]venezia_chn":
+                Debug.Log($"[Client] RequestName : {requestName}, End handling data");
+                break;
+            case "[Save]gugudan":
+                Debug.Log($"[Client] RequestName : {requestName}, End handling data");
+                break;
+            case "[Save]calculation":
+                Debug.Log($"[Client] RequestName : {requestName}, End handling data");
+                break;
             default:
                 Debug.Log("[Client] HandleRequestMessage Method Something Happend");
                 break;
@@ -310,8 +313,110 @@ public class Client : MonoBehaviour
         playerdata_Dic = new Dictionary<string, List<string>>();
     }
 
+    /*
+   Client가 DB에 있는 파일을 Save Load 하는 경우
+   1. 앱 시작 -> Load (모든 데이터, 게임데이터, 재화, crew 소유권한 등)
+   2. 플레이어(charactor) 생성 -> Save, Load
+   3. 앱 게임 시작 -> TotalScore(int형) Load (game_type, level, step 받음) -> Save GameData
+   4. 랭킹 UI 접속 시(or 랭킹새로고침) -> rank Load
+   5. 앱 종료 -> Save (모든 데이터)
+    */
+
+    // 앱 시작시 모든 데이터 Load
+    public Result_DB AppStart_LoadAllDataFromDB()
+    {
+        Result_DB resultdb = new Result_DB();
+
+        // user_info table -> [0]:User_LicenseNumber, [1]:User_Charactor, [2]:User_Name, [3]:User_Profile, [4]:User_Coin
+        // rank table - > [0]:User_LicenseNumber, [1]:User_Charactor, [2]:TotalTime, [3]:TotalScore
+        resultdb.playerName = playerdata_Dic["user_info"][2];
+        resultdb.image = Encoding.UTF8.GetBytes(playerdata_Dic["user_info"][3]);
+        resultdb.Day = "";
+        resultdb.TotalAnswers = Int32.Parse(playerdata_Dic["rank"][3]);
+        resultdb.TotalTime = float.Parse(playerdata_Dic["rank"][2]);
+
+        string[] game_Names = { "venezia_kor", "venezia_eng", "venezia_chn", "calculation", "gugudan" };
+        int[] levels = { 1, 2, 3 };
+        int[] steps = { 1, 2, 3, 4, 5, 6 };
+
+        for (int i = 0; i < game_Names.Length; i++)
+        {
+            for (int j = 0; j < levels.Length; j++)
+            {
+                for (int k = 0; k < steps.Length; k++)
+                {
+                    Game_Type game_type;
+                    switch (i)
+                    {
+                        case 0:
+                            game_type = Game_Type.A;
+                            break;
+                        case 1:
+                            game_type = Game_Type.B;
+                            break;
+                        case 2:
+                            game_type = Game_Type.C;
+                            break;
+                        case 3:
+                            game_type = Game_Type.D;
+                            break;
+                        case 4:
+                            game_type = Game_Type.E;
+                            break;
+                        default:
+                            game_type = Game_Type.A;
+                            Debug.Log("[Clinet] AppStart_LoadAllDataFromDB() Game_Type default Problem");
+                            break;
+                    }
+
+                    string levelpart = $"level{levels[j]}";
+                    if (game_Names[i] == "venezia_chn")
+                    {
+                        j = 2; // venezia_chn 게임은 level이 1개뿐이므로 한번만 돌아야함.
+                        levelpart = "level";
+                    }
+
+                    string game_TableName = $"{game_Names[i]}_{levelpart}_step{steps[k]}";
+
+                    float reactionRate = float.Parse(playerdata_Dic[$"{game_TableName}"][2]);
+                    int answersCount = Int32.Parse(playerdata_Dic[$"{game_TableName}"][3]);
+                    int answers = Int32.Parse(playerdata_Dic[$"{game_TableName}"][4]);
+                    float playTime = float.Parse(playerdata_Dic[$"{game_TableName}"][5]);
+                    int totalScore = Int32.Parse(playerdata_Dic[$"{game_TableName}"][6]);
+
+                    Data_value datavalue = new Data_value(reactionRate, answersCount, answers, playTime, totalScore);
+
+                    resultdb.Data.Add((game_type, j, k), datavalue);
+                }
+            }
+        }
+
+        return resultdb;
+    }
+
+    // Charactor 생성 Save (기존에 플레이하던 Charator Data)
+    public void CreateCharactor_SaveAllDataToDB(Result_DB resultdb)
+    {
+        
+    }
+
+    // Charactor 생성 Load (새로 생성한 Charatror Data)
+    public Result_DB CreateCharactor_LoadAllDataFromDB()
+    {
+        Result_DB resultdb = new Result_DB();
+
+        return resultdb;
+    }
+
+    // 게임 시작시 TotalScore Load
+    public int AppGame_LoadTotalScoreFromDB(Game_Type game_type, int level, int step)
+    {
+
+        return 0;
+    }
+
     // 재백이가 만든 Result_Data를 매개변수로 받아서 DB에 저장하는 메서드(server에 요청 -> RequestServer)
-    public void SaveResultDataToDB(Result_DB resultdata, Game_Type game_type, int level, int step)
+    public void AppGame_SaveResultDataToDB(Result_DB resultdata, Game_Type game_type, int level, int step)
     {
         // requestData = RequestName[0]/User_Licensenumber[1]/User_Charactor[2]/ReactionRate[3]/.../StarPoint[8]
         string requestData;
@@ -352,15 +457,14 @@ public class Client : MonoBehaviour
         RequestToServer(requestData);
     }
 
-    // 재백이가 사용할 PlayerData
-    //public Result_DB LoadData()
+    //// 랭킹 UI 접속 시 Rank Load
+    //public RankData Ranking_LoadRankDataFromDB()
     //{
-    //    Result_DB resultDB = new Result_DB(1,1,"2");
-    //    return resultDB;
+        
     //}
 
-    // 서버로부터 받은 PlayerData를 게임에서 사용하는 Player Class에 설정
-    private void SetPlayer(User_Info user)
+    // 앱 종료시 모든 데이터 Save
+    public void AppEnd_SaveAlldataToDB()
     {
 
     }
@@ -370,7 +474,7 @@ public class Client : MonoBehaviour
         Game_Type game_Type = Game_Type.A;
         int level = 1;
         int step = 2;
-        Result_DB result_DB = new Result_DB(level, step, "23-02-21");
+        Result_DB result_DB = new Result_DB();
         Data_value data_Value = new Data_value(234.21f, 23, 12, 22.44f, 18000);
         //Reult_DB가 Null일 때 처리
         if (!result_DB.Data.ContainsKey((game_Type, level, step)))
@@ -386,7 +490,15 @@ public class Client : MonoBehaviour
             }
         }
 
-        SaveResultDataToDB(result_DB, game_Type, level, step);
+        AppGame_SaveResultDataToDB(result_DB, game_Type, level, step);
+
+    }
+
+    
+
+    // 서버로부터 받은 PlayerData를 게임에서 사용하는 Player Class에 설정
+    private void SetPlayer(User_Info user)
+    {
 
     }
 

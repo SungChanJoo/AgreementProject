@@ -221,7 +221,7 @@ public class Server : MonoBehaviour
     {
         // dataList -> 0 : requestName, 1~ : values
         string requestName = dataList[0];
-        string replyRequestMessage = "";
+        string replyRequestMessage = $"{dataList[0]}|";
         Debug.Log($"[Server] HandleRequestData requestName : {dataList[0]}");
         
 
@@ -237,7 +237,7 @@ public class Server : MonoBehaviour
                 Debug.Log($"[Server] Creating... new PlayerData");
                 DBManager.instance.CreateNewPlayerData(clientLicenseNumber); // 새 플레이어 정보 생성
                 Debug.Log($"[Server] Finish Create LicenseNumber and new PlayerData");
-                replyRequestMessage =  "[Create]LicenseNumber|" + clientdata;
+                replyRequestMessage += clientdata;
                 break;
             case "[Create]Charactor":
                 break;

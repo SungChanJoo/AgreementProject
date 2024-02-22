@@ -128,7 +128,7 @@ public class DBManager : MonoBehaviour
 
         // Table - Columns
         userinfo_Columns = new string[]{ "User_LicenseNumber", "User_Charactor", "User_Name", "User_Profile", "User_Coin" };
-        rank_Columns = new string[] { "User_LicenseNumber", "User_Charactor", "TotalTime", "TotalScore" };
+        rank_Columns = new string[] { "User_LicenseNumber", "User_Charactor", "User_Profile", "User_Name", "TotalTime", "TotalScore" };
         achievement_Columns = new string[] { "User_LicenseNumber", "User_Charactor", "Something" };
         pet_Columns = new string[] { "User_LicenseNumber", "User_Charactor", "White" };
         game_Columns = new string[]{ "User_LicenseNumber", "User_Charactor", "ReactionRate", "AnswerCount", "AnswerRate", "Playtime", "TotalScore", "StarPoint" };
@@ -564,6 +564,7 @@ public class DBManager : MonoBehaviour
     // 게임이 끝날때마다 rank table에 시간, 점수 누적
     private void UpdateRankTable(int licensenumber, int charactor, float time, int score)
     {
+        // rank table -> [0]:User_LicenseNumber, [1]:User_Charactor, [2]:User_Profile, [3]:User_Name, [4]:TotalTime, [5]"TotalScore
         Debug.Log($"[DB] Updating... rank table, licensenumber : {licensenumber}, characator : {charactor}");
         string rankTable = "rank";
         float totalTime = 0;
@@ -577,8 +578,8 @@ public class DBManager : MonoBehaviour
         {
             if ((reader.GetInt32(rank_Columns[0]) == licensenumber) && (reader.GetInt32(rank_Columns[1]) == charactor))
             {
-                totalTime = reader.GetFloat(rank_Columns[2]);
-                totalScore = reader.GetInt32(rank_Columns[3]);
+                totalTime = reader.GetFloat(rank_Columns[4]);
+                totalScore = reader.GetInt32(rank_Columns[5]);
             }
         }
         reader.Close();
@@ -586,10 +587,10 @@ public class DBManager : MonoBehaviour
         totalTime += time;
         totalScore += score;
 
-        string updateRankData_Command = $"UPDATE {rankTable} SET {rank_Columns[2]} = {totalTime} WHERE {rank_Columns[0]} = {licensenumber} AND {rank_Columns[1]} = {charactor}";
+        string updateRankData_Command = $"UPDATE {rankTable} SET {rank_Columns[4]} = {totalTime} WHERE {rank_Columns[0]} = {licensenumber} AND {rank_Columns[1]} = {charactor}";
         MySqlCommand update_SqlCmd = new MySqlCommand(updateRankData_Command, connection);
         update_SqlCmd.ExecuteNonQuery();
-        update_SqlCmd.CommandText = $"UPDATE {rankTable} SET {rank_Columns[3]} = {totalScore} WHERE {rank_Columns[0]} = {licensenumber} AND {rank_Columns[1]} = {charactor}";
+        update_SqlCmd.CommandText = $"UPDATE {rankTable} SET {rank_Columns[5]} = {totalScore} WHERE {rank_Columns[0]} = {licensenumber} AND {rank_Columns[1]} = {charactor}";
         update_SqlCmd.ExecuteNonQuery();
     }
 
@@ -629,7 +630,14 @@ public class DBManager : MonoBehaviour
             string createTable_Command = $"CREATE TABLE IF NOT EXISTS {gameTable.list[i]} (";
             for(int j = 0; j < game_Columns.Length; j++)
             {
-                createTable_Command += $"{game_Columns[j]} int(11) DEFAULT NULL,";
+                if(j == 2 || j ==5) // float
+                {
+                    createTable_Command += $"{game_Columns[j]} float DEFAULT NULL,";
+                }
+                else // int
+                {
+                    createTable_Command += $"{game_Columns[j]} int(11) DEFAULT NULL,";
+                }
             }
             createTable_Command = createTable_Command.TrimEnd(','); // 마지막 쉼표 제거
             createTable_Command += $") ENGINE = InnoDB DEFAULT CHARSET = latin1 COLLATE = latin1_swedish_ci;";
@@ -647,29 +655,44 @@ public class DBManager : MonoBehaviour
         // PresentDB에 있는 gamedata들 불러오기
         for(int i=0; i<gameTable.list.Count; i++)
         {
+            // table에 몇 행이 있는지
+            string rowCount_Command = $"SELECT COUNT(*) FROM `{gameTable.list[i]}`";
+            MySqlCommand rowCount_SqlCmd = new MySqlCommand(rowCount_Command, connection);
+            int rowCountInTable = (int)rowCount_SqlCmd.ExecuteScalar(); // ExcuteScalar() 메서드는 쿼리를 실행하고 결과 집합의 첫 번째 행의 첫 번째 열의 값을 반환
+
             string select_Command = $"SELECT * FROM {gameTable.list[i]}";
             MySqlCommand select_SqlCmd = new MySqlCommand(select_Command, connection);
             MySqlDataReader reader = select_SqlCmd.ExecuteReader();
 
-            // PresentDB에 있는 row를 받기위한 List
-            List<int[]> values = new List<int[]>();
+            // PresentDB 각 table에 있는 data를 받기위한 List
+            List<List<string>> table_Values = new List<List<string>>();
 
             while(reader.Read())
             {
-                int[] rows = new int[reader.FieldCount];
-                //todo List<int>
-                Debug.Log($"[DB] CreateDaysExGameDataDB, rows count : {rows.Length}");
-                for(int j = 0; j< rows.Length; j++)
+                for(int j = 0; j < rowCountInTable; j++)
                 {
-                    int[] columns = new int[game_Columns.Length];
-                    for (int k = 0; k < game_Columns.Length; k++)
-                    {
-                        columns[k] = reader.GetInt32(game_Columns[k]);
-                    }
-                }
+                    List<string> columns_Value = new List<string>();
 
-                
+                    for(int k = 0; k < game_Columns.Length; k++)
+                    {
+                        if(k == 2 || k == 5) // float
+                        {
+                            columns_Value.Add(reader.GetFloat(game_Columns[k]).ToString());
+                        }
+                        else // int
+                        {
+                            columns_Value.Add(reader.GetInt32(game_Columns[k]).ToString());
+                        }
+                    }
+
+                    table_Values.Add(columns_Value);
+                }
             }
+            reader.Close();
+
+            // 한 테이블씩 복사
+            
+
         }
 
 
@@ -695,5 +718,84 @@ public class DBManager : MonoBehaviour
         ) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci; */
 
     }
+
+    // 임시로 PresentDB에 있는 Rank Table 데이터 사용 / Score, Time 별 Rank 1~5위 및 6번째 자기 자신의 데이터 
+    public void RankOrderByUserData(int licensenumber, int charactor)
+    {
+        // rank table -> [0]:User_LicenseNumber, [1]:User_Charactor, [2]:User_Profile, [3]:User_Name, [4]:TotalTime, [5]"TotalScore
+
+        // rank table's row count
+        string rowCount_Command = $"SELECT COUNT(*) FROM `rank`";
+        MySqlCommand rowCount_SqlCmd = new MySqlCommand(rowCount_Command, connection);
+        int rowCountInTable = (int)rowCount_SqlCmd.ExecuteScalar(); // ExcuteScalar() 메서드는 쿼리를 실행하고 결과 집합의 첫 번째 행의 첫 번째 열의 값을 반환
+
+        // Score 기준
+        string selectScore_Command = $"SELECT * FROM `rank`";
+        MySqlCommand selectScore_SqlCmd = new MySqlCommand(selectScore_Command, connection);
+        MySqlDataReader reader = selectScore_SqlCmd.ExecuteReader();
+
+        List<List<string>> rankdata = new List<List<string>>(); 
+
+        // table에 있는 data들 rankdata에 담기
+        while(reader.Read())
+        {
+            for(int i = 0; i < rowCountInTable; i++)
+            {
+                List<string> valuesInColumn = new List<string>();
+                
+                for (int j = 0; j < rank_Columns.Length; j++)
+                {
+                    if(j == 2) // byte[]
+                    {
+                        byte[] binarydata = reader[$"{rank_Columns[j]}"] as byte[]; // column에 있는 binary data 받아오기
+                        valuesInColumn.Add(System.Text.Encoding.UTF8.GetString(binarydata));
+                    }
+                    else if(j == 3) // Varchar
+                    {
+                        valuesInColumn.Add(reader.GetString(rank_Columns[j]));
+                    }
+                    else if(j == 4) // Float
+                    {
+                        valuesInColumn.Add(reader.GetFloat(rank_Columns[j]).ToString());
+                    }
+                    else // int
+                    {
+                        valuesInColumn.Add(reader.GetInt32(rank_Columns[j]).ToString());
+                    }
+                }
+                rankdata.Add(valuesInColumn);
+            }
+        }
+        reader.Close();
+
+
+        // 직접적인 순위비교
+        // Score - rankdata[i][5]
+        List<Rank_Score> scoreList = new List<Rank_Score>();
+
+        for(int i= 0; i < rankdata.Count; i++)
+        {
+            Rank_Score score = new Rank_Score();
+
+            score.place = 0;
+            score.userProfile = System.Text.Encoding.UTF8.GetBytes(rankdata[i][2]);
+            score.userName = rankdata[i][3];
+            score.totalScore = Int32.Parse(rankdata[i][5]);
+
+            scoreList.Add(score);
+        }
+
+        // totalScore로 내림차순 정렬
+        scoreList.Sort((a, b) => b.totalScore.CompareTo(a.totalScore));
+
+
+        
+
+
+        // Time 기준
+
+    }
+
+
 
 }
