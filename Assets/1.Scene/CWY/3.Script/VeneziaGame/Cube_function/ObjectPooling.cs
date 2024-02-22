@@ -24,6 +24,8 @@ public class ObjectPooling : MonoBehaviour
     public int ItemCount;
     //문제에 관련된 prefab들 생성
     public List<GameObject> cubePool = new List<GameObject>();
+    //풀링된 녀석을 담아줄 리스트
+    public List<GameObject> appearedCubePool = new List<GameObject>();
     //메테오 , 프리즈 등 아이템 생성.
     public List<GameObject> MeteorPool = new List<GameObject>();
     public List<GameObject> PausePool = new List<GameObject>();
@@ -43,25 +45,40 @@ public class ObjectPooling : MonoBehaviour
         #endregion
 
         #region Object Pooling
-        //정답 오브젝트 풀링
-        CreateQuestPrefab();
+        
+    }
 
+    private void Start()
+    {
         CreateItem();
         //아이템 프리팹 
 
 
         #endregion
-    }
-
-    private void Start()
-    {
-        StartCoroutine(Cube_Co());
+        //StartCoroutine(Cube_Co());
         StartCoroutine(Meteor_Co());        
         StartCoroutine(Pause_Co());        
     }
     public int cool;
-    public IEnumerator Cube_Co()
+    public IEnumerator Cube_Co(int count)
     {
+        while (count > 0)
+        {
+            int Randnum = Random.Range(0, count);
+            float randomValue = Random.Range(-100, 101);
+            Vector3 offset = new Vector3(randomValue, 0, 0); // 좌우 변경을위한 랜덤값
+            cubePool[Randnum].transform.position = Pool_Position.transform.position + offset;
+            cubePool[Randnum].SetActive(true);
+            cubePool.Remove(cubePool[Randnum]);
+            count--;
+            yield return new WaitForSeconds(cool); //난이도에 따라 재생되는 시간을 바꿀것
+        }
+
+    }
+
+    public IEnumerator ReStartCube_Co()
+    {
+        yield return new WaitForSeconds(cool);
         while (cubePool.Count > 0)
         {
             int Randnum = Random.Range(0, cubePool.Count);
@@ -72,13 +89,6 @@ public class ObjectPooling : MonoBehaviour
             cubePool.Remove(cubePool[Randnum]);
             yield return new WaitForSeconds(cool); //난이도에 따라 재생되는 시간을 바꿀것
         }
-
-    }
-
-    public IEnumerator ReStartCube_Co()
-    {
-        yield return new WaitForSeconds(cool);
-        StartCoroutine(Cube_Co());
     }
 
 
@@ -135,9 +145,10 @@ public class ObjectPooling : MonoBehaviour
         }
     }
 
-    private void CreateQuestPrefab()
+    public void CreateQuestPrefab(int count)
     {
-        for (int i = 0; i < VeneziaManager.Instance.QuestCount; i++)
+        
+        for (int i = 0; i < count; i++)
         {
             for (int j = 0; j < CubeCount; j++)
             {
