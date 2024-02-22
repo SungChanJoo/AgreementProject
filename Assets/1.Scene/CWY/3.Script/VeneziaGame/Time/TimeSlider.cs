@@ -26,8 +26,8 @@ public interface ITimeSlider
     public bool isStop = false;
     public bool isGameOver = false;
 
-    public float startTime = 6f; //Todo : 추후 재백이에게 데이터값을 받아와서 그값으로 변경
-    public float duration = 6f;  //Todo : 위와동일 => 
+    [HideInInspector]public float startTime; //Todo : 추후 재백이에게 데이터값을 받아와서 그값으로 변경
+    [HideInInspector]public float duration;  //Todo : 위와동일 => 
     public float Decreasetime;
 
     public bool TimeStop = true;
@@ -35,7 +35,8 @@ public interface ITimeSlider
     IEnumerator timeSlider_co;
     private void Awake()
     {
-        if(Instance == null)
+        
+        if (Instance == null)
         {
             Instance = this;
         }
@@ -65,10 +66,6 @@ public interface ITimeSlider
         slider.value = 0; // 종료 시간에 맞춰 슬라이더의 값을 설정 약간의 오차를 방지하기위해 값을 한번더 명시.
     }
 
-    private void Start()
-    {
-        timeSlider_co = timeSlider();        
-    }
 
     private void Update()
     {
@@ -123,7 +120,8 @@ public interface ITimeSlider
         }
     }
     public void StartTime()
-    {        
+    {
+        timeSlider_co = timeSlider();
         StartCoroutine(timeSlider_co);
     }
     public void TimeSliderControll()
