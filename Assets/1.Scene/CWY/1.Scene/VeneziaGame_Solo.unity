@@ -1599,7 +1599,7 @@ GameObject:
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
+  m_StaticEditorFlags: 2147483647
   m_IsActive: 1
 --- !u!4 &788314112
 Transform:
@@ -1629,11 +1629,26 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   CubePrefab:
-  - {fileID: 1079827597520798626, guid: f716e0d6343b652409d1935b63d8c279, type: 3}
-  - {fileID: 1079827597520798626, guid: 595e84be506fffc4cab8800cf5f7808d, type: 3}
   - {fileID: 1079827597520798626, guid: 42324beeb234f8b4b876e05c9fb72576, type: 3}
-  - {fileID: 1079827597520798626, guid: 860d2892839b6f24b890ad46d494a3e4, type: 3}
   - {fileID: 1079827597520798626, guid: 33189d79ff959af4ba9c7afeb6d9d974, type: 3}
+  - {fileID: 1079827597520798626, guid: 595e84be506fffc4cab8800cf5f7808d, type: 3}
+  - {fileID: 1079827597520798626, guid: f716e0d6343b652409d1935b63d8c279, type: 3}
+  - {fileID: 1079827597520798626, guid: 860d2892839b6f24b890ad46d494a3e4, type: 3}
+  - {fileID: 1079827597520798626, guid: 130d530c4e47cd540a5f32ced44df962, type: 3}
+  - {fileID: 1079827597520798626, guid: 6a69bc9a194094e46b0569c3eb939627, type: 3}
+  - {fileID: 1079827597520798626, guid: 241ae76cb42dfbc48be54b6f40361dea, type: 3}
+  - {fileID: 1079827597520798626, guid: 57ff032c9d8e7404287d558b96ab3f60, type: 3}
+  - {fileID: 1079827597520798626, guid: 6a7d44526dfdb934abe0865bf35339e2, type: 3}
+  - {fileID: 1079827597520798626, guid: 4c6f0473d5757cb4ba9b75f508f2b999, type: 3}
+  - {fileID: 1079827597520798626, guid: 0afb0bb9c359f10448f29d1f1f50af95, type: 3}
+  - {fileID: 1079827597520798626, guid: 91c7bed0914c4124bb609a41107f101a, type: 3}
+  - {fileID: 1079827597520798626, guid: dba4d76d03434bd49bf7c1805d480252, type: 3}
+  - {fileID: 1079827597520798626, guid: ba805f850956e3a48bd17d40bec9b798, type: 3}
+  - {fileID: 1079827597520798626, guid: f3895247912869e458c302f2ee05c587, type: 3}
+  - {fileID: 1079827597520798626, guid: 213b51e4fa42e664085e0e9918da24df, type: 3}
+  - {fileID: 1079827597520798626, guid: 36a78e6b285e4a640afd663e242f3e0d, type: 3}
+  - {fileID: 1079827597520798626, guid: 723906ca41418984a90628f629286c46, type: 3}
+  - {fileID: 1079827597520798626, guid: 6298f8856c104b14984c1179d96763ee, type: 3}
   Pool_Position: {fileID: 788314112}
   ParentObject: {fileID: 577192753}
   MeteorPrefab: {fileID: 371837130864099498, guid: 341d2eb32cfd00e45a350a399d1fbadf, type: 3}

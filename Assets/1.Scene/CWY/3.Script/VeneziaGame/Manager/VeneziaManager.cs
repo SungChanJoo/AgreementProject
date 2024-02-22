@@ -283,12 +283,14 @@ public class VeneziaManager : GameSetting
     public void NextQuest()
     {
         QuestData randomQuest = GetRandomQuest_Kr();
+        if (randomQuest == null) return;  //퀘스트가 전부 출제 되었을 때 다음문제 실행 방지
         Quest_Img.sprite = randomQuest.sprite;
         Quest_text.text = randomQuest.description;
     }
 
     private QuestData GetRandomQuest_Kr()
     {
+        if (QuestCount == 0) return null; //null 값 처리 (문제가 없을 때 사용)
         //QuestKorean.Count
         QuestData[] questArray = new QuestData[QuestKorean.Count];
         QuestKorean.Values.CopyTo(questArray, 0);
@@ -317,23 +319,40 @@ public class VeneziaManager : GameSetting
         }*/
         // 랜덤한 인덱스 선택
 
-        
         QuestCount--;
+        QuestData selectedQuest;
         if(questArray.Length == 0)
         {
             return null;
         }
-        QuestData selectedQuest = questArray[randomIndex];
-        // 출제된 퀘스트 데이터는 딕셔너리에서 제거 => 중복 출제 방지
+        if(QuestCount > 1)
+        {
+            if(randomIndex == 0)
+            {
+                selectedQuest = questArray[randomIndex];
+            }
+            else
+            {
+                selectedQuest = questArray[randomIndex-1];
+
+            }
+        }
+        else
+        {
+             selectedQuest = questArray[randomIndex];
+        }
+        // 문제가 2개이상 있는 경우에는 , 가장 뒤에있는 문제를 제외한 문제중 하나를 출제
+        // 단, 문제가 1개가 남았을 때는 그녀석을 출제 
         foreach (var kvp in QuestKorean)
         {
             if (kvp.Value == selectedQuest)
             {
                 QuestKorean.Remove(kvp.Key);
-                break; // 선택된 퀘스트가 한 번만 제거되도록 break설정
+                QuestKorean.Add(kvp.Key,kvp.Value);
+                break;
+                //선택된 문제를 출제하고 다시 저장을 1번만 실행
             }
         }
-        print("확인");
         return selectedQuest;       
     }
 
@@ -356,13 +375,13 @@ public class VeneziaManager : GameSetting
         switch (timeSet)
         {
             case 60:
-                QuestCount = 5;
+                QuestCount = 10;
                 break;
             case 180:
-                QuestCount = 7; // 예시 값
+                QuestCount = 14; // 예시 값
                 break;
             case 300:
-                QuestCount = 10; // 예시 값
+                QuestCount = 20; // 예시 값
                 break;
             default:
                 break;
