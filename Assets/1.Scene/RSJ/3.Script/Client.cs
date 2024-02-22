@@ -342,7 +342,7 @@ public class Client : MonoBehaviour
                 break;
         }
 
-        Data_value datavalue = resultdata.Data[(resultdata.game_type, resultdata.Level, resultdata.Step)];
+        Data_value datavalue = resultdata.Data[(game_type, level, step)];
 
         requestName = $"[Save]{gameName}";
         values = $"{level}|{step}|{clientLicenseNumber}|{clientCharactor}|{datavalue.ReactionRate}|{datavalue.AnswersCount}|{datavalue.Answers}|{datavalue.PlayTime}|{datavalue.TotalScore}|";
@@ -353,11 +353,11 @@ public class Client : MonoBehaviour
     }
 
     // 재백이가 사용할 PlayerData
-    public Result_DB LoadData()
-    {
-        Result_DB resultDB = new Result_DB(1,1,"2");
-        return resultDB;
-    }
+    //public Result_DB LoadData()
+    //{
+    //    Result_DB resultDB = new Result_DB(1,1,"2");
+    //    return resultDB;
+    //}
 
     // 서버로부터 받은 PlayerData를 게임에서 사용하는 Player Class에 설정
     private void SetPlayer(User_Info user)
