@@ -1829,6 +1829,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2bb5cf6dadf54af499fb05a8bd93553c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  gameType: 1
   slider: {fileID: 550552750}
   sliderVar_Image: {fileID: 373022445}
   ChangeTime: 0.35
@@ -1839,6 +1840,7 @@ MonoBehaviour:
   startTime: 100
   duration: 100
   Decreasetime: 5
+  TimeStop: 1
 --- !u!114 &550552750
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -8434,7 +8436,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 3a6558ea8600aa440aa0f5816bac825f, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 0ed34bd33dff31346b5443f9ecec010f, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -8510,7 +8512,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 3a6558ea8600aa440aa0f5816bac825f, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 0ed34bd33dff31346b5443f9ecec010f, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -9076,6 +9078,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2bb5cf6dadf54af499fb05a8bd93553c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  gameType: 1
   slider: {fileID: 8836855193705866061}
   sliderVar_Image: {fileID: 8836855194716140459}
   ChangeTime: 0.35
@@ -9086,6 +9089,7 @@ MonoBehaviour:
   startTime: 100
   duration: 100
   Decreasetime: 5
+  TimeStop: 1
 --- !u!114 &7120315697021900478
 MonoBehaviour:
   m_ObjectHideFlags: 0
