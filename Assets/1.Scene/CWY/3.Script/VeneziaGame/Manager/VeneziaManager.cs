@@ -38,13 +38,15 @@ public class VeneziaManager : GameSetting
     private string[] KorWord = { "학" , "말", "닭", "곰", "하마", "표범", "팬더",
             "타조", "쿼카", "치타", "참새", "제비", "젖소", "염소", "여우", "악어", "사자", "사슴", "돼지", "기린"};
 
-    public int QuestCount;  // 딕셔너리에 들어갈 퀘스트 갯수
+    public int QuestCount;  // 딕셔너리에 들어갈 퀘스트 갯수 //10문제 <
     public int SaveQuestStartCountData;
     public int RemainAnswer; // 게임 진행중 남은 정답 갯수
     public int CorrectAnswerCount; // 맞춘 정답 갯수
     public int ClickCount;
     public int LifeTime; // 게임 진행 시간
 
+    private int randomIndex = 0;
+    private int SaverandomIndex = 999;
     //반응속도 측정 시간
     float trueReactionTime;
     float totalReactionTime;
@@ -94,7 +96,7 @@ public class VeneziaManager : GameSetting
         DisplayRandomQuest();
         //시간 시작 
         StartTime();
-        StartCoroutine(ObjectPooling.Instance.Cube_Co(QuestCount/2));
+        StartCoroutine(ObjectPooling.Instance.Cube_Co());
     }
     private void Update()
     {
@@ -172,6 +174,8 @@ public class VeneziaManager : GameSetting
             }
             if (ObjectPooling.Instance.cubePool.Count == 1)
             {
+                StopCoroutine(ObjectPooling.Instance.Cube_Co());
+                StopCoroutine(ObjectPooling.Instance.ReStartCube_Co());
                 StartCoroutine(ObjectPooling.Instance.ReStartCube_Co());
             }
         }
@@ -296,9 +300,13 @@ public class VeneziaManager : GameSetting
         QuestCount--;
         QuestData selectedQuest;// 너이새끼 왜안나오냐
         //연속 출제를 방지하기 위해 마지막에 있는 것은 선택 방지
-        int randomIndex = Random.Range(0, ((SaveQuestStartCountData/2)-1));  
-        // 퀘스트가 1개남은상태에서 들어오면 QuestCount에의해 -- 되어 0개가된다. 
+        while (randomIndex == SaverandomIndex)
+        {
+            randomIndex = Random.Range(0, ((SaveQuestStartCountData/2)));  
+        }
+        // 퀘스트가 1개남은상태에서 들어오면 QuestCount에의해 -- 되어 0개가된다. 01234<
         selectedQuest = questArray[randomIndex]; // 
+        SaverandomIndex = randomIndex;
         // 문제가 2개이상 있는 경우에는 , 가장 뒤에있는 문제를 제외한 문제중 하나를 출제
         // 단, 문제가 1개가 남았을 때는 그녀석을 출제 
         foreach (var kvp in QuestKorean)
