@@ -8,7 +8,7 @@ enum ButtonType
     Second
 }
 
-public class GuGUDan_Fnc : MonoBehaviour
+public class GuGUDan_Fnc : GameSetting
 {
     [SerializeField] private ButtonType buttonType;
     //구구단 게임 기능 관련 스크립트
@@ -81,10 +81,7 @@ public class GuGUDan_Fnc : MonoBehaviour
     }
 
 
-    private void Start()
-    {
-        GameStart();
-    }
+    
 
     private void Update()
     {
@@ -102,7 +99,7 @@ public class GuGUDan_Fnc : MonoBehaviour
     //랜덤숫자 생성 메서드
     public int Random_Num()
     {
-        int num = Random.Range(1, 10);
+        int num = Random.Range(1, 10);        
         return num;
     }
 
@@ -143,11 +140,12 @@ public class GuGUDan_Fnc : MonoBehaviour
             default:
                 break;
         }
+        Debug.Log($"{level}:{ step}");
     }
     #region Level , Step별 문제 제작 메서드 
-    private void Lv1_RandomNum()
+    private void Lv1_RandomNum(int step)
     {
-        if (Step < 4)
+        if (step < 4)
         {
             First_num.text = Random.Range(2, 7).ToString();
             Second_num.text = Random.Range(1, 10).ToString();
@@ -158,9 +156,9 @@ public class GuGUDan_Fnc : MonoBehaviour
             Second_num.text = Random.Range(1, 10).ToString();
         }
     }
-    private void Lv2_RandomNum()
+    private void Lv2_RandomNum(int step)
     {
-        if (Step < 4)
+        if (step < 4)
         {
             First_num.text = Random.Range(2, 10).ToString();
             Second_num.text = Random.Range(1, 15).ToString();
@@ -170,10 +168,11 @@ public class GuGUDan_Fnc : MonoBehaviour
             First_num.text = Random.Range(2, 10).ToString();
             Second_num.text = Random.Range(1, 20).ToString();
         }
+        
     }
-    private void Lv3_RandomNum()
+    private void Lv3_RandomNum(int step)
     {
-        if (Step < 4)
+        if (step < 4)
         {
             First_num.text = Random.Range(2, 15).ToString();
             Second_num.text = Random.Range(1, 20).ToString();
@@ -186,19 +185,22 @@ public class GuGUDan_Fnc : MonoBehaviour
     }
     #region lv별 게임
     //lv별 로직
-    private void Lv1()
+    protected override void Level_1(int step)
     {
-        Lv1_RandomNum();
+        GameStart();
+        Lv1_RandomNum(step);
         Random_ShowText();
     }
-    private void Lv2()
+    protected override void Level_2(int step)
     {
-        Lv2_RandomNum();
+        GameStart();
+        Lv2_RandomNum(step);
         Random_ShowText();
     }
-    private void Lv3()
+    protected override void Level_3(int step)
     {
-        Lv3_RandomNum();
+        GameStart();
+        Lv3_RandomNum(step);
         Random_ShowText();
     }
     #endregion
@@ -210,22 +212,14 @@ public class GuGUDan_Fnc : MonoBehaviour
     private void GameStart()
     {
         //게임 시작을 알림
-        isStart = true;
-        switch (Level)
+        if (!isStart)
         {
-            case 1: //레벨 1 선택
-                Lv1();
-                break;
-            case 2: //레벨 2 선택
-                Lv2();
-                break;
-            case 3: //레벨 3 선택
-                Lv3();
-
-                break;
-            default:
-                break;
+            isStart = true;
+            TimeSlider.Instance.StartTime();
+            TimeSlider.Instance.TimeStop = false;
         }
+        
+        
     }
     //로직은 동일하지만 시작 - 진행 - 종료를 나누기위해 메서드 분개
     private void GameProgress()
@@ -233,20 +227,7 @@ public class GuGUDan_Fnc : MonoBehaviour
         //정답을 맞춘경우에는 문제 다시생성
         if (isAnswerCorrect)
         {
-            switch (Level)
-            {
-                case 1:
-                    Lv1();
-                    break;
-                case 2:
-                    Lv2();
-                    break;
-                case 3:
-                    Lv3();
-                    break;
-                default:
-                    break;
-            }
+            SplitLevelAndStep();
         }
         //클릭 초기화
         isFirst_Click = true;
@@ -263,9 +244,15 @@ public class GuGUDan_Fnc : MonoBehaviour
             //Todo : 게임 종료 로직 구현해주세요 > 게임화면 종료하고 결과창? 띄워줄듯
             //반응속도 쳌
             ReactionTime = trueReactionTime / TrueAnswerCount;
-            isGameOver = true;
             totalReactionTime = 0;
-        }
+            if (!isGameOver)
+            {
+                isGameOver = true;
+                answersCount = TrueAnswerCount;
+                reactionRate = ReactionTime;
+                EndGame();
+            }
+        }        
         else
         {
             return;
@@ -515,11 +502,11 @@ public class GuGUDan_Fnc : MonoBehaviour
     {
         if(buttonType == ButtonType.First)
         {
-            Score.Instance.Get_FirstScore();
+            //Score.Instance.Get_FirstScore();
         }
         else
         {
-            Score.Instance.Get_SecondScore();
+            //Score.Instance.Get_SecondScore();
         }
     }
 }
