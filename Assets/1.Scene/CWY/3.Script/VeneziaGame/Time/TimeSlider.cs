@@ -3,6 +3,11 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
+enum GameType
+{
+    Solo,
+    Couple
+}
 public interface ITimeSlider
 {
     void DecreaseTime()
@@ -13,7 +18,7 @@ public interface ITimeSlider
 
     public class TimeSlider : MonoBehaviour, ITimeSlider
 {
-
+    [SerializeField]private GameType gameType;
     public static TimeSlider Instance = null;
 
     [SerializeField] public Slider slider;
@@ -42,7 +47,14 @@ public interface ITimeSlider
         }
         else
         {
-            Destroy(gameObject);
+            if (gameType == GameType.Couple)
+            {
+                return;
+            }
+            else
+            {
+                Destroy(gameObject);
+            }
         }
     }
 

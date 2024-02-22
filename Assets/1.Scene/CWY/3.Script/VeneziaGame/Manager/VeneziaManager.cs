@@ -38,9 +38,8 @@ public class VeneziaManager : GameSetting
     private string[] KorWord = { "학" , "말", "닭", "곰", "하마", "표범", "팬더",
             "타조", "쿼카", "치타", "참새", "제비", "젖소", "염소", "여우", "악어", "사자", "사슴", "돼지", "기린"};
 
-    int randomIndex;
-
     public int QuestCount;  // 딕셔너리에 들어갈 퀘스트 갯수
+    public int SaveQuestStartCountData;
     public int RemainAnswer; // 게임 진행중 남은 정답 갯수
     public int CorrectAnswerCount; // 맞춘 정답 갯수
     public int ClickCount;
@@ -81,21 +80,21 @@ public class VeneziaManager : GameSetting
             string key = KorWord[i];
             QuestData data = new QuestData(sprites_KE[i], KorWord[i]);
             QuestKorean.Add(key, data);
-            // 딕셔너리에 입력되는 정보 확인용
-            print("Added Quest Data: Key = " + key + ", Description = " + data.description);
         }
         gameover.SetActive(false);
 
         Set_QuestCount();
-
         RemainAnswer = QuestCount;
+        SaveQuestStartCountData = QuestCount;
         totalReactionTime = 0;
         trueReactionTime = 0;
         CorrectAnswerCount = 0;
         ClickCount = 0;
+        ObjectPooling.Instance.CreateQuestPrefab(SaveQuestStartCountData/2);
         DisplayRandomQuest();
         //시간 시작 
         StartTime();
+        StartCoroutine(ObjectPooling.Instance.Cube_Co(QuestCount/2));
     }
     private void Update()
     {
@@ -294,53 +293,12 @@ public class VeneziaManager : GameSetting
         //QuestKorean.Count
         QuestData[] questArray = new QuestData[QuestKorean.Count];
         QuestKorean.Values.CopyTo(questArray, 0);
-        /*switch (step)
-        {
-            case 1:
-                randomIndex = Random.Range(0, QuestCount);
-                break;
-            case 2:
-                randomIndex = Random.Range(0, QuestCount);
-                break;
-            case 3:
-                randomIndex = Random.Range(0, QuestCount);
-                break;
-            case 4:
-                randomIndex = Random.Range(0, QuestCount);
-                break;
-            case 5:
-                randomIndex = Random.Range(0, QuestCount);
-                break;
-            case 6:
-                randomIndex = Random.Range(0, QuestCount);
-                break;
-            default:
-                break;
-        }*/
-        // 랜덤한 인덱스 선택
-
         QuestCount--;
-        QuestData selectedQuest;
-        if(questArray.Length == 0)
-        {
-            return null;
-        }
-        if(QuestCount > 1)
-        {
-            if(randomIndex == 0)
-            {
-                selectedQuest = questArray[randomIndex];
-            }
-            else
-            {
-                selectedQuest = questArray[randomIndex-1];
-
-            }
-        }
-        else
-        {
-             selectedQuest = questArray[randomIndex];
-        }
+        QuestData selectedQuest;// 너이새끼 왜안나오냐
+        //연속 출제를 방지하기 위해 마지막에 있는 것은 선택 방지
+        int randomIndex = Random.Range(0, ((SaveQuestStartCountData/2)-1));  
+        // 퀘스트가 1개남은상태에서 들어오면 QuestCount에의해 -- 되어 0개가된다. 
+        selectedQuest = questArray[randomIndex]; // 
         // 문제가 2개이상 있는 경우에는 , 가장 뒤에있는 문제를 제외한 문제중 하나를 출제
         // 단, 문제가 1개가 남았을 때는 그녀석을 출제 
         foreach (var kvp in QuestKorean)
@@ -348,14 +306,13 @@ public class VeneziaManager : GameSetting
             if (kvp.Value == selectedQuest)
             {
                 QuestKorean.Remove(kvp.Key);
-                QuestKorean.Add(kvp.Key,kvp.Value);
+                QuestKorean.Add(kvp.Key, kvp.Value);
                 break;
                 //선택된 문제를 출제하고 다시 저장을 1번만 실행
             }
         }
-        return selectedQuest;       
+        return selectedQuest;
     }
-
     private void GameOver()
     {
         isGameover = true;
