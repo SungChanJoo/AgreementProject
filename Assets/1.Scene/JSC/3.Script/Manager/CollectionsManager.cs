@@ -372,7 +372,8 @@ public class CollectionsManager : MonoBehaviour
                     text.text = _selectedCrew;
                     SetBtnColor(btn.GetComponent<Image>(), new Color32(_selectedR, _selectedG, _selectedB, 255));
                 }
-                SelectCrewManager.Instance.SelectedCrewIndex = selectIndex;
+                if (SelectCrewManager.Instance != null)
+                    SelectCrewManager.Instance.SelectedCrewIndex = selectIndex;
                 //선택된 대원 DB에 변경
                 _collections.SelectedCrew = selectIndex;
             }
