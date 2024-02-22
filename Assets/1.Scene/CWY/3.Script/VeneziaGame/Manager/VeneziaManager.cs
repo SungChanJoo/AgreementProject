@@ -35,7 +35,8 @@ public class VeneziaManager : GameSetting
     [SerializeField] private TextMeshProUGUI Quest_text;
     //한글 및 영어 문제에 사용 할 이미지 sprite 한글과 영어는 공용으로 사용하고 , 한자는 따로 
     [SerializeField] private Sprite[] sprites_KE;    // 1번부터 ~ 5번까지는 step1 ,  step 2는 
-    private string[] KorWord = { "곰" , "닭", "학", "하마", "말"};
+    private string[] KorWord = { "학" , "말", "닭", "곰", "하마", "표범", "팬더",
+            "타조", "쿼카", "치타", "참새", "제비", "젖소", "염소", "여우", "악어", "사자", "사슴", "돼지", "기린"};
 
     int randomIndex;
 
@@ -282,32 +283,76 @@ public class VeneziaManager : GameSetting
     public void NextQuest()
     {
         QuestData randomQuest = GetRandomQuest_Kr();
+        if (randomQuest == null) return;  //퀘스트가 전부 출제 되었을 때 다음문제 실행 방지
         Quest_Img.sprite = randomQuest.sprite;
         Quest_text.text = randomQuest.description;
     }
 
     private QuestData GetRandomQuest_Kr()
     {
+        if (QuestCount == 0) return null; //null 값 처리 (문제가 없을 때 사용)
+        //QuestKorean.Count
         QuestData[] questArray = new QuestData[QuestKorean.Count];
         QuestKorean.Values.CopyTo(questArray, 0);
+        /*switch (step)
+        {
+            case 1:
+                randomIndex = Random.Range(0, QuestCount);
+                break;
+            case 2:
+                randomIndex = Random.Range(0, QuestCount);
+                break;
+            case 3:
+                randomIndex = Random.Range(0, QuestCount);
+                break;
+            case 4:
+                randomIndex = Random.Range(0, QuestCount);
+                break;
+            case 5:
+                randomIndex = Random.Range(0, QuestCount);
+                break;
+            case 6:
+                randomIndex = Random.Range(0, QuestCount);
+                break;
+            default:
+                break;
+        }*/
         // 랜덤한 인덱스 선택
-        randomIndex = Random.Range(0, QuestCount);
+
         QuestCount--;
+        QuestData selectedQuest;
         if(questArray.Length == 0)
         {
             return null;
         }
-        QuestData selectedQuest = questArray[randomIndex];
-        // 출제된 퀘스트 데이터는 딕셔너리에서 제거 => 중복 출제 방지
+        if(QuestCount > 1)
+        {
+            if(randomIndex == 0)
+            {
+                selectedQuest = questArray[randomIndex];
+            }
+            else
+            {
+                selectedQuest = questArray[randomIndex-1];
+
+            }
+        }
+        else
+        {
+             selectedQuest = questArray[randomIndex];
+        }
+        // 문제가 2개이상 있는 경우에는 , 가장 뒤에있는 문제를 제외한 문제중 하나를 출제
+        // 단, 문제가 1개가 남았을 때는 그녀석을 출제 
         foreach (var kvp in QuestKorean)
         {
             if (kvp.Value == selectedQuest)
             {
                 QuestKorean.Remove(kvp.Key);
-                break; // 선택된 퀘스트가 한 번만 제거되도록 break설정
+                QuestKorean.Add(kvp.Key,kvp.Value);
+                break;
+                //선택된 문제를 출제하고 다시 저장을 1번만 실행
             }
         }
-        print("확인");
         return selectedQuest;       
     }
 
@@ -330,13 +375,13 @@ public class VeneziaManager : GameSetting
         switch (timeSet)
         {
             case 60:
-                QuestCount = 2;
+                QuestCount = 10;
                 break;
             case 180:
-                QuestCount = 3; // 예시 값
+                QuestCount = 14; // 예시 값
                 break;
             case 300:
-                QuestCount = 5; // 예시 값
+                QuestCount = 20; // 예시 값
                 break;
             default:
                 break;

@@ -430,7 +430,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 893c05464137fa14b9d3c300ba4adac6, type: 3}
+  m_Sprite: {fileID: 0}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -1599,7 +1599,7 @@ GameObject:
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
+  m_StaticEditorFlags: 2147483647
   m_IsActive: 1
 --- !u!4 &788314112
 Transform:
@@ -1629,14 +1629,29 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   CubePrefab:
-  - {fileID: 1079827597520798626, guid: f716e0d6343b652409d1935b63d8c279, type: 3}
-  - {fileID: 1079827597520798626, guid: 595e84be506fffc4cab8800cf5f7808d, type: 3}
   - {fileID: 1079827597520798626, guid: 42324beeb234f8b4b876e05c9fb72576, type: 3}
-  - {fileID: 1079827597520798626, guid: 860d2892839b6f24b890ad46d494a3e4, type: 3}
   - {fileID: 1079827597520798626, guid: 33189d79ff959af4ba9c7afeb6d9d974, type: 3}
+  - {fileID: 1079827597520798626, guid: 595e84be506fffc4cab8800cf5f7808d, type: 3}
+  - {fileID: 1079827597520798626, guid: f716e0d6343b652409d1935b63d8c279, type: 3}
+  - {fileID: 1079827597520798626, guid: 860d2892839b6f24b890ad46d494a3e4, type: 3}
+  - {fileID: 1079827597520798626, guid: 130d530c4e47cd540a5f32ced44df962, type: 3}
+  - {fileID: 1079827597520798626, guid: 6a69bc9a194094e46b0569c3eb939627, type: 3}
+  - {fileID: 1079827597520798626, guid: 241ae76cb42dfbc48be54b6f40361dea, type: 3}
+  - {fileID: 1079827597520798626, guid: 57ff032c9d8e7404287d558b96ab3f60, type: 3}
+  - {fileID: 1079827597520798626, guid: 6a7d44526dfdb934abe0865bf35339e2, type: 3}
+  - {fileID: 1079827597520798626, guid: 4c6f0473d5757cb4ba9b75f508f2b999, type: 3}
+  - {fileID: 1079827597520798626, guid: 0afb0bb9c359f10448f29d1f1f50af95, type: 3}
+  - {fileID: 1079827597520798626, guid: 91c7bed0914c4124bb609a41107f101a, type: 3}
+  - {fileID: 1079827597520798626, guid: dba4d76d03434bd49bf7c1805d480252, type: 3}
+  - {fileID: 1079827597520798626, guid: ba805f850956e3a48bd17d40bec9b798, type: 3}
+  - {fileID: 1079827597520798626, guid: f3895247912869e458c302f2ee05c587, type: 3}
+  - {fileID: 1079827597520798626, guid: 213b51e4fa42e664085e0e9918da24df, type: 3}
+  - {fileID: 1079827597520798626, guid: 36a78e6b285e4a640afd663e242f3e0d, type: 3}
+  - {fileID: 1079827597520798626, guid: 723906ca41418984a90628f629286c46, type: 3}
+  - {fileID: 1079827597520798626, guid: 6298f8856c104b14984c1179d96763ee, type: 3}
   Pool_Position: {fileID: 788314112}
   ParentObject: {fileID: 577192753}
-  MeteorPrefab: {fileID: 1860903464496173882, guid: 15b804bf8eb4b764386e2076d16c65ef, type: 3}
+  MeteorPrefab: {fileID: 371837130864099498, guid: 341d2eb32cfd00e45a350a399d1fbadf, type: 3}
   PausePrefab: {fileID: 3133072286338926989, guid: 2d81f266957498b4a9cb41ddefa9390e, type: 3}
   CubeCount: 1
   ItemCount: 5
@@ -2170,11 +2185,26 @@ MonoBehaviour:
   Quest_Img: {fileID: 240970841}
   Quest_text: {fileID: 1885517469}
   sprites_KE:
-  - {fileID: 21300000, guid: 28aca85ae782029448491822b42c2ac4, type: 3}
-  - {fileID: 21300000, guid: a2f5c8ade033f9742b703f8ce0f6cca2, type: 3}
-  - {fileID: 21300000, guid: a75112095ca32ef4c9314fc2f4c68cd9, type: 3}
-  - {fileID: 21300000, guid: 93c6fe202818cfb46881047d37dfb55e, type: 3}
-  - {fileID: 21300000, guid: cc5d6a1468146e942a93aba37ab2769c, type: 3}
+  - {fileID: 21300000, guid: 088f070eb522174439e18b6eebb58e6e, type: 3}
+  - {fileID: 21300000, guid: 52d7412bff6c7674a9a9bd476f49a1a9, type: 3}
+  - {fileID: 21300000, guid: 2218c0c90cdb276418f6bf71e437505a, type: 3}
+  - {fileID: 21300000, guid: bf482cc86c2692d40ad964bdf5c167d1, type: 3}
+  - {fileID: 21300000, guid: 780ee15c6a21ded4eb0115df4de3a5cf, type: 3}
+  - {fileID: 21300000, guid: a0c46e98289bdb14a8776e34ab80d14d, type: 3}
+  - {fileID: 21300000, guid: dd10260738713d44c9b7383afa325821, type: 3}
+  - {fileID: 21300000, guid: 07b3f36212193db4e8190fe8bcc3a157, type: 3}
+  - {fileID: 21300000, guid: 5280c6713ce272347ae9b0952e5e1bb0, type: 3}
+  - {fileID: 21300000, guid: 7dbbe09f0bdabf243ab9fbae5f7dd8ab, type: 3}
+  - {fileID: 21300000, guid: 2ad1f70752b43eb41b536f8809b5161d, type: 3}
+  - {fileID: 21300000, guid: 0c0320509f8118044b4b750766795a30, type: 3}
+  - {fileID: 21300000, guid: 111b5a4b83108da439a97ae3839fb770, type: 3}
+  - {fileID: 21300000, guid: 7ebc78f31d74778449ecd83dfb492a38, type: 3}
+  - {fileID: 21300000, guid: aa47a575a0225ae468dd7dbae150b557, type: 3}
+  - {fileID: 21300000, guid: 8abb6e46451bc9d4c8093b96cbe5a5dc, type: 3}
+  - {fileID: 21300000, guid: 7fa6c0fa6a88d6b478f5ef6aa69035c5, type: 3}
+  - {fileID: 21300000, guid: b6bbf8d71753605488950dc70a907636, type: 3}
+  - {fileID: 21300000, guid: 6cbcd38e96e215041b3f74b145b17ab3, type: 3}
+  - {fileID: 21300000, guid: 4019238692475d048ba002c60a3ac1f3, type: 3}
   QuestCount: 5
   RemainAnswer: 0
   CorrectAnswerCount: 0
