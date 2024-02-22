@@ -137,7 +137,7 @@ public class ObjectPooling : MonoBehaviour
 
     private void CreateQuestPrefab()
     {
-        for (int i = 0; i < CubePrefab.Length; i++)
+        for (int i = 0; i < VeneziaManager.Instance.QuestCount; i++)
         {
             for (int j = 0; j < CubeCount; j++)
             {
