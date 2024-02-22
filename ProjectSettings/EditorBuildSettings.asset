@@ -14,19 +14,13 @@ EditorBuildSettings:
   - enabled: 0
     path: Assets/1.Scene/HJB/1.Scene/HJB_ElementaryArithmeticGame.unity
     guid: fde9b5e682204254cafbffe7582098e9
-  - enabled: 1
-    path: Assets/1.Scene/CWY/1.Scene/VeneziaGame_Solo.unity
-    guid: 0e912cebe56caf84584b1b137e81103d
   - enabled: 0
     path: Assets/1.Scene/JSC/1.Scene/JSC_Test_EnterToMetaWorld.unity
     guid: 0712ca4adf74e384d9ff48bb9f5dee7d
   - enabled: 0
     path: Assets/1.Scene/JSC/1.Scene/JSC_Test_MetaWorld.unity
     guid: 2a179970b1c7b074f82c9d5d8c7d8a1c
-  - enabled: 0
-    path: Assets/1.Scene/RSJ/1.Scene/Client.unity
-    guid: e0b2fa4273588c7439112e9b3e2f6aa6
   - enabled: 1
-    path: Assets/1.Scene/RSJ/1.Scene/Server.unity
-    guid: 8d4e3223c38b259408de5818b7197c88
+    path: Assets/1.Scene/JSC/1.Scene/JSC_Test_Crew Collections.unity
+    guid: 05d7099621dc59246b0f5dd3608e0eca
   m_configObjects: {}

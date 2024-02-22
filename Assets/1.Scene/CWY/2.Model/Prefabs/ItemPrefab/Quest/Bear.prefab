@@ -15,7 +15,7 @@ GameObject:
   - component: {fileID: 1079827597520798624}
   - component: {fileID: 1079827597520798628}
   m_Layer: 0
-  m_Name: Bear
+  m_Name: bear
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -118,7 +118,7 @@ MonoBehaviour:
   SaveSpeed: 0
   AccelerationSpeed: 1.05
   isStart: 1
-  sprite: {fileID: 21300000, guid: 28aca85ae782029448491822b42c2ac4, type: 3}
+  sprite: {fileID: 21300000, guid: bf482cc86c2692d40ad964bdf5c167d1, type: 3}
   count: 0
 --- !u!54 &1079827597520798628
 Rigidbody:
@@ -203,7 +203,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 28aca85ae782029448491822b42c2ac4, type: 3}
+  m_Sprite: {fileID: 21300000, guid: bf482cc86c2692d40ad964bdf5c167d1, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
