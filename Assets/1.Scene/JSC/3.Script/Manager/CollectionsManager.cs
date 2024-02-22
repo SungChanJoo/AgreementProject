@@ -9,9 +9,13 @@ using kcp2k;
 
 public class Crew
 {
-    public GameObject DetailCrew;
-    public Text CrewName;
-    public Text CrewDescript;
+    public string CrewName { get; private set; }
+    public string CrewDescript { get; private set; }
+    public Crew(string crewName, string crewDescript)
+    {
+        CrewName = crewName;
+        CrewDescript = crewDescript;
+    }
 }
 
 //펫을 고르고 메타별에 입장을 관리하는 매니져
@@ -44,8 +48,13 @@ public class CollectionsManager : MonoBehaviour
     [Header("ViewDetails")]
     public GameObject DetailWindow;
     public List<Crew> CrewInfo;
+    public List<GameObject> CrewModel; 
+    public TMP_Text CrewName;
+    public TMP_Text CrewDescript;
+    public int seletedDetailModel;
 
-
+    private Quaternion _modelRotationY;
+    [SerializeField] private float _rotateSpeedModifier = 0.1f;
     public Action OnCheckPurchasePossibility; //돈 갱신될때마다 호출
 
     private void Awake()
@@ -57,6 +66,7 @@ public class CollectionsManager : MonoBehaviour
         //todo 0220 DB에서 플레이어 돈 받아와서 할당해줘
         moneyText.text = $"{_money}";
         SetCollections();
+        DetailCrewData();
     }
     private void OnEnable()
     {
@@ -97,10 +107,92 @@ public class CollectionsManager : MonoBehaviour
         }
     }
 
-    public void ViewDetails()
+    #region 대원상세보기
+    //대원상세보기버튼 이벤트
+    public void OnViewDetails(int crewNumber)
     {
+        Debug.Log($"crewNumber : {crewNumber}");
+        //상세보기가 켜질 때
+        if (!DetailWindow.activeSelf)
+        {
+            if (CrewInfo[crewNumber] != null)
+            {
+                CrewModel[crewNumber].SetActive(true);
+                CrewName.text = $"대원이름 : {CrewInfo[crewNumber].CrewName}";
+                CrewDescript.text = $"대원설명 {CrewInfo[crewNumber].CrewDescript}";
+                seletedDetailModel = crewNumber;
+
+            }
+            else
+            {
+                CrewName.text = $"대원이름 : 없음 {crewNumber}";
+                CrewDescript.text = $"대원설명 없음 {crewNumber}";
+            }
+            //모델 회전 코루틴 시작
+            if (currentRotateCrewModel_co == null)
+            {
+                currentRotateCrewModel_co = RotateCrewModel_co();
+                StartCoroutine(currentRotateCrewModel_co);
+            }
+        }
+        //상세보기가 꺼질 때
+        else
+        {
+            if (CrewInfo[seletedDetailModel] != null)
+            {
+                CrewModel[seletedDetailModel].SetActive(false);
+                CrewName.text = string.Empty;
+                CrewDescript.text = string.Empty;
+            }
+            //모델 회전 코루틴 종료
+            if (currentRotateCrewModel_co != null)
+            {
+                currentRotateCrewModel_co = null;
+            }
+        }
+
+        DetailWindow.SetActive(!DetailWindow.activeSelf);
 
     }
+    IEnumerator currentRotateCrewModel_co = null;
+    IEnumerator RotateCrewModel_co()
+    {
+        Ray ray;
+        while (currentRotateCrewModel_co != null)
+        {
+            if (Application.platform == RuntimePlatform.Android)
+            {
+                var touch = Input.GetTouch(0);
+                if (Input.touchCount > 0 && touch.phase == TouchPhase.Moved)
+                {
+                    //if(touch.phase == TouchPhase.Moved)
+                    {
+                        _modelRotationY = Quaternion.Euler(
+                            0f,
+                            -touch.deltaPosition.x * _rotateSpeedModifier,
+                            0f);
+                        CrewModel[seletedDetailModel].transform.rotation = _modelRotationY * transform.rotation;
+                    }
+                    ray = Camera.main.ScreenPointToRay(Input.GetTouch(0).position);
+                }
+            }
+            else
+            {
+                //if (Input.GetMouseButtonDown(0))
+                {
+                    float _modelRotationY = Input.GetAxis("Mouse X") * 2f;
+
+                    CrewModel[seletedDetailModel].transform.Rotate(Vector3.down, _modelRotationY);
+                    ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+
+                    Debug.Log($"{CrewModel[seletedDetailModel].name}Rotate {_modelRotationY}");
+
+                }
+            }
+            yield return null;
+        }
+    } 
+    #endregion
     //전체 대원, 보유 대원 전환
     public void ToggleOwnedCrew()
     {
@@ -126,7 +218,6 @@ public class CollectionsManager : MonoBehaviour
         ownedCrew.Add(false);
         ownedCrew.Add(false);
         ownedCrew.Add(false);
-
         collections = new ExpenditionCrew(selectedCrew, ownedCrew);
 
         //텍스트, 버튼 초기화
@@ -223,5 +314,16 @@ public class CollectionsManager : MonoBehaviour
     public void SetBtnColor(Image button, Color color)
     {
         button.color = color;
+    }
+
+    public void DetailCrewData()
+    {
+        CrewInfo = new List<Crew>();
+        CrewInfo.Add(new Crew("바보", "바보에요"));
+        CrewInfo.Add(new Crew("바보1", "바보에요1"));
+        CrewInfo.Add(new Crew("바보2", "바보에요2"));
+        CrewInfo.Add(new Crew("바보3", "바보에요3"));
+        CrewInfo.Add(new Crew("바보4", "바보에요4"));
+        CrewInfo.Add(new Crew("바보5", "바보에요5"));
     }
 }

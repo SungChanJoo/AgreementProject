@@ -16,7 +16,7 @@ public class TableName
 
         // Game tablename
         string game_TableName;
-        string[] game_Names = { "calculation", "venezia_chn" };
+        string[] game_Names = { "venezia_kor", "venezia_eng", "venezia_chn", "calculation", "gugudan" };
         int[] levels = { 1, 2, 3 };
         int[] steps = { 1, 2, 3, 4, 5, 6 };
 

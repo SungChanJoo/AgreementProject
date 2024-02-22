@@ -56,7 +56,7 @@ public class ItemFnc : MonoBehaviour
 
     private void GameOver()
     {
-        if (VeneziaManager.Instance.isGameover) gameObject.SetActive(false);
+        //if (VeneziaManager.Instance.isGameover) gameObject.SetActive(false);
     }
 
 

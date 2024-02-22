@@ -61,7 +61,13 @@ public class GuGUDan_Fnc : MonoBehaviour
     //문제 출제 후 반응속도 시간 재기 정답만
     float trueReactionTime = 0f; //정답을 맞췄을때의 반응속도
     float totalReactionTime = 0f;
+
+    //최종 반응속도
+    float ReactionTime;
+
     string buttonText;
+
+    
 
     //스탭별 케이스 선택지 번호 확인
     int CaseNum;
@@ -260,7 +266,7 @@ public class GuGUDan_Fnc : MonoBehaviour
         {
             //Todo : 게임 종료 로직 구현해주세요 > 게임화면 종료하고 결과창? 띄워줄듯
             //반응속도 쳌
-            print(trueReactionTime / TrueAnswerCount);
+            ReactionTime = trueReactionTime / TrueAnswerCount;
             isGameOver = true;
             totalReactionTime = 0;
         }
@@ -484,7 +490,6 @@ public class GuGUDan_Fnc : MonoBehaviour
     {
         // 게임시간이 끝날 때 까지 정답을 몇개나 맞췄는지 반응속도 잴것.
         totalReactionTime += Time.deltaTime; // 코루틴XXXX
-       //   trueReactionTime = (isAnswerCorrect) ? (trueReactionTime += totalReactionTime) : (trueReactionTime += 0); // 정답을 맞춘 경우에는 시간을 더해줄것 아닌경우에는 0을더함(반응속도에 영향x)
         if (isAnswerCorrect)
         {
             trueReactionTime += totalReactionTime;

@@ -26,13 +26,17 @@ public interface ITimeSlider
     public bool isStop = false;
     public bool isGameOver = false;
 
-    public float startTime = 6f; //Todo : 추후 재백이에게 데이터값을 받아와서 그값으로 변경
-    public float duration = 6f;  //Todo : 위와동일 => 
+    [HideInInspector]public float startTime; //Todo : 추후 재백이에게 데이터값을 받아와서 그값으로 변경
+    [HideInInspector]public float duration;  //Todo : 위와동일 => 
     public float Decreasetime;
 
+    public bool TimeStop = true;
+
+    IEnumerator timeSlider_co;
     private void Awake()
     {
-        if(Instance == null)
+        
+        if (Instance == null)
         {
             Instance = this;
         }
@@ -44,6 +48,7 @@ public interface ITimeSlider
 
     private IEnumerator timeSlider() //추후 메인 UI에서 시간설정하면 값을 받아올 것
     {
+        Debug.Log("코루틴실행중");
         float endTime = 0f;
         Color startColor = sliderVar_Image.color; // 시작 색상
         while (startTime > endTime)
@@ -61,10 +66,6 @@ public interface ITimeSlider
         slider.value = 0; // 종료 시간에 맞춰 슬라이더의 값을 설정 약간의 오차를 방지하기위해 값을 한번더 명시.
     }
 
-    private void Start()
-    {
-        StartCoroutine(timeSlider());
-    }
 
     private void Update()
     {
@@ -99,7 +100,7 @@ public interface ITimeSlider
 
     public void DecreaseTime()
     {
-        TimeSlider.Instance.startTime -= Decreasetime;
+        Instance.startTime -= Decreasetime;
     }
 
     public void DecreaseTime_Item(int Decreasetime)
@@ -118,7 +119,28 @@ public interface ITimeSlider
             time = Time.unscaledDeltaTime;
         }
     }
-
+    public void StartTime()
+    {
+        timeSlider_co = timeSlider();
+        StartCoroutine(timeSlider_co);
+    }
+    public void TimeSliderControll()
+    {        
+        //시간 설정 변경을 위한 연산
+        TimeStop = TimeStop.Equals(true) ? false : true;
+        if (!TimeStop && timeSlider_co == null)
+        {
+            //시간을 다시 흐르게
+            timeSlider_co = timeSlider();
+            StartCoroutine(timeSlider_co);
+        }
+        else
+        {
+            //설정창 및 결과표 출력시 시간 정지
+            StopCoroutine(timeSlider_co);
+            timeSlider_co = null;
+        }
+    }
     public void GameOver()
     {
         isGameOver = true;
