@@ -3,24 +3,15 @@ using System.Collections.Generic;
 
 public class Result_DB
 {
-    public string playerName { get; private set; }
-
-    public Game_Type game_type;
-
+    public string playerName;
     public byte[] image;
-
-    public int Level { get; private set; }
-    public int Step { get; private set; }
-    public string Day { get; private set; }
-    public int TotalAnswers { get; private set; }
-
+    public string Day;
+    public int TotalAnswers;
+    public float TotalTime;
+    
     public Dictionary<(Game_Type, int, int), Data_value> Data = 
         new Dictionary<(Game_Type, int, int), Data_value>();
-
-    public Result_DB(int level, int step, string day)
-    {        
-        Day = day;        
-    }
+    
 }
 public class Data_value
 {

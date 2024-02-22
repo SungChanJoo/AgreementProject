@@ -35,23 +35,29 @@ public abstract class GameSetting : MonoBehaviour
     public Result_Printer result_Printer;
 
     [SerializeField] GameObject resultCanvas_UI;
+
+    IEnumerator UpdateDatabaseFromData_co;
     private void Awake()
     {
-        
+
     }
     private void Start()
     {
+        UpdateDatabaseFromData_co = UpdateDatabaseFromData();
         startSet();
     }
-   
+
     private void startSet()
     {
         //선택한 레벨, 스텝, 시간 값 초기 설정
-        game_Type = (Game_Type)SceneManager.GetActiveScene().buildIndex-2;
+        game_Type = (Game_Type)SceneManager.GetActiveScene().buildIndex - 2;
         step = StepManager.Instance.CurrentStep;
-        level = StepManager.Instance.CurrentLevel;        
-        timeSet = StepManager.Instance.CurrentTime;        
+        level = StepManager.Instance.CurrentLevel;
+        print(step);
+        timeSet = StepManager.Instance.CurrentTime;
+        print("1");
         TimeSlider.Instance.startTime = timeSet;
+        print("2");
         TimeSlider.Instance.duration = timeSet;
         //로직에 의한 시작
         SplitLevelAndStep();
@@ -80,12 +86,18 @@ public abstract class GameSetting : MonoBehaviour
             case 1:
                 Level_1(step);
                 break;
-            case 2: 
+            case 2:
                 Level_2(step);
                 break;
             case 3:
                 Level_3(step);
                 break;
+        }
+        Result_DB sdf = new Result_DB();
+        for (int i = 0; i < level; i++)
+        {
+            Data_value asdf = new(reactionRate, answersCount, answers, playTime, totalScore);
+            sdf.Data.Add((game_Type, level, step), asdf);
         }
     }
     protected abstract void Level_1(int step);
@@ -106,9 +118,10 @@ public abstract class GameSetting : MonoBehaviour
         //남은시간
         remainingTime = TimeSlider.Instance.startTime;
         playTime = TimeSlider.Instance.duration - remainingTime;
-        
+
         //Result_Data에 게임결과 할당
         ScoreCalculation();
+        StartCoroutine(UpdateDatabaseFromData_co);
         //결과표 텍스트 출력
         ResultPrinter_UI();
     }
@@ -121,7 +134,7 @@ public abstract class GameSetting : MonoBehaviour
     protected void ResultPrinter_UI()
     {
         //결과표 출력 Result_Data Class 형식으로 넘겨주기
-        result_Printer.ShowText(result_data);
+        result_Printer.ShowText(result_data,game_Type);
     }
 
     protected void ScoreCalculation()
@@ -144,7 +157,7 @@ public abstract class GameSetting : MonoBehaviour
         switch (timeSet)
         {
             case (int)TimeSet._1m:
-                t = z *3 * 3 + 1;
+                t = z * 3 * 3 + 1;
                 break;
             case (int)TimeSet._3m:
                 t = (z) * 3 + 1;
@@ -156,21 +169,22 @@ public abstract class GameSetting : MonoBehaviour
         //난이도 계수
         float n = 1f + level * step / 10f;
         totalScore =
-            (int)((answersCount * t + 1) + (n*answers / 100f) * (1 + y * x));
-        
+            (int)((answersCount * t + 1) + (n * answers / 100f) * (1 + y * x));
+
         //총 점수 십의자리수 날리기
         totalScore = (int)(totalScore / 100f) * 100;
 
     }
 
-    private void UpdateDatabaseFromData()
+    private IEnumerator UpdateDatabaseFromData()
     {
-        Result_DB result_DB = new Result_DB(level,step,"23-02-21");
+        //string day = System.DateTime.Now.ToString("dd-MM-yy");
+        Result_DB result_DB = new Result_DB();
         Data_value data_Value = new Data_value(reactionRate, answersCount, answers, playTime, totalScore);
         //Reult_DB가 Null일 때 처리
-        if (!result_DB.Data.ContainsKey((game_Type,level,step)))
+        if (!result_DB.Data.ContainsKey((game_Type, level, step)))
         {
-            result_DB.Data.Add((game_Type, level, step), data_Value);
+            result_DB.Data.Add((game_Type, level, step), data_Value);            
         }
         else
         {
@@ -180,10 +194,11 @@ public abstract class GameSetting : MonoBehaviour
                 result_DB.Data[(game_Type, level, step)] = data_Value;
             }
         }
+        Client.instance.SaveResultDataToDB(result_DB,game_Type,level,step);
+        yield return null;
     }
     public void Setting_UI()
     {
-        
         SettingManager.Instance.Setting_Btn();
     }
     public void RestartGame()
@@ -191,7 +206,7 @@ public abstract class GameSetting : MonoBehaviour
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
     }
     public void NextStep_Btn()
-    {        
+    {
         StepManager.Instance.NextStep();
     }
     public void ExitGame()
