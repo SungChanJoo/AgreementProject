@@ -21,7 +21,7 @@ public class VeneziaManager : GameSetting
     public static VeneziaManager Instance = null;
     //전반적인 배네치아 게임을 관리하기 위한 스크립트
     //게임을 진행하면서 정답을 판정해주고, 정답란에 표기해줄 ui를 갈아끼워줄 역할 을 수행 할 것.
-
+     
     [SerializeField] private GameObject gameover; // 테스트용 게임오버 이미지
 
     public bool isGameover = false;
