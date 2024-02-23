@@ -37,7 +37,12 @@ public class VeneziaManager : GameSetting
     [SerializeField] private Sprite[] sprites_KE;    // 1번부터 ~ 5번까지는 step1 ,  step 2는 
     private string[] KorWord = { "학" , "말", "닭", "곰", "하마", "표범", "팬더",
             "타조", "쿼카", "치타", "참새", "제비", "젖소", "염소", "여우", "악어", "사자", "사슴", "돼지", "기린"};
-
+    private string[] EnglishWord =
+    {
+        "Crane", "Horse", "Chicken", "Bear", "Hippopotamus", "Leopard", "Panda",
+        "Ostrich", "Quokka", "Cheetah", "Sparrow", "Swallow", "Cow", "Goat", "Fox", 
+        "Crocodile", "Lion", "Deer", "Pig", "Giraffe"
+    };
     public int QuestCount;  // 딕셔너리에 들어갈 퀘스트 갯수 //10문제 <
     public int SaveQuestStartCountData;
     public int RemainAnswer; // 게임 진행중 남은 정답 갯수
@@ -55,7 +60,7 @@ public class VeneziaManager : GameSetting
     float ReactionTime;
 
     //한국어 관련 문제 데이터 저장
-    public Dictionary<string, QuestData> QuestKorean = new Dictionary<string, QuestData>();
+    public Dictionary<string, QuestData> Quest = new Dictionary<string, QuestData>();
     //영어 관련 문제 데이터 저장
     public Dictionary<string, QuestData> QuestEnglish = new Dictionary<string, QuestData>();
     //한자 관련 문제 
@@ -75,14 +80,31 @@ public class VeneziaManager : GameSetting
      
     }    
     
-    private void StartSet()
+    private void StartSet(int lv)
     {
-        for (int i = 0; i < sprites_KE.Length; i++)
+        if(lv == 1)
         {
-            string key = KorWord[i];
-            QuestData data = new QuestData(sprites_KE[i], KorWord[i]);
-            QuestKorean.Add(key, data);
+            for (int i = 0; i < sprites_KE.Length; i++)
+            {
+                string key = KorWord[i];
+                QuestData data = new QuestData(sprites_KE[i], KorWord[i]);
+                Quest.Add(key, data);
+            }
         }
+        else if(lv == 2)
+        {
+            for (int i = 0; i < sprites_KE.Length; i++)
+            {
+                string key = EnglishWord[i];
+                QuestData data = new QuestData(sprites_KE[i], EnglishWord[i]);
+                Quest.Add(key, data);
+            }
+        }
+        else
+        {
+            //Todo : 한자 문제 셋팅 해주세요
+        }
+
         gameover.SetActive(false);
 
         Set_QuestCount();
@@ -102,7 +124,7 @@ public class VeneziaManager : GameSetting
     {
         //  GameStop();
         Click_Obj();        
-        if(TimeSlider.Instance.startTime == 0)
+        if(TimeSlider.Instance.startTime < 0 && !isGameover)
         {                
             GameOver();            
         }
@@ -204,7 +226,8 @@ public class VeneziaManager : GameSetting
     }
     protected override void Level_1(int step)
     {
-        StartSet();        
+        int lv = 1;
+        StartSet(lv);        
         switch (step)
         {
             case 1:
@@ -226,10 +249,12 @@ public class VeneziaManager : GameSetting
     }
     protected override void Level_2(int step)
     {
+        int lv = 2;
+        StartSet(lv);
         switch (Step)
         {
             case 1:
-
+                NextQuest();
                 break;
             case 2:
                 break;
@@ -285,36 +310,36 @@ public class VeneziaManager : GameSetting
 
     public void NextQuest()
     {
-        QuestData randomQuest = GetRandomQuest_Kr();
+        QuestData randomQuest = GetRandomQuest();
         if (randomQuest == null) return;  //퀘스트가 전부 출제 되었을 때 다음문제 실행 방지
         Quest_Img.sprite = randomQuest.sprite;
         Quest_text.text = randomQuest.description;
     }
 
-    private QuestData GetRandomQuest_Kr()
+    private QuestData GetRandomQuest()
     {
         if (QuestCount == 0) return null; //null 값 처리 (문제가 없을 때 사용)
         //QuestKorean.Count
-        QuestData[] questArray = new QuestData[QuestKorean.Count];
-        QuestKorean.Values.CopyTo(questArray, 0);
+        QuestData[] questArray = new QuestData[Quest.Count];
+        Quest.Values.CopyTo(questArray, 0);
         QuestCount--;
-        QuestData selectedQuest;// 너이새끼 왜안나오냐
-        //연속 출제를 방지하기 위해 마지막에 있는 것은 선택 방지
+        QuestData selectedQuest;
+        //연속 출제를 방지
         while (randomIndex == SaverandomIndex)
         {
-            randomIndex = Random.Range(0, ((SaveQuestStartCountData/2)));  
+            randomIndex = Random.Range(0, ((SaveQuestStartCountData/2)));  // Todo : prototype이 아닌 cbt 제작 과정에서는 0 < 부분을 스텝에 맞는 인덱스를 가져 올 수 있도록 설정 변경 할 것.
         }
         // 퀘스트가 1개남은상태에서 들어오면 QuestCount에의해 -- 되어 0개가된다. 01234<
         selectedQuest = questArray[randomIndex]; // 
         SaverandomIndex = randomIndex;
         // 문제가 2개이상 있는 경우에는 , 가장 뒤에있는 문제를 제외한 문제중 하나를 출제
         // 단, 문제가 1개가 남았을 때는 그녀석을 출제 
-        foreach (var kvp in QuestKorean)
+        foreach (var kvp in Quest)
         {
             if (kvp.Value == selectedQuest)
             {
-                QuestKorean.Remove(kvp.Key);
-                QuestKorean.Add(kvp.Key, kvp.Value);
+                Quest.Remove(kvp.Key);
+                Quest.Add(kvp.Key, kvp.Value);
                 break;
                 //선택된 문제를 출제하고 다시 저장을 1번만 실행
             }
@@ -323,6 +348,7 @@ public class VeneziaManager : GameSetting
     }
     private void GameOver()
     {
+        TimeSlider.Instance.startTime = 0;
         isGameover = true;
         totalQuestions = ClickCount;
         ReactionTime = trueReactionTime / CorrectAnswerCount;
@@ -351,11 +377,14 @@ public class VeneziaManager : GameSetting
             default:
                 break;
         }
-        
-        Debug.Log(totalQuestions);
     }
     private void AnswerRate()
     {
+        if (CorrectAnswerCount == 0)
+        {
+            answers = 0;
+            return;
+        }
         answers = CorrectAnswerCount * 100 / ClickCount;
     }
 }
