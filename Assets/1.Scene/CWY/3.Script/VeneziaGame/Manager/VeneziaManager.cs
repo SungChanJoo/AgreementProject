@@ -16,7 +16,6 @@ public class QuestData
     }
 }
 
-
 public class VeneziaManager : GameSetting
 {
     public static VeneziaManager Instance = null;
@@ -39,7 +38,7 @@ public class VeneziaManager : GameSetting
             "타조", "쿼카", "치타", "참새", "제비", "젖소", "염소", "여우", "악어", "사자", "사슴", "돼지", "기린"};
     private string[] EnglishWord =
     {
-        "Crane", "Horse", "Chicken", "Bear", "Hippopotamus", "Leopard", "Panda",
+        "Crane", "Horse", "Chicken", "Bear", "Hippo", "Leopard", "Panda",
         "Ostrich", "Quokka", "Cheetah", "Sparrow", "Swallow", "Cow", "Goat", "Fox", 
         "Crocodile", "Lion", "Deer", "Pig", "Giraffe"
     };
@@ -80,9 +79,10 @@ public class VeneziaManager : GameSetting
      
     }    
     
-    private void StartSet(int lv)
+    private void StartSet()
     {
-        if(lv == 1)
+        //1 3 4 B D E 한글 영어 한좌
+        if(game_Type == Game_Type.B)
         {
             for (int i = 0; i < sprites_KE.Length; i++)
             {
@@ -91,7 +91,7 @@ public class VeneziaManager : GameSetting
                 Quest.Add(key, data);
             }
         }
-        else if(lv == 2)
+        else if(game_Type == Game_Type.D)
         {
             for (int i = 0; i < sprites_KE.Length; i++)
             {
@@ -102,7 +102,7 @@ public class VeneziaManager : GameSetting
         }
         else
         {
-            //Todo : 한자 문제 셋팅 해주세요
+            //Todo : 한자 문제 셋팅 해주세요..........
         }
 
         gameover.SetActive(false);
@@ -119,6 +119,8 @@ public class VeneziaManager : GameSetting
         //시간 시작 
         StartTime();
         StartCoroutine(ObjectPooling.Instance.Cube_Co());
+
+        print("겜타 " + game_Type);
     }
     private void Update()
     {
@@ -226,8 +228,7 @@ public class VeneziaManager : GameSetting
     }
     protected override void Level_1(int step)
     {
-        int lv = 1;
-        StartSet(lv);        
+        StartSet();        
         switch (step)
         {
             case 1:
@@ -249,8 +250,7 @@ public class VeneziaManager : GameSetting
     }
     protected override void Level_2(int step)
     {
-        int lv = 2;
-        StartSet(lv);
+        StartSet();
         switch (Step)
         {
             case 1:
