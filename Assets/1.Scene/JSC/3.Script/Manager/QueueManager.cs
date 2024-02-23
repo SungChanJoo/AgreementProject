@@ -58,9 +58,9 @@ public class QueueManager : NetworkBehaviour
     {
         if (isClient)
         {
-            if (SelectCrewManager.Instance != null)
+            if (CrewSelectManager.Instance != null)
                 //SelectedPetIndex에 따라 플레이어 프리펩 변경
-                CmdEnterPlayer(SelectCrewManager.Instance.SelectedCrewIndex);
+                CmdEnterPlayer(CrewSelectManager.Instance.SelectedCrewIndex);
         }
     }
     //플레이어가 서버에 접속했을 때 처리
