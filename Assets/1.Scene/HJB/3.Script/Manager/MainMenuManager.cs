@@ -11,6 +11,7 @@ public class MainMenuManager : MonoBehaviour
     [SerializeField] private GameObject CollectionCavas;
     [SerializeField] private GameObject LevelCavas;
     [SerializeField] private GameObject CameraCavas;
+    [SerializeField] private GameObject AlbumCavas;
     [SerializeField] private GameObject ProfileCanvas;
     [SerializeField] private GameObject StepCanvas;
 
@@ -69,6 +70,10 @@ public class MainMenuManager : MonoBehaviour
     public void Camera_UI()
     {
         CameraCavas.SetActive(!CameraCavas.activeSelf);
+    }
+    public void Album_UI()
+    {
+        AlbumCavas.SetActive(!AlbumCavas.activeSelf);
     }
     public void MetaWorldPetSelect_UI()
     {
