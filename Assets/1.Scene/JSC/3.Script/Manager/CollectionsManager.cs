@@ -40,10 +40,15 @@ public class CollectionsManager : MonoBehaviour
     [SerializeField]  private List<GameObject> _crewList;
     private List<TMP_Text> _crewStatusText;
     private List<GameObject> _crewStatusBtn;
+    [SerializeField] private GameObject _alreadySeletedCrewUI;
 
     [Header("Purchase")]
     [SerializeField] private GameObject _purchaseWindow;
     [SerializeField] private TMP_Text _purchaseText;
+    [SerializeField] private GameObject _purchaseBtn;
+    [SerializeField] private GameObject _deniedPurchaseUI;
+    [SerializeField] private float _deniedPurchaseDuration;
+    
     private int _money = 200;
     [SerializeField] private TMP_Text _moneyText;
 
@@ -55,6 +60,7 @@ public class CollectionsManager : MonoBehaviour
     [SerializeField] private TMP_Text _crewName;
     [SerializeField] private TMP_Text _crewDescript;
     [SerializeField] private GameObject _detailSelectBtn;
+    [SerializeField] private TMP_Text _detailSelectText;
 
     private int _seletedDetailModel;
     private GameObject _ModelSpace;
@@ -88,15 +94,48 @@ public class CollectionsManager : MonoBehaviour
 
     public void OnViewPurchase(int crewNumber)
     {
-        //영입창 켜질때
-        if (!_purchaseWindow.activeSelf)
+        if (crewNumber > -1)
         {
-            _purchaseText.text = $"[{_crewInfo[crewNumber].CrewName}]을 영입하시겠습니까?";
+            var crewCost = Convert.ToInt32(_crewStatusText[crewNumber].text);
+            if (_money >= crewCost)
+            {
+                //영입창 켜질때
+                if (!_purchaseWindow.activeSelf)
+                {
+                    _purchaseText.text = $"[{_crewInfo[crewNumber].CrewName}]을 영입하시겠습니까?";
+                    //상세보기가 켜져있다면
+                    if (!_detailWindow.activeSelf)
+                        _purchaseBtn.GetComponent<Button>().onClick.AddListener(() => OnPurchaseCrew(crewNumber));
+                    else
+                        _purchaseBtn.GetComponent<Button>().onClick.AddListener(() => OnPurchaseCrew(crewNumber, _detailSelectBtn, _detailSelectText));
+                }
+                _purchaseWindow.SetActive(!_purchaseWindow.activeSelf);
+            }
+            else
+            {
+                StartCoroutine(ViewDeniedPurchase_co());
+                Debug.Log("구매할 수 없음");
+            }
         }
-        _purchaseWindow.SetActive(!_purchaseWindow.activeSelf);
+        //닫기버튼
+        else
+        {
+            _purchaseWindow.SetActive(!_purchaseWindow.activeSelf);
+        }
+
     }
-
-
+    IEnumerator ViewDeniedPurchase_co()
+    {
+        _deniedPurchaseUI.SetActive(true);
+        yield return new WaitForSeconds(_deniedPurchaseDuration);
+        _deniedPurchaseUI.SetActive(false);
+    }
+    IEnumerator ViewAlreadySeletedCrew_co()
+    {
+        _alreadySeletedCrewUI.SetActive(true);
+        yield return new WaitForSeconds(_deniedPurchaseDuration);
+        _alreadySeletedCrewUI.SetActive(false);
+    }
     #region 대원상세보기
     //대원상세보기버튼 이벤트
     public void OnViewDetails(int crewNumber)
@@ -105,9 +144,8 @@ public class CollectionsManager : MonoBehaviour
         //상세보기가 켜질 때
         if (!_detailWindow.activeSelf)
         {
-            var btnText = _detailSelectBtn.transform.GetChild(0).GetComponent<TMP_Text>();
-            btnText.text = _crewStatusText[crewNumber].text;
-            SetupCrewSelectionBtn(crewNumber, _detailSelectBtn, btnText);
+            _detailSelectText.text = _crewStatusText[crewNumber].text;
+            SetupCrewSelectionBtn(crewNumber, _detailSelectBtn, _detailSelectText);
             if (_crewInfo[crewNumber] != null)
             {
                 _crewModel[crewNumber].SetActive(true);
@@ -258,14 +296,14 @@ public class CollectionsManager : MonoBehaviour
             button = btn.GetComponent<Button>();
             buttonText = text;
         }
-        int crewIndex = i; //클로저 방지
+        int crewNumber = i; //클로저 방지
         //선택되어 있던 대원은 "출동!" 텍스트
         if (_collections.SelectedCrew == i)
         {
             if (btn == null && text == null) 
-                button.onClick.AddListener(() => OnSelectPet(crewIndex));
+                button.onClick.AddListener(() => OnSelectPet(crewNumber));
             else
-                button.onClick.AddListener(() => OnSelectPet(crewIndex, btn, text));
+                button.onClick.AddListener(() => OnSelectPet(crewNumber, btn, text));
             buttonText.text = _selectedCrew;
             SetBtnColor(buttonImg, new Color32(_selectedR, _selectedG, _selectedB, 255));
         }
@@ -273,9 +311,9 @@ public class CollectionsManager : MonoBehaviour
         else if (_collections.OwnedCrew[i])
         {
             if (btn == null && text == null) 
-                button.onClick.AddListener(() => OnSelectPet(crewIndex));
+                button.onClick.AddListener(() => OnSelectPet(crewNumber));
             else 
-                button.onClick.AddListener(() => OnSelectPet(crewIndex, btn, text));
+                button.onClick.AddListener(() => OnSelectPet(crewNumber, btn, text));
             buttonText.text = _ownedCrew;
             SetBtnColor(buttonImg, new Color32(_defaultR, _defaultG, _defaultB, 255));
         }
@@ -284,10 +322,10 @@ public class CollectionsManager : MonoBehaviour
         {
             if (btn == null && text == null) 
                 //button.onClick.AddListener(() => OnPurchaseCrew(crewIndex));
-                button.onClick.AddListener(() => OnViewPurchase(crewIndex));
+                button.onClick.AddListener(() => OnViewPurchase(crewNumber));
             else 
                 //button.onClick.AddListener(() => OnPurchaseCrew(crewIndex, btn, text));
-                button.onClick.AddListener(() => OnViewPurchase(crewIndex));
+                button.onClick.AddListener(() => OnViewPurchase(crewNumber));
             //보유한 금액보다 탐험대원의 비용이 더 비싸면 deniedPurchase
             if (_money < Convert.ToInt32(_crewStatusText[i].text))
             {
@@ -304,38 +342,48 @@ public class CollectionsManager : MonoBehaviour
     public void OnSelectPet(int selectIndex, GameObject btn = null, TMP_Text text = null)
     {
         Debug.Log("SelectPet");
-        //대원이 "출동 대기" -> "출동!" 으로, 이전 "출동!" -> "출동 대기" 상태로 변경
-        if (_crewStatusText[selectIndex].text.Equals(_ownedCrew))
+        //이미 선택된 대원입니다.
+        if (_collections.SelectedCrew == selectIndex)
         {
-            //"출동!" 찾기
-            for (int i = 0; i < _crewStatusText.Count; i++)
-            {
-                // 보유중이고, "출동!" 상태인 탐원대원
-                if (_collections.OwnedCrew[i] && _crewStatusText[i].text.Equals(_selectedCrew))
-                {
-                    //"출동!" -> "출동 대기" 
-                    _crewStatusText[i].text = _ownedCrew;
-                    SetBtnColor(_crewStatusBtn[i].GetComponent<Image>(), new Color32(_defaultR, _defaultG, _defaultB, 255));
-                    break;
-                }
-            }
-            _crewStatusText[selectIndex].text = _selectedCrew;
-            SetBtnColor(_crewStatusBtn[selectIndex].GetComponent<Image>(), new Color32(_selectedR, _selectedG, _selectedB, 255));
-            //상세보기 버튼 변경
-            if (btn != null && text != null)
-            {
-                text.text = _selectedCrew;
-                SetBtnColor(btn.GetComponent<Image>(), new Color32(_selectedR, _selectedG, _selectedB, 255));
-            }
-            SelectCrewManager.Instance.SelectedCrewIndex = selectIndex;
-            //선택된 대원 DB에 변경
-            _collections.SelectedCrew = selectIndex;
+            StartCoroutine(ViewAlreadySeletedCrew_co());
         }
+        else
+        {
+            //대원이 "출동 대기" -> "출동!" 으로, 이전 "출동!" -> "출동 대기" 상태로 변경
+            if (_crewStatusText[selectIndex].text.Equals(_ownedCrew))
+            {
+                //"출동!" 찾기
+                for (int i = 0; i < _crewStatusText.Count; i++)
+                {
+                    // 보유중이고, "출동!" 상태인 탐원대원
+                    if (_collections.OwnedCrew[i] && _crewStatusText[i].text.Equals(_selectedCrew))
+                    {
+                        //"출동!" -> "출동 대기" 
+                        _crewStatusText[i].text = _ownedCrew;
+                        SetBtnColor(_crewStatusBtn[i].GetComponent<Image>(), new Color32(_defaultR, _defaultG, _defaultB, 255));
+                        break;
+                    }
+                }
+                _crewStatusText[selectIndex].text = _selectedCrew;
+                SetBtnColor(_crewStatusBtn[selectIndex].GetComponent<Image>(), new Color32(_selectedR, _selectedG, _selectedB, 255));
+                //상세보기 버튼 변경
+                if (btn != null && text != null)
+                {
+                    text.text = _selectedCrew;
+                    SetBtnColor(btn.GetComponent<Image>(), new Color32(_selectedR, _selectedG, _selectedB, 255));
+                }
+                if (SelectCrewManager.Instance != null)
+                    SelectCrewManager.Instance.SelectedCrewIndex = selectIndex;
+                //선택된 대원 DB에 변경
+                _collections.SelectedCrew = selectIndex;
+            }
+        }
+
     }
     //대원 구매
     public void OnPurchaseCrew(int i, GameObject btn = null, TMP_Text text = null)
     {
-        Debug.Log("PurchaseCrew :" + i);
+        Debug.Log("PurchaseCrew :" + _crewStatusText[i].text);
 
         var crewCost = Convert.ToInt32(_crewStatusText[i].text);
         if (_money >= crewCost)
@@ -366,6 +414,9 @@ public class CollectionsManager : MonoBehaviour
                 button.onClick.RemoveAllListeners();
                 button.onClick.AddListener(() => OnSelectPet(i, btn, text));
             }
+            //구매후 창닫기
+            _purchaseWindow.SetActive(false);
+            _purchaseBtn.GetComponent<Button>().onClick.RemoveAllListeners();
         }
         else
         {
