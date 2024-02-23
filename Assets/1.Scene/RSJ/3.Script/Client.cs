@@ -30,8 +30,8 @@ public class Client : MonoBehaviour
     // login - license
     public static ClientLoginStatus loginStatus;
     public static string clientLicenseNumber;
+    public static string clientCharactor;
     public string licenseFolderPath = string.Empty;
-    public string clientCharactor;
 
     // 서버로 부터 받은 data를 1차적으로 거른 List
     public List<string> playerdata_FromServer = new List<string>();
@@ -44,6 +44,9 @@ public class Client : MonoBehaviour
 
     // 서버-클라이언트 string으로 data 주고받을때 구분하기 위한 문자열
     private const string separatorString = "E|";
+
+    // Rank data
+    private RankData clientRankData;
 
     // timer
     private float transmissionTime = 1f;
@@ -151,7 +154,7 @@ public class Client : MonoBehaviour
             string requestName = requestDataList[0];
             Debug.Log($"[Client] Request to server : {requestData}");
 
-            ReceiveRequestDataFromServer(stream, requestName); // 메서드가 실행될때 까지 대기 / 대기시키기 위해 메서드 앞에 await을 붙여서 실행시키려면 메서드가 Task 붙여야하는듯?
+            ReceiveRequestDataFromServer(stream); // 메서드가 실행될때 까지 대기 / 대기시키기 위해 메서드 앞에 await을 붙여서 실행시키려면 메서드가 Task 붙여야하는듯?
         }
         catch (Exception e)
         {
@@ -160,7 +163,7 @@ public class Client : MonoBehaviour
     }
 
     // 서버에 요청보낸거 받음, 받은 string, case로 구분해서 처리
-    private async void ReceiveRequestDataFromServer(NetworkStream stream, string requestName)
+    private async void ReceiveRequestDataFromServer(NetworkStream stream)
     {
         try
         {
@@ -174,38 +177,20 @@ public class Client : MonoBehaviour
 
                 receivedRequestData_List.Add(receivedRequestData);
                 Debug.Log($"[Client] Receiving... massive request message from server : {receivedRequestData}");
-                HandleMassiveRequestData(receivedRequestData);
 
                 // 데이터가 다 불러와졌으면 break;
                 List<string> endCheck = receivedRequestData.Split('|').ToList();
                 if (endCheck.Contains("Finish"))
                 {
-                    FilterPlayerData(); // 플레이어 데이터 정리
-                    //ClientPlayerDataToPlayerClassVariable();
                     break;
                 }
             }
 
             HandleRequestData(receivedRequestData_List);
-
         }
         catch (Exception e)
         {
             Debug.Log($"[Client] Error receiving data from server : {e.Message}");
-        }
-
-        try
-        {
-            byte[] buffer = new byte[1024];
-            int bytesRead = await stream.ReadAsync(buffer, 0, buffer.Length); // 데이터를 읽어올때까지 대기
-            string receivedRequestData = Encoding.UTF8.GetString(buffer, 0, bytesRead); // 데이터 변환
-            Debug.Log($"[Client] Received request message from server : {receivedRequestData}");
-            List<string> dataList = receivedRequestData.Split('|').ToList();
-            HandleRequestData(dataList);
-        }
-        catch (Exception e)
-        {
-            Debug.Log($"Error receiving message from server : {e.Message}");
         }
     }
 
@@ -225,10 +210,10 @@ public class Client : MonoBehaviour
         switch (requestName)
         {
             case "[Create]LicenseNumber":
-                clientLicenseNumber = dataList[1];
-                clientCharactor = dataList[2];
+                clientLicenseNumber = dataList[0].Split('|')[1];
+                clientCharactor = dataList[0].Split('|')[2];
                 SaveClientDataToJsonFile();
-                Debug.Log($"[Client] RequestName : LicenseNumber, get and save licenseNumber to jsonfile");
+                Debug.Log($"[Client] RequestName : {requestName}, get and save licenseNumber to jsonfile");
                 break;
             case "[Create]Charactor":
                 break;
@@ -249,79 +234,15 @@ public class Client : MonoBehaviour
                 break;
             case "[Load]PlayerData":
                 HandleLoadPlayerData(dataList);
+                Debug.Log($"[Client] RequestName : {requestName}, End handling data");
+                break;
+            case "[Load]RankData":
+                HandleLoadRankData(dataList);
+                Debug.Log($"[Client] RequestName : {requestName}, End handling data");
                 break;
             default:
                 Debug.Log("[Client] HandleRequestMessage Method Something Happend");
                 break;
-        }
-    }
-
-    // 서버에서 대량으로 데이터를 받는 메서드
-    private async void ReceiveMassiveRequestFromServer(NetworkStream stream)
-    {
-
-
-        Debug.Log($"[Client] ReceiveMassiveRequestFromServer");
-
-        try
-        {
-            while (true)
-            {
-                byte[] buffer = new byte[1024];
-                int bytesRead = await stream.ReadAsync(buffer, 0, buffer.Length); // 데이터를 읽어올때까지 대기
-                string receivedRequestData = Encoding.UTF8.GetString(buffer, 0, bytesRead); // 데이터 변환
-
-                Debug.Log($"[Client] Receiving... massive request message from server : {receivedRequestData}");
-                HandleMassiveRequestData(receivedRequestData);
-
-                // 데이터가 다 불러와졌으면 break;
-                List<string> endCheck = receivedRequestData.Split('|').ToList();
-                if (endCheck.Contains("Finish"))
-                {
-                    FilterPlayerData(); // 플레이어 데이터 정리
-                    //ClientPlayerDataToPlayerClassVariable();
-                    break;
-                }
-            }
-
-        }
-        catch (Exception e)
-        {
-            Debug.Log($"Error receiving message from server : {e.Message}");
-        }
-    }
-
-    // 서버로부터 받은 대량 데이터 처리
-    private void HandleLoadPlayerData(List<string> dataList)
-    {
-        // dataList[0] = "[Load]PlayerData|user_info|value|value..|value|E|";
-        // dataList[1] = "rank|value|value|...|value|E|{gameTableName}|value|value|...|value|E|";
-        // dataList[2] = "{gameTableName}|value|value|...|value|E|{gameTableName}|value|value|...|value|E|";
-        // ... dataList[Last] = "{gameTableName}|value|value|...|value|E|Finish|;
-
-        Debug.Log("[Client] Handling LoadPlayerdata");
-
-        List<string> firstFilterData = new List<string>(); // "E|" 제거
-
-        // "E|" separatorString으로 구분
-        //List<string> parts = new List<string>();  
-        //requestdata.Split(separatorString, StringSplitOptions.RemoveEmptyEntries).ToList();
-
-        //List<string> parts = dataList[0].Split(separatorString, StringSplitOptions.RemoveEmptyEntries).ToList());
-        for (int i = 0; i < dataList.Count; i++)
-        {
-            List<string> parts = new List<string>();
-            parts = dataList[i].Split(separatorString, StringSplitOptions.RemoveEmptyEntries).ToList();
-
-            foreach(string )
-            
-        }
-
-
-
-        foreach(string part in parts)
-        {
-            playerdata_FromServer.Add(part);
         }
     }
 
@@ -365,6 +286,97 @@ public class Client : MonoBehaviour
 
         // Dictionary 생성
         playerdata_Dic = new Dictionary<string, List<string>>();
+    }
+
+    // 플레이어 데이터 처리
+    private void HandleLoadPlayerData(List<string> dataList)
+    {
+        // dataList[0] = "[Load]PlayerData|user_info|value|value..|value|E|";
+        // dataList[1] = "rank|value|value|...|value|E|{gameTableName}|value|value|...|value|E|";
+        // dataList[2] = "{gameTableName}|value|value|...|value|E|{gameTableName}|value|value|...|value|E|";
+        // ... dataList[Last] = "{gameTableName}|value|value|...|value|E|Finish|;
+
+        Debug.Log("[Client] Handling LoadPlayerdata");
+
+        List<string> firstFilterData = new List<string>(); // "E|" 제거
+
+        // "E|" separatorString으로 구분
+        //List<string> parts = new List<string>();  
+        //requestdata.Split(separatorString, StringSplitOptions.RemoveEmptyEntries).ToList();
+
+        //List<string> parts = dataList[0].Split(separatorString, StringSplitOptions.RemoveEmptyEntries).ToList());
+        for (int i = 0; i < dataList.Count; i++)
+        {
+            // requestName 제거
+            if (i == 0) dataList[0] = dataList[0].Substring("[Load]PlayerData".Length);
+
+            List<string> parts = new List<string>();
+            parts = dataList[i].Split(separatorString, StringSplitOptions.RemoveEmptyEntries).ToList();
+
+            foreach (string part in parts) // part : rank|value|value|...|value|
+            {
+                //part.Split('|', StringSplitOptions.RemoveEmptyEntries);
+                playerdata_FromServer.Add(part);
+            }
+
+        }
+
+        FilterPlayerData();
+    }
+
+    // 랭크 데이터 처리
+    private void HandleLoadRankData(List<string> dataList)
+    {
+        // return_string = $"{i}|{timeList[i].userProfile}|{timeList[i].userName}|{timeList[i].totalTime}|{separatorString}";
+        // dataList[0] = "[Load]RankData|place|profile|name|time or score|E|";
+        // dataList[1] = "place|profile|name|time or score|E|"; // parts.Count == 1
+        // or dataList[1] = "place|profile|name|time or score|E|place|profile|name|time or score|E|"; // parts.Count == 2
+
+        // clientRankData InitSetting
+        clientRankData = new RankData();
+        clientRankData.rank_Score = new Rank_Score[6];
+        clientRankData.rank_Time = new Rank_Time[6];
+
+        // separatorString ( "E|" )을 기준으로 Split 한 List
+        List<string> filterDataList = new List<string>();
+
+        for(int i =0; i < dataList.Count; i++)
+        {
+            // requestName 제거
+            if (i == 0) dataList[0] = dataList[0].Substring("[Load]RankData".Length);
+
+            List<string> parts = new List<string>();
+            parts = dataList[i].Split(separatorString, StringSplitOptions.RemoveEmptyEntries).ToList();
+            parts.ForEach(data => filterDataList.Add(data)); // 인덱스(string) 옮김
+        }
+
+
+        for(int i = 0; i < filterDataList.Count; i++)
+        {
+            List<string> parts = filterDataList[i].Split('|', StringSplitOptions.RemoveEmptyEntries).ToList();
+
+            if(i < 6) // score
+            {
+                for (int j = 0; j < parts.Count; j++)
+                {
+                    if (j == 0) clientRankData.rank_Score[i].place = Int32.Parse(parts[j]);
+                    else if (j == 1) clientRankData.rank_Score[i].userProfile = Encoding.UTF8.GetBytes(parts[j]);
+                    else if (j == 2) clientRankData.rank_Score[i].userName = parts[j];
+                    else if (j == 3) clientRankData.rank_Score[i].totalScore = Int32.Parse(parts[j]);
+                }
+            }
+            else // time
+            {
+                for (int j = 0; j < parts.Count; j++)
+                {
+                    if (j == 0) clientRankData.rank_Time[i].place = Int32.Parse(parts[j]);
+                    else if (j == 1) clientRankData.rank_Time[i].userProfile = Encoding.UTF8.GetBytes(parts[j]);
+                    else if (j == 2) clientRankData.rank_Time[i].userName = parts[j];
+                    else if (j == 3) clientRankData.rank_Time[i].totalTime = Int32.Parse(parts[j]);
+                }
+            }
+        }
+
     }
 
     /*
@@ -419,7 +431,7 @@ public class Client : MonoBehaviour
                             break;
                         default:
                             game_type = Game_Type.A;
-                            Debug.Log("[Clinet] AppStart_LoadAllDataFromDB() Game_Type default Problem");
+                            Debug.Log("[Client] AppStart_LoadAllDataFromDB() Game_Type default Problem");
                             break;
                     }
 
@@ -514,8 +526,14 @@ public class Client : MonoBehaviour
     // 랭킹 UI 접속 시 Rank Load
     public RankData Ranking_LoadRankDataFromDB()
     {
-        RankData
-      
+        RankData return_RankData = new RankData();
+
+        string requestData = $"[Load]RankData|{clientLicenseNumber}|{clientCharactor}|";
+        RequestToServer(requestData);
+
+        return_RankData = clientRankData;
+
+        return return_RankData;
     }
 
     // 앱 종료시 모든 데이터 Save
