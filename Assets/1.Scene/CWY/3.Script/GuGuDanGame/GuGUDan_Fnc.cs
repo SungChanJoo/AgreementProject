@@ -2,6 +2,8 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 
+//추가해야할것 구구단 문제 출제 갯수 및 정답률 결과값
+
 enum ButtonType
 {
     First,
@@ -42,6 +44,10 @@ public class GuGUDan_Fnc : GameSetting
     bool isThird_Click = false;
     bool isGameOver = false;
 
+    //문제 개수 & 초기 문제 출제 개수 저장값 & 정답 입력 시도 총 횟수
+    int QuestCount;
+    int StartQuestCount;
+    int AnswerCount; //정답을 입력한 총 횟수
     //정답의 자릿수 확인
     int FirstNumDigit;
     int SecondNumDigit;
@@ -78,10 +84,7 @@ public class GuGUDan_Fnc : GameSetting
         Answer_num.text = "??";
         buttonText = "";
         
-    }
-
-
-    
+    }    
 
     private void Update()
     {
@@ -214,7 +217,10 @@ public class GuGUDan_Fnc : GameSetting
         //게임 시작을 알림
         if (!isStart)
         {
+            Set_QuestCount();
+            QuestCount--;
             isStart = true;
+            AnswerCount = 0;
             TimeSlider.Instance.StartTime();
             TimeSlider.Instance.TimeStop = false;
         }
@@ -227,6 +233,7 @@ public class GuGUDan_Fnc : GameSetting
         //정답을 맞춘경우에는 문제 다시생성
         if (isAnswerCorrect)
         {
+            QuestCount--;
             SplitLevelAndStep();
         }
         //클릭 초기화
@@ -241,8 +248,6 @@ public class GuGUDan_Fnc : GameSetting
         //타임슬라이더의 Value 값이 0 일경우 게임 끝.
         if(TimeSlider.Instance.slider.value == 0)
         {
-            //Todo : 게임 종료 로직 구현해주세요 > 게임화면 종료하고 결과창? 띄워줄듯
-            //반응속도 쳌
             ReactionTime = trueReactionTime / TrueAnswerCount;
             totalReactionTime = 0;
             if (!isGameOver)
@@ -250,12 +255,21 @@ public class GuGUDan_Fnc : GameSetting
                 isGameOver = true;
                 answersCount = TrueAnswerCount;
                 reactionRate = ReactionTime;
+                AnswerRate();
                 EndGame();
             }
         }        
         else
         {
-            return;
+            if(QuestCount < 0 && !isGameOver)
+            {
+                ReactionTime = trueReactionTime / TrueAnswerCount;
+                isGameOver = true;
+                answersCount = TrueAnswerCount;
+                reactionRate = ReactionTime;
+                AnswerRate();
+                EndGame();
+            }
         }  
     }
 
@@ -275,6 +289,7 @@ public class GuGUDan_Fnc : GameSetting
                 TrueAnswerCount++; //정답 갯수 증가 -> 정답률 반영에 사용할거
                 isAnswerCheck = true;
                 isAnswerCorrect = true;
+                AnswerCount++;
                 //누적시간 변수에 저장.
             }
             else //오답일경우
@@ -282,6 +297,7 @@ public class GuGUDan_Fnc : GameSetting
                 //Todo: 기획팀에서 어떻게 할 계획인지 말해주면 그냥 리턴하던지
                 // 오답일경우 제한시간감소 
                 //누적된 시간 날리기
+                AnswerCount++;
                 isAnswerCheck = true;
                 isAnswerCorrect = false;
                 TimeSlider.Instance.DecreaseTime_Item(5);
@@ -295,6 +311,7 @@ public class GuGUDan_Fnc : GameSetting
                 TrueAnswerCount++; //정답 갯수 증가 -> 정답률 반영에 사용할거
                 isAnswerCheck = true;
                 isAnswerCorrect = true;
+                AnswerCount++;
                 //누적시간 변수에 저장.
             }
             else //오답일경우
@@ -304,6 +321,7 @@ public class GuGUDan_Fnc : GameSetting
                 //누적된 시간 날리기
                 isAnswerCheck = true;
                 isAnswerCorrect = false;
+                AnswerCount++;
                 TimeSlider.Instance.DecreaseTime_Item(5);
             }
         }
@@ -313,6 +331,7 @@ public class GuGUDan_Fnc : GameSetting
             {
                 Get_Score();
                 TrueAnswerCount++; //정답 갯수 증가 -> 정답률 반영에 사용할거
+                AnswerCount++;
                 isAnswerCheck = true;
                 isAnswerCorrect = true;
                 //누적시간 변수에 저장.
@@ -322,6 +341,7 @@ public class GuGUDan_Fnc : GameSetting
                 //Todo: 기획팀에서 어떻게 할 계획인지 말해주면 그냥 리턴하던지
                 // 오답일경우 제한시간감소 
                 //누적된 시간 날리기
+                AnswerCount++;
                 isAnswerCheck = true;
                 isAnswerCorrect = false;
                 TimeSlider.Instance.DecreaseTime_Item(5);
@@ -502,11 +522,37 @@ public class GuGUDan_Fnc : GameSetting
     {
         if(buttonType == ButtonType.First)
         {
-            //Score.Instance.Get_FirstScore();
+            Score.Instance.Get_FirstScore();
         }
         else
         {
-            //Score.Instance.Get_SecondScore();
+            Score.Instance.Get_SecondScore();
         }
+    }
+
+    private void Set_QuestCount()
+    {
+        switch (timeSet)
+        {
+            case 60:
+                QuestCount = 2;
+                
+                break;
+            case 180:
+                QuestCount = 3; // 예시 값
+                break;
+            case 300:
+                QuestCount = 5; // 예시 값
+                break;
+            default:
+                break;
+        }
+        StartQuestCount = QuestCount;
+    }
+
+
+    private void AnswerRate()
+    {
+        answers = StartQuestCount * 100 / AnswerCount;
     }
 }
