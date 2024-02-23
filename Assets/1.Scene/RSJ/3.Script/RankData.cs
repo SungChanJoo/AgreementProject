@@ -13,6 +13,8 @@ public class RankData
 public class Rank_Score
 {
     public int place;
+    public int userlicensenumber;
+    public int usercharactor;
     public byte[] userProfile;
     public string userName;
     public int totalScore;
@@ -21,6 +23,8 @@ public class Rank_Score
 public class Rank_Time
 {
     public int place;
+    public int userlicensenumber;
+    public int usercharactor;
     public byte[] userProfile;
     public string userName;
     public float totalTime;

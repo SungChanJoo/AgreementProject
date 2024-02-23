@@ -195,23 +195,14 @@ public class Server : MonoBehaviour
                 int bytesRead = await stream.ReadAsync(buffer, 0, buffer.Length); // 메세지 받을때까지 대기
                 string receivedRequestData = Encoding.UTF8.GetString(buffer, 0, bytesRead); // 데이터 변환
                 List<string> dataList = receivedRequestData.Split('|', StringSplitOptions.RemoveEmptyEntries).ToList(); // 받은 data 분할해서 list에 담음
-                string receivedRequestName = dataList[0]; // dataList[0]은 클라이언트가 요청한 주제, 게임 등의 이름
-                Debug.Log($"[Server] Received request name from client : {receivedRequestName}");
 
-                // 클라이언트로부터 요청 받은 제목에 대한 내용을 처리해서 클라이언트에게 보내줘야함
-                if(receivedRequestName == "[Load]PlayerData")
-                {
-                    HandleRequestDataForLoad(stream, dataList);
-                }
-                else
-                {
-                    HandleRequestData(stream, dataList);
-                }
+                // 클라이언트에게 온 요청을 처리해서 클라이언트에게 회신
+                HandleRequestData(stream, dataList);
             }
         }
         catch (Exception e)
         {
-            Debug.Log($"[Server] Data Communicate error : {e.Message}");
+            Debug.Log($"[Server] Error in ReceiveRequestFromClient Method : {e.Message}");
         }
 
     }
@@ -221,9 +212,13 @@ public class Server : MonoBehaviour
     {
         // dataList -> 0 : requestName, 1~ : values
         string requestName = dataList[0];
+        int clientLicenseNumber = Int32.Parse(dataList[1]);
+        int clientCharactor = Int32.Parse(dataList[2]);
+        Debug.Log($"[Server] Recieved request name from client : {dataList[0]}");
+
+        // Reply
+        List<string> replyRequestData_List = new List<string>();
         string replyRequestMessage = $"{dataList[0]}|";
-        Debug.Log($"[Server] HandleRequestData requestName : {dataList[0]}");
-        
 
         switch (requestName)
         {
@@ -256,6 +251,12 @@ public class Server : MonoBehaviour
             case "[Save]calculation":
                 DBManager.instance.SaveGameResultData(dataList);
                 break;
+            case "[Load]PlayerData":
+                // dataList[1] = user_LicenseNumber, dataList[2] = user_Charactor
+                replyRequestData_List = DBManager.instance.LoadPlayerData(clientLicenseNumber, clientCharactor);
+                break;
+            case "[Load]RankData":
+                break;
             default:
                 Debug.Log($"[Server] Handling error that request from client, request name : {requestName}");
                 break;
@@ -265,14 +266,26 @@ public class Server : MonoBehaviour
         stream.Write(data, 0, data.Length); // 메세지 보냄
         Debug.Log($"[Server] Reply request message to client");
 
+        for (int i = 0; i < replyRequestDataList.Count; i++)
+        {
+            byte[] data = Encoding.UTF8.GetBytes(replyMassiveRequestMessage[i]);
+            stream.Write(data, 0, data.Length);
+            Debug.Log("[Server] Replying... massive request message to client");
+        }
+
+        byte[] finishData = Encoding.UTF8.GetBytes("Finish");
+        stream.Write(finishData, 0, finishData.Length);
+        Debug.Log("[Server] End reply massive request message to client");
+
     }
 
     private void HandleRequestDataForLoad(NetworkStream stream, List<string> dataList)
     {
         Debug.Log($"[Server] receivedRequestName : {dataList[0]}");
 
-        int newClientLicenseNumber = Int32.Parse(dataList[1]);
-        List<string> replyMassiveRequestMessage = DBManager.instance.LoadPlayerData(ClientLoginStatus.New, newClientLicenseNumber); // 새 플레이어 정보 불러오기
+        int clientLicenseNumber = Int32.Parse(dataList[1]);
+        int clientCharactor = Int32.Parse(dataList[2]);
+        List<string> replyMassiveRequestMessage = DBManager.instance.LoadPlayerData(clientLicenseNumber, clientCharactor); // 새 플레이어 정보 불러오기
 
         for (int i = 0; i < replyMassiveRequestMessage.Count; i++)
         {

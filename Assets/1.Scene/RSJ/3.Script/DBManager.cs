@@ -355,7 +355,7 @@ public class DBManager : MonoBehaviour
     }
 
     // 플레이어 데이터 불러오기, DB에서 불러와서 서버가 클라이언트한테 쏴줄수 있게 string으로 묶어서 반환형 string
-    public List<string> LoadPlayerData(ClientLoginStatus loginstatus, int clientlicensenumber)
+    public List<string> LoadPlayerData(int clientlicensenumber, int clientcharactor)
     {
         List<string> return_TableData = new List<string>();
         string return_TempData;
@@ -720,9 +720,10 @@ public class DBManager : MonoBehaviour
     }
 
     // 임시로 PresentDB에 있는 Rank Table 데이터 사용 / Score, Time 별 Rank 1~5위 및 6번째 자기 자신의 데이터 
-    public void RankOrderByUserData(int licensenumber, int charactor)
+    public List<string> RankOrderByUserData(int licensenumber, int charactor)
     {
         // rank table -> [0]:User_LicenseNumber, [1]:User_Charactor, [2]:User_Profile, [3]:User_Name, [4]:TotalTime, [5]"TotalScore
+        List<string> return_List = new List<string>();
 
         // rank table's row count
         string rowCount_Command = $"SELECT COUNT(*) FROM `rank`";
@@ -778,6 +779,8 @@ public class DBManager : MonoBehaviour
             Rank_Score score = new Rank_Score();
 
             score.place = 0;
+            score.userlicensenumber = Int32.Parse(rankdata[i][0]);
+            score.usercharactor = Int32.Parse(rankdata[i][1]);
             score.userProfile = System.Text.Encoding.UTF8.GetBytes(rankdata[i][2]);
             score.userName = rankdata[i][3];
             score.totalScore = Int32.Parse(rankdata[i][5]);
@@ -788,12 +791,111 @@ public class DBManager : MonoBehaviour
         // totalScore로 내림차순 정렬
         scoreList.Sort((a, b) => b.totalScore.CompareTo(a.totalScore));
 
+        // 정렬된 List가지고 1~5등 유저의 순위,점수 저장
+        for(int i = 0; i < scoreList.Count; i++)
+        {
+            //보낼 데이터(value) place/Profile/Name/total
+            string return_string;
 
-        
+            if(i >= 0 && i < 5)
+            {
+                return_string = $"{i}|{scoreList[i].userProfile}|{scoreList[i].userName}|{scoreList[i].totalScore}|{separatorString}";
+            }
+            else
+            {
+                continue;
+            }
 
+            return_List.Add(return_string);
+        }
+
+        // 예외처리, rank data에 5명의 기록이 없으면 return_List에 index[5]까지 빈내용으로 저장
+        if(scoreList.Count < 5)
+        {
+            int user_Count = scoreList.Count;
+
+            while(user_Count < 5)
+            {
+                //보낼 데이터(value) place/Profile/Name/total
+                return_List.Add($"{user_Count}|0|None|0|{separatorString}");
+                user_Count++;
+            }
+        }
+
+        // return_List index[5]에 개인 순위,점수 저장
+        for (int i = 0; i < scoreList.Count; i++)
+        {
+            if (scoreList[i].userlicensenumber == licensenumber && scoreList[i].usercharactor == charactor)
+            {
+                string return_string;
+                return_string = $"{i}|{scoreList[i].userProfile}|{scoreList[i].userName}|{scoreList[i].totalScore}|{separatorString}";
+                return_List.Add(return_string);
+            }
+        }
 
         // Time 기준
+        List<Rank_Time> timeList = new List<Rank_Time>();
 
+        for (int i = 0; i < rankdata.Count; i++)
+        {
+            Rank_Time time = new Rank_Time();
+
+            time.place = 0;
+            time.userlicensenumber = Int32.Parse(rankdata[i][0]);
+            time.usercharactor = Int32.Parse(rankdata[i][1]);
+            time.userProfile = System.Text.Encoding.UTF8.GetBytes(rankdata[i][2]);
+            time.userName = rankdata[i][3];
+            time.totalTime = float.Parse(rankdata[i][5]);
+
+            timeList.Add(time);
+        }
+
+        // totalTime으로 내림차순 정렬
+        timeList.Sort((a, b) => b.totalTime.CompareTo(a.totalTime));
+
+        // 정렬된 List가지고 1~5등 유저의 순위, 시간 저장
+        for (int i = 0; i < timeList.Count; i++)
+        {
+            //보낼 데이터(value) place/Profile/Name/total
+            string return_string;
+
+            if (i >= 0 && i < 5)
+            {
+                return_string = $"{i}|{timeList[i].userProfile}|{timeList[i].userName}|{timeList[i].totalTime}|{separatorString}";
+            }
+            else
+            {
+                continue;
+            }
+
+            return_List.Add(return_string);
+        }
+
+        // 예외처리, rank data에 5명의 기록이 없으면 return_List에 index[5]까지 빈내용으로 저장
+        if (timeList.Count < 5)
+        {
+            int user_Count = timeList.Count;
+
+            while (user_Count < 5)
+            {
+                //보낼 데이터(value) place/Profile/Name/total
+                return_List.Add($"{user_Count}|0|None|0|{separatorString}");
+                user_Count++;
+            }
+        }
+
+        // return_List index[11]에 개인 순위,점수 저장
+        for (int i = 0; i < timeList.Count; i++)
+        {
+            if (timeList[i].userlicensenumber == licensenumber && timeList[i].usercharactor == charactor)
+            {
+                string return_string;
+                return_string = $"{i}|{timeList[i].userProfile}|{timeList[i].userName}|{timeList[i].totalTime}|{separatorString}";
+                return_List.Add(return_string);
+            }
+        }
+
+        return return_List;
     }
 
 

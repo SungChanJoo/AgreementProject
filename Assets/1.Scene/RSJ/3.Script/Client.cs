@@ -151,26 +151,49 @@ public class Client : MonoBehaviour
             string requestName = requestDataList[0];
             Debug.Log($"[Client] Request to server : {requestData}");
 
-            // MassiveData인지 아닌지 초기에 플레이어 데이터를 받을때 많은 양의 데이터를 받아야해서
-            // 따로 처리해야함
-            if(requestName == "[Load]PlayerData")
-            {
-                ReceiveMassiveRequestFromServer(stream);
-            }
-            else
-            {
-                ReceiveRequestFromServer(stream, requestName); // 메서드가 실행될때 까지 대기 / 대기시키기 위해 메서드 앞에 await을 붙여서 실행시키려면 메서드가 Task 붙여야하는듯?
-            }
+            ReceiveRequestDataFromServer(stream, requestName); // 메서드가 실행될때 까지 대기 / 대기시키기 위해 메서드 앞에 await을 붙여서 실행시키려면 메서드가 Task 붙여야하는듯?
         }
         catch (Exception e)
         {
-            Debug.Log($"[Client] Fail Request to sever : + {e.Message}");
+            Debug.Log($"[Client] Error Request to sever : + {e.Message}");
         }
     }
 
     // 서버에 요청보낸거 받음, 받은 string, case로 구분해서 처리
-    private async void ReceiveRequestFromServer(NetworkStream stream, string requestName)
+    private async void ReceiveRequestDataFromServer(NetworkStream stream, string requestName)
     {
+        try
+        {
+            List<string> receivedRequestData_List = new List<string>();
+
+            while (true)
+            {
+                byte[] buffer = new byte[1024];
+                int bytesRead = await stream.ReadAsync(buffer, 0, buffer.Length); // 데이터를 읽어올때까지 대기
+                string receivedRequestData = Encoding.UTF8.GetString(buffer, 0, bytesRead); // 데이터 변환
+
+                receivedRequestData_List.Add(receivedRequestData);
+                Debug.Log($"[Client] Receiving... massive request message from server : {receivedRequestData}");
+                HandleMassiveRequestData(receivedRequestData);
+
+                // 데이터가 다 불러와졌으면 break;
+                List<string> endCheck = receivedRequestData.Split('|').ToList();
+                if (endCheck.Contains("Finish"))
+                {
+                    FilterPlayerData(); // 플레이어 데이터 정리
+                    //ClientPlayerDataToPlayerClassVariable();
+                    break;
+                }
+            }
+
+            HandleRequestData(receivedRequestData_List);
+
+        }
+        catch (Exception e)
+        {
+            Debug.Log($"[Client] Error receiving data from server : {e.Message}");
+        }
+
         try
         {
             byte[] buffer = new byte[1024];
@@ -194,7 +217,9 @@ public class Client : MonoBehaviour
         // LicenseNumber -> clientLicenseNumber를 server가 보내줌 (Client가 첫 접속인 경우 처리됨)
         // LoadNewPlayerData -> 새 플레이어의 경우 DB에 licenseNumber를 제외한 데이터가 없으므로 모든 테이블에 존재하는 열항목에 0값을 부여한 PlayerData를 가질 것임
         // LoadExistPlayerData -> 기존 플레이어의 경우 DB에 저장된 PlayerData를 가질 것임
-        string requestName = dataList[0];
+
+        // dataList[0] = "[Load]PlayerData|value|value..|value|E|";
+        string requestName = dataList[0].Split('|')[0];
         Debug.Log($"[Client] HandleRequestData method, request name : {requestName}");
 
         switch (requestName)
@@ -204,6 +229,8 @@ public class Client : MonoBehaviour
                 clientCharactor = dataList[2];
                 SaveClientDataToJsonFile();
                 Debug.Log($"[Client] RequestName : LicenseNumber, get and save licenseNumber to jsonfile");
+                break;
+            case "[Create]Charactor":
                 break;
             case "[Save]venezia_kor":
                 Debug.Log($"[Client] RequestName : {requestName}, End handling data");
@@ -220,6 +247,9 @@ public class Client : MonoBehaviour
             case "[Save]calculation":
                 Debug.Log($"[Client] RequestName : {requestName}, End handling data");
                 break;
+            case "[Load]PlayerData":
+                HandleLoadPlayerData(dataList);
+                break;
             default:
                 Debug.Log("[Client] HandleRequestMessage Method Something Happend");
                 break;
@@ -229,6 +259,8 @@ public class Client : MonoBehaviour
     // 서버에서 대량으로 데이터를 받는 메서드
     private async void ReceiveMassiveRequestFromServer(NetworkStream stream)
     {
+
+
         Debug.Log($"[Client] ReceiveMassiveRequestFromServer");
 
         try
@@ -260,10 +292,32 @@ public class Client : MonoBehaviour
     }
 
     // 서버로부터 받은 대량 데이터 처리
-    private void HandleMassiveRequestData(string requestdata)
+    private void HandleLoadPlayerData(List<string> dataList)
     {
-        Debug.Log("[Client] Handling... massive request data");
-        List<string> parts = requestdata.Split(separatorString, StringSplitOptions.RemoveEmptyEntries).ToList();
+        // dataList[0] = "[Load]PlayerData|user_info|value|value..|value|E|";
+        // dataList[1] = "rank|value|value|...|value|E|{gameTableName}|value|value|...|value|E|";
+        // dataList[2] = "{gameTableName}|value|value|...|value|E|{gameTableName}|value|value|...|value|E|";
+        // ... dataList[Last] = "{gameTableName}|value|value|...|value|E|Finish|;
+
+        Debug.Log("[Client] Handling LoadPlayerdata");
+
+        List<string> firstFilterData = new List<string>(); // "E|" 제거
+
+        // "E|" separatorString으로 구분
+        //List<string> parts = new List<string>();  
+        //requestdata.Split(separatorString, StringSplitOptions.RemoveEmptyEntries).ToList();
+
+        //List<string> parts = dataList[0].Split(separatorString, StringSplitOptions.RemoveEmptyEntries).ToList());
+        for (int i = 0; i < dataList.Count; i++)
+        {
+            List<string> parts = new List<string>();
+            parts = dataList[i].Split(separatorString, StringSplitOptions.RemoveEmptyEntries).ToList();
+
+            foreach(string )
+            
+        }
+
+
 
         foreach(string part in parts)
         {
@@ -457,11 +511,12 @@ public class Client : MonoBehaviour
         RequestToServer(requestData);
     }
 
-    //// 랭킹 UI 접속 시 Rank Load
-    //public RankData Ranking_LoadRankDataFromDB()
-    //{
-        
-    //}
+    // 랭킹 UI 접속 시 Rank Load
+    public RankData Ranking_LoadRankDataFromDB()
+    {
+        RankData
+      
+    }
 
     // 앱 종료시 모든 데이터 Save
     public void AppEnd_SaveAlldataToDB()
