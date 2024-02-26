@@ -2206,6 +2206,7 @@ MonoBehaviour:
   - {fileID: 21300000, guid: 6cbcd38e96e215041b3f74b145b17ab3, type: 3}
   - {fileID: 21300000, guid: 4019238692475d048ba002c60a3ac1f3, type: 3}
   QuestCount: 5
+  QuestRange: 0
   RemainAnswer: 0
   CorrectAnswerCount: 0
   ClickCount: 0
@@ -2648,6 +2649,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2bb5cf6dadf54af499fb05a8bd93553c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  gameType: 0
   slider: {fileID: 1391337205}
   sliderVar_Image: {fileID: 773295635}
   ChangeTime: 0.2
