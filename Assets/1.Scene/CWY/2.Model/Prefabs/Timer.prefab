@@ -104,10 +104,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2bb5cf6dadf54af499fb05a8bd93553c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  gameType: 0
   slider: {fileID: 8413165714975634700}
   sliderVar_Image: {fileID: 0}
   ChangeTime: 0.95
   changeDuration: 3
+  time: 0
+  isStop: 0
+  isGameOver: 0
+  startTime: 0
+  duration: 0
+  Decreasetime: 0
+  TimeStop: 1
 --- !u!1 &8413165715041118440
 GameObject:
   m_ObjectHideFlags: 0
