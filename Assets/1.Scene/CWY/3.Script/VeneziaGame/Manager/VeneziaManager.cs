@@ -43,7 +43,7 @@ public class VeneziaManager : GameSetting
         "Crocodile", "Lion", "Deer", "Pig", "Giraffe"
     };
     public int QuestCount;  // 딕셔너리에 들어갈 퀘스트 갯수 //10문제 <
-    public int SaveQuestStartCountData;
+    public int QuestRange;
     public int RemainAnswer; // 게임 진행중 남은 정답 갯수
     public int CorrectAnswerCount; // 맞춘 정답 갯수
     public int ClickCount;
@@ -109,12 +109,11 @@ public class VeneziaManager : GameSetting
 
         Set_QuestCount();
         RemainAnswer = QuestCount;
-        SaveQuestStartCountData = QuestCount;
         totalReactionTime = 0;
         trueReactionTime = 0;
         CorrectAnswerCount = 0;
         ClickCount = 0;
-        ObjectPooling.Instance.CreateQuestPrefab(SaveQuestStartCountData/2);
+        ObjectPooling.Instance.CreateQuestPrefab(QuestRange);
         DisplayRandomQuest();
         //시간 시작 
         StartTime();
@@ -228,6 +227,7 @@ public class VeneziaManager : GameSetting
     }
     protected override void Level_1(int step)
     {
+        QuestRange = 5;
         StartSet();        
         switch (step)
         {
@@ -250,6 +250,7 @@ public class VeneziaManager : GameSetting
     }
     protected override void Level_2(int step)
     {
+        QuestRange = 10;
         StartSet();
         switch (Step)
         {
@@ -272,6 +273,7 @@ public class VeneziaManager : GameSetting
     }
     protected override void Level_3(int step)
     {
+        QuestRange = 20;
         switch (Step)
         {
             case 1:
@@ -297,12 +299,8 @@ public class VeneziaManager : GameSetting
     {
         if(QuestCount == 0)
         {
-
             Time.timeScale = 0;
             ObjectPooling.Instance.StopAllCoroutines();            
-
-
-            
             return;
         }        
 
@@ -327,7 +325,7 @@ public class VeneziaManager : GameSetting
         //연속 출제를 방지
         while (randomIndex == SaverandomIndex)
         {
-            randomIndex = Random.Range(0, ((SaveQuestStartCountData/2)));  // Todo : prototype이 아닌 cbt 제작 과정에서는 0 < 부분을 스텝에 맞는 인덱스를 가져 올 수 있도록 설정 변경 할 것.
+            randomIndex = Random.Range(0, ((QuestRange)));  // Todo : prototype이 아닌 cbt 제작 과정에서는 0 < 부분을 스텝에 맞는 인덱스를 가져 올 수 있도록 설정 변경 할 것.
         }
         // 퀘스트가 1개남은상태에서 들어오면 QuestCount에의해 -- 되어 0개가된다. 01234<
         selectedQuest = questArray[randomIndex]; // 
