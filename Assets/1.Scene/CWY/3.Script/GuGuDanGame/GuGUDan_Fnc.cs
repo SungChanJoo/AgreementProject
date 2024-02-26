@@ -2,13 +2,15 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 
+//추가해야할것 구구단 문제 출제 갯수 및 정답률 결과값
+
 enum ButtonType
 {
     First,
     Second
 }
 
-public class GuGUDan_Fnc : MonoBehaviour
+public class GuGUDan_Fnc : GameSetting
 {
     [SerializeField] private ButtonType buttonType;
     //구구단 게임 기능 관련 스크립트
@@ -42,6 +44,10 @@ public class GuGUDan_Fnc : MonoBehaviour
     bool isThird_Click = false;
     bool isGameOver = false;
 
+    //문제 개수 & 초기 문제 출제 개수 저장값 & 정답 입력 시도 총 횟수
+    int QuestCount;
+    int StartQuestCount;
+    int AnswerCount; //정답을 입력한 총 횟수
     //정답의 자릿수 확인
     int FirstNumDigit;
     int SecondNumDigit;
@@ -78,13 +84,7 @@ public class GuGUDan_Fnc : MonoBehaviour
         Answer_num.text = "??";
         buttonText = "";
         
-    }
-
-
-    private void Start()
-    {
-        GameStart();
-    }
+    }    
 
     private void Update()
     {
@@ -102,7 +102,7 @@ public class GuGUDan_Fnc : MonoBehaviour
     //랜덤숫자 생성 메서드
     public int Random_Num()
     {
-        int num = Random.Range(1, 10);
+        int num = Random.Range(1, 10);        
         return num;
     }
 
@@ -143,11 +143,12 @@ public class GuGUDan_Fnc : MonoBehaviour
             default:
                 break;
         }
+        Debug.Log($"{level}:{ step}");
     }
     #region Level , Step별 문제 제작 메서드 
-    private void Lv1_RandomNum()
+    private void Lv1_RandomNum(int step)
     {
-        if (Step < 4)
+        if (step < 4)
         {
             First_num.text = Random.Range(2, 7).ToString();
             Second_num.text = Random.Range(1, 10).ToString();
@@ -158,9 +159,9 @@ public class GuGUDan_Fnc : MonoBehaviour
             Second_num.text = Random.Range(1, 10).ToString();
         }
     }
-    private void Lv2_RandomNum()
+    private void Lv2_RandomNum(int step)
     {
-        if (Step < 4)
+        if (step < 4)
         {
             First_num.text = Random.Range(2, 10).ToString();
             Second_num.text = Random.Range(1, 15).ToString();
@@ -170,10 +171,11 @@ public class GuGUDan_Fnc : MonoBehaviour
             First_num.text = Random.Range(2, 10).ToString();
             Second_num.text = Random.Range(1, 20).ToString();
         }
+        
     }
-    private void Lv3_RandomNum()
+    private void Lv3_RandomNum(int step)
     {
-        if (Step < 4)
+        if (step < 4)
         {
             First_num.text = Random.Range(2, 15).ToString();
             Second_num.text = Random.Range(1, 20).ToString();
@@ -186,19 +188,22 @@ public class GuGUDan_Fnc : MonoBehaviour
     }
     #region lv별 게임
     //lv별 로직
-    private void Lv1()
+    protected override void Level_1(int step)
     {
-        Lv1_RandomNum();
+        GameStart();
+        Lv1_RandomNum(step);
         Random_ShowText();
     }
-    private void Lv2()
+    protected override void Level_2(int step)
     {
-        Lv2_RandomNum();
+        GameStart();
+        Lv2_RandomNum(step);
         Random_ShowText();
     }
-    private void Lv3()
+    protected override void Level_3(int step)
     {
-        Lv3_RandomNum();
+        GameStart();
+        Lv3_RandomNum(step);
         Random_ShowText();
     }
     #endregion
@@ -210,22 +215,17 @@ public class GuGUDan_Fnc : MonoBehaviour
     private void GameStart()
     {
         //게임 시작을 알림
-        isStart = true;
-        switch (Level)
+        if (!isStart)
         {
-            case 1: //레벨 1 선택
-                Lv1();
-                break;
-            case 2: //레벨 2 선택
-                Lv2();
-                break;
-            case 3: //레벨 3 선택
-                Lv3();
-
-                break;
-            default:
-                break;
+            Set_QuestCount();
+            QuestCount--;
+            isStart = true;
+            AnswerCount = 0;
+            TimeSlider.Instance.StartTime();
+            TimeSlider.Instance.TimeStop = false;
         }
+        
+        
     }
     //로직은 동일하지만 시작 - 진행 - 종료를 나누기위해 메서드 분개
     private void GameProgress()
@@ -233,20 +233,8 @@ public class GuGUDan_Fnc : MonoBehaviour
         //정답을 맞춘경우에는 문제 다시생성
         if (isAnswerCorrect)
         {
-            switch (Level)
-            {
-                case 1:
-                    Lv1();
-                    break;
-                case 2:
-                    Lv2();
-                    break;
-                case 3:
-                    Lv3();
-                    break;
-                default:
-                    break;
-            }
+            QuestCount--;
+            SplitLevelAndStep();
         }
         //클릭 초기화
         isFirst_Click = true;
@@ -260,15 +248,28 @@ public class GuGUDan_Fnc : MonoBehaviour
         //타임슬라이더의 Value 값이 0 일경우 게임 끝.
         if(TimeSlider.Instance.slider.value == 0)
         {
-            //Todo : 게임 종료 로직 구현해주세요 > 게임화면 종료하고 결과창? 띄워줄듯
-            //반응속도 쳌
             ReactionTime = trueReactionTime / TrueAnswerCount;
-            isGameOver = true;
             totalReactionTime = 0;
-        }
+            if (!isGameOver)
+            {
+                isGameOver = true;
+                answersCount = TrueAnswerCount;
+                reactionRate = ReactionTime;
+                AnswerRate();
+                EndGame();
+            }
+        }        
         else
         {
-            return;
+            if(QuestCount < 0 && !isGameOver)
+            {
+                ReactionTime = trueReactionTime / TrueAnswerCount;
+                isGameOver = true;
+                answersCount = TrueAnswerCount;
+                reactionRate = ReactionTime;
+                AnswerRate();
+                EndGame();
+            }
         }  
     }
 
@@ -288,6 +289,7 @@ public class GuGUDan_Fnc : MonoBehaviour
                 TrueAnswerCount++; //정답 갯수 증가 -> 정답률 반영에 사용할거
                 isAnswerCheck = true;
                 isAnswerCorrect = true;
+                AnswerCount++;
                 //누적시간 변수에 저장.
             }
             else //오답일경우
@@ -295,6 +297,7 @@ public class GuGUDan_Fnc : MonoBehaviour
                 //Todo: 기획팀에서 어떻게 할 계획인지 말해주면 그냥 리턴하던지
                 // 오답일경우 제한시간감소 
                 //누적된 시간 날리기
+                AnswerCount++;
                 isAnswerCheck = true;
                 isAnswerCorrect = false;
                 TimeSlider.Instance.DecreaseTime_Item(5);
@@ -308,6 +311,7 @@ public class GuGUDan_Fnc : MonoBehaviour
                 TrueAnswerCount++; //정답 갯수 증가 -> 정답률 반영에 사용할거
                 isAnswerCheck = true;
                 isAnswerCorrect = true;
+                AnswerCount++;
                 //누적시간 변수에 저장.
             }
             else //오답일경우
@@ -317,6 +321,7 @@ public class GuGUDan_Fnc : MonoBehaviour
                 //누적된 시간 날리기
                 isAnswerCheck = true;
                 isAnswerCorrect = false;
+                AnswerCount++;
                 TimeSlider.Instance.DecreaseTime_Item(5);
             }
         }
@@ -326,6 +331,7 @@ public class GuGUDan_Fnc : MonoBehaviour
             {
                 Get_Score();
                 TrueAnswerCount++; //정답 갯수 증가 -> 정답률 반영에 사용할거
+                AnswerCount++;
                 isAnswerCheck = true;
                 isAnswerCorrect = true;
                 //누적시간 변수에 저장.
@@ -335,6 +341,7 @@ public class GuGUDan_Fnc : MonoBehaviour
                 //Todo: 기획팀에서 어떻게 할 계획인지 말해주면 그냥 리턴하던지
                 // 오답일경우 제한시간감소 
                 //누적된 시간 날리기
+                AnswerCount++;
                 isAnswerCheck = true;
                 isAnswerCorrect = false;
                 TimeSlider.Instance.DecreaseTime_Item(5);
@@ -521,5 +528,31 @@ public class GuGUDan_Fnc : MonoBehaviour
         {
             Score.Instance.Get_SecondScore();
         }
+    }
+
+    private void Set_QuestCount()
+    {
+        switch (timeSet)
+        {
+            case 60:
+                QuestCount = 2;
+                
+                break;
+            case 180:
+                QuestCount = 3; // 예시 값
+                break;
+            case 300:
+                QuestCount = 5; // 예시 값
+                break;
+            default:
+                break;
+        }
+        StartQuestCount = QuestCount;
+    }
+
+
+    private void AnswerRate()
+    {
+        answers = StartQuestCount * 100 / AnswerCount;
     }
 }

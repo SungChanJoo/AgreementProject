@@ -10,7 +10,7 @@ public class ExitMetaWorld : MonoBehaviour
     {
         NetworkClient.Disconnect();
         Destroy(FindObjectOfType<PetSwitchNetworkManager>().gameObject);
-        Destroy(FindObjectOfType<SelectCrewManager>().gameObject);
+        Destroy(FindObjectOfType<CrewSelectManager>().gameObject);
         SceneManager.LoadScene(sceneName);
     }
 }
