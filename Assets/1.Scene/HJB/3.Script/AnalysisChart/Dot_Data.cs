@@ -9,6 +9,6 @@ public class Dot_Data : MonoBehaviour
 
     public void Print_DotData(float data)
     {
-        dot_data.text = data.ToString("F1");
+        dot_data.text = data.ToString("F2");
     }
 }

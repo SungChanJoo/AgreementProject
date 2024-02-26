@@ -28,6 +28,7 @@ public class AnalysisChart : MonoBehaviour
     private void Start()
     {
         DataSet();
+        SelectType();
         
     }
     private void DataSet()
@@ -54,13 +55,14 @@ public class AnalysisChart : MonoBehaviour
     {
         //그래프가 그려질 오브젝트의 컴포넌트 가져오기
         RectTransform backRect = BackGroundTile_obj.GetComponent<RectTransform>();
+        float Back_Height = backRect.rect.height - 100;
         //날짜의 길이만큼 반복
         for (int i = 0; i < dayText.Length; i++)
         {
             //그래프가 이미지 틀 안에서 그려지기 위해 보간하여 비율로 나타내기
-            float a = Mathf.Lerp(0, backRect.rect.height, data[i]);
+            float a = Mathf.Lerp(0, Back_Height, data[i]);
             //점이 찍히는 기본위치를 0으로 지정하기 위한 계산
-            float b = a - (backRect.rect.height*0.5f);            
+            float b = a - (Back_Height*0.5f);            
             //여기에서 Y축의 값을 받아서 넣어야함
             Vector2 dayVector2 = new Vector2(dayText[i].rectTransform.localPosition.x, b );
             GameObject R_Dot = Instantiate(reactionRate_Dot,BackGroundTile_obj.transform);
