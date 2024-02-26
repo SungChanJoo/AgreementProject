@@ -97,8 +97,9 @@ public class ObjectPooling : MonoBehaviour
             yield return new WaitForSeconds(cool); //난이도에 따라 재생되는 시간을 바꿀것
             //아이템 랜덤 생성
             int Randnum = Random.Range(0, MeteorPool.Count);
-            float randomValue = Random.Range(-100, 101);
-            Vector3 offset = new Vector3(randomValue, 0, 0); // 좌우 변경을위한 랜덤값
+            float randomValueX = Random.Range(-100, 101);
+          //  float randomValueZ = Random.Range(-100, 101);
+            Vector3 offset = new Vector3(randomValueX, 0, -40); // 좌우 변경을위한 랜덤값
             MeteorPool[Randnum].transform.position = Pool_Position.transform.position + offset;
             MeteorPool[Randnum].SetActive(true);
             MeteorPool.Remove(MeteorPool[Randnum]);
