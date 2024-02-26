@@ -59,8 +59,7 @@ public interface ITimeSlider
     }
 
     private IEnumerator timeSlider() //추후 메인 UI에서 시간설정하면 값을 받아올 것
-    {
-        Debug.Log("코루틴실행중");
+    {        
         float endTime = 0f;
         Color startColor = sliderVar_Image.color; // 시작 색상
         while (startTime > endTime)

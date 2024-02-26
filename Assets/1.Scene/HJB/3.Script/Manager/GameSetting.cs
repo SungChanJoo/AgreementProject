@@ -37,14 +37,12 @@ public abstract class GameSetting : MonoBehaviour
     [SerializeField] GameObject resultCanvas_UI;
 
     IEnumerator UpdateDatabaseFromData_co;
-    private void Awake()
-    {
 
-    }
+   
     private void Start()
     {
         UpdateDatabaseFromData_co = UpdateDatabaseFromData();
-        startSet();
+        startSet();        
     }
 
     private void startSet()
@@ -188,6 +186,7 @@ public abstract class GameSetting : MonoBehaviour
     }
     public void Setting_UI()
     {
+        SettingManager.Instance.EnableSettingBtn();
         SettingManager.Instance.Setting_Btn();
     }
     public void RestartGame()

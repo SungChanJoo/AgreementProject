@@ -14,7 +14,11 @@ public class AudioManager : MonoBehaviour
     [SerializeField] private AudioMixer audioMixer;
     [SerializeField] private Slider master_slider;
     [SerializeField] private Slider bgm_slider;
-    
+    [SerializeField] private Slider sfx_slider;
+
+    private float masterValue;
+    private float bgmValue;
+    private float sfxValue;
 
     private void Awake()
     {
@@ -43,16 +47,58 @@ public class AudioManager : MonoBehaviour
         BGMAudio.clip = bgmClip[idx];
         BGMAudio.Play();
     }
+    public void SliderControll(int num, bool check)
+    {
+        switch (num)
+        {
+            case 0:
+                if (check)
+                {
 
-
+                    Master_VolumeSet();
+                    master_slider.interactable = true;
+                }
+                else
+                {
+                    audioMixer.SetFloat("Master", -80f);
+                    master_slider.interactable = false;
+                }
+                break;
+            case 1:
+                if (check)
+                {
+                    BGM_VolumeSet();
+                    bgm_slider.interactable = true;
+                }
+                else
+                {
+                    audioMixer.SetFloat("BGM", -80f);
+                    bgm_slider.interactable = false;
+                }
+                break;
+            case 2:
+                if (check)
+                {
+                    //SFX_VolumeSet();
+                    sfx_slider.interactable = true;
+                }
+                else
+                {
+                    //audioMixer.SetFloat("SFX", -80f);
+                    sfx_slider.interactable = false;
+                }
+                break;
+        }
+    }
+    
     public void Master_VolumeSet()
     {
-        audioMixer.SetFloat("Master", Mathf.Log10(master_slider.value) * 20);
+        audioMixer.SetFloat("Master", Mathf.Log10(master_slider.value) * 20f);
     }
 
     public void BGM_VolumeSet()
     {
-        audioMixer.SetFloat("BGM", Mathf.Log10(bgm_slider.value) * 20);
+        audioMixer.SetFloat("BGM", Mathf.Log10(bgm_slider.value) * 20f);
     }
     public void SFX_VolumeSet()
     {
