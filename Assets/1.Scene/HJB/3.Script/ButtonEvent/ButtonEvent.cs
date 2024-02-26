@@ -18,14 +18,18 @@ public class ButtonEvent : MonoBehaviour
     [SerializeField] private Sprite select_img;
     [SerializeField] private Sprite Non_img;
 
-    private void Start()
-    {        
+    private void Awake()
+    {
         level_img = new Image[level_btn.Length];
         time_img = new Image[time_btn.Length];
 
         ButtonReference();
         ChangeColor_Level();
         ChangeColor_Time();
+    }
+    private void Start()
+    {        
+        
     }
     private void ButtonReference()
     {

@@ -17,7 +17,11 @@ public class MainMenuManager : MonoBehaviour
     [SerializeField] private GameObject ChartCanvas;
 
     public Game_Type game_Type;
-    
+
+    private void Start()
+    {
+        SettingManager.Instance.EnableSettingBtn();
+    }
     public void GameScene()
     {
         SceneManager.LoadScene((int)game_Type+2);
@@ -84,6 +88,7 @@ public class MainMenuManager : MonoBehaviour
     {
         PetSelectCavas.SetActive(!PetSelectCavas.activeSelf);        
     }
+    
     //환경설정 창 On
     public void Setting_UI()
     {
