@@ -118,8 +118,6 @@ public class VeneziaManager : GameSetting
         //시간 시작 
         StartTime();
         StartCoroutine(ObjectPooling.Instance.Cube_Co());
-
-        print("겜타 " + game_Type);
     }
     private void Update()
     {
@@ -277,7 +275,6 @@ public class VeneziaManager : GameSetting
         switch (Step)
         {
             case 1:
-
                 break;
             case 2:
                 break;
