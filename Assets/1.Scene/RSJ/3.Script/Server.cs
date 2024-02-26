@@ -220,7 +220,7 @@ public class Server : MonoBehaviour
         }
         Debug.Log($"[Server] Recieved request name from client : {dataList[0]}");
 
-        // Reply -> Client에게 보낼 List<string>
+        // Reply -> Client에게 보낼 List<string>, [0]은 requestName
         List<string> replyRequestData_List = new List<string>();
         replyRequestData_List.Add($"{requestName}|");
 
@@ -232,14 +232,20 @@ public class Server : MonoBehaviour
             case "[Create]LicenseNumber":
                 // 클라이언트가 LicenseNumber를 요청하는건 처음 접속하기때문에 LicenseNumber가 없는것
                 // 따라서 DB에 연결해 LicenseNumber가 몇개있는지 확인(Count)하고 클라이언트에게 LicenseNumber 부여
+
+                // 새 라이센스 발급 (유저(플레이어), 로컬에 저장되는 한 개의 라이센스)
                 Debug.Log($"[Server] Creating... User_LicenseNumber");
-                string clientdata = DBManager.instance.CreateLicenseNumber(); // 새 라이센스 발급
-                List<string> clientdata_List = clientdata.Split('|').ToList();
-                clientLicenseNumber = Int32.Parse(clientdata_List[0]);
-                Debug.Log($"[Server] Creating... new PlayerData");
-                DBManager.instance.CreateNewPlayerData(clientLicenseNumber); // 새 플레이어 정보 생성
-                Debug.Log($"[Server] Finish Create LicenseNumber and new PlayerData");
-                replyRequestData_List.Add($"{dataList[0]}|{clientdata}");
+                string clientdata = DBManager.instance.CreateLicenseNumber(); 
+
+                // 새 캐릭터 정보 생성 (유저 한명당 가지는 첫 캐릭터)
+                Debug.Log($"[Server] Creating... new Charactor Data");
+                //List<string> clientdata_List = clientdata.Split('|').ToList();
+                //clientLicenseNumber = Int32.Parse(clientdata_List[0]);
+                clientLicenseNumber = Int32.Parse(clientdata.Split('|')[0]);
+                DBManager.instance.CreateNewCharactorData(clientLicenseNumber); 
+
+                Debug.Log($"[Server] Finish Create LicenseNumber and new CharactorData");
+                replyRequestData_List.Add($"{clientdata}|");
                 break;
             case "[Create]Charactor":
                 break;
@@ -258,9 +264,9 @@ public class Server : MonoBehaviour
             case "[Save]calculation":
                 DBManager.instance.SaveGameResultData(dataList);
                 break;
-            case "[Load]PlayerData":
+            case "[Load]CharactorData":
                 // dataList[1] = user_LicenseNumber, dataList[2] = user_Charactor
-                tempAllocate = DBManager.instance.LoadPlayerData(clientLicenseNumber, clientCharactor);
+                tempAllocate = DBManager.instance.LoadCharactorData(clientLicenseNumber, clientCharactor);
                 tempAllocate.ForEach(data => replyRequestData_List.Add(data)); // TempList의 각 요소(data = string value) ReplyList에 추가
                 break;
             case "[Load]RankData":
@@ -281,7 +287,7 @@ public class Server : MonoBehaviour
 
         byte[] finishData = Encoding.UTF8.GetBytes("Finish");
         stream.Write(finishData, 0, finishData.Length);
-        Debug.Log("[Server] End reply request data to client");
+        Debug.Log("[Server] Finish reply request data to client");
     }
 
     // 하루가 지났을 때 PresentDB에 있는 gamedata들 새 DB(ex) 24-02-21)에 저장

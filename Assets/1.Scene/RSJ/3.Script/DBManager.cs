@@ -168,7 +168,7 @@ public class DBManager : MonoBehaviour
         int clientLicenseNumber = clientLicenseNumber_Base + count;
         int user_Charactor = 1;
         string user_Name = "Guest";
-        int user_Profile = 1;
+        byte[] user_Profile = { 0x00};
         int user_Coin = 0;
 
         // Binary Parameter
@@ -181,9 +181,8 @@ public class DBManager : MonoBehaviour
         insert_SqlCmd.Parameters.Add("@clientLicenseNumber", MySqlDbType.Int32).Value = clientLicenseNumber;
         insert_SqlCmd.Parameters.Add("@user_Charactor", MySqlDbType.Int32).Value = user_Charactor;
         insert_SqlCmd.Parameters.Add("@user_Name", MySqlDbType.VarChar).Value = user_Name;
-        insert_SqlCmd.Parameters.Add("@user_Profile", MySqlDbType.Int32).Value = user_Profile;
+        insert_SqlCmd.Parameters.Add("@user_Profile", MySqlDbType.MediumBlob).Value = user_Profile;
         insert_SqlCmd.Parameters.Add("@user_Coin", MySqlDbType.Int32).Value = user_Coin;
-        //insert_SqlCmd.ExecuteNonQuery(); 
         
         insert_SqlCmd.ExecuteNonQuery(); // command.ExecuteNonQuery()은 DB에서 변경 작업을 수행하는 SQL 명령문을 실행하고, 영향을 받은 행의 수를 반환하는 메서드
 
@@ -191,10 +190,10 @@ public class DBManager : MonoBehaviour
         return returnData;
     }
 
-    // 새 플레이어 데이터 생성
-    public void CreateNewPlayerData(int clientlicensenumber)
+    // 새 캐릭터 데이터 생성
+    public void CreateNewCharactorData(int clientlicensenumber)
     {
-        Debug.Log($"[DB] Create new Player data, client's licensenumber : {clientlicensenumber}");
+        Debug.Log($"[DB] Create new Charactor data, client's licensenumber : {clientlicensenumber}");
         // ClientLicenseNumber가 발급되면 새 플레이어 정보를 만드는 것이므로, 모든 테이블에 data를 추가해야함
         string insertCreatePlayerData_Command;
         MySqlCommand insert_SqlCmd = new MySqlCommand();
@@ -208,8 +207,8 @@ public class DBManager : MonoBehaviour
         // table.list[0] -> userinfo, [1]->rank, [2]->achievement, [3]->pet
 
         // rank table
-        //string rank_TableName = "rank";
-        //string[] rank_Columns = { "User_LicenseNumber", "User_Charactor", "TotalTime", "TotalScore" };
+        // table.list[1] = "rank"
+        // rank_Columns = { "User_LicenseNumber", "User_Charactor", "User_Profile", "User_Name", "TotalTime", "TotalScore" };
         int rank_valuepart;
 
         // insert row
@@ -223,7 +222,7 @@ public class DBManager : MonoBehaviour
             else if (i == 1) rank_valuepart = 1;
             else rank_valuepart = 0;
 
-            updatePlayerData_Command = $"UPDATE {table.list[1]} SET {rank_Columns[i]} = {rank_valuepart}";
+            updatePlayerData_Command = $"UPDATE `{table.list[1]}` SET `{rank_Columns[i]}` = '{rank_valuepart}'";
             update_SqlCmd.CommandText = updatePlayerData_Command;
             update_SqlCmd.ExecuteNonQuery();
         }
@@ -355,8 +354,10 @@ public class DBManager : MonoBehaviour
     }
 
     // 플레이어 데이터 불러오기, DB에서 불러와서 서버가 클라이언트한테 쏴줄수 있게 string으로 묶어서 반환형 string
-    public List<string> LoadPlayerData(int clientlicensenumber, int clientcharactor)
+    public List<string> LoadCharactorData(int clientlicensenumber, int clientcharactor)
     {
+        Debug.Log("[DB] LoadCharactorData...");
+
         List<string> return_TableData = new List<string>();
         string return_TempData;
 
@@ -392,20 +393,17 @@ public class DBManager : MonoBehaviour
                                 //MySqlCommand selectColumn_SqlCmd = new MySqlCommand(selectColumn_Command, connection);
                                 //MySqlDataReader tempReader = selectColumn_SqlCmd.ExecuteReader();
 
-                                Debug.Log($"[DB] tableName : {table.list[i]}, dbLicenseNumber : {dbLicenseNumber}");
-                                Debug.Log("[DB] LoadPlayerData - user_info table");
+                                Debug.Log($"[DB] tableName : {table.list[i]}, dbLicenseNumber : {dbLicenseNumber},");
+                                Debug.Log("[DB] LoadCharactorData - user_info table");
                                 string user_Name = reader.GetString("User_Name");
                                 //string user_Name = reader["User_Name"].ToString();
                                 Debug.Log("[DB] User_Name Get????");
-                                // db에서 binary 타입 데이터 가져와서 string으로 변환
-                                //// 실제 읽은 데이터의 길이
-                                //int bytesRead = (int)reader.GetBytes(reader.GetOrdinal("User_Profile"), 0, null, 0, 1000);
-                                //// 읽은 데이터 길이만큼 배열 생성
-                                //byte[] binaryData = new byte[bytesRead];
-                                //// 데이터를 읽어와서 배열에 저장 - binaryData(buffer)에 저장됨
-                                //reader.GetBytes(reader.GetOrdinal("User_Profile"), 0, binaryData, 0, 1000);
-                                //string user_Profile = Convert.ToBase64String(binaryData);
-                                string user_Profile = reader.GetInt32("User_Profile").ToString();
+                                // db에서 MediumBlob 타입 데이터 가져와서 string으로 변환
+                                byte[] user_Profile_bytes = reader["User_Profile"] as byte[];
+                                string user_Profile = Convert.ToBase64String(user_Profile_bytes);
+                                //string user_Profile = reader.GetInt32("User_Profile").ToString();
+                                Debug.Log($"[db] User_Profile byte[] type : {user_Profile_bytes}");
+                                Debug.Log($"[DB] User_Profile string type : {user_Profile}");
                                 Debug.Log("[DB] User_Profile Get????");
                                 string user_Coin = reader.GetInt32("User_Coin").ToString();
                                 Debug.Log("[DB] User_Coin Get????");
@@ -545,8 +543,6 @@ public class DBManager : MonoBehaviour
 
         for (int i = 2; i < game_Columns.Length; i++) // game_Columns = [0]~[7]
         {
-            Debug.Log($"[DB] Update Tuple problem?? ....");
-            Debug.Log($"[DB] Check dataList[10] is ? : {dataList[10]}");
             string updateGameData_Command = "";
             if (i == 2 || i == 5) // float
             {
@@ -722,18 +718,26 @@ public class DBManager : MonoBehaviour
     // 임시로 PresentDB에 있는 Rank Table 데이터 사용 / Score, Time 별 Rank 1~5위 및 6번째 자기 자신의 데이터 
     public List<string> RankOrderByUserData(int licensenumber, int charactor)
     {
+        Debug.Log("[DB] Come in RankOrderByUserData Method");
+
         // rank table -> [0]:User_LicenseNumber, [1]:User_Charactor, [2]:User_Profile, [3]:User_Name, [4]:TotalTime, [5]"TotalScore
         List<string> return_List = new List<string>();
 
         // rank table's row count
         string rowCount_Command = $"SELECT COUNT(*) FROM `rank`";
         MySqlCommand rowCount_SqlCmd = new MySqlCommand(rowCount_Command, connection);
-        int rowCountInTable = (int)rowCount_SqlCmd.ExecuteScalar(); // ExcuteScalar() 메서드는 쿼리를 실행하고 결과 집합의 첫 번째 행의 첫 번째 열의 값을 반환
+        // Int 캐스팅
+        object result = rowCount_SqlCmd.ExecuteScalar(); // ExcuteScalar() 메서드는 쿼리를 실행하고 결과 집합의 첫 번째 행의 첫 번째 열의 값을 반환
+        Debug.Log($"[DB] Check result: {result}");
+        result = (result == DBNull.Value) ? null : result;
+        int rowCountInTable = Convert.ToInt32(result); 
+        Debug.Log($"[DB] Check rowCount, rowCountInTable : {rowCountInTable}");
 
         // Score 기준
         string selectScore_Command = $"SELECT * FROM `rank`";
         MySqlCommand selectScore_SqlCmd = new MySqlCommand(selectScore_Command, connection);
         MySqlDataReader reader = selectScore_SqlCmd.ExecuteReader();
+        Debug.Log("[DB] Check selectScore");
 
         List<List<string>> rankdata = new List<List<string>>(); 
 
@@ -746,29 +750,36 @@ public class DBManager : MonoBehaviour
                 
                 for (int j = 0; j < rank_Columns.Length; j++)
                 {
-                    if(j == 2) // byte[]
+                    Debug.Log($"[DB] Check Type Conversion, j : {j}");
+                    if (j == 2) // byte[]
                     {
-                        byte[] binarydata = reader[$"{rank_Columns[j]}"] as byte[]; // column에 있는 binary data 받아오기
-                        valuesInColumn.Add(System.Text.Encoding.UTF8.GetString(binarydata));
+                        byte[] profiledata = reader[$"{rank_Columns[j]}"] as byte[]; // column에 있는 MediumBlob Type value -> byte[] type으로 받아오기
+                        valuesInColumn.Add(System.Text.Encoding.UTF8.GetString(profiledata));
+                        Debug.Log($"[DB] Check Type Conversion, Where: byte[], {profiledata}, j : {j}");
+                        Debug.Log($"[DB] Check Type Conversion, Where: byte[], {System.Text.Encoding.UTF8.GetString(profiledata)}, j : {j}");
                     }
                     else if(j == 3) // Varchar
                     {
                         valuesInColumn.Add(reader.GetString(rank_Columns[j]));
+                        Debug.Log($"[DB] Check Type Conversion, Where: Varchar[], j : {j}");
                     }
                     else if(j == 4) // Float
                     {
                         valuesInColumn.Add(reader.GetFloat(rank_Columns[j]).ToString());
+                        Debug.Log($"[DB] Check Type Conversion, Where: Float[], j : {j}");
+                        Debug.Log($"[DB] Check float type? : {reader.GetFloat(rank_Columns[j]).GetType()}");
+                        Debug.Log($"[DB] Check float value : {reader.GetFloat(rank_Columns[j])}");
                     }
                     else // int
                     {
                         valuesInColumn.Add(reader.GetInt32(rank_Columns[j]).ToString());
+                        Debug.Log($"[DB] Check Type Conversion, Where: Int[], j : {j}");
                     }
                 }
                 rankdata.Add(valuesInColumn);
             }
         }
         reader.Close();
-
 
         // 직접적인 순위비교
         // Score - rankdata[i][5]
@@ -845,7 +856,7 @@ public class DBManager : MonoBehaviour
             time.usercharactor = Int32.Parse(rankdata[i][1]);
             time.userProfile = System.Text.Encoding.UTF8.GetBytes(rankdata[i][2]);
             time.userName = rankdata[i][3];
-            time.totalTime = float.Parse(rankdata[i][5]);
+            time.totalTime = float.Parse(rankdata[i][4]);
 
             timeList.Add(time);
         }

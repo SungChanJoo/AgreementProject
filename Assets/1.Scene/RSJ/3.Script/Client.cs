@@ -34,13 +34,13 @@ public class Client : MonoBehaviour
     public string licenseFolderPath = string.Empty;
 
     // 서버로 부터 받은 data를 1차적으로 거른 List
-    public List<string> playerdata_FromServer = new List<string>();
+    public List<string> CharactorData_FromServer = new List<string>();
+
+    // Charactor data를 사용하기 위한 Dictionary
+    public Dictionary<string, List<string>> CharactorData_Dic;
 
     // DB Table Name
     private TableName table;
-
-    // Player data를 사용하기 위한 Dictionary
-    public Dictionary<string, List<string>> playerdata_Dic;
 
     // 서버-클라이언트 string으로 data 주고받을때 구분하기 위한 문자열
     private const string separatorString = "E|";
@@ -77,7 +77,7 @@ public class Client : MonoBehaviour
         ETCInitSetting();
         ConnectToServer();
         ClientLoginSet();
-        Invoke("LoadPlayerDataFromDB", 5f);
+        Invoke("LoadCharactorDataFromDB", 8f);
     }
 
     // 클라이언트가 실행할 때 서버 연결 시도
@@ -119,7 +119,6 @@ public class Client : MonoBehaviour
             // 서버에서 라이센스 넘버를 받아와야함, 그러기 위해 서버에 요청 todo
             string requestName = "[Create]LicenseNumber";
             RequestToServer(requestName);
-            Debug.Log($"[Client] Create licensenumber?");
             Debug.Log($"[Client] This client's licensenumber(first) : {clientLicenseNumber}");
             return; // 처음 접속이라면 폴더 및 파일 저장하고 return
         }
@@ -135,11 +134,11 @@ public class Client : MonoBehaviour
     }
 
     // 게임 시작할 때 유저정보 불러오기 - 서버에 요청(서버-DB) // 나중에 Player Class 정리되면 수정해야함. todo
-    private void LoadPlayerDataFromDB()
+    private void LoadCharactorDataFromDB()
     {
-        Debug.Log("[Clinet] Request LoadPlayerDataFromDB");
+        Debug.Log("[Clinet] Request LoadCharactorDataFromDB");
         string requestData; // 이 메서드에서 requestData는 requestName/clientLicenseNumber/clientCharactor
-        requestData = $"[Load]PlayerData|{clientLicenseNumber}|{clientCharactor}";
+        requestData = $"[Load]CharactorData|{clientLicenseNumber}|{clientCharactor}";
         RequestToServer(requestData);
     }
 
@@ -171,19 +170,35 @@ public class Client : MonoBehaviour
 
             while (true)
             {
-                byte[] buffer = new byte[1024];
+                //byte[] buffer = new byte[1024]; // 일반적인 버퍼사이즈
+                byte[] buffer = new byte[16000000]; // 16MiB 버퍼 사이즈 
                 int bytesRead = await stream.ReadAsync(buffer, 0, buffer.Length); // 데이터를 읽어올때까지 대기
                 string receivedRequestData = Encoding.UTF8.GetString(buffer, 0, bytesRead); // 데이터 변환
 
                 receivedRequestData_List.Add(receivedRequestData);
-                Debug.Log($"[Client] Receiving... massive request message from server : {receivedRequestData}");
+                Debug.Log($"[Client] Receiving... request data from server : {receivedRequestData}");
 
-                // 데이터가 다 불러와졌으면 break;
+                // 서버로부터 데이터 전송이 끝나면(Finish) break;
                 List<string> endCheck = receivedRequestData.Split('|').ToList();
                 if (endCheck.Contains("Finish"))
                 {
+                    // receivedRequestData에 Finish가 있는 경우 Finish를 제거
+                    receivedRequestData_List.RemoveAt(receivedRequestData_List.Count - 1);
+                    endCheck.RemoveAt(endCheck.Count - 1);
+
+                    string fixLastIndexInList = null;
+
+                    for(int i = 0; i < endCheck.Count; i++)
+                    {
+                        fixLastIndexInList += $"{endCheck[i]}|";
+                    }
+
+                    receivedRequestData_List.Add(fixLastIndexInList);
+
+                    Debug.Log($"[Client] Finish Receive Data From Server");
                     break;
                 }
+
             }
 
             HandleRequestData(receivedRequestData_List);
@@ -200,16 +215,20 @@ public class Client : MonoBehaviour
         // requestname : 클라이언트-서버에서 데이터를 처리하기 위한 구분
         // requestdata : Server에서 requestName으로 처리된 결과를 보낸 data
         // LicenseNumber -> clientLicenseNumber를 server가 보내줌 (Client가 첫 접속인 경우 처리됨)
-        // LoadNewPlayerData -> 새 플레이어의 경우 DB에 licenseNumber를 제외한 데이터가 없으므로 모든 테이블에 존재하는 열항목에 0값을 부여한 PlayerData를 가질 것임
-        // LoadExistPlayerData -> 기존 플레이어의 경우 DB에 저장된 PlayerData를 가질 것임
+        // LoadNewCharactorData -> 새 플레이어의 경우 DB에 licenseNumber를 제외한 데이터가 없으므로 모든 테이블에 존재하는 열항목에 0값을 부여한 CharactorData를 가질 것임
+        // LoadExistCharactorData -> 기존 플레이어의 경우 DB에 저장된 CharactorData를 가질 것임
 
-        // dataList[0] = "[Load]PlayerData|value|value..|value|E|";
+        // dataList[0] = "[Load]CharactorData|value|value..|value|E|";
         string requestName = dataList[0].Split('|')[0];
         Debug.Log($"[Client] HandleRequestData method, request name : {requestName}");
 
         switch (requestName)
         {
             case "[Create]LicenseNumber":
+                foreach (string data in dataList[0].Split('|'))
+                {
+                    Debug.Log($"[Client] Check User data : {data} ");
+                }
                 clientLicenseNumber = dataList[0].Split('|')[1];
                 clientCharactor = dataList[0].Split('|')[2];
                 SaveClientDataToJsonFile();
@@ -232,8 +251,8 @@ public class Client : MonoBehaviour
             case "[Save]calculation":
                 Debug.Log($"[Client] RequestName : {requestName}, End handling data");
                 break;
-            case "[Load]PlayerData":
-                HandleLoadPlayerData(dataList);
+            case "[Load]CharactorData":
+                HandleLoadCharactorData(dataList);
                 Debug.Log($"[Client] RequestName : {requestName}, End handling data");
                 break;
             case "[Load]RankData":
@@ -248,18 +267,18 @@ public class Client : MonoBehaviour
 
     // 최종적으로 사용할 수 있는 player data
     // 서버로부터 받고 1차적으로 정리한 data중 table name을 가지고 최종적으로 data 정리 
-    private void FilterPlayerData()
+    private void FilterCharactorData()
     {
         Debug.Log("[Client] Filtering... player data");
-        for(int i = 0; i < playerdata_FromServer.Count; i++)
+        for(int i = 0; i < CharactorData_FromServer.Count; i++)
         {
             for(int j = 0; j < table.list.Count; j++)
             {
-                if(playerdata_FromServer[i].Contains(table.list[j]))
+                if(CharactorData_FromServer[i].Contains(table.list[j]))
                 {
-                    List<string> values = playerdata_FromServer[i].Split('|', StringSplitOptions.RemoveEmptyEntries).ToList(); // User테이블기준으로 User|User_Name|User_Profile|User_Coin이 있을것임
+                    List<string> values = CharactorData_FromServer[i].Split('|', StringSplitOptions.RemoveEmptyEntries).ToList(); // User테이블기준으로 User|User_Name|User_Profile|User_Coin이 있을것임
                     values.RemoveAt(0); // 0번째 인덱스는 테이블명이므로 values에 필요하지 않다.
-                    playerdata_Dic.Add(table.list[j], values);
+                    CharactorData_Dic.Add(table.list[j], values);
                 }
             }
         }
@@ -285,18 +304,18 @@ public class Client : MonoBehaviour
         table = new TableName();
 
         // Dictionary 생성
-        playerdata_Dic = new Dictionary<string, List<string>>();
+        CharactorData_Dic = new Dictionary<string, List<string>>();
     }
 
     // 플레이어 데이터 처리
-    private void HandleLoadPlayerData(List<string> dataList)
+    private void HandleLoadCharactorData(List<string> dataList)
     {
-        // dataList[0] = "[Load]PlayerData|user_info|value|value..|value|E|";
+        // dataList[0] = "[Load]CharactorData|user_info|value|value..|value|E|";
         // dataList[1] = "rank|value|value|...|value|E|{gameTableName}|value|value|...|value|E|";
         // dataList[2] = "{gameTableName}|value|value|...|value|E|{gameTableName}|value|value|...|value|E|";
         // ... dataList[Last] = "{gameTableName}|value|value|...|value|E|Finish|;
 
-        Debug.Log("[Client] Handling LoadPlayerdata");
+        Debug.Log("[Client] Handling LoadCharactorData");
 
         List<string> firstFilterData = new List<string>(); // "E|" 제거
 
@@ -308,7 +327,7 @@ public class Client : MonoBehaviour
         for (int i = 0; i < dataList.Count; i++)
         {
             // requestName 제거
-            if (i == 0) dataList[0] = dataList[0].Substring("[Load]PlayerData".Length);
+            if (i == 0) dataList[0] = dataList[0].Substring("[Load]CharactorData".Length);
 
             List<string> parts = new List<string>();
             parts = dataList[i].Split(separatorString, StringSplitOptions.RemoveEmptyEntries).ToList();
@@ -316,12 +335,12 @@ public class Client : MonoBehaviour
             foreach (string part in parts) // part : rank|value|value|...|value|
             {
                 //part.Split('|', StringSplitOptions.RemoveEmptyEntries);
-                playerdata_FromServer.Add(part);
+                CharactorData_FromServer.Add(part);
             }
 
         }
 
-        FilterPlayerData();
+        FilterCharactorData();
     }
 
     // 랭크 데이터 처리
@@ -331,6 +350,8 @@ public class Client : MonoBehaviour
         // dataList[0] = "[Load]RankData|place|profile|name|time or score|E|";
         // dataList[1] = "place|profile|name|time or score|E|"; // parts.Count == 1
         // or dataList[1] = "place|profile|name|time or score|E|place|profile|name|time or score|E|"; // parts.Count == 2
+
+        Debug.Log("[Client] HandleLoadRankData..");
 
         // clientRankData InitSetting
         clientRankData = new RankData();
@@ -343,15 +364,19 @@ public class Client : MonoBehaviour
         for(int i =0; i < dataList.Count; i++)
         {
             // requestName 제거
-            if (i == 0) dataList[0] = dataList[0].Substring("[Load]RankData".Length);
+            if (i == 0) dataList[0] = dataList[0].Substring("[Load]RankData|".Length);
 
             List<string> parts = new List<string>();
             parts = dataList[i].Split(separatorString, StringSplitOptions.RemoveEmptyEntries).ToList();
             parts.ForEach(data => filterDataList.Add(data)); // 인덱스(string) 옮김
         }
-
-
+        Debug.Log("[Client] Check HandleLoadRankData..");
         for(int i = 0; i < filterDataList.Count; i++)
+        {
+            Debug.Log($"{filterDataList[i]}");
+        }
+
+        for (int i = 0; i < filterDataList.Count; i++)
         {
             List<string> parts = filterDataList[i].Split('|', StringSplitOptions.RemoveEmptyEntries).ToList();
 
@@ -364,6 +389,18 @@ public class Client : MonoBehaviour
                     else if (j == 2) clientRankData.rank_Score[i].userName = parts[j];
                     else if (j == 3) clientRankData.rank_Score[i].totalScore = Int32.Parse(parts[j]);
                 }
+
+                // 자기 자신의 userlicensenumber와 usercharactor를 저장해둬야 개인의 데이터를 가져다 쓸수있다.
+                if(i == 5)
+                {
+                    clientRankData.rank_Score[i].userlicensenumber = Int32.Parse(clientLicenseNumber);
+                    clientRankData.rank_Score[i].usercharactor = Int32.Parse(clientCharactor);
+                }
+                else
+                {
+                    clientRankData.rank_Score[i].userlicensenumber = 0;
+                    clientRankData.rank_Score[i].usercharactor = 0;
+                }
             }
             else // time
             {
@@ -372,10 +409,24 @@ public class Client : MonoBehaviour
                     if (j == 0) clientRankData.rank_Time[i].place = Int32.Parse(parts[j]);
                     else if (j == 1) clientRankData.rank_Time[i].userProfile = Encoding.UTF8.GetBytes(parts[j]);
                     else if (j == 2) clientRankData.rank_Time[i].userName = parts[j];
-                    else if (j == 3) clientRankData.rank_Time[i].totalTime = Int32.Parse(parts[j]);
+                    else if (j == 3) clientRankData.rank_Time[i].totalTime = float.Parse(parts[j]);
+                }
+
+                // 자기 자신의 userlicensenumber와 usercharactor를 저장해둬야 개인의 데이터를 가져다 쓸수있다.
+                if (i == 11)
+                {
+                    clientRankData.rank_Score[i].userlicensenumber = Int32.Parse(clientLicenseNumber);
+                    clientRankData.rank_Score[i].usercharactor = Int32.Parse(clientCharactor);
+                }
+                else
+                {
+                    clientRankData.rank_Score[i].userlicensenumber = 0;
+                    clientRankData.rank_Score[i].usercharactor = 0;
                 }
             }
         }
+
+        Debug.Log("[Client] End HandleLoadRankData..");
 
     }
 
@@ -395,11 +446,11 @@ public class Client : MonoBehaviour
 
         // user_info table -> [0]:User_LicenseNumber, [1]:User_Charactor, [2]:User_Name, [3]:User_Profile, [4]:User_Coin
         // rank table - > [0]:User_LicenseNumber, [1]:User_Charactor, [2]:TotalTime, [3]:TotalScore
-        resultdb.playerName = playerdata_Dic["user_info"][2];
-        resultdb.image = Encoding.UTF8.GetBytes(playerdata_Dic["user_info"][3]);
+        resultdb.playerName = CharactorData_Dic["user_info"][2];
+        resultdb.image = Encoding.UTF8.GetBytes(CharactorData_Dic["user_info"][3]);
         resultdb.Day = "";
-        resultdb.TotalAnswers = Int32.Parse(playerdata_Dic["rank"][3]);
-        resultdb.TotalTime = float.Parse(playerdata_Dic["rank"][2]);
+        resultdb.TotalAnswers = Int32.Parse(CharactorData_Dic["rank"][3]);
+        resultdb.TotalTime = float.Parse(CharactorData_Dic["rank"][2]);
 
         string[] game_Names = { "venezia_kor", "venezia_eng", "venezia_chn", "calculation", "gugudan" };
         int[] levels = { 1, 2, 3 };
@@ -444,11 +495,11 @@ public class Client : MonoBehaviour
 
                     string game_TableName = $"{game_Names[i]}_{levelpart}_step{steps[k]}";
 
-                    float reactionRate = float.Parse(playerdata_Dic[$"{game_TableName}"][2]);
-                    int answersCount = Int32.Parse(playerdata_Dic[$"{game_TableName}"][3]);
-                    int answers = Int32.Parse(playerdata_Dic[$"{game_TableName}"][4]);
-                    float playTime = float.Parse(playerdata_Dic[$"{game_TableName}"][5]);
-                    int totalScore = Int32.Parse(playerdata_Dic[$"{game_TableName}"][6]);
+                    float reactionRate = float.Parse(CharactorData_Dic[$"{game_TableName}"][2]);
+                    int answersCount = Int32.Parse(CharactorData_Dic[$"{game_TableName}"][3]);
+                    int answers = Int32.Parse(CharactorData_Dic[$"{game_TableName}"][4]);
+                    float playTime = float.Parse(CharactorData_Dic[$"{game_TableName}"][5]);
+                    int totalScore = Int32.Parse(CharactorData_Dic[$"{game_TableName}"][6]);
 
                     Data_value datavalue = new Data_value(reactionRate, answersCount, answers, playTime, totalScore);
 
@@ -569,7 +620,7 @@ public class Client : MonoBehaviour
 
     
 
-    // 서버로부터 받은 PlayerData를 게임에서 사용하는 Player Class에 설정
+    // 서버로부터 받은 CharactorData를 게임에서 사용하는 Player Class에 설정
     private void SetPlayer(User_Info user)
     {
 
@@ -590,18 +641,18 @@ public class Client : MonoBehaviour
         CloseSocket();
     }
 
-    public void OnClickLoadPlayerDataFromServerTest()
+    public void OnClickLoadCharactorDataFromServerTest()
     {
-        Debug.Log($"[Client] Test... {playerdata_FromServer}");
-        for (int i = 0; i < playerdata_FromServer.Count; i++)
+        Debug.Log($"[Client] Test... {CharactorData_FromServer}");
+        for (int i = 0; i < CharactorData_FromServer.Count; i++)
         {
-            Debug.Log($"playerdata_FromServer[{i}]'s value : {playerdata_FromServer[i]}");
+            Debug.Log($"CharactorData_FromServer[{i}]'s value : {CharactorData_FromServer[i]}");
         }
     }
 
-    public void OnClickLoadFilterPlayerDataTest()
+    public void OnClickLoadFilterCharactorDataTest()
     {
-        foreach (KeyValuePair<string, List<string>> item in playerdata_Dic)
+        foreach (KeyValuePair<string, List<string>> item in CharactorData_Dic)
         {
             Debug.Log($"item.Key : {item.Key}, item.Value : {item.Value}");
             foreach (string value in item.Value)
@@ -611,8 +662,28 @@ public class Client : MonoBehaviour
         }
     }
 
-    public void OnClickLoadGameDataForRankTest()
+    public void OnClickRanking_LoadRankDataTest()
     {
+        RankData rankDataFromDB = Ranking_LoadRankDataFromDB();
+    }
+
+    public void OnClickLoadRankDataTest()
+    {
+        for(int i = 0; i< clientRankData.rank_Score.Length; i++)
+        {
+            Debug.Log($"clientRankData.rank_Score[i].place : {clientRankData.rank_Score[i].place}");
+            Debug.Log($"clientRankData.rank_Score[i].userProfile : {clientRankData.rank_Score[i].userProfile}");
+            Debug.Log($"clientRankData.rank_Score[i].userName : {clientRankData.rank_Score[i].userName}");
+            Debug.Log($"clientRankData.rank_Score[i].totalScore : {clientRankData.rank_Score[i].totalScore}");
+        }
+
+        for (int i = 0; i < clientRankData.rank_Time.Length; i++)
+        {
+            Debug.Log($"clientRankData.rank_Time[i].place : {clientRankData.rank_Time[i].place}");
+            Debug.Log($"clientRankData.rank_Time[i].userProfile : {clientRankData.rank_Time[i].userProfile}");
+            Debug.Log($"clientRankData.rank_Time[i].userName : {clientRankData.rank_Time[i].userName}");
+            Debug.Log($"clientRankData.rank_Time[i].totalScore : {clientRankData.rank_Time[i].totalTime}");
+        }
 
     }
 
