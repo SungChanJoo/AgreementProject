@@ -153,19 +153,8 @@ public abstract class GameSetting : MonoBehaviour
         //남은시간
         int z = 180 - (int)reactionRate * totalQuestions;
         //남은시간 계수
-        int t = 0;
-        switch (timeSet)
-        {
-            case (int)TimeSet._1m:
-                t = z * 3 * 3 + 1;
-                break;
-            case (int)TimeSet._3m:
-                t = (z) * 3 + 1;
-                break;
-            case (int)TimeSet._5m:
-                t = (z * 3 / 5) * 3 + 1;
-                break;
-        }
+        int t = z * 3 + 1;
+        
         //난이도 계수
         float n = 1f + level * step / 10f;
         totalScore =
