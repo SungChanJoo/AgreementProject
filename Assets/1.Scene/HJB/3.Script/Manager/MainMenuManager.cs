@@ -14,6 +14,7 @@ public class MainMenuManager : MonoBehaviour
     [SerializeField] private GameObject AlbumCavas;
     [SerializeField] private GameObject ProfileCanvas;
     [SerializeField] private GameObject StepCanvas;
+    [SerializeField] private GameObject ChartCanvas;
 
     public Game_Type game_Type;
     
@@ -74,6 +75,10 @@ public class MainMenuManager : MonoBehaviour
     public void Album_UI()
     {
         AlbumCavas.SetActive(!AlbumCavas.activeSelf);
+    }
+    public void Chart_UI()
+    {
+        ChartCanvas.SetActive(!ChartCanvas.activeSelf);
     }
     public void MetaWorldPetSelect_UI()
     {
