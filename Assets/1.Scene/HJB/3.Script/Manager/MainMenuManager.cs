@@ -39,7 +39,7 @@ public class MainMenuManager : MonoBehaviour
     
     //선택한 Level 할당 이벤트
     public void SelectLevel_Btn(int level)
-    {
+    {        
         //StepUI가 비활성화이면..
         if (!StepCanvas.activeInHierarchy)
         {
