@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.9486204, g: 0.87804097, b: 0.7322973, a: 1}
+  m_IndirectSpecularColor: {r: 0.94862026, g: 0.87804097, b: 0.7322973, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -97,8 +97,8 @@ LightmapSettings:
     m_ExportTrainingData: 0
     m_TrainingDataDestination: TrainingData
     m_LightProbeSampleCountMultiplier: 4
-  m_LightingDataAsset: {fileID: 0}
-  m_LightingSettings: {fileID: 0}
+  m_LightingDataAsset: {fileID: 112000000, guid: 6931623fb42e7234aac713ad76596270, type: 2}
+  m_LightingSettings: {fileID: 4890085278179872738, guid: e2f56b5045a05c447af0461d0918d0a6, type: 2}
 --- !u!196 &4
 NavMeshSettings:
   serializedVersion: 2
@@ -1874,7 +1874,7 @@ Light:
   m_Type: 1
   m_Shape: 0
   m_Color: {r: 1, g: 0.95686275, b: 0.8392157, a: 1}
-  m_Intensity: 2
+  m_Intensity: 1
   m_Range: 10
   m_SpotAngle: 30
   m_InnerSpotAngle: 21.80208
@@ -2372,8 +2372,6 @@ MonoBehaviour:
   resultCanvas_UI: {fileID: 756554488}
   gameover: {fileID: 1249587734}
   isGameover: 0
-  Level: 1
-  Step: 1
   Quest_Img: {fileID: 240970841}
   Quest_text: {fileID: 1885517469}
   sprites_KE:
