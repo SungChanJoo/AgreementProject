@@ -16,6 +16,8 @@ public class ObjectPooling : MonoBehaviour
     [SerializeField] private GameObject MeteorPrefab; //아이템 풀링 해줄 프리팹
     [SerializeField] private GameObject PausePrefab; //아이템 풀링 해줄 프리팹
 
+    public IEnumerator CubePooling;
+    public IEnumerator CubeRestartPooling;
 
 
     //생성할 큐브 갯수
@@ -43,7 +45,7 @@ public class ObjectPooling : MonoBehaviour
         #endregion
 
         #region Object Pooling
-        
+
     }
 
     private void Start()
@@ -54,10 +56,21 @@ public class ObjectPooling : MonoBehaviour
 
         #endregion
         //StartCoroutine(Cube_Co());
-        StartCoroutine(Meteor_Co());        
-        StartCoroutine(Pause_Co());        
+        StartCoroutine(Meteor_Co());
+        StartCoroutine(Pause_Co());
     }
     public int cool;
+
+    public void StartCubePooling_co()
+    {
+        CubePooling = Cube_Co();
+        StartCoroutine(CubePooling);
+    }
+    public void ReStartCubePooling_co()
+    {
+        CubePooling = Cube_Co();
+        StartCoroutine(CubePooling);
+    }
     public IEnumerator Cube_Co()
     {
         while (cubePool.Count > 0)
@@ -98,7 +111,7 @@ public class ObjectPooling : MonoBehaviour
             //아이템 랜덤 생성
             int Randnum = Random.Range(0, MeteorPool.Count);
             float randomValueX = Random.Range(-100, 101);
-          //  float randomValueZ = Random.Range(-100, 101);
+            //  float randomValueZ = Random.Range(-100, 101);
             Vector3 offset = new Vector3(randomValueX, 0, -40); // 좌우 변경을위한 랜덤값
             MeteorPool[Randnum].transform.position = Pool_Position.transform.position + offset;
             MeteorPool[Randnum].SetActive(true);
@@ -145,7 +158,7 @@ public class ObjectPooling : MonoBehaviour
 
     public void CreateQuestPrefab(int count) //추후 범위제어할때 인수좀더 넣을 것.
     {
-        
+
         for (int i = 0; i < count; i++)
         {
             for (int j = 0; j < CubeCount; j++)
