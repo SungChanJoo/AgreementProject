@@ -15,7 +15,7 @@ GameObject:
   - component: {fileID: 1079827597520798624}
   - component: {fileID: 1079827597520798628}
   m_Layer: 0
-  m_Name: bear
+  m_Name: Bear
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -98,7 +98,7 @@ SphereCollider:
   m_IsTrigger: 1
   m_Enabled: 1
   serializedVersion: 2
-  m_Radius: 0.5
+  m_Radius: 0.4
   m_Center: {x: 0, y: 0, z: 0}
 --- !u!114 &1079827597520798624
 MonoBehaviour:
