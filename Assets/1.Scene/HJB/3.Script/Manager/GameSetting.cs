@@ -181,7 +181,7 @@ public abstract class GameSetting : MonoBehaviour
                 result_DB.Data[(game_Type, level, step)] = data_Value;
             }
         }
-        Client.instance.SaveResultDataToDB(result_DB,game_Type,level,step);
+        Client.instance.AppGame_SaveResultDataToDB(result_DB,game_Type,level,step);
         yield return null;
     }
     public void Setting_UI()

@@ -109,7 +109,6 @@ public class Server : MonoBehaviour
         }
 
         // 연결된 클라이언트 -> 데이터받을준비
-        //ReceiveDataFromClient(client);
         ReceiveRequestFromClient(client);
 
         StartListening(); // 클라이언트 받고 다시 실행    
@@ -129,8 +128,6 @@ public class Server : MonoBehaviour
             }
 
             //DayTimer();
-
-            
 
             debugTimer = 0f;
         }
@@ -191,27 +188,19 @@ public class Server : MonoBehaviour
                 }
 
                 // 클라이언트로부터 요청메세지(이름)을 받음
-                byte[] buffer = new byte[1024];
+                //byte[] buffer = new byte[1024]; // 일반적으로 받는 버퍼사이즈 1024byte
+                byte[] buffer = new byte[327680];
                 int bytesRead = await stream.ReadAsync(buffer, 0, buffer.Length); // 메세지 받을때까지 대기
                 string receivedRequestData = Encoding.UTF8.GetString(buffer, 0, bytesRead); // 데이터 변환
-                List<string> dataList = receivedRequestData.Split('|').ToList(); // 받은 data 분할해서 list에 담음
-                string receivedRequestName = dataList[0]; // dataList[0]은 클라이언트가 요청한 주제, 게임 등의 이름
-                Debug.Log($"[Server] Received request name from client : {receivedRequestName}");
+                List<string> dataList = receivedRequestData.Split('|', StringSplitOptions.RemoveEmptyEntries).ToList(); // 받은 data 분할해서 list에 담음
 
-                // 클라이언트로부터 요청 받은 제목에 대한 내용을 처리해서 클라이언트에게 보내줘야함
-                if(receivedRequestName == "[Load]PlayerData")
-                {
-                    HandleRequestDataForLoad(stream, dataList);
-                }
-                else
-                {
-                    HandleRequestData(stream, dataList);
-                }
+                // 클라이언트에게 온 요청을 처리해서 클라이언트에게 회신
+                HandleRequestData(stream, dataList);
             }
         }
         catch (Exception e)
         {
-            Debug.Log($"[Server] Data Communicate error : {e.Message}");
+            Debug.Log($"[Server] Error in ReceiveRequestFromClient Method : {e.Message}");
         }
 
     }
@@ -221,25 +210,58 @@ public class Server : MonoBehaviour
     {
         // dataList -> 0 : requestName, 1~ : values
         string requestName = dataList[0];
-        string replyRequestMessage = "";
-        Debug.Log($"[Server] HandleRequestData requestName : {dataList[0]}");
-        
+        int clientLicenseNumber = 0;
+        int clientCharactor = 0;
+
+        // 예외처리, index 1,2가 없으면 넘어감 
+        if (dataList.ElementAtOrDefault(1) != null && dataList.ElementAtOrDefault(2) != null) 
+        {
+            clientLicenseNumber = Int32.Parse(dataList[1]);
+            clientCharactor = Int32.Parse(dataList[2]);
+        }
+        Debug.Log($"[Server] Recieved request name from client : {dataList[0]}");
+
+        // Reply -> Client에게 보낼 List<string>, [0]은 requestName
+        List<string> replyRequestData_List = new List<string>();
+        replyRequestData_List.Add($"{requestName}|");
+
+        // TempAllocate -> DB에서 받아오는 List<string> 임시로 담기
+        List<string> tempAllocate = new List<string>();
 
         switch (requestName)
         {
             case "[Create]LicenseNumber":
                 // 클라이언트가 LicenseNumber를 요청하는건 처음 접속하기때문에 LicenseNumber가 없는것
                 // 따라서 DB에 연결해 LicenseNumber가 몇개있는지 확인(Count)하고 클라이언트에게 LicenseNumber 부여
+
+                // 새 라이센스 발급 (유저(플레이어), 로컬에 저장되는 한 개의 라이센스)
                 Debug.Log($"[Server] Creating... User_LicenseNumber");
-                string clientdata = DBManager.instance.CreateLicenseNumber(); // 새 라이센스 발급
-                List<string> clientdata_List = clientdata.Split('|').ToList();
-                clientLicenseNumber = Int32.Parse(clientdata_List[0]);
-                Debug.Log($"[Server] Creating... new PlayerData");
-                DBManager.instance.CreateNewPlayerData(clientLicenseNumber); // 새 플레이어 정보 생성
-                Debug.Log($"[Server] Finish Create LicenseNumber and new PlayerData");
-                replyRequestMessage =  "[Create]LicenseNumber|" + clientdata;
+                string clientdata = DBManager.instance.CreateLicenseNumber(); 
+
+                // 새 캐릭터 정보 생성 (유저 한명당 가지는 첫 캐릭터)
+                Debug.Log($"[Server] Creating... new Charactor Data");
+                clientLicenseNumber = Int32.Parse(clientdata.Split('|')[0]);
+                DBManager.instance.CreateNewCharactorData(clientLicenseNumber); 
+
+                Debug.Log($"[Server] Finish Create LicenseNumber and new CharactorData");
+                replyRequestData_List.Add($"{clientdata}|");
                 break;
             case "[Create]Charactor":
+                // to do fix
+                DBManager.instance.CreateNewCharactorData(clientLicenseNumber);
+                break;
+            case "[Save]CharactorName":
+                DBManager.instance.SaveCharactorName(dataList);
+                break;
+            case "[Save]CharactorProfile":
+                Debug.Log($"[Server] Check Profile Data, dataList[3], Base64 : {dataList[3]}");
+                Debug.Log($"[Server] Check Profile Data, dataList[3], Convert.FromBase64String, byte[] : {Convert.FromBase64String(dataList[3])}");
+                DBManager.instance.SaveCharactorProfile(dataList);
+                break;
+            case "[Save]CharactorData":
+                DBManager.instance.SaveCharactorData(dataList);
+                break;
+            case "[Save]GameResult":
                 break;
             case "[Save]venezia_kor":
                 DBManager.instance.SaveGameResultData(dataList);
@@ -256,34 +278,30 @@ public class Server : MonoBehaviour
             case "[Save]calculation":
                 DBManager.instance.SaveGameResultData(dataList);
                 break;
+            case "[Load]CharactorData":
+                // dataList[1] = user_LicenseNumber, dataList[2] = user_Charactor
+                tempAllocate = DBManager.instance.LoadCharactorData(clientLicenseNumber, clientCharactor);
+                tempAllocate.ForEach(data => replyRequestData_List.Add(data)); // TempList의 각 요소(data = string value) ReplyList에 추가
+                break;
+            case "[Load]RankData":
+                tempAllocate = DBManager.instance.RankOrderByUserData(clientLicenseNumber, clientCharactor);
+                tempAllocate.ForEach(data => replyRequestData_List.Add(data));
+                break;
             default:
                 Debug.Log($"[Server] Handling error that request from client, request name : {requestName}");
                 break;
         }
 
-        byte[] data = Encoding.UTF8.GetBytes(replyRequestMessage); // 데이터 변환
-        stream.Write(data, 0, data.Length); // 메세지 보냄
-        Debug.Log($"[Server] Reply request message to client");
-
-    }
-
-    private void HandleRequestDataForLoad(NetworkStream stream, List<string> dataList)
-    {
-        Debug.Log($"[Server] receivedRequestName : {dataList[0]}");
-
-        int newClientLicenseNumber = Int32.Parse(dataList[1]);
-        List<string> replyMassiveRequestMessage = DBManager.instance.LoadPlayerData(ClientLoginStatus.New, newClientLicenseNumber); // 새 플레이어 정보 불러오기
-
-        for (int i = 0; i < replyMassiveRequestMessage.Count; i++)
+        for (int i = 0; i < replyRequestData_List.Count; i++)
         {
-            byte[] data = Encoding.UTF8.GetBytes(replyMassiveRequestMessage[i]);
+            byte[] data = Encoding.UTF8.GetBytes(replyRequestData_List[i]); // string -> byte[] 데이터 형식 변환
             stream.Write(data, 0, data.Length);
-            Debug.Log("[Server] Replying... massive request message to client");
+            Debug.Log("[Server] Replying... request data to client");
         }
 
         byte[] finishData = Encoding.UTF8.GetBytes("Finish");
         stream.Write(finishData, 0, finishData.Length);
-        Debug.Log("[Server] End reply massive request message to client");
+        Debug.Log("[Server] Finish reply request data to client");
     }
 
     // 하루가 지났을 때 PresentDB에 있는 gamedata들 새 DB(ex) 24-02-21)에 저장
