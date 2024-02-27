@@ -28,6 +28,8 @@ public interface ITimeSlider
 
     public float time=0;
 
+    public float PlayTime = 0;
+
     public bool isStop = false;
     public bool isGameOver = false;
 
@@ -81,6 +83,7 @@ public interface ITimeSlider
     private void Update()
     {
         TimeControl();
+        PlayTimeChecker();
     }
 
     private IEnumerator ChangeColorOverTime(Color startColor)
@@ -117,6 +120,10 @@ public interface ITimeSlider
     public void DecreaseTime_Item(int Decreasetime)
     {
         startTime -= Decreasetime;
+        if(startTime < 0)
+        {
+            startTime = 0;
+        }
     }
 
     public void TimeControl()
@@ -155,5 +162,13 @@ public interface ITimeSlider
     public void GameOver()
     {
         isGameOver = true;
+    }
+
+    public void PlayTimeChecker()
+    {
+        if (startTime != 0)
+        {
+            PlayTime += Time.deltaTime;
+        }
     }
 }
