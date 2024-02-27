@@ -368,10 +368,11 @@ public class CollectionsManager : MonoBehaviour
                 //"출동!" 상태인 탐험대원 "출동!" -> "출동 대기"
                 _crewStatusText[Collections.SelectedCrew].text = CrewButton._ownedCrew;
                 _crewStatusBtn[Collections.SelectedCrew].GetComponent<Image>().sprite = DefaultImg;
-
+                //"출동 대기" -> "출동!"
                 _crewStatusText[selectIndex].text = CrewButton._selectedCrew;
-                //SetBtnColor(_crewStatusBtn[selectIndex].GetComponent<Image>(), SelectedBtnColor);
                 _crewStatusBtn[selectIndex].GetComponent<Image>().sprite = SelectedImg;
+                //SetBtnColor(_crewStatusBtn[selectIndex].GetComponent<Image>(), SelectedBtnColor);
+
                 //상세보기 버튼 변경
                 if (btn != null && text != null)
                 {
