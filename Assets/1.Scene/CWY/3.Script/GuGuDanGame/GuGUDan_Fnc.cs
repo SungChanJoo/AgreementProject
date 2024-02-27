@@ -252,6 +252,7 @@ public class GuGUDan_Fnc : GameSetting
             totalReactionTime = 0;
             if (!isGameOver)
             {
+                print(TimeSlider.Instance.PlayTime);
                 isGameOver = true;
                 answersCount = TrueAnswerCount;
                 reactionRate = ReactionTime;
@@ -552,6 +553,6 @@ public class GuGUDan_Fnc : GameSetting
 
     private void AnswerRate()
     {
-        answers = StartQuestCount * 100 / AnswerCount;
+        answers = answersCount * 100 / StartQuestCount;
     }
 }
