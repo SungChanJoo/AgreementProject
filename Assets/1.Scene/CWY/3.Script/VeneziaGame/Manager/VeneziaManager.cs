@@ -155,12 +155,13 @@ public class VeneziaManager : GameSetting
                         totalReactionTime = 0;
                         NextQuest();
                     }
+
                     if (RemainAnswer == 0) // 정답을 모두 맞췄을때 게임 종료
                     {
                         GameOver();
                     }
 
-                    ObjectPooling.Instance.cubePool.Add(hit.collider.gameObject); StartCoroutine(ObjectPooling.Instance.Cube_Co());
+                    ObjectPooling.Instance.cubePool.Add(hit.collider.gameObject);
                     hit.collider.gameObject.SetActive(false);
                 }
                 else if (Questprefab != null && Questprefab.objectType != ObjectType.CorrectAnswer)
@@ -383,7 +384,7 @@ public class VeneziaManager : GameSetting
 
     public void ResetCube()
     {
-        if (ObjectPooling.Instance.cubePool.Count == 1)
+        if (ObjectPooling.Instance.cubePool.Count != 0)
         {
             StopCoroutine(ObjectPooling.Instance.CubePooling);
             ObjectPooling.Instance.ReStartCubePooling_co();

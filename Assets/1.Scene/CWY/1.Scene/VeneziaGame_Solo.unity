@@ -1734,8 +1734,8 @@ MonoBehaviour:
   cubePool: []
   MeteorPool: []
   PausePool: []
-  MaxDistance: 200
-  cool: 3
+  MaxDistance: 350
+  cool: 1
 --- !u!1 &935920901
 GameObject:
   m_ObjectHideFlags: 0
@@ -2401,6 +2401,7 @@ MonoBehaviour:
   CorrectAnswerCount: 0
   ClickCount: 0
   LifeTime: 300
+  DestroyTime: 0
 --- !u!1 &1593131793
 GameObject:
   m_ObjectHideFlags: 0
