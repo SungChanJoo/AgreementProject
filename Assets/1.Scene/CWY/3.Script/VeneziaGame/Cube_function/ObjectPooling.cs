@@ -69,7 +69,7 @@ public class ObjectPooling : MonoBehaviour
     public void ReStartCubePooling_co()
     {
         CubePooling = Cube_Co();
-        StartCoroutine(CubePooling);
+        StartCoroutine(ReStartCube_Co());
     }
     public IEnumerator Cube_Co()
     {
