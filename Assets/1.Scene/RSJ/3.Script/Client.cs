@@ -77,7 +77,7 @@ public class Client : MonoBehaviour
         ETCInitSetting();
         ConnectToServer();
         ClientLoginSet();
-        Invoke("LoadCharactorDataFromDB", 5f);
+        Invoke("LoadCharactorDataFromDB", 7f);
     }
 
     // 클라이언트가 실행할 때 서버 연결 시도
@@ -225,12 +225,12 @@ public class Client : MonoBehaviour
         switch (requestName)
         {
             case "[Create]LicenseNumber":
-                foreach (string data in dataList[0].Split('|'))
+                for(int i = 0; i < dataList.Count; i ++)
                 {
-                    Debug.Log($"[Client] Check User data : {data} ");
+                    Debug.Log($"[Client] Check User dataList{i} : {dataList[i]}");
                 }
-                clientLicenseNumber = dataList[0].Split('|')[1];
-                clientCharactor = dataList[0].Split('|')[2];
+                clientLicenseNumber = dataList[1].Split('|')[0];
+                clientCharactor = dataList[1].Split('|')[1];
                 SaveClientDataToJsonFile();
                 Debug.Log($"[Client] RequestName : {requestName}, get and save licenseNumber to jsonfile");
                 break;

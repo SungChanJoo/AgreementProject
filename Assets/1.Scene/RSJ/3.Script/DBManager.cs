@@ -192,7 +192,7 @@ public class DBManager : MonoBehaviour
     }
 
     // 새 캐릭터 데이터 생성
-    public void CreateNewCharactorData(int clientlicensenumber)
+    public void CreateNewCharactorData(int clientlicensenumber, int clientcharactor)
     {
         Debug.Log($"[DB] Create new Charactor data, client's licensenumber : {clientlicensenumber}");
         // ClientLicenseNumber가 발급되면 새 플레이어 정보를 만드는 것이므로, 모든 테이블에 data를 추가해야함
@@ -220,10 +220,10 @@ public class DBManager : MonoBehaviour
         for (int i = 0; i < rank_Columns.Length; i++) // 0->licensenumber, 1->charactor
         {
             if (i == 0) rank_valuepart = clientlicensenumber;
-            else if (i == 1) rank_valuepart = 1;
+            else if (i == 1) rank_valuepart = clientcharactor;
             else rank_valuepart = 0;
 
-            updatePlayerData_Command = $"UPDATE `{table.list[1]}` SET `{rank_Columns[i]}` = '{rank_valuepart}'";
+            updatePlayerData_Command = $"UPDATE `{table.list[1]}` SET `{rank_Columns[i]}` = '{rank_valuepart}' WHERE `{rank_Columns[0]}` = '{clientlicensenumber}'";
             update_SqlCmd.CommandText = updatePlayerData_Command;
             update_SqlCmd.ExecuteNonQuery();
         }
@@ -245,7 +245,7 @@ public class DBManager : MonoBehaviour
             else if (i == 1) achievement_valuepart = 1;
             else achievement_valuepart = 0;
 
-            updatePlayerData_Command = $"UPDATE {table.list[2]} SET {achievement_Columns[i]} = {achievement_valuepart}";
+            updatePlayerData_Command = $"UPDATE `{table.list[2]}` SET `{achievement_Columns[i]}` = '{achievement_valuepart}' WHERE `{achievement_Columns[0]}` = '{clientlicensenumber}'";
             update_SqlCmd.CommandText = updatePlayerData_Command;
             update_SqlCmd.ExecuteNonQuery();
         }
@@ -257,7 +257,7 @@ public class DBManager : MonoBehaviour
         int pet_valuepart;
 
         // insert row
-        insertCreatePlayerData_Command = $"INSERT INTO {table.list[3]} ({pet_Columns[0]}) VALUES ({clientlicensenumber})";
+        insertCreatePlayerData_Command = $"INSERT INTO `{table.list[3]}` (`{pet_Columns[0]}`) VALUES ('{clientlicensenumber}')";
         insert_SqlCmd.CommandText = insertCreatePlayerData_Command;
         insert_SqlCmd.ExecuteNonQuery();
 
@@ -267,10 +267,10 @@ public class DBManager : MonoBehaviour
             else if (i == 1) pet_valuepart = 1;
             else pet_valuepart = 0;
 
-            updatePlayerData_Command = $"UPDATE {table.list[3]} SET {pet_Columns[i]} = {pet_valuepart}";
+            updatePlayerData_Command = $"UPDATE `{table.list[3]}` SET `{pet_Columns[i]}` = '{pet_valuepart}' WHERE `{pet_Columns[0]}` = '{clientlicensenumber}'";
             if (i==2) // float
             {
-                updatePlayerData_Command = $"UPDATE {table.list[3]} SET {pet_Columns[i]} = {(float)pet_valuepart}";
+                updatePlayerData_Command = $"UPDATE `{table.list[3]}` SET `{pet_Columns[i]}` = '{(float)pet_valuepart}'";
             }
             update_SqlCmd.CommandText = updatePlayerData_Command;
             update_SqlCmd.ExecuteNonQuery();
@@ -322,7 +322,7 @@ public class DBManager : MonoBehaviour
             // update rowm j=2부터 시작하는 이유는 0은 licensenumber고 1은 charactor번호이고 insert로 넣어줬기 때문에 굳이 또 업데이트를 할 필요가 없음
             for (int j = 2; j < game_Columns.Length; j++)
             {
-                updatePlayerData_Command = $"UPDATE {game_TableList[i]} SET {game_Columns[j]} = @value";
+                updatePlayerData_Command = $"UPDATE {game_TableList[i]} SET {game_Columns[j]} = @value  WHERE `{game_Columns[0]}` = '{clientlicensenumber}'" ;
                 update_SqlCmd.CommandText = updatePlayerData_Command;
 
                 // parameter 초기화

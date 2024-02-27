@@ -241,14 +241,14 @@ public class Server : MonoBehaviour
                 // 새 캐릭터 정보 생성 (유저 한명당 가지는 첫 캐릭터)
                 Debug.Log($"[Server] Creating... new Charactor Data");
                 clientLicenseNumber = Int32.Parse(clientdata.Split('|')[0]);
-                DBManager.instance.CreateNewCharactorData(clientLicenseNumber); 
+                DBManager.instance.CreateNewCharactorData(clientLicenseNumber, 1); 
 
                 Debug.Log($"[Server] Finish Create LicenseNumber and new CharactorData");
                 replyRequestData_List.Add($"{clientdata}|");
                 break;
             case "[Create]Charactor":
                 // to do fix
-                DBManager.instance.CreateNewCharactorData(clientLicenseNumber);
+                DBManager.instance.CreateNewCharactorData(clientLicenseNumber, clientCharactor);
                 break;
             case "[Save]CharactorName":
                 DBManager.instance.SaveCharactorName(dataList);
