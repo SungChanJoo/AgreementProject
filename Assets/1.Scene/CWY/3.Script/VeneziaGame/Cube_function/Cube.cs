@@ -16,7 +16,7 @@ public enum ObjectType
 }*/
 
 
-public class Cube : GameSetting
+public class Cube : MonoBehaviour
 { 
     public  ObjectType objectType;
   //  public  Quset_exam quset_Exam;
@@ -297,12 +297,30 @@ public class Cube : GameSetting
         }
     }
 
-    private IEnumerator Cube_Destroy(int step)
+    private IEnumerator Cube_Destroy()
     {
-        if(step == 1)
+        switch (VeneziaManager.Instance.step)
         {
-            yield return new WaitForSeconds(step);
-            gameObject.SetActive(false);
+            case 1:
+                yield return new WaitForSeconds(10f);
+                break;
+            case 2:
+                yield return new WaitForSeconds(10f);
+                break;
+            case 3:
+                yield return new WaitForSeconds(10f);
+                break;
+            case 4:
+                yield return new WaitForSeconds(10f);
+                break;
+            case 5:
+                yield return new WaitForSeconds(10f);
+                break;
+            case 6:
+                yield return new WaitForSeconds(10f);
+                break;
+            default:
+                break;
         }
     }
     
@@ -330,25 +348,5 @@ public class Cube : GameSetting
     }
 
 
-    protected override void Level_1(int step)
-    {
-        switch (step)
-        {
-            case 1:
-                
-                break;
-            case 2:
-                break;
-            case 3:
-                break;
-            case 4:
-                break;
-            case 5:
-                break;
-            case 6:
-                break;
-            default:
-                break;
-        }
-    }
+    
 }
