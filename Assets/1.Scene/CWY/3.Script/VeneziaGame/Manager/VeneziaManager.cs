@@ -21,7 +21,7 @@ public class VeneziaManager : GameSetting
     public static VeneziaManager Instance = null;
     //전반적인 배네치아 게임을 관리하기 위한 스크립트
     //게임을 진행하면서 정답을 판정해주고, 정답란에 표기해줄 ui를 갈아끼워줄 역할 을 수행 할 것.
-     
+
     [SerializeField] private GameObject gameover; // 테스트용 게임오버 이미지
 
     public bool isGameover = false;
@@ -37,7 +37,7 @@ public class VeneziaManager : GameSetting
     private string[] EnglishWord =
     {
         "Crane", "Horse", "Chicken", "Bear", "Hippo", "Leopard", "Panda",
-        "Ostrich", "Quokka", "Cheetah", "Sparrow", "Swallow", "Cow", "Goat", "Fox", 
+        "Ostrich", "Quokka", "Cheetah", "Sparrow", "Swallow", "Cow", "Goat", "Fox",
         "Crocodile", "Lion", "Deer", "Pig", "Giraffe"
     };
     public int QuestCount;  // 딕셔너리에 들어갈 퀘스트 갯수 //10문제 <
@@ -46,6 +46,8 @@ public class VeneziaManager : GameSetting
     public int CorrectAnswerCount; // 맞춘 정답 갯수
     public int ClickCount;
     public int LifeTime; // 게임 진행 시간
+
+    public int DestroyTime;
 
     private int randomIndex = 0;
     private int SaverandomIndex = 999;
@@ -64,9 +66,9 @@ public class VeneziaManager : GameSetting
     public Dictionary<string, QuestData> QuestHanja = new Dictionary<string, QuestData>();
     private void Awake()
     {
-        if(Instance == null)
+        if (Instance == null)
         {
-            Instance = this;            
+            Instance = this;
         }
         else
         {
@@ -74,13 +76,13 @@ public class VeneziaManager : GameSetting
             return;
         }
 
-     
-    }    
-    
+
+    }
+
     private void StartSet()
     {
         //1 3 4 B D E 한글 영어 한좌
-        if(game_Type == Game_Type.B)
+        if (game_Type == Game_Type.B)
         {
             for (int i = 0; i < sprites_KE.Length; i++)
             {
@@ -89,7 +91,7 @@ public class VeneziaManager : GameSetting
                 Quest.Add(key, data);
             }
         }
-        else if(game_Type == Game_Type.D)
+        else if (game_Type == Game_Type.D)
         {
             for (int i = 0; i < sprites_KE.Length; i++)
             {
@@ -115,15 +117,15 @@ public class VeneziaManager : GameSetting
         DisplayRandomQuest();
         //시간 시작 
         StartTime();
-        StartCoroutine(ObjectPooling.Instance.Cube_Co());
+        ObjectPooling.Instance.StartCubePooling_co();
     }
     private void Update()
     {
         //  GameStop();
-        Click_Obj();        
-        if(TimeSlider.Instance.startTime < 0 && !isGameover)
-        {                
-            GameOver();            
+        Click_Obj();
+        if (TimeSlider.Instance.startTime < 0 && !isGameover)
+        {
+            GameOver();
         }
     }
     //오브젝트 클릭시 입력처리
@@ -141,9 +143,9 @@ public class VeneziaManager : GameSetting
                 print(hit.collider.gameObject.name);
                 //큐브 오브젝트 판단
                 Cube Questprefab = hit.collider.gameObject.GetComponent<Cube>();
-                if(Questprefab != null && Questprefab.objectType == ObjectType.CorrectAnswer) // 큐브를 눌렀을때 Quest 인지 알아야함
+                if (Questprefab != null && Questprefab.objectType == ObjectType.CorrectAnswer) // 큐브를 눌렀을때 Quest 인지 알아야함
                 {
-                    if(QuestCount > -1)
+                    if (QuestCount > -1)
                     {
                         Score.Instance.Get_FirstScore();
                         RemainAnswer--;
@@ -153,12 +155,12 @@ public class VeneziaManager : GameSetting
                         totalReactionTime = 0;
                         NextQuest();
                     }
-                    if(RemainAnswer == 0) // 정답을 모두 맞췄을때 게임 종료
+                    if (RemainAnswer == 0) // 정답을 모두 맞췄을때 게임 종료
                     {
                         GameOver();
                     }
-                    
-                    ObjectPooling.Instance.cubePool.Add(hit.collider.gameObject);
+
+                    ObjectPooling.Instance.cubePool.Add(hit.collider.gameObject); StartCoroutine(ObjectPooling.Instance.Cube_Co());
                     hit.collider.gameObject.SetActive(false);
                 }
                 else if (Questprefab != null && Questprefab.objectType != ObjectType.CorrectAnswer)
@@ -191,12 +193,7 @@ public class VeneziaManager : GameSetting
                     }
                 }
             }
-            if (ObjectPooling.Instance.cubePool.Count == 1)
-            {
-                StopCoroutine(ObjectPooling.Instance.Cube_Co());
-                StopCoroutine(ObjectPooling.Instance.ReStartCube_Co());
-                StartCoroutine(ObjectPooling.Instance.ReStartCube_Co());
-            }
+            ResetCube();
         }
 
 
@@ -224,7 +221,7 @@ public class VeneziaManager : GameSetting
     protected override void Level_1(int step)
     {
         QuestRange = 5;
-        StartSet();        
+        StartSet();
         switch (step)
         {
             case 1:
@@ -289,15 +286,15 @@ public class VeneziaManager : GameSetting
         }
     }
 
-    
+
     public void DisplayRandomQuest()
     {
-        if(QuestCount == 0)
+        if (QuestCount == 0)
         {
             Time.timeScale = 0;
-            ObjectPooling.Instance.StopAllCoroutines();            
+            ObjectPooling.Instance.StopAllCoroutines();
             return;
-        }        
+        }
 
     }
 
@@ -360,12 +357,15 @@ public class VeneziaManager : GameSetting
         {
             case 60:
                 QuestCount = 10;
+                DestroyTime = 10;
                 break;
             case 180:
                 QuestCount = 14; // 예시 값
+                DestroyTime = 10;
                 break;
             case 300:
                 QuestCount = 20; // 예시 값
+                DestroyTime = 10;
                 break;
             default:
                 break;
@@ -379,5 +379,14 @@ public class VeneziaManager : GameSetting
             return;
         }
         answers = CorrectAnswerCount * 100 / ClickCount;
+    }
+
+    public void ResetCube()
+    {
+        if (ObjectPooling.Instance.cubePool.Count == 1)
+        {
+            StopCoroutine(ObjectPooling.Instance.CubePooling);
+            ObjectPooling.Instance.ReStartCubePooling_co();
+        }
     }
 }

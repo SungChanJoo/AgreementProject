@@ -17,14 +17,16 @@ public enum ObjectType
 
 
 public class Cube : MonoBehaviour
-{ 
-    public  ObjectType objectType;
-  //  public  Quset_exam quset_Exam;
+{
+    public ObjectType objectType;
+    //  public  Quset_exam quset_Exam;
 
     public float StartSpeed; // 공을 움직일 속도  1 
     public float CurrentSpeed; // 공을 움직일 속도  1 
     public float SaveSpeed; // 속도 저장    
     public float AccelerationSpeed; // 최대 속도 제한    
+
+    public float removeTime = 0;
 
     [SerializeField] private bool isStart;
     [SerializeField] private Sprite sprite;
@@ -42,61 +44,57 @@ public class Cube : MonoBehaviour
 
     private void Start()
     {
-        print(VeneziaManager.Instance.timeSet);
-        StartCoroutine(Cube_Destroy());
+
     }
 
     private void Update()
     {
-        if (!gameObject.activeSelf) 
+        if (!gameObject.activeSelf)
         {
             isStart = false;
             isFloor = false;
             isLeftWall = false;
             isRightWall = false;
             isCeiling = false;
-        } 
+        }
 
-       // if (gameObject.activeSelf) isStart = true;
+        // if (gameObject.activeSelf) isStart = true;
         if (isStart && gameObject.activeSelf)
         {
             Cube_StartMove();
         }
         if (!isStart) StartSpeed = 0;
         //Translate로 움직이기 때문에 가끔 물리판정이 무시되어 벽을 뚫는경우를 고려
-        if(gameObject.transform.position.x >= ObjectPooling.Instance.MaxDistance || gameObject.transform.position.x <= -ObjectPooling.Instance.MaxDistance)
+        if (gameObject.transform.position.x >= ObjectPooling.Instance.MaxDistance || gameObject.transform.position.x <= -ObjectPooling.Instance.MaxDistance)
         {
-            ObjectPooling.Instance.cubePool.Remove(gameObject);
-            gameObject.SetActive(false);
-            ObjectPooling.Instance.cubePool.Add(gameObject);
-            gameObject.SetActive(true);
             gameObject.transform.position = ObjectPooling.Instance.transform.position;
             StartSpeed = CurrentSpeed;
             isStart = true;
         }
 
         JudgeCubeObjType();
-        GameOver();        
+        GameOver();
+        DestoryCube();
     }
     private void OnTriggerEnter(Collider other)
     {
         //각 오브젝트들이 충돌하는 colider 이름을 기준으로 gameobj의 방향결정
-        if(other.gameObject.name == "Floor")
+        if (other.gameObject.name == "Floor")
         {
             isStart = false;
             StartCoroutine(Cube_Touch_Floor());
         }
-        if(other.gameObject.name == "LeftWall")
+        if (other.gameObject.name == "LeftWall")
         {
             isStart = false;
             StartCoroutine(Cube_Touch_LeftWall());
         }
-        if(other.gameObject.name == "RightWall")
+        if (other.gameObject.name == "RightWall")
         {
             isStart = false;
             StartCoroutine(Cube_Touch_RightWall());
         }
-        if(other.gameObject.name == "Ceiling")
+        if (other.gameObject.name == "Ceiling")
         {
             isStart = false;
             StartCoroutine(Cube_Touch_Ceiling());
@@ -121,17 +119,17 @@ public class Cube : MonoBehaviour
         isLeftWall = false;
         isRightWall = false;
         isCeiling = false;
-        if(count == 0)
+        if (count == 0)
         {
             CurrentSpeed = StartSpeed * AccelerationSpeed;
         }
         else
         {
-            if(count <= 10) CurrentSpeed = CurrentSpeed * AccelerationSpeed;
+            if (count <= 10) CurrentSpeed = CurrentSpeed * AccelerationSpeed;
         }
-        
-        float moveY = CurrentSpeed * Time.deltaTime ;
-        float moveX = CurrentSpeed * Time.deltaTime ;
+
+        float moveY = CurrentSpeed * Time.deltaTime;
+        float moveX = CurrentSpeed * Time.deltaTime;
 
         // 랜덤으로 좌우 방향 선택
         if (!isFloor)
@@ -148,11 +146,11 @@ public class Cube : MonoBehaviour
         }
         isFloor = true;
         count++;
-/*        while (isFloor)
-        {
-            transform.Translate(moveX, moveY, 0);
-            yield return null;
-        }*/
+        /*        while (isFloor)
+                {
+                    transform.Translate(moveX, moveY, 0);
+                    yield return null;
+                }*/
         while (isFloor)
         {
             // Time.timeScale이 0일 때는 즉시 종료
@@ -193,11 +191,11 @@ public class Cube : MonoBehaviour
         }
         isCeiling = true;
         count++;
-/*        while (isCeiling)
-        {
-            transform.Translate(moveX, moveY, 0);
-            yield return null;
-        }*/
+        /*        while (isCeiling)
+                {
+                    transform.Translate(moveX, moveY, 0);
+                    yield return null;
+                }*/
         while (isCeiling)
         {
             // Time.timeScale이 0일 때는 즉시 종료
@@ -221,11 +219,11 @@ public class Cube : MonoBehaviour
         isCeiling = false;
         if (count <= 10) CurrentSpeed = CurrentSpeed * AccelerationSpeed;
         //왼쪽 벽을 터치 =>  x값은 right방향(양수) 값으로 고정
-        float moveY = CurrentSpeed * Time.deltaTime ;
-        float moveX = CurrentSpeed * Time.deltaTime ;
+        float moveY = CurrentSpeed * Time.deltaTime;
+        float moveX = CurrentSpeed * Time.deltaTime;
         if (!isLeftWall)
         {
-            switch (Random.Range(0,2))
+            switch (Random.Range(0, 2))
             {
                 case 0:
                     moveY *= -1; // 왼쪽으로 이동
@@ -237,11 +235,11 @@ public class Cube : MonoBehaviour
         }
         isLeftWall = true;
         count++;
-/*        while (isLeftWall)
-        {
-            transform.Translate(moveX, moveY, 0);
-            yield return null;
-        }*/
+        /*        while (isLeftWall)
+                {
+                    transform.Translate(moveX, moveY, 0);
+                    yield return null;
+                }*/
         while (isLeftWall)
         {
             // Time.timeScale이 0일 때는 즉시 종료
@@ -282,11 +280,11 @@ public class Cube : MonoBehaviour
         }
         isRightWall = true;
         count++;
-/*        while (isRightWall)
-        {
-            transform.Translate(moveX, moveY, 0);
-            yield return null;
-        }*/
+        /*        while (isRightWall)
+                {
+                    transform.Translate(moveX, moveY, 0);
+                    yield return null;
+                }*/
         while (isRightWall)
         {
             // Time.timeScale이 0일 때는 즉시 종료
@@ -301,38 +299,9 @@ public class Cube : MonoBehaviour
             yield return null;
         }
     }
-
-    private IEnumerator Cube_Destroy()
-    {
-        switch (VeneziaManager.Instance.timeSet)
-        {
-            case 60:
-                yield return new WaitForSeconds(10f);
-                gameObject.SetActive(false);
-                ObjectPooling.Instance.cubePool.Add(gameObject);
-                TimeSlider.Instance.DecreaseTime_Item(20);
-                break;
-            case 180:
-                yield return new WaitForSeconds(20);
-                gameObject.SetActive(false);
-                ObjectPooling.Instance.cubePool.Add(gameObject);
-                TimeSlider.Instance.DecreaseTime_Item(3);
-                break;
-            case 300:
-                yield return new WaitForSeconds(30f);
-                gameObject.SetActive(false);
-                ObjectPooling.Instance.cubePool.Add(gameObject);
-                TimeSlider.Instance.DecreaseTime_Item(3);
-                break;
-            default:
-                break;
-        }
-    }
-    
-
     private void JudgeCubeObjType()
     {
-        if(VeneziaManager.Instance.Quest_Img.sprite == sprite)
+        if (VeneziaManager.Instance.Quest_Img.sprite == sprite)
         {
             objectType = ObjectType.CorrectAnswer;
             //quset_Exam = Quset_exam.Current;
@@ -342,16 +311,40 @@ public class Cube : MonoBehaviour
             objectType = ObjectType.Wronganswer;
         }
     }
-    
-    
+
+    private void DestoryCube()
+    {
+        if (objectType == ObjectType.CorrectAnswer && gameObject.activeSelf)
+        {
+            if (removeTime >= VeneziaManager.Instance.DestroyTime)
+            {
+                objectType = ObjectType.Wronganswer;
+                TimeSlider.Instance.DecreaseTime_Item(3);
+                VeneziaManager.Instance.NextQuest();
+                ObjectPooling.Instance.cubePool.Add(gameObject);
+                gameObject.SetActive(false);
+                removeTime = 0;
+                if (ObjectPooling.Instance.cubePool.Count != 0)
+                {
+                    StopCoroutine(ObjectPooling.Instance.CubePooling);
+                    ObjectPooling.Instance.ReStartCubePooling_co();
+                }
+            }
+            else
+            {
+                removeTime += Time.deltaTime;
+            }
+        }
+    }
+
     private void GameOver()
     {
-        if(VeneziaManager.Instance.isGameover)
+        if (VeneziaManager.Instance.isGameover)
         {
             gameObject.SetActive(false);
         }
     }
 
 
-    
+
 }
