@@ -27,8 +27,6 @@ public class VeneziaManager : GameSetting
     public bool isGameover = false;
 
     //아이템과의 상호작용도 여기에 구현
-    public int Level;
-    public int Step;
     //문제 출제를 매니저에서 관리 , 출제 문제의 이미지와 이름을 기준으로 정답의 유무를 판단 할 수 있어야함.
     [SerializeField] public Image Quest_Img;
     [SerializeField] private TextMeshProUGUI Quest_text;
@@ -250,7 +248,7 @@ public class VeneziaManager : GameSetting
     {
         QuestRange = 10;
         StartSet();
-        switch (Step)
+        switch (step)
         {
             case 1:
                 NextQuest();
@@ -272,7 +270,7 @@ public class VeneziaManager : GameSetting
     protected override void Level_3(int step)
     {
         QuestRange = 20;
-        switch (Step)
+        switch (step)
         {
             case 1:
                 break;
