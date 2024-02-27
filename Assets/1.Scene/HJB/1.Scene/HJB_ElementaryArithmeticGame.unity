@@ -2473,6 +2473,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2bb5cf6dadf54af499fb05a8bd93553c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  gameType: 0
   slider: {fileID: 799251394}
   sliderVar_Image: {fileID: 1298881747}
   ChangeTime: 0.4
