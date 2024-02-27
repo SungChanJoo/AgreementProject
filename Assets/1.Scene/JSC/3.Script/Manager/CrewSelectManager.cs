@@ -52,13 +52,15 @@ public class CrewSelectManager : MonoBehaviour
                 if(SelectedCrewIndex == i)
                 {
                     _crewStatusText[i].text = CrewButton._selectedCrew;
-                    _crewStatusBtn[i].GetComponent<Image>().color = CollectionsManager.Instance.SelectedBtnColor;
+                    //_crewStatusBtn[i].GetComponent<Image>().color = CollectionsManager.Instance.SelectedBtnColor;
+                    _crewStatusBtn[i].GetComponent<Image>().sprite = CollectionsManager.Instance.SelectedImg;
                 }
                 //보유한 대원은 "출동 대기" 텍스트
                 else
                 {
                     _crewStatusText[i].text = CrewButton._ownedCrew;
-                    _crewStatusBtn[i].GetComponent<Image>().color = CollectionsManager.Instance.DefaultBtnColor;
+                    //_crewStatusBtn[i].GetComponent<Image>().color = CollectionsManager.Instance.DefaultBtnColor;
+                    _crewStatusBtn[i].GetComponent<Image>().sprite = CollectionsManager.Instance.DefaultImg;
                 }
             }
             else
@@ -103,12 +105,14 @@ public class CrewSelectManager : MonoBehaviour
                     {
                         //"출동!" -> "출동 대기" 
                         _crewStatusText[i].text = CrewButton._ownedCrew;
-                        _crewStatusBtn[i].GetComponent<Image>().color =  CollectionsManager.Instance.DefaultBtnColor;
+                        //_crewStatusBtn[i].GetComponent<Image>().color =  CollectionsManager.Instance.DefaultBtnColor;
+                        _crewStatusBtn[i].GetComponent<Image>().sprite = CollectionsManager.Instance.DefaultImg;
                         break;
                     }
                 }
                 _crewStatusText[selectIndex].text = CrewButton._selectedCrew;
-                _crewStatusBtn[selectIndex].GetComponent<Image>().color = CollectionsManager.Instance.SelectedBtnColor;
+                //_crewStatusBtn[selectIndex].GetComponent<Image>().color = CollectionsManager.Instance.SelectedBtnColor;
+                _crewStatusBtn[selectIndex].GetComponent<Image>().sprite = CollectionsManager.Instance.SelectedImg;
 
                 //상세보기 버튼 변경
                 SelectedCrewIndex = selectIndex;
