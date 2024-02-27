@@ -6,15 +6,14 @@ using UnityEngine.UI;
 public class ButtonEvent : MonoBehaviour
 {
     [SerializeField] private GameObject[] level_btn;
-    [SerializeField] private GameObject[] time_btn;   
+    [SerializeField] private GameObject[] time_btn;
+
 
     private int level;
     private int timeSet;   
     
-    private Image[] level_img;
+    private Image[] level_img;    
     private Image[] time_img;
-
-   
 
     [SerializeField] private Sprite select_img;
     [SerializeField] private Sprite Non_img;
@@ -28,8 +27,10 @@ public class ButtonEvent : MonoBehaviour
         ChangeColor_Level();
         ChangeColor_Time();
     }
-    
-    
+    private void Start()
+    {        
+        
+    }
     private void ButtonReference()
     {
         for (int i = 0; i < level_btn.Length; i++)
@@ -56,7 +57,7 @@ public class ButtonEvent : MonoBehaviour
                 level_img[i].sprite= select_img;
             }
             else
-            {
+            {                
                 level_img[i].sprite = Non_img;
             }
         }        
@@ -79,6 +80,4 @@ public class ButtonEvent : MonoBehaviour
             count++;
         }        
     }
-
-    
 }

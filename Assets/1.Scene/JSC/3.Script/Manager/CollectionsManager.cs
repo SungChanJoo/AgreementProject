@@ -46,8 +46,6 @@ public class CollectionsManager : MonoBehaviour
     private List<TMP_Text> _crewStatusText;
     private List<GameObject> _crewStatusBtn;
     [SerializeField] private GameObject _alreadySeletedCrewUI;
-    [SerializeField] public Sprite SelectedImg;
-    [SerializeField] public Sprite DefaultImg;
 
     [Header("Purchase")]
     [SerializeField] private GameObject _purchaseWindow;
@@ -315,8 +313,7 @@ public class CollectionsManager : MonoBehaviour
             else
                 button.onClick.AddListener(() => OnSelectPet(crewNumber, btn, text));
             buttonText.text = CrewButton._selectedCrew;
-            //SetBtnColor(buttonImg, SelectedBtnColor);
-            buttonImg.sprite = SelectedImg;
+            SetBtnColor(buttonImg, SelectedBtnColor);
         }
         //보유한 대원은 "출동 대기" 텍스트
         else if (Collections.OwnedCrew[i])
@@ -326,8 +323,7 @@ public class CollectionsManager : MonoBehaviour
             else 
                 button.onClick.AddListener(() => OnSelectPet(crewNumber, btn, text));
             buttonText.text = CrewButton._ownedCrew;
-            //SetBtnColor(buttonImg, DefaultBtnColor);
-            buttonImg.sprite = DefaultImg;
+            SetBtnColor(buttonImg, DefaultBtnColor);
         }
         //영입가능한 대원은 Cost 텍스트
         else
@@ -341,13 +337,12 @@ public class CollectionsManager : MonoBehaviour
             //보유한 금액보다 탐험대원의 비용이 더 비싸면 deniedPurchase
             if (_money < Convert.ToInt32(_crewStatusText[i].text))
             {
-                //SetBtnColor(buttonImg, DeniedPurchaseBtnColor);
+                SetBtnColor(buttonImg, DeniedPurchaseBtnColor);
             }
             //아니면 영입가능
             else
             {
-                //SetBtnColor(buttonImg, DefaultBtnColor);
-                buttonImg.sprite = DefaultImg;
+                SetBtnColor(buttonImg, DefaultBtnColor);
             }
         }
     }
@@ -365,20 +360,25 @@ public class CollectionsManager : MonoBehaviour
             //대원이 "출동 대기" -> "출동!" 으로, 이전 "출동!" -> "출동 대기" 상태로 변경
             if (_crewStatusText[selectIndex].text.Equals(CrewButton._ownedCrew))
             {
-                //"출동!" 상태인 탐험대원 "출동!" -> "출동 대기"
-                _crewStatusText[Collections.SelectedCrew].text = CrewButton._ownedCrew;
-                _crewStatusBtn[Collections.SelectedCrew].GetComponent<Image>().sprite = DefaultImg;
-                //"출동 대기" -> "출동!"
+                //"출동!" 찾기
+                for (int i = 0; i < _crewStatusText.Count; i++)
+                {
+                    // 보유중이고, "출동!" 상태인 탐험대원
+                    if (Collections.OwnedCrew[i] && _crewStatusText[i].text.Equals(CrewButton._selectedCrew))
+                    {
+                        //"출동!" -> "출동 대기" 
+                        _crewStatusText[i].text = CrewButton._ownedCrew;
+                        SetBtnColor(_crewStatusBtn[i].GetComponent<Image>(), DefaultBtnColor);
+                        break;
+                    }
+                }
                 _crewStatusText[selectIndex].text = CrewButton._selectedCrew;
-                _crewStatusBtn[selectIndex].GetComponent<Image>().sprite = SelectedImg;
-                //SetBtnColor(_crewStatusBtn[selectIndex].GetComponent<Image>(), SelectedBtnColor);
-
+                SetBtnColor(_crewStatusBtn[selectIndex].GetComponent<Image>(), SelectedBtnColor);
                 //상세보기 버튼 변경
                 if (btn != null && text != null)
                 {
                     text.text = CrewButton._selectedCrew;
-                    //SetBtnColor(btn.GetComponent<Image>(), SelectedBtnColor);
-                    btn.GetComponent<Image>().sprite = SelectedImg;
+                    SetBtnColor(btn.GetComponent<Image>(), SelectedBtnColor);
                 }
                 if (CrewSelectManager.Instance != null)
                     CrewSelectManager.Instance.SelectedCrewIndex = selectIndex;
@@ -439,20 +439,19 @@ public class CollectionsManager : MonoBehaviour
             //보유중이 아니고, 가격이 현재 가진 돈보다 비싸면 버튼 색 변경
             if (_money < Convert.ToInt32(_crewStatusText[i].text))
             {
-                //SetBtnColor(_crewStatusBtn[i].GetComponent<Image>(), DeniedPurchaseBtnColor);
+                SetBtnColor(_crewStatusBtn[i].GetComponent<Image>(), DeniedPurchaseBtnColor);
             }
             else
             {
-                //SetBtnColor(_crewStatusBtn[i].GetComponent<Image>(), DefaultBtnColor);
-                _crewStatusBtn[i].GetComponent<Image>().sprite = DefaultImg;
+                SetBtnColor(_crewStatusBtn[i].GetComponent<Image>(), DefaultBtnColor);
             }
         }
     }
     //버튼 색 변경
-/*    public void SetBtnColor(Image button, Color color)
+    public void SetBtnColor(Image button, Color color)
     {
         button.color = color;
-    }*/
+    }
     //탐험대원 정보(이름, 설명) 불러오기
     public void DetailCrewData()
     {
