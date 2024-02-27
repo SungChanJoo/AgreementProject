@@ -117,7 +117,7 @@ public class CrewSelectManager : MonoBehaviour
                 //상세보기 버튼 변경
                 SelectedCrewIndex = selectIndex;
                 //선택된 대원 도감에 반영
-                CollectionsManager.Instance.Collections.SelectedCrew = selectIndex;
+                CollectionsManager.Instance.OnSelectPet(selectIndex);
             }
         }
     }
