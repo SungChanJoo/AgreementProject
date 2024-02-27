@@ -40,6 +40,11 @@ public class Cube : MonoBehaviour
         isStart = true;
     }
 
+    private void Start()
+    {
+        print(VeneziaManager.Instance.timeSet);
+        StartCoroutine(Cube_Destroy());
+    }
 
     private void Update()
     {
@@ -299,25 +304,25 @@ public class Cube : MonoBehaviour
 
     private IEnumerator Cube_Destroy()
     {
-        switch (VeneziaManager.Instance.step)
+        switch (VeneziaManager.Instance.timeSet)
         {
-            case 1:
+            case 60:
                 yield return new WaitForSeconds(10f);
+                gameObject.SetActive(false);
+                ObjectPooling.Instance.cubePool.Add(gameObject);
+                TimeSlider.Instance.DecreaseTime_Item(20);
                 break;
-            case 2:
-                yield return new WaitForSeconds(10f);
+            case 180:
+                yield return new WaitForSeconds(20);
+                gameObject.SetActive(false);
+                ObjectPooling.Instance.cubePool.Add(gameObject);
+                TimeSlider.Instance.DecreaseTime_Item(3);
                 break;
-            case 3:
-                yield return new WaitForSeconds(10f);
-                break;
-            case 4:
-                yield return new WaitForSeconds(10f);
-                break;
-            case 5:
-                yield return new WaitForSeconds(10f);
-                break;
-            case 6:
-                yield return new WaitForSeconds(10f);
+            case 300:
+                yield return new WaitForSeconds(30f);
+                gameObject.SetActive(false);
+                ObjectPooling.Instance.cubePool.Add(gameObject);
+                TimeSlider.Instance.DecreaseTime_Item(3);
                 break;
             default:
                 break;
