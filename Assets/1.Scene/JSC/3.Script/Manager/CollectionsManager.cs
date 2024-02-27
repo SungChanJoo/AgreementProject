@@ -365,19 +365,10 @@ public class CollectionsManager : MonoBehaviour
             //대원이 "출동 대기" -> "출동!" 으로, 이전 "출동!" -> "출동 대기" 상태로 변경
             if (_crewStatusText[selectIndex].text.Equals(CrewButton._ownedCrew))
             {
-                //"출동!" 찾기
-                for (int i = 0; i < _crewStatusText.Count; i++)
-                {
-                    // 보유중이고, "출동!" 상태인 탐험대원
-                    if (Collections.OwnedCrew[i] && _crewStatusText[i].text.Equals(CrewButton._selectedCrew))
-                    {
-                        //"출동!" -> "출동 대기" 
-                        _crewStatusText[i].text = CrewButton._ownedCrew;
-                        //SetBtnColor(_crewStatusBtn[i].GetComponent<Image>(), DefaultBtnColor);
-                        _crewStatusBtn[i].GetComponent<Image>().sprite = DefaultImg;
-                        break;
-                    }
-                }
+                //"출동!" 상태인 탐험대원 "출동!" -> "출동 대기"
+                _crewStatusText[Collections.SelectedCrew].text = CrewButton._ownedCrew;
+                _crewStatusBtn[Collections.SelectedCrew].GetComponent<Image>().sprite = DefaultImg;
+
                 _crewStatusText[selectIndex].text = CrewButton._selectedCrew;
                 //SetBtnColor(_crewStatusBtn[selectIndex].GetComponent<Image>(), SelectedBtnColor);
                 _crewStatusBtn[selectIndex].GetComponent<Image>().sprite = SelectedImg;

@@ -97,7 +97,7 @@ public class CrewSelectManager : MonoBehaviour
             //대원이 "출동 대기" -> "출동!" 으로, 이전 "출동!" -> "출동 대기" 상태로 변경
             if (_crewStatusText[selectIndex].text.Equals(CrewButton._ownedCrew))
             {
-                //"출동!" 찾기
+/*                //"출동!" 찾기
                 for (int i = 0; i < _crewStatusText.Count; i++)
                 {
                     // 보유중이고, "출동!" 상태인 탐험대원
@@ -109,7 +109,10 @@ public class CrewSelectManager : MonoBehaviour
                         _crewStatusBtn[i].GetComponent<Image>().sprite = CollectionsManager.Instance.DefaultImg;
                         break;
                     }
-                }
+                }*/
+                _crewStatusBtn[SelectedCrewIndex].GetComponent<Image>().sprite = CollectionsManager.Instance.DefaultImg;
+                _crewStatusText[SelectedCrewIndex].text = CrewButton._ownedCrew;
+
                 _crewStatusText[selectIndex].text = CrewButton._selectedCrew;
                 //_crewStatusBtn[selectIndex].GetComponent<Image>().color = CollectionsManager.Instance.SelectedBtnColor;
                 _crewStatusBtn[selectIndex].GetComponent<Image>().sprite = CollectionsManager.Instance.SelectedImg;
