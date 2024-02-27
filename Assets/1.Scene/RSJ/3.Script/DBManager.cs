@@ -5,6 +5,7 @@ using MySql.Data;
 using MySql.Data.MySqlClient;
 using UnityEngine.UI;
 using System;
+using System.Text;
 
 // 싱글톤 쓰자
 // 클라이언트가 서버에 연결했을때? 클라이언트는 이미 자체적으로 IP와 Port를 알아서 서버에 연결함
@@ -353,104 +354,70 @@ public class DBManager : MonoBehaviour
         Debug.Log("[DB] game table complete!");
     }
 
-    // 플레이어 데이터 불러오기, DB에서 불러와서 서버가 클라이언트한테 쏴줄수 있게 string으로 묶어서 반환형 string
-    public List<string> LoadCharactorData(int clientlicensenumber, int clientcharactor)
+    // DB에 캐릭터 이름 저장
+    public void SaveCharactorName(List<string> dataList)
     {
-        Debug.Log("[DB] LoadCharactorData...");
+        // user_info table과 rank table에 업데이트
+        // dataList -> [0]requestName / [1]license / [2]charactor / [3]name
+        Debug.Log("[DB] Come in SaveCharactorName method");
 
-        List<string> return_TableData = new List<string>();
-        string return_TempData;
+        // 지역변수
+        string update_Command;
+        MySqlCommand update_sqlCmd;
 
-        string selectTable_Command;
-        MySqlCommand select_SqlCmd = new MySqlCommand();
-        select_SqlCmd.Connection = connection;
+        // user_info == table.list[0]
+        update_Command = $"UPDATE `{table.list[0]}` SET `{userinfo_Columns[2]}` = '{dataList[3]}' " +
+                                $"WHERE `{userinfo_Columns[0]}` = '{Int32.Parse(dataList[1])}' AND `{userinfo_Columns[1]}` = '{Int32.Parse(dataList[2])}';";
+        update_sqlCmd = new MySqlCommand(update_Command, connection);
+        update_sqlCmd.ExecuteNonQuery();
 
+        // rank == table.list[1]
+        update_Command = $"UPDATE `{table.list[1]}` SET `{rank_Columns[3]}` = '{dataList[3]}' " +
+                                $"WHERE `{rank_Columns[0]}` = '{Int32.Parse(dataList[1])}' AND `{rank_Columns[1]}` = '{Int32.Parse(dataList[2])}';";
+        update_sqlCmd = new MySqlCommand(update_Command, connection);
+        update_sqlCmd.ExecuteNonQuery();
 
-        for(int i = 0; i < table.list.Count; i++) // table_List
-        {
-            // 저 테이블에 있는 licensenumber만 읽어오고 다른 컬럼을 읽어오지 않았는데 다른 컬럼에 있는 값을 가져오려니 당연히 오류가 나지 않을까?
-            //selectTable_Command = $"SELECT User_LicenseNumber FROM {table.list[i]}";
-            selectTable_Command = $"SELECT * FROM {table.list[i]}";
-            select_SqlCmd.CommandText = selectTable_Command;
-            reader = select_SqlCmd.ExecuteReader();
-
-            // table, User_LicenseNumber열에서 행이 있다면
-            if (reader.HasRows)
-            {
-                // 읽는다. 읽는동안
-                while (reader.Read())
-                {
-                    int dbLicenseNumber = reader.GetInt32("User_LicenseNumber");
-                    // int dbcharactor = reader.GetInt32("User_Charactor"); 나중에 캐릭터 변경시 필요할 변수. todo
-
-                    // 클라이언트 라이센스와 db에 있는 라이센스가 같다면 데이터를 불러온다
-                    if (clientlicensenumber == dbLicenseNumber)
-                    {
-                        switch(table.list[i])
-                        {
-                            case "user_info":
-                                //string selectColumn_Command = $"SELECT * FROM {table.list[i]}";
-                                //MySqlCommand selectColumn_SqlCmd = new MySqlCommand(selectColumn_Command, connection);
-                                //MySqlDataReader tempReader = selectColumn_SqlCmd.ExecuteReader();
-
-                                Debug.Log($"[DB] tableName : {table.list[i]}, dbLicenseNumber : {dbLicenseNumber},");
-                                Debug.Log("[DB] LoadCharactorData - user_info table");
-                                string user_Name = reader.GetString("User_Name");
-                                //string user_Name = reader["User_Name"].ToString();
-                                Debug.Log("[DB] User_Name Get????");
-                                // db에서 MediumBlob 타입 데이터 가져와서 string으로 변환
-                                byte[] user_Profile_bytes = reader["User_Profile"] as byte[];
-                                string user_Profile = Convert.ToBase64String(user_Profile_bytes);
-                                //string user_Profile = reader.GetInt32("User_Profile").ToString();
-                                Debug.Log($"[db] User_Profile byte[] type : {user_Profile_bytes}");
-                                Debug.Log($"[DB] User_Profile string type : {user_Profile}");
-                                Debug.Log("[DB] User_Profile Get????");
-                                string user_Coin = reader.GetInt32("User_Coin").ToString();
-                                Debug.Log("[DB] User_Coin Get????");
-                                return_TempData = $"{table.list[i]}|{user_Name}|{user_Profile}|{user_Coin}|{separatorString}"; // 맨 앞에 tag처럼 구분할 수 있게 특정명 기입(User)
-                                return_TableData.Add(return_TempData);
-                                break;
-                            case "rank":
-                                Debug.Log("[DB] LoadPlayerData - rank table");
-                                string rank_TotalTime = reader.GetString("TotalTime");
-                                string rank_TotalScore = reader.GetString("TotalScore");
-                                return_TempData = $"{table.list[i]}|{rank_TotalTime}|{rank_TotalScore}|{separatorString}";
-                                return_TableData.Add(return_TempData);
-                                break;
-                            case "achievement":
-                                Debug.Log("[DB] LoadPlayerData - achievement table");
-                                string achievement_Something = reader.GetInt32("Something").ToString();
-                                return_TempData = $"{table.list[i]}|{achievement_Something}|{separatorString}";
-                                return_TableData.Add(return_TempData);
-                                break;
-                            case "pet":
-                                Debug.Log("[DB] LoadPlayerData - pet table");
-                                string pet_White = reader.GetInt32("White").ToString();
-                                return_TempData = $"{table.list[i]}|{pet_White}|{separatorString}";
-                                return_TableData.Add(return_TempData);
-                                break;
-                            default:
-                                Debug.Log("[DB] LoadPlayerData - game table");
-                                string game_ReactionRate = reader.GetFloat("ReactionRate").ToString();
-                                string game_AnswerCount = reader.GetInt32("AnswerCount").ToString();
-                                string game_AnswerRate = reader.GetInt32("AnswerRate").ToString();
-                                string game_Playtime = reader.GetFloat("Playtime").ToString();
-                                string game_TotalScore = reader.GetInt32("TotalScore").ToString();
-                                string game_StarPoint = reader.GetInt32("StarPoint").ToString();
-                                return_TempData = $"{table.list[i]}|{game_ReactionRate}|{game_AnswerCount}|{game_AnswerRate}|{game_Playtime}|{game_TotalScore}|{game_StarPoint}|{separatorString}";
-                                return_TableData.Add(return_TempData);
-                                break;
-                        }
-                    }
-                }
-            }
-
-            reader.Close();
-        }
-
-        return return_TableData;
+        Debug.Log("[DB] Complete save charactor name to DB");
     }
 
+    // DB에 캐릭터 프로필(이미지) 저장
+    public void SaveCharactorProfile(List<string> dataList)
+    {
+        // user_info table과 rank table에 업데이트
+        // dataList -> [0]requestName / [1]license / [2]charactor / [3]profile(Base64)
+        Debug.Log("[DB] Come in SaveCharactorProfile method");
+
+        // Profile Base64 -> byte[] 변환
+        byte[] profileBytes = Convert.FromBase64String(dataList[3]);
+        // byte[]로 저장해야하나?
+
+        // 지역변수
+        string update_Command;
+        MySqlCommand update_sqlCmd;
+
+        // user_info == table.list[0]
+        update_Command = $"UPDATE `{table.list[0]}` SET `{userinfo_Columns[3]}` = '{dataList[3]}' " +
+                         $"WHERE `{userinfo_Columns[0]}` = '{Int32.Parse(dataList[1])}' AND `{userinfo_Columns[1]}` = '{Int32.Parse(dataList[2])}';";
+        Debug.Log(update_Command);
+        update_sqlCmd = new MySqlCommand(update_Command, connection);
+        update_sqlCmd.ExecuteNonQuery();
+
+        // rank == table.list[1]
+        update_Command = $"UPDATE `{table.list[1]}` SET `{rank_Columns[2]}` = '{dataList[3]}' " +
+                         $"WHERE `{rank_Columns[0]}` = '{Int32.Parse(dataList[1])}' AND `{rank_Columns[1]}` = '{Int32.Parse(dataList[2])}';";
+        update_sqlCmd = new MySqlCommand(update_Command, connection);
+        update_sqlCmd.ExecuteNonQuery();
+
+        Debug.Log("[DB] Complete save charactor profile to DB");
+    }
+
+    // DB에 캐릭터 데이터 저장 (캐릭터 변경 또는 게임 종료시)
+    public void SaveCharactorData(List<string> dataList)
+    {
+
+    }
+
+    // DB에 게임결과 저장
     public void SaveGameResultData(List<string> dataList)
     {
         // DB gametable column순 : User_Licensenumber/User_Charactor/ReactionRate/AnswerCount/AnswerRate/Playtime/TotalScore/StarPoint
@@ -493,8 +460,6 @@ public class DBManager : MonoBehaviour
             {
                 Debug.Log($"[DB] reader error : {e.Message}");
             }
-
-            
         }
         reader.Close();
 
@@ -523,23 +488,6 @@ public class DBManager : MonoBehaviour
         Debug.Log($"[DB] dataList's Count : {dataList.Count}");
         Debug.Log($"[DB] dataList[9]'s value : {dataList[9]}");
         Debug.Log($"[DB] dataList[10]'s value : {dataList[10]}");
-
-        //// 컬럼명-값 Tuple
-        //Tuple<string, int>[] columns_Tuple = new Tuple<string, int>[8];
-        //for(int i = 0; i < columns_Tuple.Length; i++)
-        //{
-        //    columns_Tuple[i] = new Tuple<string, int>(game_Columns[i], Int32.Parse(dataList[i+3]));
-        //}
-
-        //// 게임테이블에 values update
-        //// i=0 -> licensenumber / i=1 -> charactor ==> table에서 특정조건(라이센스,캐릭터)을 만족하는 column을 업데이트함
-        //for(int i = 2; i < columns_Tuple.Length; i++)
-        //{
-        //    Debug.Log($"[DB] Update Tuple problem?? ....");
-        //    string updateGameData_Command = $"UPDATE `{table_Name}` SET `{columns_Tuple[i].Item1}` = '{columns_Tuple[i].Item2}' WHERE `{columns_Tuple[0].Item1}` = '{columns_Tuple[0].Item2}' AND `{columns_Tuple[1].Item1}` = '{columns_Tuple[1].Item2}'";
-        //    MySqlCommand update_SqlCmd = new MySqlCommand(updateGameData_Command, connection);
-        //    update_SqlCmd.ExecuteNonQuery();
-        //}
 
         for (int i = 2; i < game_Columns.Length; i++) // game_Columns = [0]~[7]
         {
@@ -690,10 +638,7 @@ public class DBManager : MonoBehaviour
             
 
         }
-
-
         /*
-        
         네, 맞습니다. CREATE DATABASE와 CREATE TABLE은 각각의 명령문이므로, 한꺼번에 넘겨주어서는 안 됩니다. 
         MariaDB나 MySQL과 같은 데이터베이스 시스템에서는 각각의 명령문을 구분하여 실행해야 합니다.
         따라서 CREATE DATABASE와 USE 그리고 CREATE TABLE 등 여러 개의 SQL 명령문을 하나의 문자열로 합쳐서 실행하면 문법 오류가 발생할 수 있습니다. 
@@ -713,6 +658,102 @@ public class DBManager : MonoBehaviour
           `StarPoint` int(11) DEFAULT NULL
         ) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci; */
 
+    }
+
+    // 플레이어 데이터 불러오기, DB에서 불러와서 서버가 클라이언트한테 쏴줄수 있게 string으로 묶어서 반환형 string
+    public List<string> LoadCharactorData(int clientlicensenumber, int clientcharactor)
+    {
+        Debug.Log("[DB] LoadCharactorData...");
+
+        List<string> return_TableData = new List<string>();
+        string return_TempData;
+
+        string selectTable_Command;
+        MySqlCommand select_SqlCmd = new MySqlCommand();
+        select_SqlCmd.Connection = connection;
+
+
+        for (int i = 0; i < table.list.Count; i++) // table_List
+        {
+            // 저 테이블에 있는 licensenumber만 읽어오고 다른 컬럼을 읽어오지 않았는데 다른 컬럼에 있는 값을 가져오려니 당연히 오류가 나지 않을까?
+            //selectTable_Command = $"SELECT User_LicenseNumber FROM {table.list[i]}";
+            selectTable_Command = $"SELECT * FROM {table.list[i]}";
+            select_SqlCmd.CommandText = selectTable_Command;
+            reader = select_SqlCmd.ExecuteReader();
+
+            // table, User_LicenseNumber열에서 행이 있다면
+            if (reader.HasRows)
+            {
+                // 읽는다. 읽는동안
+                while (reader.Read())
+                {
+                    int dbLicenseNumber = reader.GetInt32("User_LicenseNumber");
+                    // int dbcharactor = reader.GetInt32("User_Charactor"); 나중에 캐릭터 변경시 필요할 변수. todo
+
+                    // 클라이언트 라이센스와 db에 있는 라이센스가 같다면 데이터를 불러온다
+                    if (clientlicensenumber == dbLicenseNumber)
+                    {
+                        switch (table.list[i])
+                        {
+                            case "user_info":
+                                //string selectColumn_Command = $"SELECT * FROM {table.list[i]}";
+                                //MySqlCommand selectColumn_SqlCmd = new MySqlCommand(selectColumn_Command, connection);
+                                //MySqlDataReader tempReader = selectColumn_SqlCmd.ExecuteReader();
+
+                                Debug.Log($"[DB] tableName : {table.list[i]}, dbLicenseNumber : {dbLicenseNumber},");
+                                Debug.Log("[DB] LoadCharactorData - user_info table");
+                                string user_Name = reader.GetString("User_Name");
+                                //string user_Name = reader["User_Name"].ToString();
+                                Debug.Log("[DB] User_Name Get????");
+                                // db에서 MediumBlob 타입 데이터 가져오기
+                                //byte[] user_Profile_bytes = reader["User_Profile"] as byte[];
+                                string user_Profile = reader.GetString("User_Profile");
+                                Debug.Log($"[DB] User_Profile : {user_Profile}");
+
+                                Debug.Log("[DB] User_Profile Get????");
+                                string user_Coin = reader.GetInt32("User_Coin").ToString();
+                                Debug.Log("[DB] User_Coin Get????");
+                                return_TempData = $"{table.list[i]}|{user_Name}|{user_Profile}|{user_Coin}|{separatorString}"; // 맨 앞에 tag처럼 구분할 수 있게 특정명 기입(User)
+                                return_TableData.Add(return_TempData);
+                                break;
+                            case "rank":
+                                Debug.Log("[DB] LoadPlayerData - rank table");
+                                string rank_TotalTime = reader.GetString("TotalTime");
+                                string rank_TotalScore = reader.GetString("TotalScore");
+                                return_TempData = $"{table.list[i]}|{rank_TotalTime}|{rank_TotalScore}|{separatorString}";
+                                return_TableData.Add(return_TempData);
+                                break;
+                            case "achievement":
+                                Debug.Log("[DB] LoadPlayerData - achievement table");
+                                string achievement_Something = reader.GetInt32("Something").ToString();
+                                return_TempData = $"{table.list[i]}|{achievement_Something}|{separatorString}";
+                                return_TableData.Add(return_TempData);
+                                break;
+                            case "pet":
+                                Debug.Log("[DB] LoadPlayerData - pet table");
+                                string pet_White = reader.GetInt32("White").ToString();
+                                return_TempData = $"{table.list[i]}|{pet_White}|{separatorString}";
+                                return_TableData.Add(return_TempData);
+                                break;
+                            default:
+                                Debug.Log("[DB] LoadPlayerData - game table");
+                                string game_ReactionRate = reader.GetFloat("ReactionRate").ToString();
+                                string game_AnswerCount = reader.GetInt32("AnswerCount").ToString();
+                                string game_AnswerRate = reader.GetInt32("AnswerRate").ToString();
+                                string game_Playtime = reader.GetFloat("Playtime").ToString();
+                                string game_TotalScore = reader.GetInt32("TotalScore").ToString();
+                                string game_StarPoint = reader.GetInt32("StarPoint").ToString();
+                                return_TempData = $"{table.list[i]}|{game_ReactionRate}|{game_AnswerCount}|{game_AnswerRate}|{game_Playtime}|{game_TotalScore}|{game_StarPoint}|{separatorString}";
+                                return_TableData.Add(return_TempData);
+                                break;
+                        }
+                    }
+                }
+            }
+            reader.Close();
+        }
+
+        return return_TableData;
     }
 
     // 임시로 PresentDB에 있는 Rank Table 데이터 사용 / Score, Time 별 Rank 1~5위 및 6번째 자기 자신의 데이터 
@@ -753,10 +794,15 @@ public class DBManager : MonoBehaviour
                     Debug.Log($"[DB] Check Type Conversion, j : {j}");
                     if (j == 2) // byte[]
                     {
-                        byte[] profiledata = reader[$"{rank_Columns[j]}"] as byte[]; // column에 있는 MediumBlob Type value -> byte[] type으로 받아오기
-                        valuesInColumn.Add(System.Text.Encoding.UTF8.GetString(profiledata));
-                        Debug.Log($"[DB] Check Type Conversion, Where: byte[], {profiledata}, j : {j}");
-                        Debug.Log($"[DB] Check Type Conversion, Where: byte[], {System.Text.Encoding.UTF8.GetString(profiledata)}, j : {j}");
+                        // column에 있는 MediumBlob Type value -> byte[] type으로 받아오기
+                        byte[] profileData = reader[$"{rank_Columns[j]}"] as byte[];
+                        // Image Data를 Base64 문자열로 변환
+                        string profileDataBase64 = Convert.ToBase64String(profileData);
+                        // client에 보낼 문자열에 Base64 문자열 추가 (나중에 client에서 decoding해야함)
+                        valuesInColumn.Add(profileDataBase64);
+                        Debug.Log($"[DB] Check Type Conversion, Where: byte[] profileData, {profileData}, j : {j}");
+                        Debug.Log($"[DB] Check Type Conversion, Where: string profileDataBase64, {profileDataBase64}, j : {j}");
+                        Debug.Log($"[DB] Check Type Conversion, Where: string Encoding.UTF8.Getstring(profileData), {System.Text.Encoding.UTF8.GetString(profileData)}, j : {j}");
                     }
                     else if(j == 3) // Varchar
                     {

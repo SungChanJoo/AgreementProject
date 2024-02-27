@@ -188,7 +188,8 @@ public class Server : MonoBehaviour
                 }
 
                 // 클라이언트로부터 요청메세지(이름)을 받음
-                byte[] buffer = new byte[1024];
+                //byte[] buffer = new byte[1024]; // 일반적으로 받는 버퍼사이즈 1024byte
+                byte[] buffer = new byte[327680];
                 int bytesRead = await stream.ReadAsync(buffer, 0, buffer.Length); // 메세지 받을때까지 대기
                 string receivedRequestData = Encoding.UTF8.GetString(buffer, 0, bytesRead); // 데이터 변환
                 List<string> dataList = receivedRequestData.Split('|', StringSplitOptions.RemoveEmptyEntries).ToList(); // 받은 data 분할해서 list에 담음
@@ -239,8 +240,6 @@ public class Server : MonoBehaviour
 
                 // 새 캐릭터 정보 생성 (유저 한명당 가지는 첫 캐릭터)
                 Debug.Log($"[Server] Creating... new Charactor Data");
-                //List<string> clientdata_List = clientdata.Split('|').ToList();
-                //clientLicenseNumber = Int32.Parse(clientdata_List[0]);
                 clientLicenseNumber = Int32.Parse(clientdata.Split('|')[0]);
                 DBManager.instance.CreateNewCharactorData(clientLicenseNumber); 
 
@@ -248,6 +247,21 @@ public class Server : MonoBehaviour
                 replyRequestData_List.Add($"{clientdata}|");
                 break;
             case "[Create]Charactor":
+                // to do fix
+                DBManager.instance.CreateNewCharactorData(clientLicenseNumber);
+                break;
+            case "[Save]CharactorName":
+                DBManager.instance.SaveCharactorName(dataList);
+                break;
+            case "[Save]CharactorProfile":
+                Debug.Log($"[Server] Check Profile Data, dataList[3], Base64 : {dataList[3]}");
+                Debug.Log($"[Server] Check Profile Data, dataList[3], Convert.FromBase64String, byte[] : {Convert.FromBase64String(dataList[3])}");
+                DBManager.instance.SaveCharactorProfile(dataList);
+                break;
+            case "[Save]CharactorData":
+                DBManager.instance.SaveCharactorData(dataList);
+                break;
+            case "[Save]GameResult":
                 break;
             case "[Save]venezia_kor":
                 DBManager.instance.SaveGameResultData(dataList);
