@@ -536,13 +536,13 @@ public class GuGUDan_Fnc : GameSetting
         switch (timeSet)
         {
             case 60:
-                QuestCount = 18;                
+                QuestCount = 15;                
                 break;
             case 180:
-                QuestCount = 30; // 예시
+                QuestCount = 45; // 예시
                 break;
             case 300:
-                QuestCount = 42; // 예시 값
+                QuestCount = 75; // 예시 값
                 break;
             default:
                 break;

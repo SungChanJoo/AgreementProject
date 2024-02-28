@@ -113,10 +113,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   objectType: 0
-  StartSpeed: 10
+  StartSpeed: 20
   CurrentSpeed: 0
   SaveSpeed: 0
   AccelerationSpeed: 1.05
+  removeTime: 0
   isStart: 1
   sprite: {fileID: 21300000, guid: 7fa6c0fa6a88d6b478f5ef6aa69035c5, type: 3}
   count: 0
