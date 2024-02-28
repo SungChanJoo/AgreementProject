@@ -5,6 +5,12 @@ using UnityEngine.SceneManagement;
 using UnityEngine.Android;
 using UnityEngine.UI;
 
+public enum Sound_
+{
+    Master = 0,
+    BGM,
+    SFX = 2,
+}
 
 public class SettingManager : MonoBehaviour
 {
@@ -14,15 +20,19 @@ public class SettingManager : MonoBehaviour
     [SerializeField] private GameObject InGameBtn_panel;
     [SerializeField] private GameObject ReQuestion_panel;        
     
-    [Header("토글 ON/OFF 위부터 순서대로")]
-    [SerializeField] private Toggle[] on_tog;
-    [SerializeField] private Toggle[] off_tog;
+    [Header("Checkmark ON/OFF 위부터 순서대로")]
+    [SerializeField] private GameObject[] on_img;
+    [SerializeField] private GameObject[] Off_img;
+    
     [Header("토글 OFF시 슬라이더바 컬러조정")]
     [SerializeField] private Image[] MasterSlider_color;
     [SerializeField] private Image[] BgmSlider_color;
     [SerializeField] private Image[] SfxSlider_color;
-
+    
+    
     int count = 0;
+
+    private int sound_num;
     private void Awake()
     {        
         if (Instance == null)
@@ -118,51 +128,33 @@ public class SettingManager : MonoBehaviour
         //메뉴 Scene 빌드번호 1로 지정
         SceneManager.LoadScene(1);
     }
+    public void Sound_Num(int num)
+    {
+        sound_num = num;
+    }
+    public void SoundMutEvent(bool check)
+    {
 
-    public void MasterSoundTogglEvent(bool check)
-    {        
         if (!check)
         {
-            on_tog[0].isOn = !off_tog[0].isOn;
+            Off_img[sound_num].SetActive(true);
+            on_img[sound_num].SetActive(false);           
         }
         else
         {
-            off_tog[0].isOn = !on_tog[0].isOn;
-        }
-        SliderColorChange(0);
-    }
-    public void BGMSoundTogglEvent(bool check)
-    {
-        if (!check)
-        {
-            on_tog[1].isOn = !off_tog[1].isOn;
-        }
-        else
-        {
-            off_tog[1].isOn = !on_tog[1].isOn;
-        }
-        SliderColorChange(1);
-    }
-    public void SFXSoundTogglEvent(bool check)
-    {
-        if (!check)
-        {
-            on_tog[2].isOn = !off_tog[2].isOn;
-        }
-        else
-        {
-            off_tog[2].isOn = !on_tog[2].isOn;
-        }
-        SliderColorChange(2);
-    }
-    private void SliderColorChange(int num)
+            on_img[sound_num].SetActive(true);
+            Off_img[sound_num].SetActive(false);
+        }        
+        SliderColorChange(sound_num,check);
+    }    
+    private void SliderColorChange(int num , bool check)
     {
         for (int i = 0; i < MasterSlider_color.Length; i++)
         {
             switch (num)
             {
                 case 0:
-                    if (!on_tog[0].isOn)
+                    if (!check)
                     {
                         MasterSlider_color[i].color = Color.gray;
                     }
@@ -172,7 +164,7 @@ public class SettingManager : MonoBehaviour
                     }
                     break;
                 case 1:
-                    if (!on_tog[1].isOn)
+                    if (!check)
                     {
                         BgmSlider_color[i].color = Color.gray;
                     }
@@ -182,7 +174,7 @@ public class SettingManager : MonoBehaviour
                     }
                     break;
                 case 2:
-                    if (!on_tog[2].isOn)
+                    if (!check)
                     {
                         SfxSlider_color[i].color = Color.gray;
                     }
@@ -193,7 +185,7 @@ public class SettingManager : MonoBehaviour
                     break;
             }            
         }
-        AudioManager.Instance.SliderControll(num,on_tog[num].isOn);
+        AudioManager.Instance.SliderControll(num,check);
 
         
     }

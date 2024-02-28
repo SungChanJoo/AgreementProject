@@ -20,7 +20,7 @@ public enum ClientLoginStatus
 public class Client : MonoBehaviour
 {
     // IP, Port ∞Ì¡§µ 
-    [SerializeField] private string server_IP = "15.165.159.141"; // aws EC2 IP : 15.165.159.141
+    [SerializeField] private string server_IP = "3.39.194.36"; // aws EC2 IP : 3.39.194.36
     [SerializeField] private int server_Port = 2421;
 
     bool socketReady;

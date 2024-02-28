@@ -136,6 +136,10 @@ public interface ITimeSlider
         {
             time = Time.unscaledDeltaTime;
         }
+        if (startTime>0)
+        {
+            
+        }
     }
     public void StartTime()
     {
