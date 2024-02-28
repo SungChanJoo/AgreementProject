@@ -10,13 +10,6 @@ using System.Threading.Tasks;
 using LitJson;
 using System.Linq;
 
-// 처음 접속하는 유저인지(First), 접속했었던 유저인지(Continue) 
-public enum ClientLoginStatus
-{
-    New,
-    Exist
-}
-
 public class Client : MonoBehaviour
 {
     // IP, Port 고정됨
@@ -24,26 +17,26 @@ public class Client : MonoBehaviour
     [SerializeField] private int server_Port = 2421;
 
     bool socketReady;
+    // TCP 통신
     private TcpClient client;
     private static NetworkStream stream;
 
-    // login - license
-    public static ClientLoginStatus loginStatus;
+    // login - license, charactor / local(json)로 관리
     public static string clientLicenseNumber;
     public static string clientCharactor;
     public string licenseFolderPath = string.Empty;
 
     // 서버로 부터 받은 data를 1차적으로 거른 List
-    public List<string> CharactorData_FromServer = new List<string>();
+    public List<string> CharactorData_FromServer;
 
     // Charactor data를 사용하기 위한 Dictionary
     public Dictionary<string, List<string>> CharactorData_Dic;
 
-    // DB Table Name
-    private TableName table;
-
     // 서버-클라이언트 string으로 data 주고받을때 구분하기 위한 문자열
     private const string separatorString = "E|";
+
+    // DB Table Name
+    private TableName table;
 
     // Rank data
     private RankData clientRankData;
@@ -77,7 +70,22 @@ public class Client : MonoBehaviour
         ETCInitSetting();
         ConnectToServer();
         ClientLoginSet();
-        Invoke("LoadCharactorDataFromDB", 7f);
+        Invoke("LoadCharactorDataFromDB", 6f);
+    }
+
+    // Start시 기타 멤버변수 초기화
+    private void ETCInitSetting()
+    {
+        Debug.Log("[Client] ETCInitSetting");
+
+        // DB TableName 생성
+        table = new TableName();
+
+        // CharactorData Load했을때 받아오는 List 생성
+        CharactorData_FromServer = new List<string>();
+
+        // Dictionary 생성
+        CharactorData_Dic = new Dictionary<string, List<string>>();
     }
 
     // 클라이언트가 실행할 때 서버 연결 시도
@@ -86,9 +94,9 @@ public class Client : MonoBehaviour
         // 이미 연결되었다면 함수 무시
         if (socketReady) return;
 
-        // 서버에 연결
         try
         {
+            // 서버 연결
             client = new TcpClient();
             client.Connect(server_IP, server_Port);
             Debug.Log("[Client] Success Connect to Server!");
@@ -100,9 +108,9 @@ public class Client : MonoBehaviour
         {
             Debug.Log($"[Client] Fail Connect to Server : {e.Message}");
         }
-
     }
 
+    // 서버에 연결할 때 클라이언트의 정보를 불러오기 위한 메서드
     public void ClientLoginSet()
     {
         // 연결되지 않았다면 return
@@ -111,26 +119,23 @@ public class Client : MonoBehaviour
         licenseFolderPath = Application.dataPath + "/License";
         string licenseFilePath = licenseFolderPath + "/clientlicense.json";
 
-        Debug.Log($"[Client] Directory.Exists(licenseFolderPath) value ? {Directory.Exists(licenseFolderPath)}");
         // 경로에 파일이 존재하지 않는다면 라이센스넘버가 없다는것이고, 처음 접속한다는 뜻
         if (!File.Exists(licenseFilePath))
         {
-            loginStatus = ClientLoginStatus.New;
             // 서버에서 라이센스 넘버를 받아와야함, 그러기 위해 서버에 요청 todo
+            Debug.Log($"[Client] This client is entering game for the first time..");
             string requestName = "[Create]LicenseNumber";
             RequestToServer(requestName);
-            Debug.Log($"[Client] This client's licensenumber(first) : {clientLicenseNumber}");
             return; // 처음 접속이라면 폴더 및 파일 저장하고 return
         }
 
-        loginStatus = ClientLoginStatus.Exist;
         // 해당 경로에 있는 파일을 읽어 클라이언트 라이센스 넘버를 불러옴
         string jsonStringFromFile = File.ReadAllText(licenseFilePath);
         JsonData client_JsonFile = JsonMapper.ToObject(jsonStringFromFile);
         clientLicenseNumber = client_JsonFile["LicenseNumber"].ToString();
         clientCharactor = client_JsonFile["Charactor"].ToString();
-        Debug.Log($"[Client] Use already existed licensenumber?");
-        Debug.Log($"[Client] This client's licensenumber(existing) : {clientLicenseNumber}");
+        Debug.Log($"[Client] This client's licensenumber(have) : {clientLicenseNumber}");
+        Debug.Log($"[Client] This client's charactor(last charactor) : {clientCharactor}");
     }
 
     // 게임 시작할 때 유저정보 불러오기 - 서버에 요청(서버-DB) // 나중에 Player Class 정리되면 수정해야함. todo
@@ -142,7 +147,7 @@ public class Client : MonoBehaviour
         RequestToServer(requestData);
     }
 
-    // 서버에 요청할때 string으로 보내는데, 서버에서 받을 때 string case로 구분해서 처리
+    // 서버 요청 - 매개변수로 string으로 받고, requestName으로 요청사항 구분
     private void RequestToServer(string requestData)
     {
         try
@@ -151,17 +156,17 @@ public class Client : MonoBehaviour
             stream.Write(data, 0, data.Length); // 데이터를 보낼때 까지 대기? 그냥 보내면 되잖어
             List<string> requestDataList = requestData.Split('|', StringSplitOptions.RemoveEmptyEntries).ToList();
             string requestName = requestDataList[0];
-            Debug.Log($"[Client] Request to server : {requestData}");
+            Debug.Log($"[Client] Request to server : {requestName}");
 
             ReceiveRequestDataFromServer(stream); // 메서드가 실행될때 까지 대기 / 대기시키기 위해 메서드 앞에 await을 붙여서 실행시키려면 메서드가 Task 붙여야하는듯?
         }
         catch (Exception e)
         {
-            Debug.Log($"[Client] Error Request to sever : + {e.Message}");
+            Debug.Log($"[Client] Error Request to server : + {e.Message}");
         }
     }
 
-    // 서버에 요청보낸거 받음, 받은 string, case로 구분해서 처리
+    // 서버 요청 후 Receive
     private async void ReceiveRequestDataFromServer(NetworkStream stream)
     {
         try
@@ -198,10 +203,9 @@ public class Client : MonoBehaviour
                     Debug.Log($"[Client] Finish Receive Data From Server");
                     break;
                 }
-
             }
 
-            HandleRequestData(receivedRequestData_List);
+            HandleReceivedRequestData(receivedRequestData_List);
         }
         catch (Exception e)
         {
@@ -210,21 +214,22 @@ public class Client : MonoBehaviour
     }
 
     // 서버로부터 받은 데이터 처리
-    private void HandleRequestData(List<string> dataList)
+    private void HandleReceivedRequestData(List<string> dataList)
     {
         // requestname : 클라이언트-서버에서 데이터를 처리하기 위한 구분
         // requestdata : Server에서 requestName으로 처리된 결과를 보낸 data
-        // LicenseNumber -> clientLicenseNumber를 server가 보내줌 (Client가 첫 접속인 경우 처리됨)
+        // LicenseNumber -> clientLicenseNumber를 server가 보내줌 (Client가 첫 접속인 경우 실행됨)
         // LoadNewCharactorData -> 새 플레이어의 경우 DB에 licenseNumber를 제외한 데이터가 없으므로 모든 테이블에 존재하는 열항목에 0값을 부여한 CharactorData를 가질 것임
         // LoadExistCharactorData -> 기존 플레이어의 경우 DB에 저장된 CharactorData를 가질 것임
 
-        // dataList[0] = "[Load]CharactorData|value|value..|value|E|";
+        // dataList[0] = {requestName}|
         string requestName = dataList[0].Split('|')[0];
         Debug.Log($"[Client] HandleRequestData method, request name : {requestName}");
 
         switch (requestName)
         {
             case "[Create]LicenseNumber":
+                // dataList[1] = {clientLicenseNumber}|{clientCharactor}|
                 for(int i = 0; i < dataList.Count; i ++)
                 {
                     Debug.Log($"[Client] Check User dataList{i} : {dataList[i]}");
@@ -234,7 +239,9 @@ public class Client : MonoBehaviour
                 SaveClientDataToJsonFile();
                 Debug.Log($"[Client] RequestName : {requestName}, get and save licenseNumber to jsonfile");
                 break;
-            case "[Create]Charactor":
+            case "[Create]Charactor": // todo
+                clientCharactor = "22";
+                SaveClientDataToJsonFile();
                 break;
             case "[Save]CharactorName":
                 Debug.Log($"[Client] RequestName : {requestName}, End handling data");
@@ -242,10 +249,12 @@ public class Client : MonoBehaviour
             case "[Save]CharactorProfile":
                 Debug.Log($"[Client] RequestName : {requestName}, End handling data");
                 break;
-            case "[Save]CharactorData":
+            case "[Save]CharactorData": // todo
+                clientCharactor = "22";
+                SaveClientDataToJsonFile();
                 Debug.Log($"[Client] RequestName : {requestName}, End handling data");
                 break;
-            case "[Save]GameResult":
+            case "[Save]GameResult": // todo
                 Debug.Log($"[Client] RequestName : {requestName}, End handling data");
                 break;
             case "[Save]venezia_kor":
@@ -264,6 +273,7 @@ public class Client : MonoBehaviour
                 Debug.Log($"[Client] RequestName : {requestName}, End handling data");
                 break;
             case "[Load]CharactorData":
+                // dataList[0] = "[Load]CharactorData|value|value..|value|E|";
                 HandleLoadCharactorData(dataList);
                 Debug.Log($"[Client] RequestName : {requestName}, End handling data");
                 break;
@@ -277,25 +287,6 @@ public class Client : MonoBehaviour
         }
     }
 
-    // 최종적으로 사용할 수 있는 player data
-    // 서버로부터 받고 1차적으로 정리한 data중 table name을 가지고 최종적으로 data 정리 
-    private void FilterCharactorData()
-    {
-        Debug.Log("[Client] Filtering... player data");
-        for(int i = 0; i < CharactorData_FromServer.Count; i++)
-        {
-            for(int j = 0; j < table.list.Count; j++)
-            {
-                if(CharactorData_FromServer[i].Contains(table.list[j]))
-                {
-                    List<string> values = CharactorData_FromServer[i].Split('|', StringSplitOptions.RemoveEmptyEntries).ToList(); // User테이블기준으로 User|User_Name|User_Profile|User_Coin이 있을것임
-                    values.RemoveAt(0); // 0번째 인덱스는 테이블명이므로 values에 필요하지 않다.
-                    CharactorData_Dic.Add(table.list[j], values);
-                }
-            }
-        }
-    }
-
     // Json파일에 LicenseNumber 등록 / 비동기로 호출된 것이 끝났을때 동기적으로 호출시키기 위해
     private void SaveClientDataToJsonFile()
     {
@@ -303,20 +294,10 @@ public class Client : MonoBehaviour
         JsonData client_Json = new JsonData();
         client_Json["LicenseNumber"] = clientLicenseNumber;
         client_Json["Charactor"] = clientCharactor;
+
         // Json 데이터를 문자열로 변환하여 파일에 저장
         string jsonString = JsonMapper.ToJson(client_Json);
         File.WriteAllText(licenseFolderPath + "/clientlicense.json", jsonString);
-    }
-
-    // Start DBTable 세팅
-    private void ETCInitSetting()
-    {
-        Debug.Log("[Client] ETCInitSetting");
-        // DB TableName 생성
-        table = new TableName();
-
-        // Dictionary 생성
-        CharactorData_Dic = new Dictionary<string, List<string>>();
     }
 
     // 플레이어 데이터 처리
@@ -341,9 +322,11 @@ public class Client : MonoBehaviour
             // requestName 제거
             if (i == 0) dataList[0] = dataList[0].Substring("[Load]CharactorData".Length);
 
+            // "E|" 제거 -> DB table별로 List에 나눠서 담음
             List<string> parts = new List<string>();
-            parts = dataList[i].Split(separatorString, StringSplitOptions.RemoveEmptyEntries).ToList();
+            parts = dataList[i].Split(separatorString, StringSplitOptions.RemoveEmptyEntries).ToList(); 
 
+            // List[index]에 string
             foreach (string part in parts) // part : rank|value|value|...|value|
             {
                 //part.Split('|', StringSplitOptions.RemoveEmptyEntries);
@@ -353,6 +336,25 @@ public class Client : MonoBehaviour
         }
 
         FilterCharactorData();
+    }
+
+    // 최종적으로 사용할 수 있는 player data
+    // 서버로부터 받고 1차적으로 정리한 data중 table name을 가지고 최종적으로 data 정리 
+    private void FilterCharactorData()
+    {
+        Debug.Log("[Client] Filtering... player data");
+        for (int i = 0; i < CharactorData_FromServer.Count; i++)
+        {
+            for (int j = 0; j < table.list.Count; j++)
+            {
+                if (CharactorData_FromServer[i].Contains(table.list[j]))
+                {
+                    List<string> values = CharactorData_FromServer[i].Split('|', StringSplitOptions.RemoveEmptyEntries).ToList(); // User테이블기준으로 User|User_Name|User_Profile|User_Coin이 있을것임
+                    values.RemoveAt(0); // 0번째 인덱스는 테이블명이므로 values에 필요하지 않다.
+                    CharactorData_Dic.Add(table.list[j], values);
+                }
+            }
+        }
     }
 
     // 랭크 데이터 처리
@@ -442,6 +444,8 @@ public class Client : MonoBehaviour
 
     }
 
+    #region 클라이언트-서버요청
+
     /*
     Client가 DB에 있는 파일을 Save Load 하는 경우
     1. 앱 시작 -> Load (모든 데이터, 게임데이터, 재화, crew 소유권한 등)
@@ -449,7 +453,7 @@ public class Client : MonoBehaviour
     3. Charactor Name 등록
     4. Charactor Profile 등록
     5. 앱 게임 시작 -> TotalScore(int형) Load (game_type, level, step 받음) -> Save GameData
-    6. 랭킹 UI 접속 시(or 랭킹새로고침) -> rank Load
+    6. 랭킹 UI 접속 시(or 랭킹새로고침) -> rank Load  // 일단 테스트용
     7. 앱 종료 -> Save (모든 데이터)
     */
 
@@ -458,8 +462,13 @@ public class Client : MonoBehaviour
     {
         Result_DB resultdb = new Result_DB();
 
+        // 컬럼순
         // user_info table -> [0]:User_LicenseNumber, [1]:User_Charactor, [2]:User_Name, [3]:User_Profile, [4]:User_Coin
         // rank table - > [0]:User_LicenseNumber, [1]:User_Charactor, [2]:TotalTime, [3]:TotalScore
+
+        // CharactorData_Dic에 담긴 값
+        // CharactorData_Dic["user_info"] -> [0]:name / [1]:profile / [2]:coin
+        // CharactorData_Dic["rank"] -> [0]:TotalTime / [1]:TotalAnswers
         resultdb.playerName = CharactorData_Dic["user_info"][0];
         resultdb.image = Convert.FromBase64String(CharactorData_Dic["user_info"][1]);
         resultdb.Day = "";
@@ -642,6 +651,8 @@ public class Client : MonoBehaviour
         RequestToServer(requestData);
     }
 
+    #endregion
+
     public void OnClickSaveGameDataTest()
     {
         Game_Type game_Type = Game_Type.A;
@@ -664,14 +675,6 @@ public class Client : MonoBehaviour
         }
 
         AppGame_SaveResultDataToDB(result_DB, game_Type, level, step);
-
-    }
-
-    
-
-    // 서버로부터 받은 CharactorData를 게임에서 사용하는 Player Class에 설정
-    private void SetPlayer(User_Info user)
-    {
 
     }
 

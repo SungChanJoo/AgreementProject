@@ -6,8 +6,6 @@ using LitJson;
 
 public class ClientLicense : MonoBehaviour
 {
-    public static ClientLoginStatus loginStatus;
-
     public static string clientLicenseNumber;
 
     public string licensePath = string.Empty;
