@@ -208,6 +208,8 @@ public class Server : MonoBehaviour
     // 클라이언트로부터 받은 요청을 제목에 맞게 분류해서 처리함
     private void HandleRequestData(NetworkStream stream, List<string> dataList)
     {
+        Debug.Log($"[Server] Recieved request name from client : {dataList[0]}");
+
         // dataList -> 0 : requestName, 1~ : values
         string requestName = dataList[0];
         int clientLicenseNumber = 0;
@@ -219,7 +221,6 @@ public class Server : MonoBehaviour
             clientLicenseNumber = Int32.Parse(dataList[1]);
             clientCharactor = Int32.Parse(dataList[2]);
         }
-        Debug.Log($"[Server] Recieved request name from client : {dataList[0]}");
 
         // Reply -> Client에게 보낼 List<string>, [0]은 requestName
         List<string> replyRequestData_List = new List<string>();
@@ -254,8 +255,8 @@ public class Server : MonoBehaviour
                 DBManager.instance.SaveCharactorName(dataList);
                 break;
             case "[Save]CharactorProfile":
+                // dataList[1] = user_LicenseNumber, dataList[2] = user_Charactor, dataList[3] = profile
                 Debug.Log($"[Server] Check Profile Data, dataList[3], Base64 : {dataList[3]}");
-                Debug.Log($"[Server] Check Profile Data, dataList[3], Convert.FromBase64String, byte[] : {Convert.FromBase64String(dataList[3])}");
                 DBManager.instance.SaveCharactorProfile(dataList);
                 break;
             case "[Save]CharactorData":
