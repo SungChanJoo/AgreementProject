@@ -18,8 +18,8 @@ public class Test_Image : MonoBehaviour
         Game_Type game_Type = Game_Type.A;
         int level = 1;
         int step = 2;
-        Result_DB result_DB = new Result_DB();
-        Data_value data_Value = new Data_value(234.21f, 23, 12, 22.44f, 18000);
+        Player_DB result_DB = new Player_DB();
+        Data_value data_Value = new Data_value(234.21f, 23, 12, 22.44f, 18000,3);
         //Reult_DB가 Null일 때 처리
         if (!result_DB.Data.ContainsKey((game_Type, level, step)))
         {
@@ -42,7 +42,7 @@ public class Test_Image : MonoBehaviour
     {
         
         
-        Result_DB db = Client.instance.AppStart_LoadAllDataFromDB();
+        Player_DB db = Client.instance.AppStart_LoadAllDataFromDB();
         byte[] image = db.image;
             
         //byte[] image = Convert.FromBase64String(base64image);

@@ -23,7 +23,7 @@ public class AnalysisChart : MonoBehaviour
 
 
 
-    Result_DB result_Data = new Result_DB();
+    Player_DB result_Data = new Player_DB();
 
     private void Start()
     {
