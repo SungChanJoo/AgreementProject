@@ -281,11 +281,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9f29fac38ef4dd5438c4b09831cf93c8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  server_IP: 15.165.159.141
+  server_IP: 3.39.194.36
   server_Port: 2421
   licenseFolderPath: 
-  clientCharactor: 
-  playerdata_FromServer: []
+  CharactorData_FromServer: []
 --- !u!4 &427120338
 Transform:
   m_ObjectHideFlags: 0
@@ -2331,8 +2330,7 @@ MonoBehaviour:
   server_IP: 127.0.0.1
   server_Port: 2421
   licenseFolderPath: 
-  clientCharactor: 
-  playerdata_FromServer: []
+  CharactorData_FromServer: []
 --- !u!4 &1823038814
 Transform:
   m_ObjectHideFlags: 0
@@ -2346,7 +2344,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 7
+  m_RootOrder: 8
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1867342381
 GameObject:
