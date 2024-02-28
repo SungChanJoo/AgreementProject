@@ -67,7 +67,6 @@ public class Cube : MonoBehaviour
         {
             Cube_StartMove_();
         }
-        if (!isStart) StartSpeed = 0;
         //Translate로 움직이기 때문에 가끔 물리판정이 무시되어 벽을 뚫는경우를 고려
         if (gameObject.transform.position.x >= ObjectPooling.Instance.MaxDistance || gameObject.transform.position.x <= -ObjectPooling.Instance.MaxDistance)
         {
@@ -80,6 +79,7 @@ public class Cube : MonoBehaviour
         GameOver();
         DestoryCube();
         print(rb.velocity);
+        print(CurrentSpeed);
     }
     private void OnTriggerEnter(Collider other)
     {
@@ -134,8 +134,8 @@ public class Cube : MonoBehaviour
             if (count <= 10) CurrentSpeed = CurrentSpeed * AccelerationSpeed;
         }
 
-        float moveX = CurrentSpeed * Time.deltaTime;
-        float moveY = CurrentSpeed * Time.deltaTime; //방향을 위로 전환
+        float moveX = CurrentSpeed;
+        float moveY = CurrentSpeed; //방향을 위로 전환
 
         // 랜덤으로 좌우 방향 선택
         if (!isFloor)
@@ -174,8 +174,8 @@ public class Cube : MonoBehaviour
         isLeftWall = false;
         isRightWall = false;
         if (count <= 10) CurrentSpeed = CurrentSpeed * AccelerationSpeed;
-        float moveY = -1 * CurrentSpeed * Time.deltaTime;
-        float moveX = CurrentSpeed * Time.deltaTime;
+        float moveY = -1 * CurrentSpeed;
+        float moveX = CurrentSpeed;
 
         // 랜덤으로 좌우 방향 선택
         if (!isCeiling) // 처음 천장에 닿았을때 방향을 정해준 후 , 중복실행(방향x축방향을바꾸는) 방지
@@ -206,7 +206,7 @@ public class Cube : MonoBehaviour
             }
             else
             {
-                transform.Translate(moveX, moveY, 0);
+                rb.velocity = new Vector3(moveX, moveY, 0);
             }
             yield return null;
         }
@@ -220,8 +220,8 @@ public class Cube : MonoBehaviour
         isCeiling = false;
         if (count <= 10) CurrentSpeed = CurrentSpeed * AccelerationSpeed;
         //왼쪽 벽을 터치 =>  x값은 right방향(양수) 값으로 고정
-        float moveY = CurrentSpeed * Time.deltaTime;
-        float moveX = CurrentSpeed * Time.deltaTime;
+        float moveY = CurrentSpeed;
+        float moveX = CurrentSpeed;
         if (!isLeftWall)
         {
             switch (Random.Range(0, 2))
@@ -265,8 +265,8 @@ public class Cube : MonoBehaviour
         isCeiling = false;
         if (count <= 10) CurrentSpeed = CurrentSpeed * AccelerationSpeed;
         //오른쪽 벽을 터치 =>  x값은 Left방향(음수) 값으로 고정
-        float moveY = CurrentSpeed * Time.deltaTime * AccelerationSpeed;
-        float moveX = -1 * CurrentSpeed * Time.deltaTime * AccelerationSpeed;
+        float moveY = CurrentSpeed;
+        float moveX = -1 * CurrentSpeed;
         if (!isRightWall)
         {
             switch (Random.Range(0, 2))
@@ -281,11 +281,6 @@ public class Cube : MonoBehaviour
         }
         isRightWall = true;
         count++;
-        /*        while (isRightWall)
-                {
-                    transform.Translate(moveX, moveY, 0);
-                    yield return null;
-                }*/
         while (isRightWall)
         {
             // Time.timeScale이 0일 때는 즉시 종료
@@ -305,7 +300,6 @@ public class Cube : MonoBehaviour
         if (VeneziaManager.Instance.Quest_Img.sprite == sprite)
         {
             objectType = ObjectType.CorrectAnswer;
-            //quset_Exam = Quset_exam.Current;
         }
         else
         {

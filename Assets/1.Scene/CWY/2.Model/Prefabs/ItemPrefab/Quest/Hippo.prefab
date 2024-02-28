@@ -15,7 +15,7 @@ GameObject:
   - component: {fileID: 1079827597520798624}
   - component: {fileID: 1079827597520798628}
   m_Layer: 0
-  m_Name: hippo
+  m_Name: Hippo
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -113,10 +113,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   objectType: 0
-  StartSpeed: 10
+  StartSpeed: 20
   CurrentSpeed: 0
   SaveSpeed: 0
   AccelerationSpeed: 1.05
+  removeTime: 0
   isStart: 1
   sprite: {fileID: 21300000, guid: 780ee15c6a21ded4eb0115df4de3a5cf, type: 3}
   count: 0
