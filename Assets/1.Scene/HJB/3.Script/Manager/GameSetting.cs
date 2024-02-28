@@ -123,7 +123,10 @@ public abstract class GameSetting : MonoBehaviour
         //결과표 텍스트 출력
         ResultPrinter_UI();
     }
+    public virtual void TimeOut()
+    {
 
+    }
     public void ResultCanvas_UI()
     {
         resultCanvas_UI.SetActive(!resultCanvas_UI.activeSelf);

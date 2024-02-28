@@ -52,13 +52,15 @@ public class CrewSelectManager : MonoBehaviour
                 if(SelectedCrewIndex == i)
                 {
                     _crewStatusText[i].text = CrewButton._selectedCrew;
-                    _crewStatusBtn[i].GetComponent<Image>().color = CollectionsManager.Instance.SelectedBtnColor;
+                    //_crewStatusBtn[i].GetComponent<Image>().color = CollectionsManager.Instance.SelectedBtnColor;
+                    _crewStatusBtn[i].GetComponent<Image>().sprite = CollectionsManager.Instance.SelectedImg;
                 }
                 //보유한 대원은 "출동 대기" 텍스트
                 else
                 {
                     _crewStatusText[i].text = CrewButton._ownedCrew;
-                    _crewStatusBtn[i].GetComponent<Image>().color = CollectionsManager.Instance.DefaultBtnColor;
+                    //_crewStatusBtn[i].GetComponent<Image>().color = CollectionsManager.Instance.DefaultBtnColor;
+                    _crewStatusBtn[i].GetComponent<Image>().sprite = CollectionsManager.Instance.DefaultImg;
                 }
             }
             else
@@ -95,25 +97,19 @@ public class CrewSelectManager : MonoBehaviour
             //대원이 "출동 대기" -> "출동!" 으로, 이전 "출동!" -> "출동 대기" 상태로 변경
             if (_crewStatusText[selectIndex].text.Equals(CrewButton._ownedCrew))
             {
-                //"출동!" 찾기
-                for (int i = 0; i < _crewStatusText.Count; i++)
-                {
-                    // 보유중이고, "출동!" 상태인 탐험대원
-                    if (CollectionsManager.Instance.Collections.OwnedCrew[i] && _crewStatusText[i].text.Equals(CrewButton._selectedCrew))
-                    {
-                        //"출동!" -> "출동 대기" 
-                        _crewStatusText[i].text = CrewButton._ownedCrew;
-                        _crewStatusBtn[i].GetComponent<Image>().color =  CollectionsManager.Instance.DefaultBtnColor;
-                        break;
-                    }
-                }
+
+                //"출동!" 상태인 탐험대원 "출동!" -> "출동 대기" 
+                _crewStatusBtn[SelectedCrewIndex].GetComponent<Image>().sprite = CollectionsManager.Instance.DefaultImg;
+                _crewStatusText[SelectedCrewIndex].text = CrewButton._ownedCrew;
+                //"출동 대기" -> "출동!"
                 _crewStatusText[selectIndex].text = CrewButton._selectedCrew;
-                _crewStatusBtn[selectIndex].GetComponent<Image>().color = CollectionsManager.Instance.SelectedBtnColor;
+                _crewStatusBtn[selectIndex].GetComponent<Image>().sprite = CollectionsManager.Instance.SelectedImg;
+                //_crewStatusBtn[selectIndex].GetComponent<Image>().color = CollectionsManager.Instance.SelectedBtnColor;
 
                 //상세보기 버튼 변경
                 SelectedCrewIndex = selectIndex;
                 //선택된 대원 도감에 반영
-                CollectionsManager.Instance.Collections.SelectedCrew = selectIndex;
+                CollectionsManager.Instance.OnSelectPet(selectIndex);
             }
         }
     }
