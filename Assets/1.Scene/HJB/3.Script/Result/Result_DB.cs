@@ -20,6 +20,7 @@ public class Data_value
     public int Answers;
     public float PlayTime;
     public int TotalScore;
+    //º°Ãß°¡ 
     public Data_value(float reactionRate, int answersCount, int answers, float playTime, int totalScore)
     {
         ReactionRate = reactionRate;
