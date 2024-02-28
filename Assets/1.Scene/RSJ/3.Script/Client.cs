@@ -460,11 +460,11 @@ public class Client : MonoBehaviour
 
         // user_info table -> [0]:User_LicenseNumber, [1]:User_Charactor, [2]:User_Name, [3]:User_Profile, [4]:User_Coin
         // rank table - > [0]:User_LicenseNumber, [1]:User_Charactor, [2]:TotalTime, [3]:TotalScore
-        resultdb.playerName = CharactorData_Dic["user_info"][2];
-        resultdb.image = Convert.FromBase64String(CharactorData_Dic["user_info"][3]);
+        resultdb.playerName = CharactorData_Dic["user_info"][0];
+        resultdb.image = Convert.FromBase64String(CharactorData_Dic["user_info"][1]);
         resultdb.Day = "";
-        resultdb.TotalAnswers = Int32.Parse(CharactorData_Dic["rank"][3]);
-        resultdb.TotalTime = float.Parse(CharactorData_Dic["rank"][2]);
+        resultdb.TotalTime = float.Parse(CharactorData_Dic["rank"][0]);
+        resultdb.TotalAnswers = int.Parse(CharactorData_Dic["rank"][1]);
 
         string[] game_Names = { "venezia_kor", "venezia_eng", "venezia_chn", "calculation", "gugudan" };
         int[] levels = { 1, 2, 3 };
@@ -509,11 +509,11 @@ public class Client : MonoBehaviour
 
                     string game_TableName = $"{game_Names[i]}_{levelpart}_step{steps[k]}";
 
-                    float reactionRate = float.Parse(CharactorData_Dic[$"{game_TableName}"][2]);
-                    int answersCount = Int32.Parse(CharactorData_Dic[$"{game_TableName}"][3]);
-                    int answers = Int32.Parse(CharactorData_Dic[$"{game_TableName}"][4]);
-                    float playTime = float.Parse(CharactorData_Dic[$"{game_TableName}"][5]);
-                    int totalScore = Int32.Parse(CharactorData_Dic[$"{game_TableName}"][6]);
+                    float reactionRate = float.Parse(CharactorData_Dic[$"{game_TableName}"][0]);
+                    int answersCount = Int32.Parse(CharactorData_Dic[$"{game_TableName}"][1]);
+                    int answers = Int32.Parse(CharactorData_Dic[$"{game_TableName}"][2]);
+                    float playTime = float.Parse(CharactorData_Dic[$"{game_TableName}"][3]);
+                    int totalScore = Int32.Parse(CharactorData_Dic[$"{game_TableName}"][4]);
 
                     Data_value datavalue = new Data_value(reactionRate, answersCount, answers, playTime, totalScore);
 
