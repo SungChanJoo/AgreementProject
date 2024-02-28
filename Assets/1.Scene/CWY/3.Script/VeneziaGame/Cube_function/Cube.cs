@@ -67,19 +67,9 @@ public class Cube : MonoBehaviour
         {
             Cube_StartMove_();
         }
-        //Translate로 움직이기 때문에 가끔 물리판정이 무시되어 벽을 뚫는경우를 고려
-        if (gameObject.transform.position.x >= ObjectPooling.Instance.MaxDistance || gameObject.transform.position.x <= -ObjectPooling.Instance.MaxDistance)
-        {
-            gameObject.transform.position = ObjectPooling.Instance.transform.position;
-            StartSpeed = CurrentSpeed;
-            isStart = true;
-        }
-
         JudgeCubeObjType();
         GameOver();
         DestoryCube();
-        print(rb.velocity);
-        print(CurrentSpeed);
     }
     private void OnTriggerEnter(Collider other)
     {

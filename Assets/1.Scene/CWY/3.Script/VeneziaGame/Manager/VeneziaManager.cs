@@ -23,6 +23,7 @@ public class VeneziaManager : GameSetting
     //게임을 진행하면서 정답을 판정해주고, 정답란에 표기해줄 ui를 갈아끼워줄 역할 을 수행 할 것.
 
     [SerializeField] private GameObject gameover; // 테스트용 게임오버 이미지
+    [SerializeField] private GameObject CubeParent;
 
     public bool isGameover = false;
 
@@ -75,8 +76,6 @@ public class VeneziaManager : GameSetting
             Destroy(gameObject);
             return;
         }
-
-
     }
 
     private void StartSet()
@@ -118,6 +117,10 @@ public class VeneziaManager : GameSetting
         //시간 시작 
         StartTime();
         ObjectPooling.Instance.StartCubePooling_co();
+
+        
+
+
     }
     private void Update()
     {
@@ -127,12 +130,15 @@ public class VeneziaManager : GameSetting
         {
             GameOver();
         }
+
+
+        print(totalReactionTime);
     }
     //오브젝트 클릭시 입력처리
     //Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Began > 터치입력
     private void Click_Obj()
     {
-        totalReactionTime += Time.deltaTime; // 반응속도 측정
+        CheckCubeTypes();
         if (Input.GetMouseButtonDown(0))
         {
             Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
@@ -219,6 +225,7 @@ public class VeneziaManager : GameSetting
         TimeSlider.Instance.TimeStop = false;
 
     }
+    #region Level설정
     protected override void Level_1(int step)
     {
         QuestRange = 5;
@@ -286,8 +293,9 @@ public class VeneziaManager : GameSetting
                 break;
         }
     }
+    #endregion
 
-
+    #region Quest설정
     public void DisplayRandomQuest()
     {
         if (QuestCount == 0)
@@ -337,21 +345,6 @@ public class VeneziaManager : GameSetting
         }
         return selectedQuest;
     }
-    private void GameOver()
-    {
-        TimeSlider.Instance.startTime = 0;
-        isGameover = true;
-        totalQuestions = ClickCount;
-        ReactionTime = trueReactionTime / CorrectAnswerCount;
-        //반응속도 할당
-        reactionRate = ReactionTime;
-        answersCount = CorrectAnswerCount;
-        //정답률 계산
-        AnswerRate();
-        //결과표 출력
-        EndGame();
-    }
-
     private void Set_QuestCount()
     {
         switch (timeSet)
@@ -372,6 +365,22 @@ public class VeneziaManager : GameSetting
                 break;
         }
     }
+    #endregion
+    private void GameOver()
+    {
+        TimeSlider.Instance.startTime = 0;
+        isGameover = true;
+        totalQuestions = ClickCount;
+        ReactionTime = trueReactionTime / CorrectAnswerCount;
+        //반응속도 할당
+        reactionRate = ReactionTime;
+        answersCount = CorrectAnswerCount;
+        //정답률 계산
+        AnswerRate();
+        //결과표 출력
+        EndGame();
+    }
+
     private void AnswerRate()
     {
         if (CorrectAnswerCount == 0)
@@ -388,6 +397,19 @@ public class VeneziaManager : GameSetting
         {
             StopCoroutine(ObjectPooling.Instance.CubePooling);
             ObjectPooling.Instance.ReStartCubePooling_co();
+        }
+    }
+
+
+    private void CheckCubeTypes()
+    {
+
+        for (int i = 0; i < QuestRange; i++)
+        {
+            if(CubeParent.transform.GetChild(i).GetComponent<Cube>().objectType == ObjectType.CorrectAnswer && CubeParent.transform.GetChild(i).gameObject.activeSelf)
+            {
+                totalReactionTime += Time.deltaTime;
+            }
         }
     }
 }

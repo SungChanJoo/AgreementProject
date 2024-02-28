@@ -769,6 +769,40 @@ Transform:
   m_Father: {fileID: 694020506}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &299114680
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 299114681}
+  m_Layer: 0
+  m_Name: Pooling
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &299114681
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 299114680}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 788314112}
+  - {fileID: 577192753}
+  - {fileID: 1774103092}
+  m_Father: {fileID: 0}
+  m_RootOrder: 2
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &363235889
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1203,7 +1237,7 @@ GameObject:
   m_Component:
   - component: {fileID: 577192753}
   m_Layer: 0
-  m_Name: PoolingObject
+  m_Name: PoolingQuestObject
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1216,13 +1250,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 577192752}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 732, y: 1014, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 0}
-  m_RootOrder: 3
+  m_Father: {fileID: 299114681}
+  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &614524265
 PrefabInstance:
@@ -1689,7 +1723,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8522782059221032617, guid: 3042b6bfcba007c458a0a14a6d8383b3, type: 3}
       propertyPath: m_RootOrder
-      value: 8
+      value: 7
       objectReference: {fileID: 0}
     - target: {fileID: 8522782059221032617, guid: 3042b6bfcba007c458a0a14a6d8383b3, type: 3}
       propertyPath: m_AnchorMax.x
@@ -2210,13 +2244,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 788314111}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: -1, y: 57.4, z: -85}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 0}
-  m_RootOrder: 2
+  m_Father: {fileID: 299114681}
+  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &788314113
 MonoBehaviour:
@@ -2252,7 +2286,8 @@ MonoBehaviour:
   - {fileID: 1079827597520798626, guid: 723906ca41418984a90628f629286c46, type: 3}
   - {fileID: 1079827597520798626, guid: 6298f8856c104b14984c1179d96763ee, type: 3}
   Pool_Position: {fileID: 788314112}
-  ParentObject: {fileID: 577192753}
+  CubeParentObject: {fileID: 577192753}
+  ItemParentObject: {fileID: 1774103092}
   MeteorPrefab: {fileID: 371837130864099498, guid: 341d2eb32cfd00e45a350a399d1fbadf, type: 3}
   PausePrefab: {fileID: 3133072286338926989, guid: 2d81f266957498b4a9cb41ddefa9390e, type: 3}
   CubeCount: 1
@@ -2261,7 +2296,7 @@ MonoBehaviour:
   MeteorPool: []
   PausePool: []
   MaxDistance: 350
-  cool: 1
+  cool: 3
 --- !u!1 &935920901
 GameObject:
   m_ObjectHideFlags: 0
@@ -2368,7 +2403,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 5
+  m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &979645159
 PrefabInstance:
@@ -3234,7 +3269,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 7
+  m_RootOrder: 6
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1566866589
 MonoBehaviour:
@@ -3275,6 +3310,7 @@ MonoBehaviour:
   result_Printer: {fileID: 756554489}
   resultCanvas_UI: {fileID: 756554488}
   gameover: {fileID: 1249587734}
+  CubeParent: {fileID: 577192752}
   isGameover: 0
   Quest_Img: {fileID: 240970841}
   Quest_text: {fileID: 1885517469}
@@ -3348,7 +3384,7 @@ Transform:
   - {fileID: 614524266}
   - {fileID: 1000104749}
   m_Father: {fileID: 0}
-  m_RootOrder: 9
+  m_RootOrder: 8
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1593131793
 GameObject:
@@ -3462,7 +3498,7 @@ Transform:
   - {fileID: 543450653521063784}
   - {fileID: 722810013}
   m_Father: {fileID: 0}
-  m_RootOrder: 6
+  m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1709339468
 GameObject:
@@ -3502,6 +3538,37 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!1 &1774103091
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1774103092}
+  m_Layer: 0
+  m_Name: PoolingItemObject
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1774103092
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1774103091}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 732, y: 1014, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 299114681}
+  m_RootOrder: 2
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &1780936393
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -4035,7 +4102,7 @@ RectTransform:
   - {fileID: 1709339469}
   - {fileID: 1249587735}
   m_Father: {fileID: 0}
-  m_RootOrder: 4
+  m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}

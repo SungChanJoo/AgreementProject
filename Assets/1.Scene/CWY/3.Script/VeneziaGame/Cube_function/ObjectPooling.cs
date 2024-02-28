@@ -10,7 +10,8 @@ public class ObjectPooling : MonoBehaviour
 
     [SerializeField] private GameObject[] CubePrefab; //풀링할 정답 & 오답 큐브 프리팹
     [SerializeField] private Transform Pool_Position; //풀의 위치
-    [SerializeField] private Transform ParentObject; // 풀링된 오브젝트를 저장할 더미오브젝트
+    [SerializeField] private Transform CubeParentObject; // 풀링된 오브젝트를 저장할 더미오브젝트
+    [SerializeField] private Transform ItemParentObject; // 풀링된 오브젝트를 저장할 더미오브젝트
 
 
     [SerializeField] private GameObject MeteorPrefab; //아이템 풀링 해줄 프리팹
@@ -43,18 +44,12 @@ public class ObjectPooling : MonoBehaviour
             Destroy(gameObject);
         }
         #endregion
-
-        #region Object Pooling
-
     }
 
     private void Start()
     {
         CreateItem();
         //아이템 프리팹 
-
-
-        #endregion
         //StartCoroutine(Cube_Co());
         StartCoroutine(Meteor_Co());
         StartCoroutine(Pause_Co());
@@ -143,7 +138,7 @@ public class ObjectPooling : MonoBehaviour
         {
             GameObject item = Instantiate(MeteorPrefab); // 해당 인덱스의 프리팹을 인스턴스화
             item.SetActive(false); // 활성화하지 않음
-            item.transform.SetParent(ParentObject); // 풀 위치에 부모 설정
+            item.transform.SetParent(ItemParentObject); // 풀 위치에 부모 설정
             MeteorPool.Add(item); // 아이템 풀 리스트에 추가
         }
         //일시정지 
@@ -151,7 +146,7 @@ public class ObjectPooling : MonoBehaviour
         {
             GameObject item = Instantiate(PausePrefab); // 해당 인덱스의 프리팹을 인스턴스화
             item.SetActive(false); // 활성화하지 않음
-            item.transform.SetParent(ParentObject); // 풀 위치에 부모 설정
+            item.transform.SetParent(ItemParentObject); // 풀 위치에 부모 설정
             PausePool.Add(item); // 아이템 풀 리스트에 추가
         }
     }
@@ -165,7 +160,7 @@ public class ObjectPooling : MonoBehaviour
             {
                 GameObject QuestPrefab = Instantiate(CubePrefab[i]); //풀링할 오브잭트 생성
                 QuestPrefab.SetActive(false);
-                QuestPrefab.transform.SetParent(ParentObject);
+                QuestPrefab.transform.SetParent(CubeParentObject);
                 cubePool.Add(QuestPrefab);
             }
         }
