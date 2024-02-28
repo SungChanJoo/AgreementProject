@@ -5,7 +5,7 @@ using UnityEngine;
 public class DataBase : MonoBehaviour
 {
     public static DataBase Instance = null;
-    Player_DB playerInfo;
+    public Player_DB playerInfo;
     private void Awake()
     {
         if (Instance == null)
@@ -19,9 +19,18 @@ public class DataBase : MonoBehaviour
         }
     }
 
-    private void  PlayerDataLoad()
+    public void PlayerDataLoad()
     {
-        playerInfo = Client.instance.AppStart_LoadAllDataFromDB();
+        try
+        {
+            //플레이어 정보 불러오기
+            playerInfo = Client.instance.AppStart_LoadAllDataFromDB();        
+
+        }
+        catch (System.Exception)
+        {
+            Debug.Log("DB에서 플레이어 데이터를 불러오지 못했습니다.");
+        }
     }
 
     

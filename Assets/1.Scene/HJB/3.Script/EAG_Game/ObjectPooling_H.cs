@@ -149,11 +149,11 @@ public class ObjectPooling_H : MonoBehaviour
         
         if (movingCube.result.Equals(answer))
         {
+            answer_count++;
             waitTime = 0;
             //정답오브젝트의 반응속도를 담기
             reactionList.Add(movingCube.reactionRate);
             Next_Result();
-            answer_count++;
         }
         else
         {
