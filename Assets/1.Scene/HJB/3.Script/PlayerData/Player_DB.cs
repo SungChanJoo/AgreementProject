@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 
 
-public class Result_DB
+public class Player_DB
 {
     public string playerName;
     public byte[] image;
@@ -20,14 +20,16 @@ public class Data_value
     public int Answers;
     public float PlayTime;
     public int TotalScore;
+    public int StarCount;
     //º°Ãß°¡ 
-    public Data_value(float reactionRate, int answersCount, int answers, float playTime, int totalScore)
+    public Data_value(float reactionRate, int answersCount, int answers, float playTime, int totalScore,int starcount)
     {
         ReactionRate = reactionRate;
         AnswersCount = answersCount;
         Answers = answers;
         PlayTime = playTime;
         TotalScore = totalScore;
+        StarCount = starcount;
     }
 }
 

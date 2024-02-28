@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [System.Serializable]
-public class Result_Data
+public class Player_Data
 {
     public Game_Type Game_type;
 

@@ -458,9 +458,9 @@ public class Client : MonoBehaviour
     */
 
     // 앱 시작시 모든 데이터 Load
-    public Result_DB AppStart_LoadAllDataFromDB()
+    public Player_DB AppStart_LoadAllDataFromDB()
     {
-        Result_DB resultdb = new Result_DB();
+        Player_DB resultdb = new Player_DB();
 
         // 컬럼순
         // user_info table -> [0]:User_LicenseNumber, [1]:User_Charactor, [2]:User_Name, [3]:User_Profile, [4]:User_Coin
@@ -523,8 +523,9 @@ public class Client : MonoBehaviour
                     int answers = Int32.Parse(CharactorData_Dic[$"{game_TableName}"][2]);
                     float playTime = float.Parse(CharactorData_Dic[$"{game_TableName}"][3]);
                     int totalScore = Int32.Parse(CharactorData_Dic[$"{game_TableName}"][4]);
+                    int starCount = Int32.Parse(CharactorData_Dic[$"{game_TableName}"][5]);
 
-                    Data_value datavalue = new Data_value(reactionRate, answersCount, answers, playTime, totalScore);
+                    Data_value datavalue = new Data_value(reactionRate, answersCount, answers, playTime, totalScore,starCount);
 
                     resultdb.Data.Add((game_type, j, k), datavalue);
                 }
@@ -535,7 +536,7 @@ public class Client : MonoBehaviour
     }
 
     // Charactor 생성시, 사용중인 Charactor Data Save
-    public void CreateCharactor_SaveCharactorDataToDB(Result_DB resultdb)
+    public void CreateCharactor_SaveCharactorDataToDB(Player_DB resultdb)
     {
         string requestData = $"[Save]CharactorData";
 
@@ -543,9 +544,9 @@ public class Client : MonoBehaviour
     }
 
     // Charactor 생성 Load (새로 생성한 Charatror Data)
-    public Result_DB CreateCharactor_LoadCharactorDataFromDB()
+    public Player_DB CreateCharactor_LoadCharactorDataFromDB()
     {
-        Result_DB resultdb = new Result_DB();
+        Player_DB resultdb = new Player_DB();
 
         return resultdb;
     }
@@ -589,7 +590,7 @@ public class Client : MonoBehaviour
     }
 
     // 재백이가 만든 Result_Data를 매개변수로 받아서 DB에 저장하는 메서드(server에 요청 -> RequestServer)
-    public void AppGame_SaveResultDataToDB(Result_DB resultdata, Game_Type game_type, int level, int step)
+    public void AppGame_SaveResultDataToDB(Player_DB resultdata, Game_Type game_type, int level, int step)
     {
         // requestData = RequestName[0]/User_Licensenumber[1]/User_Charactor[2]/ReactionRate[3]/.../StarPoint[8]
         string requestData;
@@ -658,8 +659,8 @@ public class Client : MonoBehaviour
         Game_Type game_Type = Game_Type.A;
         int level = 1;
         int step = 2;
-        Result_DB result_DB = new Result_DB();
-        Data_value data_Value = new Data_value(234.21f, 23, 12, 22.44f, 18000);
+        Player_DB result_DB = new Player_DB();
+        Data_value data_Value = new Data_value(234.21f, 23, 12, 22.44f, 18000,3);
         //Reult_DB가 Null일 때 처리
         if (!result_DB.Data.ContainsKey((game_Type, level, step)))
         {

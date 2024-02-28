@@ -13,7 +13,7 @@ public class Result_Printer : MonoBehaviour
     [SerializeField] private TextMeshProUGUI totalScore;
 
 
-    public void ShowText(Result_Data data,Game_Type game_Type)
+    public void ShowText(Player_Data data,Game_Type game_Type)
     {
 
         reactionRate.text = data.ReactionRate.ToString("F2");        

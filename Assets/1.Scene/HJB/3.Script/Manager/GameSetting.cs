@@ -27,10 +27,12 @@ public abstract class GameSetting : MonoBehaviour
     [HideInInspector] public int totalQuestions;
     [HideInInspector] public int totalScore;
     [HideInInspector] public float remainingTime;
+    [HideInInspector] public int starcount;
+
 
     [SerializeField] private GameObject nextStep_Btn;
 
-    public Result_Data result_data;
+    public Player_Data result_data;
 
     public Result_Printer result_Printer;
 
@@ -91,10 +93,10 @@ public abstract class GameSetting : MonoBehaviour
                 Level_3(step);
                 break;
         }
-        Result_DB sdf = new Result_DB();
+        Player_DB sdf = new Player_DB();
         for (int i = 0; i < level; i++)
         {
-            Data_value asdf = new(reactionRate, answersCount, answers, playTime, totalScore);
+            Data_value asdf = new(reactionRate, answersCount, answers, playTime, totalScore , starcount);
             sdf.Data.Add((game_Type, level, step), asdf);
         }
     }
@@ -169,8 +171,8 @@ public abstract class GameSetting : MonoBehaviour
     private IEnumerator UpdateDatabaseFromData()
     {
         //string day = System.DateTime.Now.ToString("dd-MM-yy");
-        Result_DB result_DB = new Result_DB();
-        Data_value data_Value = new Data_value(reactionRate, answersCount, answers, playTime, totalScore);
+        Player_DB result_DB = new Player_DB();
+        Data_value data_Value = new Data_value(reactionRate, answersCount, answers, playTime, totalScore,starcount);
         //Reult_DB가 Null일 때 처리
         if (!result_DB.Data.ContainsKey((game_Type, level, step)))
         {
