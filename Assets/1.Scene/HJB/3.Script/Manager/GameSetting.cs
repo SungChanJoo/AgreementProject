@@ -52,12 +52,9 @@ public abstract class GameSetting : MonoBehaviour
         //선택한 레벨, 스텝, 시간 값 초기 설정
         game_Type = (Game_Type)SceneManager.GetActiveScene().buildIndex - 2;
         step = StepManager.Instance.CurrentStep;
-        level = StepManager.Instance.CurrentLevel;
-        print(step);
-        timeSet = StepManager.Instance.CurrentTime;
-        print("1");
+        level = StepManager.Instance.CurrentLevel;        
+        timeSet = StepManager.Instance.CurrentTime;        
         TimeSlider.Instance.startTime = timeSet;
-        print("2");
         TimeSlider.Instance.duration = timeSet;
         //로직에 의한 시작
         SplitLevelAndStep();
@@ -92,13 +89,7 @@ public abstract class GameSetting : MonoBehaviour
             case 3:
                 Level_3(step);
                 break;
-        }
-        Player_DB sdf = new Player_DB();
-        for (int i = 0; i < level; i++)
-        {
-            Data_value asdf = new(reactionRate, answersCount, answers, playTime, totalScore , starcount);
-            sdf.Data.Add((game_Type, level, step), asdf);
-        }
+        }        
     }
     protected abstract void Level_1(int step);
     protected abstract void Level_2(int step);
@@ -125,10 +116,7 @@ public abstract class GameSetting : MonoBehaviour
         //결과표 텍스트 출력
         ResultPrinter_UI();
     }
-    public virtual void TimeOut()
-    {
-
-    }
+    
     public void ResultCanvas_UI()
     {
         resultCanvas_UI.SetActive(!resultCanvas_UI.activeSelf);
@@ -171,22 +159,20 @@ public abstract class GameSetting : MonoBehaviour
     private IEnumerator UpdateDatabaseFromData()
     {
         //string day = System.DateTime.Now.ToString("dd-MM-yy");
-        Player_DB result_DB = new Player_DB();
-        Data_value data_Value = new Data_value(reactionRate, answersCount, answers, playTime, totalScore,starcount);
-        //Reult_DB가 Null일 때 처리
-        if (!result_DB.Data.ContainsKey((game_Type, level, step)))
+        Player_DB db = DataBase.Instance.playerInfo;
+        Data_value data_Value = new Data_value(reactionRate, answersCount, answers, playTime, totalScore,starcount);        
+        
+        //만약 totalScore가 DB에 있는 점수보다 크다면 다시 할당
+        if (db.Data[(game_Type, level, step)].TotalScore < totalScore)
         {
-            result_DB.Data.Add((game_Type, level, step), data_Value);            
+            db.Data[(game_Type, level, step)] = data_Value;
+            Client.instance.AppGame_SaveResultDataToDB(db, game_Type,level,step);
         }
         else
         {
-            //만약 totalScore가 DB에 있는 점수보다 크다면 다시 할당
-            if (result_DB.Data[(game_Type, level, step)].TotalScore < totalScore)
-            {
-                result_DB.Data[(game_Type, level, step)] = data_Value;
-            }
+            Debug.Log("최종점수가 DB에 있는 점수보다 낮아서 저장안함 ");
         }
-        Client.instance.AppGame_SaveResultDataToDB(result_DB,game_Type,level,step);
+        
         yield return null;
     }
     public void Setting_UI()
