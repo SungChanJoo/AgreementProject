@@ -30,13 +30,17 @@ public class Cube : MonoBehaviour
 
     [SerializeField] private bool isStart;
     [SerializeField] private Sprite sprite;
+    private Rigidbody rb;
     private bool isFloor = false;
     private bool isLeftWall = false;
     private bool isRightWall = false;
     private bool isCeiling = false;
 
     public int count = 0;
-
+    private void Awake()
+    {
+        TryGetComponent(out rb);
+    }
     private void OnEnable()
     {
         isStart = true;
@@ -44,7 +48,7 @@ public class Cube : MonoBehaviour
 
     private void Start()
     {
-
+        
     }
 
     private void Update()
@@ -61,7 +65,7 @@ public class Cube : MonoBehaviour
         // if (gameObject.activeSelf) isStart = true;
         if (isStart && gameObject.activeSelf)
         {
-            Cube_StartMove();
+            Cube_StartMove_();
         }
         if (!isStart) StartSpeed = 0;
         //Translate로 움직이기 때문에 가끔 물리판정이 무시되어 벽을 뚫는경우를 고려
@@ -75,6 +79,7 @@ public class Cube : MonoBehaviour
         JudgeCubeObjType();
         GameOver();
         DestoryCube();
+        print(rb.velocity);
     }
     private void OnTriggerEnter(Collider other)
     {
@@ -103,10 +108,11 @@ public class Cube : MonoBehaviour
 
     //처음 시작 했을 때는 아래로 움직이게 
     //Todo : 기획팀 기획안 넘어오면 처음 시작했을때 움직이는 로직은 변경할 예정
-    private void Cube_StartMove()
+    private void Cube_StartMove_()
     {
-        float moveY = -1 * 15f * Time.deltaTime;
-        transform.Translate(0, moveY, 0);
+        // 오브젝트를 아래 방향으로 이동할 속도 설정
+        float moveSpeedY = -StartSpeed;
+        rb.velocity = new Vector3(0f, moveSpeedY, 0f);
     }
 
     //바닥에 닿았을 때 z축은 항상고정
@@ -128,8 +134,8 @@ public class Cube : MonoBehaviour
             if (count <= 10) CurrentSpeed = CurrentSpeed * AccelerationSpeed;
         }
 
-        float moveY = CurrentSpeed * Time.deltaTime;
         float moveX = CurrentSpeed * Time.deltaTime;
+        float moveY = CurrentSpeed * Time.deltaTime; //방향을 위로 전환
 
         // 랜덤으로 좌우 방향 선택
         if (!isFloor)
@@ -146,21 +152,16 @@ public class Cube : MonoBehaviour
         }
         isFloor = true;
         count++;
-        /*        while (isFloor)
-                {
-                    transform.Translate(moveX, moveY, 0);
-                    yield return null;
-                }*/
         while (isFloor)
         {
             // Time.timeScale이 0일 때는 즉시 종료
             if (Time.timeScale == 0)
             {
-                transform.Translate(0, 0, 0);
+                rb.velocity = Vector3.zero;
             }
             else
             {
-                transform.Translate(moveX, moveY, 0);
+                rb.velocity = new Vector3(moveX, moveY, 0);
             }
             yield return null;
         }
@@ -201,7 +202,7 @@ public class Cube : MonoBehaviour
             // Time.timeScale이 0일 때는 즉시 종료
             if (Time.timeScale == 0)
             {
-                transform.Translate(0, 0, 0);
+                rb.velocity = Vector3.zero;
             }
             else
             {
@@ -245,11 +246,11 @@ public class Cube : MonoBehaviour
             // Time.timeScale이 0일 때는 즉시 종료
             if (Time.timeScale == 0)
             {
-                transform.Translate(0, 0, 0);
+                rb.velocity = Vector3.zero;
             }
             else
             {
-                transform.Translate(moveX, moveY, 0);
+                rb.velocity = new Vector3(moveX, moveY, 0);
             }
             yield return null;
         }
@@ -290,11 +291,11 @@ public class Cube : MonoBehaviour
             // Time.timeScale이 0일 때는 즉시 종료
             if (Time.timeScale == 0)
             {
-                transform.Translate(0, 0, 0);
+                rb.velocity = Vector3.zero;
             }
             else
             {
-                transform.Translate(moveX, moveY, 0);
+                rb.velocity = new Vector3(moveX, moveY, 0);
             }
             yield return null;
         }
