@@ -1,11 +1,12 @@
 using System.Collections.Generic;
 
-
+[System.Serializable]
 public class Player_DB
 {
     public string playerName;
     public byte[] image;
     public string Day;
+    public string BirthDay;
     public int TotalAnswers;
     public float TotalTime;
     
@@ -13,6 +14,7 @@ public class Player_DB
         new Dictionary<(Game_Type, int, int), Data_value>();
     
 }
+[System.Serializable]
 public class Data_value
 {
     public float ReactionRate;
