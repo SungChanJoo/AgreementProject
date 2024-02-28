@@ -460,7 +460,7 @@ public class Client : MonoBehaviour
     // 앱 시작시 모든 데이터 Load
     public Player_DB AppStart_LoadAllDataFromDB()
     {
-        Player_DB resultdb = new Player_DB();
+        Player_DB playerDB = new Player_DB();
 
         // 컬럼순
         // user_info table -> [0]:User_LicenseNumber, [1]:User_Charactor, [2]:User_Name, [3]:User_Profile, [4]:User_Coin
@@ -469,11 +469,11 @@ public class Client : MonoBehaviour
         // CharactorData_Dic에 담긴 값
         // CharactorData_Dic["user_info"] -> [0]:name / [1]:profile / [2]:coin
         // CharactorData_Dic["rank"] -> [0]:TotalTime / [1]:TotalAnswers
-        resultdb.playerName = CharactorData_Dic["user_info"][0];
-        resultdb.image = Convert.FromBase64String(CharactorData_Dic["user_info"][1]);
-        resultdb.Day = "";
-        resultdb.TotalTime = float.Parse(CharactorData_Dic["rank"][0]);
-        resultdb.TotalAnswers = int.Parse(CharactorData_Dic["rank"][1]);
+        playerDB.playerName = CharactorData_Dic["user_info"][0];
+        playerDB.image = Convert.FromBase64String(CharactorData_Dic["user_info"][1]);
+        playerDB.Day = "";
+        playerDB.TotalTime = float.Parse(CharactorData_Dic["rank"][0]);
+        playerDB.TotalAnswers = int.Parse(CharactorData_Dic["rank"][1]);
 
         string[] game_Names = { "venezia_kor", "venezia_eng", "venezia_chn", "calculation", "gugudan" };
         int[] levels = { 1, 2, 3 };
@@ -527,12 +527,12 @@ public class Client : MonoBehaviour
 
                     Data_value datavalue = new Data_value(reactionRate, answersCount, answers, playTime, totalScore,starCount);
 
-                    resultdb.Data.Add((game_type, j, k), datavalue);
+                    playerDB.Data.Add((game_type, j, k), datavalue);
                 }
             }
         }
 
-        return resultdb;
+        return playerDB;
     }
 
     // Charactor 생성시, 사용중인 Charactor Data Save
@@ -645,8 +645,10 @@ public class Client : MonoBehaviour
     }
 
     // 앱 종료시 Charactor Data Save
-    public void AppExit_SaveCharactorDataToDB()
+    public void AppExit_SaveCharactorDataToDB(Player_DB playerdb)
     {
+
+
         string requestData = $"[Save]CharactorData";
 
         RequestToServer(requestData);
