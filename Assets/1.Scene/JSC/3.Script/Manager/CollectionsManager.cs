@@ -46,8 +46,9 @@ public class CollectionsManager : MonoBehaviour
     private List<TMP_Text> _crewStatusText;
     private List<GameObject> _crewStatusBtn;
     [SerializeField] private GameObject _alreadySeletedCrewUI;
-    [SerializeField] public Sprite SelectedImg;
-    [SerializeField] public Sprite DefaultImg;
+    [SerializeField] private PlayerMod_Toggle PMToggle;
+    public Sprite SelectedImg;
+    public Sprite DefaultImg;
 
     [Header("Purchase")]
     [SerializeField] private GameObject _purchaseWindow;
@@ -249,14 +250,13 @@ public class CollectionsManager : MonoBehaviour
     //전체 대원, 보유 대원 전환
     public void ToggleOwnedCrew()
     {
-        for(int i =0; i < CrewList.Count; i++)
+        for (int i =0; i < CrewList.Count; i++)
         {
-            //선택된대원이 아니고, 보유중인 대원이 아닐경우 게임오브젝트 활성화 -> 비활성화, 비활성화 -> 활성화
+            //전체 대원, 보유 대원 전환 게임오브젝트 활성화 -> 비활성화, 비활성화 -> 활성화
             if (!Collections.OwnedCrew[i])
             {
                 CrewList[i].SetActive(!CrewList[i].activeSelf);
             }
-
         }
     }
     //DB에서 탐험대원 콜렉션 불러오기
