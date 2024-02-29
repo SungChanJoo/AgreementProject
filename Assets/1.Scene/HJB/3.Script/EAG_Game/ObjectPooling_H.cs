@@ -44,13 +44,16 @@ public class ObjectPooling_H : MonoBehaviour
     private void Update()
     {
         Click_Obj();
-        TimeCheck();
+        //게임이 끝나지 않았다면
+        if (!timeOut)
+        {
+            TimeCheck();
+        }
     }   
     private void TimeCheck()
-    {
-        if (TimeSlider.Instance.slider.value<=0 && !timeOut)
-        {
-            timeOut = true;
+    {        
+        if (TimeSlider.Instance.slider.value<=0)
+        {            
             GameOver();
         }
         //문제를 못풀고 20초가 지났을 경우
@@ -82,6 +85,7 @@ public class ObjectPooling_H : MonoBehaviour
 
     public void GameOver()
     {
+        timeOut = true;
         aopManager.answersCount = answer_count;
         ReactionCalculation();
         AnswerRate();
@@ -90,7 +94,7 @@ public class ObjectPooling_H : MonoBehaviour
     private void CubeStart()
     {
         //준비된 문제가 끝났다면
-        if (problom_count == 0)
+        if (problom_count == 0&& !timeOut)
         {
             GameOver();
             return;
