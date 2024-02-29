@@ -112,7 +112,7 @@ public class VeneziaManager : GameSetting
         trueReactionTime = 0;
         CorrectAnswerCount = 0;
         ClickCount = 0;
-        ObjectPooling.Instance.CreateQuestPrefab(1); //Todo: 임시
+        ObjectPooling.Instance.CreateQuestPrefab(QuestRange); //Todo: 임시
         DisplayRandomQuest();
         //시간 시작 
         StartTime();

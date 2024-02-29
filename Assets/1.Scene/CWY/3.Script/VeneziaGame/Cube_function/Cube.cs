@@ -81,6 +81,10 @@ public class Cube : MonoBehaviour
             isLeftWall = false;
             isRightWall = false;
             isCeiling = false;
+            isDirFloorSelect = false;
+            isDirCelingSelect = false;
+            isDirLeftSelect = false;
+            isDirRightSelect = false;
         }
 
         // if (gameObject.activeSelf) isStart = true;
@@ -91,7 +95,6 @@ public class Cube : MonoBehaviour
         JudgeCubeObjType();
         GameOver();
         //DestoryCube();
-        print(count);
         ShootRaycasts();
     }
 
@@ -105,6 +108,8 @@ public class Cube : MonoBehaviour
         rb.velocity = new Vector3(0f, moveSpeedY, 0f);
     }
 
+
+    #region 코루틴 현재사용하지않음 임시저장
     //바닥에 닿았을 때 z축은 항상고정
     //x값(좌우) 랜덤으로 설정
     //y값은 항상 위쪽으로 
@@ -268,6 +273,8 @@ public class Cube : MonoBehaviour
         Start_Right = Cube_Touch_Ceiling();
         StartCoroutine(Start_Right);
     }
+
+    #endregion
     private void JudgeCubeObjType()
     {
         if (VeneziaManager.Instance.Quest_Img.sprite == sprite)
@@ -316,9 +323,10 @@ public class Cube : MonoBehaviour
     private void ShootRaycasts()
     {
         // 아래쪽 방향 레이캐스트
+        int layerMask = ~LayerMask.GetMask("Quest");
         float collideDistance = 13.5f;
         RaycastHit hitDown;
-        if (Physics.Raycast(transform.position, -Vector3.up, out hitDown))
+        if (Physics.Raycast(transform.position, -Vector3.up, out hitDown, Mathf.Infinity, layerMask))
         {
             // 레이캐스트가 충돌한 경우의 처리
             Debug.DrawLine(transform.position, hitDown.point, Color.green);
@@ -343,18 +351,19 @@ public class Cube : MonoBehaviour
                 if (!isDirFloorSelect)
                 {
                     isDirFloorSelect = true;
-                    moveX = Random.Range(-1f, 1f) * CurrentSpeed;
+                    float randomDir = Random.Range(0, 2) == 0 ? -1f : 1f;
+                    print(randomDir);
+                    moveX = randomDir * CurrentSpeed;
                 }
                 moveY = Mathf.Abs(CurrentSpeed); // y축 방향은 위로 설정
                 
                 rb.velocity = new Vector3(moveX, moveY, 0);
                 Debug.DrawLine(transform.position, hitDown.point, Color.green);
             }
-            Debug.Log("바닥 충돌 지점까지의 거리: " + hitDistance);
         }
         // 위쪽 방향 레이캐스트
         RaycastHit hitUp;
-        if (Physics.Raycast(transform.position, Vector3.up, out hitUp))
+        if (Physics.Raycast(transform.position, Vector3.up, out hitUp, Mathf.Infinity, layerMask))
         {
             Debug.DrawLine(transform.position, hitUp.point, Color.green);
             float hitDistance = hitUp.distance;
@@ -376,18 +385,19 @@ public class Cube : MonoBehaviour
                 if (!isDirCelingSelect)
                 {
                     isDirCelingSelect = true;
-                    moveX = Random.Range(-1f, 1f) * CurrentSpeed;
+                    float randomDir = Random.Range(0, 2) == 0 ? -1f : 1f;
+                    print(randomDir);
+                    moveX = randomDir * CurrentSpeed;
                 }
                 moveY = -Mathf.Abs(CurrentSpeed); // y축 방향은 위로 설정
                 rb.velocity = new Vector3(moveX, moveY, 0);
                 Debug.DrawLine(transform.position, hitUp.point, Color.green);
             }
-            Debug.Log("천장 충돌 지점까지의 거리: " + hitDistance);
         }
 
         // 왼쪽 방향 레이캐스트
         RaycastHit hitLeft;
-        if (Physics.Raycast(transform.position, -Vector3.right, out hitLeft))
+        if (Physics.Raycast(transform.position, -Vector3.right, out hitLeft, Mathf.Infinity, layerMask))
         {
             Debug.DrawLine(transform.position, hitLeft.point, Color.green);
             float hitDistance = hitLeft.distance;
@@ -409,18 +419,19 @@ public class Cube : MonoBehaviour
                 if (!isDirLeftSelect)
                 {
                     isDirLeftSelect = true;
-                    moveY = Random.Range(-1f, 1f) * CurrentSpeed;
+                    float randomDir = Random.Range(0, 2) == 0 ? -1f : 1f;
+                    print(randomDir);
+                    moveY = randomDir * CurrentSpeed;
                 }
                 moveX = Mathf.Abs(CurrentSpeed); // y축 방향은 위로 설정
                 rb.velocity = new Vector3(moveX, moveY, 0);
                 Debug.DrawLine(transform.position, hitLeft.point, Color.green);
             }
-            Debug.Log("왼벽 지점까지의 거리: " + hitDistance);
         }
 
         // 오른쪽 방향 레이캐스트
         RaycastHit hitRight;
-        if (Physics.Raycast(transform.position, Vector3.right, out hitRight))
+        if (Physics.Raycast(transform.position, Vector3.right, out hitRight, Mathf.Infinity, layerMask))
         {
             Debug.DrawLine(transform.position, hitRight.point, Color.green);
             float hitDistance = hitRight.distance;
@@ -435,20 +446,21 @@ public class Cube : MonoBehaviour
                 isDirCelingSelect = false;
                 isDirFloorSelect = false;
             }
-            if (isLeftWall) //바닥과 닿았기 때문에 Cube_Touch 실행.
+            if (isRightWall)
             {
                 Debug.DrawLine(transform.position, hitRight.point, Color.red);
                 // 좌우 방향을 랜덤으로 선택
                 if (!isDirRightSelect)
                 {
                     isDirRightSelect = true;
-                    moveY = Random.Range(-1f, 1f) * CurrentSpeed;
+                    float randomDir = Random.Range(0, 2) == 0 ? -1f : 1f;
+                    print(randomDir);
+                    moveY = randomDir * CurrentSpeed;
                 }
-                moveX = Mathf.Abs(CurrentSpeed); // y축 방향은 위로 설정
+                moveX = -Mathf.Abs(CurrentSpeed); // y축 방향은 위로 설정
                 rb.velocity = new Vector3(moveX, moveY, 0);
                 Debug.DrawLine(transform.position, hitRight.point, Color.green);
             }
-            Debug.Log("왼벽 지점까지의 거리: " + hitDistance);
         }
     }
 
