@@ -112,7 +112,7 @@ public class VeneziaManager : GameSetting
         trueReactionTime = 0;
         CorrectAnswerCount = 0;
         ClickCount = 0;
-        ObjectPooling.Instance.CreateQuestPrefab(QuestRange);
+        ObjectPooling.Instance.CreateQuestPrefab(QuestRange); //Todo: 임시
         DisplayRandomQuest();
         //시간 시작 
         StartTime();
@@ -126,19 +126,16 @@ public class VeneziaManager : GameSetting
     {
         //  GameStop();
         Click_Obj();
-        if (TimeSlider.Instance.startTime < 0 && !isGameover)
+        if (TimeSlider.Instance.startTime <= 0)
         {
             GameOver();
         }
-
-
-        print(totalReactionTime);
     }
     //오브젝트 클릭시 입력처리
-    //Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Began > 터치입력
+    //|| (Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Began)
     private void Click_Obj()
     {
-        CheckCubeTypes();
+       // CheckCubeTypes();
         if (Input.GetMouseButtonDown(0))
         {
             Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
@@ -204,11 +201,6 @@ public class VeneziaManager : GameSetting
         }
 
 
-    }
-    private void OnDrawGizmos()
-    {
-        Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-        Debug.DrawRay(ray.origin, ray.direction * 100f, Color.red);
     }
 
     IEnumerator Pause_co()
@@ -368,6 +360,7 @@ public class VeneziaManager : GameSetting
     #endregion
     private void GameOver()
     {
+        if (isGameover) return;
         TimeSlider.Instance.startTime = 0;
         isGameover = true;
         totalQuestions = ClickCount;

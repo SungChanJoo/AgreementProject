@@ -123,6 +123,7 @@ public interface ITimeSlider
         if(startTime < 0)
         {
             startTime = 0;
+            slider.value = 0;
         }
     }
 
