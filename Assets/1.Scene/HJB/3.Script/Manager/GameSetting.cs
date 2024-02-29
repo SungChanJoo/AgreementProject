@@ -108,7 +108,7 @@ public abstract class GameSetting : MonoBehaviour
         }
         //남은시간
         remainingTime = TimeSlider.Instance.startTime;
-        playTime = TimeSlider.Instance.duration - remainingTime;
+        playTime = TimeSlider.Instance.PlayTime;
 
         //Result_Data에 게임결과 할당
         ScoreCalculation();
