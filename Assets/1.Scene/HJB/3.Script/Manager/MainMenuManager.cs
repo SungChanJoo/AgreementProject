@@ -17,7 +17,7 @@ public class MainMenuManager : MonoBehaviour
     [SerializeField] private GameObject ChartCanvas;
 
     public Game_Type game_Type;
-
+    
     private void Start()
     {
         SettingManager.Instance.EnableSettingBtn();
