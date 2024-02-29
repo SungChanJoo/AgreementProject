@@ -24,6 +24,9 @@ public class Server : MonoBehaviour
     // 클라이언트에게 라이센스번호를 부여하기위한 변수
     private int clientLicenseNumber;
 
+    // 서버-클라이언트 string으로 data 주고받을때 구분하기 위한 문자열
+    private const string separatorString = "E|";
+
     // Rank용 Timer 변수, 5분마다 실시간 갱신(DB데이터 불러와서) 그 후 클라이언트한테 쏴줘야함(UDP) todo
     private float rankTime = 300f;
 
@@ -187,15 +190,44 @@ public class Server : MonoBehaviour
                     break;
                 }
 
-                // 클라이언트로부터 요청메세지(이름)을 받음
-                //byte[] buffer = new byte[1024]; // 일반적으로 받는 버퍼사이즈 1024byte
-                byte[] buffer = new byte[327680];
-                int bytesRead = await stream.ReadAsync(buffer, 0, buffer.Length); // 메세지 받을때까지 대기
-                string receivedRequestData = Encoding.UTF8.GetString(buffer, 0, bytesRead); // 데이터 변환
-                List<string> dataList = receivedRequestData.Split('|', StringSplitOptions.RemoveEmptyEntries).ToList(); // 받은 data 분할해서 list에 담음
+                List<string> dataList = new List<string>();
+
+                while (true)
+                {
+                    // 클라이언트로부터 요청메세지(이름)을 받음
+                    //byte[] buffer = new byte[1024]; // 일반적으로 받는 버퍼사이즈 1024byte
+                    byte[] buffer = new byte[327680];
+                    int bytesRead = await stream.ReadAsync(buffer, 0, buffer.Length); // 메세지 받을때까지 대기
+                    string receivedRequestData = Encoding.UTF8.GetString(buffer, 0, bytesRead); // 데이터 변환
+
+
+                    if (receivedRequestData.Contains(separatorString)) // 임시로 E| 사용해서 구분, 캐릭터 모든 정보 db에 저장할때
+                    {
+                        Debug.Log("[Server] recieved data from client");
+                        Debug.Log($"[Server] recievedRequestData : {receivedRequestData}");
+                        List<string> tempAllocate = new List<string>();
+                        tempAllocate = receivedRequestData.Split(separatorString, StringSplitOptions.RemoveEmptyEntries).ToList(); // 받은 data 분할해서 list에 담음
+                        if (tempAllocate.Count > 0)
+                        {
+                            Debug.Log("[Server] tempAllocate have at least one index ");
+                            tempAllocate.ForEach(data => dataList.Add(data));
+                                    
+                        }
+                    }
+                    else
+                    {
+                        dataList = receivedRequestData.Split('|', StringSplitOptions.RemoveEmptyEntries).ToList(); // 받은 data 분할해서 list에 담음
+                    }
+
+                    if (receivedRequestData.Contains("Finish"))
+                    {
+                        Debug.Log("[Server] received data contains Finish from client");
+                        break;
+                    }
+                }
 
                 // 클라이언트에게 온 요청을 처리해서 클라이언트에게 회신
-                HandleRequestData(stream, dataList);
+                if (dataList.Count > 0) HandleRequestData(stream, dataList);
             }
         }
         catch (Exception e)
@@ -214,13 +246,24 @@ public class Server : MonoBehaviour
         string requestName = dataList[0];
         int clientLicenseNumber = 0;
         int clientCharactor = 0;
-
-        // 예외처리, index 1,2가 없으면 넘어감 
-        if (dataList.ElementAtOrDefault(1) != null && dataList.ElementAtOrDefault(2) != null) 
+        if (dataList[0].Contains('|'))
+        {
+            Debug.Log($"[Server] dataList[0] have '|' so check dataList[0], {dataList[0]}");
+            requestName = dataList[0].Split('|', StringSplitOptions.RemoveEmptyEntries)[0]; // 임시로 사용, playerdata save
+            Debug.Log($"[Server] Check requestName, dataList[0].Split('|', StringSplitOptions.RemoveEmptyEntries)[0] : {dataList[0].Split('|', StringSplitOptions.RemoveEmptyEntries)[0]}");
+        }
+        else if(dataList.ElementAtOrDefault(1) != null && dataList.ElementAtOrDefault(2) != null) // 예외처리, index 1,2가 없으면 넘어감 
         {
             clientLicenseNumber = Int32.Parse(dataList[1]);
             clientCharactor = Int32.Parse(dataList[2]);
         }
+
+        //// 예외처리, index 1,2가 없으면 넘어감 
+        //if (dataList.ElementAtOrDefault(1) != null && dataList.ElementAtOrDefault(2) != null) 
+        //{
+        //    clientLicenseNumber = Int32.Parse(dataList[1]);
+        //    clientCharactor = Int32.Parse(dataList[2]);
+        //}
 
         // Reply -> Client에게 보낼 List<string>, [0]은 requestName
         List<string> replyRequestData_List = new List<string>();
@@ -260,6 +303,11 @@ public class Server : MonoBehaviour
                 DBManager.instance.SaveCharactorProfile(dataList);
                 break;
             case "[Save]CharactorData":
+                Debug.Log($"[Server] Check come in charactordata, dataList[0] : {dataList[0]}");
+                for(int i = 0; i < dataList.Count; i++)
+                {
+                    Debug.Log($"[Server] Check charactor dataList{i}, : {dataList[i]}");
+                }
                 DBManager.instance.SaveCharactorData(dataList);
                 break;
             case "[Save]GameResult":

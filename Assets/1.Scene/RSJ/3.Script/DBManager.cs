@@ -6,6 +6,7 @@ using MySql.Data.MySqlClient;
 using UnityEngine.UI;
 using System;
 using System.Text;
+using System.Linq;
 
 // 싱글톤 쓰자
 // 클라이언트가 서버에 연결했을때? 클라이언트는 이미 자체적으로 IP와 Port를 알아서 서버에 연결함
@@ -110,7 +111,7 @@ public class DBManager : MonoBehaviour
         table = new TableName(); 
 
         // Table - Columns
-        userinfo_Columns = new string[]{ "User_LicenseNumber", "User_Charactor", "User_Name", "User_Profile", "User_Coin" };
+        userinfo_Columns = new string[]{ "User_LicenseNumber", "User_Charactor", "User_Name", "User_Profile", "User_Birthday", "User_TotalAnswers", "User_TotalTime", "User_Coin" };
         rank_Columns = new string[] { "User_LicenseNumber", "User_Charactor", "User_Profile", "User_Name", "TotalTime", "TotalScore" };
         achievement_Columns = new string[] { "User_LicenseNumber", "User_Charactor", "Something" };
         pet_Columns = new string[] { "User_LicenseNumber", "User_Charactor", "White" };
@@ -131,7 +132,7 @@ public class DBManager : MonoBehaviour
         int count = 0;
 
         // DB user_info 테이블에서 User_LicenseNumber가 몇개 있는지 체크
-        string checkUserInfo_Command = $"SELECT User_LicenseNumber FROM user_info";
+        string checkUserInfo_Command = $"SELECT `User_LicenseNumber` FROM `user_info`";
         MySqlCommand check_SqlCmd = new MySqlCommand(checkUserInfo_Command, connection);
         reader = check_SqlCmd.ExecuteReader();
 
@@ -147,24 +148,30 @@ public class DBManager : MonoBehaviour
 
         // user_info 변수
         string table_Name = "user_info";
-        string[] columns = { "User_LicenseNumber", "User_Charactor", "User_Name", "User_Profile", "User_Coin" };
+        string[] columns = { "User_LicenseNumber", "User_Charactor", "User_Name", "User_Profile", "User_Birthday", "User_TotalAnswers", "User_TotalTime", "User_Coin" };
         int clientLicenseNumber = clientLicenseNumber_Base + count;
         int user_Charactor = 1;
         string user_Name = "Guest";
         byte[] user_Profile = { 0x00};
+        string user_Birthday = "96.02.01";
+        int user_TotalAnswers = 0;
+        float user_TotalTime = 0f;
         int user_Coin = 0;
 
         // Binary Parameter
         //MySqlParameter binaryParameter = new MySqlParameter
 
         // 생성하는 쿼리문
-        string createAccount_Command = $"INSERT INTO {table_Name} ({columns[0]}, {columns[1]}, {columns[2]}, {columns[3]}, {columns[4]}) " +
-                                        $"VALUES (@clientLicenseNumber, @user_Charactor, @user_Name, @user_Profile, @user_Coin)"; // `(따옴표), '(백틱) 구분하기
+        string createAccount_Command = $"INSERT INTO {table_Name} ({columns[0]}, {columns[1]}, {columns[2]}, {columns[3]}, {columns[4]}, {columns[5]}, {columns[6]}, {columns[7]}) " +
+                                        $"VALUES (@clientLicenseNumber, @user_Charactor, @user_Name, @user_Profile, @user_Birthday, @user_TotalAnswers, @user_TotalTime, @user_Coin)"; // `(따옴표), '(백틱) 구분하기
         MySqlCommand insert_SqlCmd = new MySqlCommand(createAccount_Command, connection);
         insert_SqlCmd.Parameters.Add("@clientLicenseNumber", MySqlDbType.Int32).Value = clientLicenseNumber;
         insert_SqlCmd.Parameters.Add("@user_Charactor", MySqlDbType.Int32).Value = user_Charactor;
         insert_SqlCmd.Parameters.Add("@user_Name", MySqlDbType.VarChar).Value = user_Name;
         insert_SqlCmd.Parameters.Add("@user_Profile", MySqlDbType.MediumBlob).Value = user_Profile;
+        insert_SqlCmd.Parameters.Add("@user_Birthday", MySqlDbType.MediumBlob).Value = user_Birthday;
+        insert_SqlCmd.Parameters.Add("@user_TotalAnswers", MySqlDbType.MediumBlob).Value = user_TotalAnswers;
+        insert_SqlCmd.Parameters.Add("@user_TotalTime", MySqlDbType.MediumBlob).Value = user_TotalTime;
         insert_SqlCmd.Parameters.Add("@user_Coin", MySqlDbType.Int32).Value = user_Coin;
         
         insert_SqlCmd.ExecuteNonQuery(); // command.ExecuteNonQuery()은 DB에서 변경 작업을 수행하는 SQL 명령문을 실행하고, 영향을 받은 행의 수를 반환하는 메서드
@@ -384,7 +391,69 @@ public class DBManager : MonoBehaviour
     // DB에 캐릭터 데이터 저장 (캐릭터 변경 또는 게임 종료시)
     public void SaveCharactorData(List<string> dataList)
     {
+        Debug.Log("[DB] Come in save charactor data");
+        // dataList[0] : $"{requestName}|{clientLicenseNumber}|{clientCharactor}|"
+        // dataList[1] : $"{table.list[0]}|{playerdb.playerName}|{Convert.ToBase64String(playerdb.image)}|{playerdb.BirthDay}|{playerdb.TotalAnswers}|{playerdb.TotalTime}|";
+        // dataList[2~n-1] : $"{table.list[i]}|{reactionRate_List[i - 4]}|{answersCount_List[i - 4]}|{answers_List[i - 4]}|{playTime_List[i - 4]}|{totalScore_List[i - 4]}|{starCount_List[i - 4]}|}";
+        // dataList[n] : $"Finish"
 
+        for(int i = 0; i<dataList.Count; i++)
+        {
+            Debug.Log($"[DB] charactor dataList{i} : {dataList[i]}");
+        }
+        string update_Command;
+        MySqlCommand update_SqlCmd = new MySqlCommand();
+        update_SqlCmd.Connection = connection;
+        Debug.Log($"[DB] Check dataList[0].Split('|', StringSplitOptions.RemoveEmptyEntries)[1] : {Int32.Parse(dataList[0].Split('|', StringSplitOptions.RemoveEmptyEntries)[1])}");
+        Debug.Log($"[DB] Check dataList[0].Split('|', StringSplitOptions.RemoveEmptyEntries)[2] : {Int32.Parse(dataList[0].Split('|', StringSplitOptions.RemoveEmptyEntries)[2])}");
+        int clientLicenseNumber = Int32.Parse(dataList[0].Split('|', StringSplitOptions.RemoveEmptyEntries)[1]);
+        int clientCharactor = Int32.Parse(dataList[0].Split('|', StringSplitOptions.RemoveEmptyEntries)[2]);
+
+        //userinfo_Columns = new string[] { "User_LicenseNumber", "User_Charactor", "User_Name", "User_Profile", "User_Birthday", "User_TotalAnswers", "User_TotalTime", "User_Coin" };
+        //game_Columns = new string[] { "User_LicenseNumber", "User_Charactor", "ReactionRate", "AnswerCount", "AnswerRate", "Playtime", "TotalScore", "StarPoint" };
+
+        for(int i = 1; i < dataList.Count; i++)
+        {
+            List<string> tempAllocate = dataList[i].Split('|', StringSplitOptions.RemoveEmptyEntries).ToList();
+            if (tempAllocate.Contains("Finish")) break;
+
+            if (i == 1) // userinfo table
+            {
+                update_Command = $"UPDATE `{tempAllocate[0]}` SET ";
+                tempAllocate.RemoveAt(0);
+                for(int j = 2; j < userinfo_Columns.Length-1; j++) // 0,1 - license, charactor , todo 나중에 코인 playerdata에 추가되면 길이 원래대로 Length-1 -> Length
+                {
+                    if (j == 2) update_Command += $"`{userinfo_Columns[j]}` = '{tempAllocate[j - 2]}', "; // name, string
+                    else if(j == 3) update_Command += $"`{userinfo_Columns[j]}` = '{tempAllocate[j - 2]}', "; // profile, Base64 (MediumBlob)
+                    else if(j == 4) update_Command += $"`{userinfo_Columns[j]}` = '{tempAllocate[j - 2]}', "; // birthday, string
+                    else if (j == 5) update_Command += $"`{userinfo_Columns[j]}` = {Int32.Parse(tempAllocate[j - 2])}, "; // totalanswers, int
+                    else if (j == 6) update_Command += $"`{userinfo_Columns[j]}` = {float.Parse(tempAllocate[j - 2])} "; // totaltime, float
+                }
+                update_Command += $"WHERE `{userinfo_Columns[0]}` = {clientLicenseNumber} AND `{userinfo_Columns[1]}` = {clientCharactor};";
+            }
+            else // game table
+            {
+                update_Command = $"UPDATE `{tempAllocate[0]}` SET ";
+                tempAllocate.RemoveAt(0);
+                for (int j = 2; j < game_Columns.Length; j++) // 0,1 - license, charactor
+                {   
+                    if (j == 2) update_Command += $"`{game_Columns[j]}` = {float.Parse(tempAllocate[j - 2])}, "; //reactionrate, float
+                    else if(j == 3) update_Command += $"`{game_Columns[j]}` = {Int32.Parse(tempAllocate[j - 2])}, "; // answercount, int
+                    else if(j == 4) update_Command += $"`{game_Columns[j]}` = {Int32.Parse(tempAllocate[j - 2])}, "; // answerrate, int
+                    else if(j == 5) update_Command += $"`{game_Columns[j]}` = {float.Parse(tempAllocate[j - 2])}, "; // playtime, float
+                    else if(j == 6) update_Command += $"`{game_Columns[j]}` = {Int32.Parse(tempAllocate[j - 2])}, "; // totalscore, int
+                    else if(j == 7) update_Command += $"`{game_Columns[j]}` = {Int32.Parse(tempAllocate[j - 2])} "; // starpoint, int
+                }
+                update_Command += $"WHERE `{game_Columns[0]}` = {clientLicenseNumber} AND `{game_Columns[1]}` = {clientCharactor};";
+            }
+
+            Debug.Log($"[DB] update_Command : {update_Command}");
+            update_SqlCmd.CommandText = update_Command;
+            update_SqlCmd.ExecuteNonQuery();
+            Debug.Log("[DB] In progress save charactor data");
+        }
+
+        Debug.Log("[DB] Complete save charactor data");
     }
 
     // DB에 게임결과 저장
@@ -669,9 +738,12 @@ public class DBManager : MonoBehaviour
                                 string user_Name = reader.GetString("User_Name");
                                 // DB에서 MediumBlob 타입 데이터(Base64 형식으로 저장됨) string으로 가져오기
                                 string user_Profile = reader.GetString("User_Profile");
+                                string user_Birthday = reader.GetString("User_Birthday");
+                                string user_TotalAnswers = reader.GetInt32("User_TotalAnswers").ToString();
+                                string user_TotalTime = reader.GetFloat("User_TotalTime").ToString();
                                 string user_Coin = reader.GetInt32("User_Coin").ToString();
                                 // table 구분을 위해 맨 앞에 {table.list[i]} 추가
-                                return_TempData = $"{table.list[i]}|{user_Name}|{user_Profile}|{user_Coin}|{separatorString}"; 
+                                return_TempData = $"{table.list[i]}|{user_Name}|{user_Profile}|{user_Birthday}|{user_TotalAnswers}|{user_TotalTime}|{user_Coin}|{separatorString}"; 
                                 return_TableData.Add(return_TempData);
                                 break;
                             case "rank":
