@@ -13,7 +13,7 @@ using System.Linq;
 public class Client : MonoBehaviour
 {
     // IP, Port ∞Ì¡§µ 
-    [SerializeField] private string server_IP = "3.39.194.36"; // aws EC2 IP : 3.39.194.36
+    [SerializeField] private string server_IP = "43.201.77.212"; // aws EC2 IP : 43.201.77.212
     [SerializeField] private int server_Port = 2421;
 
     bool socketReady;
@@ -880,5 +880,6 @@ public class Client : MonoBehaviour
         //reader.Close();
         client.Close();
         socketReady = false;
+        Application.Quit();
     }
 }
