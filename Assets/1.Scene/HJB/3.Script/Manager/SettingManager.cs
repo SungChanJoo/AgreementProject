@@ -189,9 +189,18 @@ public class SettingManager : MonoBehaviour
 
         
     }
+    private void PlayerSaveData()
+    { 
+        //여기서 상재형 메서드 받아서 Save 할 것.(Player_DB형식)
+        //DataBase.Instance.PlayerCharacter[0];
+    }
+     
+
+
     //Application 종료 버튼
     public void ApplicationExit_Btn()
     {
+        
 #if UNITY_EDITOR
         UnityEditor.EditorApplication.isPlaying = false;
 #endif
