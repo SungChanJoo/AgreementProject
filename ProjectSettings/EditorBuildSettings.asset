@@ -21,15 +21,15 @@ EditorBuildSettings:
     path: Assets/1.Scene/CWY/1.Scene/GuGuDanGame_Solo_.unity
     guid: 30c2bf26a3e39274f9c290d472921295
   - enabled: 1
-    path: Assets/1.Scene/JSC/1.Scene/JSC_Test_EnterToMetaWorld.unity
-    guid: 0712ca4adf74e384d9ff48bb9f5dee7d
-  - enabled: 1
     path: Assets/1.Scene/JSC/1.Scene/JSC_Test_MetaWorld.unity
     guid: 2a179970b1c7b074f82c9d5d8c7d8a1c
-  - enabled: 1
+  - enabled: 0
+    path: Assets/1.Scene/JSC/1.Scene/JSC_Test_EnterToMetaWorld.unity
+    guid: 0712ca4adf74e384d9ff48bb9f5dee7d
+  - enabled: 0
     path: Assets/1.Scene/JSC/1.Scene/JSC_Test_Crew Collections.unity
     guid: 05d7099621dc59246b0f5dd3608e0eca
-  - enabled: 1
+  - enabled: 0
     path: Assets/1.Scene/RSJ/1.Scene/Server.unity
     guid: 8d4e3223c38b259408de5818b7197c88
   m_configObjects: {}

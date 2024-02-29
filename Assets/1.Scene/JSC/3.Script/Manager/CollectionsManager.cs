@@ -22,15 +22,6 @@ class CrewButton
 {
     public const string _selectedCrew = "출동!";
     public const string _ownedCrew = "출동 대기";
-    public const byte _selectedR = 83;
-    public const byte _selectedG = 88;
-    public const byte _selectedB = 101;
-    public const byte _defaultR = 126;
-    public const byte _defaultG = 163;
-    public const byte _defaultB = 255;
-    public const byte _deniedPurchaseR = 150;
-    public const byte _deniedPurchaseG = 150;
-    public const byte _deniedPurchaseB = 150;
 }
 
 //펫을 고르고 메타별에 입장을 관리하는 매니져
@@ -72,10 +63,6 @@ public class CollectionsManager : MonoBehaviour
     private GameObject _ModelSpace;
     private int _seletedDetailModel;
     private bool _isDrag = false;
-
-    public Color DefaultBtnColor = new Color32(CrewButton._defaultR, CrewButton._defaultG, CrewButton._defaultB, 255);
-    public Color SelectedBtnColor = new Color32(CrewButton._selectedR, CrewButton._selectedG, CrewButton._selectedB, 255);
-    public Color DeniedPurchaseBtnColor = new Color32(CrewButton._deniedPurchaseR, CrewButton._deniedPurchaseG, CrewButton._deniedPurchaseB, 255);
 
     public Action OnCheckPurchasePossibility; //돈 갱신될때마다 호출
 
@@ -252,11 +239,9 @@ public class CollectionsManager : MonoBehaviour
     {
         for (int i =0; i < CrewList.Count; i++)
         {
-            //전체 대원, 보유 대원 전환 게임오브젝트 활성화 -> 비활성화, 비활성화 -> 활성화
-            if (!Collections.OwnedCrew[i])
-            {
-                CrewList[i].SetActive(!CrewList[i].activeSelf);
-            }
+            //전체 대원 활성화 -> 비활성화, 비활성화 -> 활성화
+            if (Collections.OwnedCrew[i]) continue; // , 보유 대원은 계속 활성화 상태
+            CrewList[i].SetActive(!CrewList[i].activeSelf);
         }
     }
     //DB에서 탐험대원 콜렉션 불러오기

@@ -1137,7 +1137,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8802732703962445868, guid: 1b2422397da10c74bbcf04a22f54b187, type: 3}
       propertyPath: m_LocalPosition.z
-      value: -2.3
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8802732703962445868, guid: 1b2422397da10c74bbcf04a22f54b187, type: 3}
       propertyPath: m_LocalRotation.w
@@ -1157,7 +1157,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8802732703962445868, guid: 1b2422397da10c74bbcf04a22f54b187, type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 0.24
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8802732703962445868, guid: 1b2422397da10c74bbcf04a22f54b187, type: 3}
       propertyPath: m_AnchoredPosition.y
@@ -1305,6 +1305,10 @@ PrefabInstance:
     - target: {fileID: 8808237330739313188, guid: e5763962cd57fc74ca3252c19a39c98d, type: 3}
       propertyPath: m_Name
       value: Queue UI Canvas
+      objectReference: {fileID: 0}
+    - target: {fileID: 8808237330739313188, guid: e5763962cd57fc74ca3252c19a39c98d, type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8859655870185036997, guid: e5763962cd57fc74ca3252c19a39c98d, type: 3}
       propertyPath: m_Name
@@ -1457,7 +1461,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6517531963482865471, guid: 6d51a8f4cc0061b419a3482507665575, type: 3}
       propertyPath: m_LocalPosition.z
-      value: -2.3
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6517531963482865471, guid: 6d51a8f4cc0061b419a3482507665575, type: 3}
       propertyPath: m_LocalRotation.w
@@ -1465,23 +1469,23 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6517531963482865471, guid: 6d51a8f4cc0061b419a3482507665575, type: 3}
       propertyPath: m_LocalRotation.x
-      value: -0
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6517531963482865471, guid: 6d51a8f4cc0061b419a3482507665575, type: 3}
       propertyPath: m_LocalRotation.y
-      value: -0
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6517531963482865471, guid: 6d51a8f4cc0061b419a3482507665575, type: 3}
       propertyPath: m_LocalRotation.z
-      value: -0
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6517531963482865471, guid: 6d51a8f4cc0061b419a3482507665575, type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 0.24
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6517531963482865471, guid: 6d51a8f4cc0061b419a3482507665575, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 0.9999999
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6517531963482865471, guid: 6d51a8f4cc0061b419a3482507665575, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
