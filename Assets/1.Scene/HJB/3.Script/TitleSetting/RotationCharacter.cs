@@ -6,7 +6,7 @@ public class RotationCharacter : MonoBehaviour
 {
     [SerializeField] private bool hold_Y = false;
     [SerializeField] private float SetRotation;
-    Vector3 rotation;    
+    Vector3 rotation;
     
 
     void Start()
