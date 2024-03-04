@@ -4,7 +4,11 @@ using UnityEngine;
 
 public class RotationCharacter : MonoBehaviour
 {
+    [SerializeField] private bool hold_Y = false;
+    [SerializeField] private float SetRotation;
     Vector3 rotation;    
+    
+
     void Start()
     {
         RandomRotaion();
@@ -16,7 +20,14 @@ public class RotationCharacter : MonoBehaviour
     }
     private void RandomRotaion()
     {
-        rotation = new Vector3(RandFloat(), RandFloat(), RandFloat());
+        if (hold_Y)
+        {
+            rotation = new Vector3(0, SetRotation, 0);
+        }
+        else
+        {
+            rotation = new Vector3(RandFloat(), RandFloat(), RandFloat());
+        }
     }
 
     float RandFloat()
