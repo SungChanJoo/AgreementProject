@@ -26,6 +26,7 @@ public class ObjectPooling_H : MonoBehaviour
     //Start 버튼 이벤트가 콜백되면 실행
     public void ObjectPooling()
     {
+        aopManager.isStop = false;
         //시간 흐르게
         TimeSlider.Instance.StartTime();
         TimeSlider.Instance.TimeStop = false;
@@ -42,18 +43,20 @@ public class ObjectPooling_H : MonoBehaviour
         CubeStart();
     }
     private void Update()
-    {
+    {        
         Click_Obj();
         //게임이 끝나지 않았다면
-        if (!timeOut)
+        if (!aopManager.isStop&&!timeOut&&!TimeSlider.Instance.TimeStop)
         {
             TimeCheck();
         }
     }   
     private void TimeCheck()
-    {        
+    {
+        Debug.Log("진입중");
         if (TimeSlider.Instance.slider.value<=0)
-        {            
+        {
+            timeOut = true;
             GameOver();
         }
         //문제를 못풀고 20초가 지났을 경우
@@ -85,7 +88,7 @@ public class ObjectPooling_H : MonoBehaviour
 
     public void GameOver()
     {
-        timeOut = true;
+        aopManager.isStop = true;
         aopManager.answersCount = answer_count;
         ReactionCalculation();
         AnswerRate();
@@ -94,7 +97,7 @@ public class ObjectPooling_H : MonoBehaviour
     private void CubeStart()
     {
         //준비된 문제가 끝났다면
-        if (problom_count == 0&& !timeOut)
+        if (problom_count == 0 && aopManager.isStop)
         {
             GameOver();
             return;

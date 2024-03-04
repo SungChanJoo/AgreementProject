@@ -40,6 +40,7 @@ public abstract class GameSetting : MonoBehaviour
 
     IEnumerator UpdateDatabaseFromData_co;
 
+    [HideInInspector] public bool isStop = true;
    
     private void Start()
     {
@@ -176,9 +177,21 @@ public abstract class GameSetting : MonoBehaviour
         yield return null;
     }
     public void Setting_UI()
-    {
+    {        
         SettingManager.Instance.EnableSettingBtn();
-        SettingManager.Instance.Setting_Btn();
+        if (isStop)
+        {   //게임 시작 전이라면 시간에 영향받지 않는 
+            SettingManager.Instance.NonTemporalSetting_Btn();
+        }
+        else
+        {
+            //게임 시작 후라면 시간 정지에 영향 주는 
+            SettingManager.Instance.Setting_Btn();
+        }       
+    }
+    public void Start_Btn()
+    {
+        SettingManager.Instance.Stop = false;
     }
     public void RestartGame()
     {
@@ -192,5 +205,7 @@ public abstract class GameSetting : MonoBehaviour
     {
         SceneManager.LoadScene("HJB_MainMenu");
     }
+    
+        
 
 }

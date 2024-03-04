@@ -16,7 +16,7 @@ public class SettingManager : MonoBehaviour
 {
 	public static SettingManager Instance = null;
     
-    [SerializeField] private GameObject setting_Canvas;
+    public GameObject setting_Canvas;
     [SerializeField] private GameObject InGameBtn_panel;
     [SerializeField] private GameObject ReQuestion_panel;        
     
@@ -28,6 +28,8 @@ public class SettingManager : MonoBehaviour
     [SerializeField] private Image[] MasterSlider_color;
     [SerializeField] private Image[] BgmSlider_color;
     [SerializeField] private Image[] SfxSlider_color;
+
+    public bool Stop = true;
     
     
     int count = 0;
@@ -44,8 +46,8 @@ public class SettingManager : MonoBehaviour
         {
             Destroy(gameObject);
         }        
-    }
-    
+    }    
+
     private IEnumerator Start()
     {        
         yield return StartCoroutine(AppSetPermission_Co());
@@ -104,13 +106,18 @@ public class SettingManager : MonoBehaviour
     }
     //환경설정 UI Off
     public void Setting_Btn()
-    {
-        if (TimeSlider.Instance != null)
+    {        
+        if (TimeSlider.Instance != null&&!Stop)
         {
             TimeSlider.Instance.TimeSliderControll();
         }
         setting_Canvas.SetActive(!setting_Canvas.activeSelf);
     }
+    public void NonTemporalSetting_Btn()
+    {
+        setting_Canvas.SetActive(!setting_Canvas.activeSelf);
+    }
+    
     public void MetaWorldSceneLoad_Btn()
     {
         SceneManager.LoadScene("JSC_Test_MetaWorld");
