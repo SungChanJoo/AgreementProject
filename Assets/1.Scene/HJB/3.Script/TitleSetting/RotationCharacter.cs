@@ -2,10 +2,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class RatationCharacter : MonoBehaviour
+public class RotationCharacter : MonoBehaviour
 {
-    Vector3 rotation;
-    // Start is called before the first frame update
+    Vector3 rotation;    
     void Start()
     {
         RandomRotaion();

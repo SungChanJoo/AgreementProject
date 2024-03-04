@@ -30,8 +30,7 @@ public class ObjectPooling : MonoBehaviour
     //메테오 , 프리즈 등 아이템 생성.
     public List<GameObject> MeteorPool = new List<GameObject>();
     public List<GameObject> PausePool = new List<GameObject>();
-    //큐브의 최대 반경거리 제한
-    public float MaxDistance;
+
     private void Awake()
     {
         #region Singleton 
@@ -49,8 +48,6 @@ public class ObjectPooling : MonoBehaviour
     private void Start()
     {
         CreateItem();
-        //아이템 프리팹 
-        //StartCoroutine(Cube_Co());
         StartCoroutine(Meteor_Co());
         StartCoroutine(Pause_Co());
     }
@@ -63,8 +60,8 @@ public class ObjectPooling : MonoBehaviour
     }
     public void ReStartCubePooling_co()
     {
-        CubePooling = Cube_Co();
-        StartCoroutine(ReStartCube_Co());
+        CubeRestartPooling = ReStartCube_Co();
+        StartCoroutine(CubeRestartPooling);
     }
     public IEnumerator Cube_Co()
     {
