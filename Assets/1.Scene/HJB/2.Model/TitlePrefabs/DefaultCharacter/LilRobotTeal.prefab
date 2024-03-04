@@ -450,7 +450,7 @@ SkinnedMeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 7cc0faed9611f6d45839983b6b2175d2, type: 2}
+  - {fileID: 2100000, guid: 83bb7b0a2d9567246b7164be80a88d82, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -502,8 +502,9 @@ GameObject:
   - component: {fileID: 7151539099117079767}
   - component: {fileID: 2600624820813443801}
   - component: {fileID: 165587507459896707}
+  - component: {fileID: -3090816647048009571}
   m_Layer: 0
-  m_Name: LilRobotBrown
+  m_Name: LilRobotTeal
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -571,6 +572,18 @@ Animation:
   m_PlayAutomatically: 1
   m_AnimatePhysics: 0
   m_CullingType: 0
+--- !u!114 &-3090816647048009571
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7010603943103720382}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ec1ee64c756125e44ad4361b210c485d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &7362037165064857210
 GameObject:
   m_ObjectHideFlags: 0
