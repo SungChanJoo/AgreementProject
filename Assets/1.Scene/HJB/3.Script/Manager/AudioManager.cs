@@ -47,6 +47,11 @@ public class AudioManager : MonoBehaviour
         BGMAudio.clip = bgmClip[idx];
         BGMAudio.Play();
     }
+    public void BGM_Stop()
+    {
+        if(BGMAudio.isPlaying)
+            BGMAudio.Stop();
+    }
     public void SliderControll(int num, bool check)
     {
         switch (num)

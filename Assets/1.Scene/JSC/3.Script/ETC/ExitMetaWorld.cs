@@ -11,6 +11,9 @@ public class ExitMetaWorld : MonoBehaviour
         NetworkClient.Disconnect();
         Destroy(FindObjectOfType<PetSwitchNetworkManager>().gameObject);
         Destroy(FindObjectOfType<CrewSelectManager>().gameObject);
+        if (AudioManager.Instance != null)
+            AudioManager.Instance.BGM_Play(0);
         SceneManager.LoadScene(sceneName);
+        
     }
 }

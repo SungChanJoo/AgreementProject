@@ -36,6 +36,9 @@ public class CrewSelectManager : MonoBehaviour
     public void LoadMetaWorld(string sceneName)
     {
         SceneManager.LoadScene(sceneName);
+        //메타별 입장시 노래 멈추기
+        if(AudioManager.Instance != null)
+           AudioManager.Instance.BGM_Stop();
     }
 
     public void OnViewSelectCrewUI()
