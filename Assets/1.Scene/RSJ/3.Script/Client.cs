@@ -44,6 +44,9 @@ public class Client : MonoBehaviour
     // timer
     private float transmissionTime = 1f;
 
+    // Handler
+    private IETCMethodHandler etcMethodHandler;
+
     public Client(NetworkStream _stream)
     {
         stream = _stream;
@@ -166,8 +169,8 @@ public class Client : MonoBehaviour
         }
     }
 
-    // 서버 요청 후 Receive
-    private async void ReceiveRequestDataFromServer(NetworkStream stream)
+    // 서버 요청 후 Receive, 동기식으로 데이터 받는다 (비동기X, 서버는 비동기식, 클라이언트는 동기식)
+    private void ReceiveRequestDataFromServer(NetworkStream stream)
     {
         try
         {
@@ -177,7 +180,8 @@ public class Client : MonoBehaviour
             {
                 //byte[] buffer = new byte[1024]; // 일반적인 버퍼사이즈
                 byte[] buffer = new byte[16000000]; // 16MiB 버퍼 사이즈 
-                int bytesRead = await stream.ReadAsync(buffer, 0, buffer.Length); // 데이터를 읽어올때까지 대기
+                int bytesRead = stream.Read(buffer, 0, buffer.Length); // 데이터를 읽어올때까지 대기 (동기식)
+                //int bytesRead = await stream.ReadAsync(buffer, 0, buffer.Length); // 데이터를 읽어올때까지 대기 (비동기식)
                 string receivedRequestData = Encoding.UTF8.GetString(buffer, 0, bytesRead); // 데이터 변환
 
                 receivedRequestData_List.Add(receivedRequestData);
@@ -188,17 +192,18 @@ public class Client : MonoBehaviour
                 if (endCheck.Contains("Finish"))
                 {
                     // receivedRequestData에 Finish가 있는 경우 Finish를 제거
-                    receivedRequestData_List.RemoveAt(receivedRequestData_List.Count - 1);
-                    endCheck.RemoveAt(endCheck.Count - 1);
-
-                    string fixLastIndexInList = null;
-
-                    for(int i = 0; i < endCheck.Count; i++)
-                    {
-                        fixLastIndexInList += $"{endCheck[i]}|";
-                    }
-
-                    receivedRequestData_List.Add(fixLastIndexInList);
+                    etcMethodHandler.RemoveFinish(receivedRequestData_List, endCheck);
+                   // receivedRequestData_List.RemoveAt(receivedRequestData_List.Count - 1);
+                   // endCheck.RemoveAt(endCheck.Count - 1);
+                   //
+                   // string fixLastIndexInList = null;
+                   //
+                   // for(int i = 0; i < endCheck.Count; i++)
+                   // {
+                   //     fixLastIndexInList += $"{endCheck[i]}|";
+                   // }
+                   //
+                   // receivedRequestData_List.Add(fixLastIndexInList);
 
                     Debug.Log($"[Client] Finish Receive Data From Server");
                     break;
@@ -445,16 +450,18 @@ public class Client : MonoBehaviour
 
     /*
     Client가 DB에 있는 파일을 Save Load 하는 경우
-    1. 앱 시작 -> Load (모든 데이터, 게임데이터, 재화, crew 소유권한 등)
-    2. 플레이어(charactor) 생성 -> Save, Load
-    3. Charactor Name 등록
-    4. Charactor Profile 등록
-    5. 앱 게임 시작 -> TotalScore(int형) Load (game_type, level, step 받음) -> Save GameData
-    6. 랭킹 UI 접속 시(or 랭킹새로고침) -> rank Load  // 일단 테스트용
-    7. 앱 종료 -> Save (모든 데이터)
+    1. 앱 시작 -> Player_DB Load (모든 데이터를 한번에 받아오는 것이 맞으나, 반환타입별로 나눠서 받음.)
+    2. 앱 시작 -> GameAnalytics Load (개인 분석표)
+    3. 앱 시작 -> RankData Load (랭킹)
+    4. 플레이어(charactor) 생성 -> Save, Load
+    5. Charactor Name 등록
+    6. Charactor Profile 등록
+    7. 앱 게임 시작 -> TotalScore(int형) Load (game_type, level, step 받음) -> Save GameData
+    8. 랭킹 UI 접속 시(or 랭킹새로고침) -> rank Load  // 일단 테스트용
+    9. 앱 종료 -> Save (모든 데이터)
     */
 
-    // 앱 시작시 모든 데이터 Load
+    // 앱 시작시 Player_DB Load
     public Player_DB AppStart_LoadAllDataFromDB()
     {
         Player_DB playerDB = new Player_DB();
@@ -531,6 +538,26 @@ public class Client : MonoBehaviour
         }
 
         return playerDB;
+    }
+
+    // 앱 시작시 GameAnalytics Load
+    public GameAnalytics AppStart_LoadGameAnalyticsDataFromDB()
+    {
+        GameAnalytics gameAnalytics = new GameAnalytics();
+
+        return gameAnalytics;
+    }
+
+    public RankData AppStart_LoadRankDataFromDB()
+    {
+        RankData return_RankData = new RankData();
+
+        string requestData = $"[Load]RankData|{clientLicenseNumber}|{clientCharactor}|Finish";
+        RequestToServer(requestData);
+
+        return_RankData = clientRankData;
+
+        return return_RankData;
     }
 
     // Charactor 생성시, 사용중인 Charactor Data Save
