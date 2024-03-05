@@ -944,6 +944,10 @@ MonoBehaviour:
   - {fileID: 1331792764}
   - {fileID: 2018538696}
   canvas: {fileID: 1215284665}
+  select:
+  - {fileID: 315485530}
+  - {fileID: 810345488}
+  - {fileID: 1314879240}
   Level: 1
   Step: 1
 --- !u!4 &287009998
@@ -1084,7 +1088,7 @@ GameObject:
   - component: {fileID: 315485533}
   - component: {fileID: 315485532}
   m_Layer: 5
-  m_Name: Select
+  m_Name: SelectFirst
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2038,7 +2042,7 @@ GameObject:
   - component: {fileID: 810345491}
   - component: {fileID: 810345490}
   m_Layer: 5
-  m_Name: Select
+  m_Name: SelectSecond
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -3562,8 +3566,8 @@ Canvas:
   m_GameObject: {fileID: 1215284662}
   m_Enabled: 1
   serializedVersion: 3
-  m_RenderMode: 0
-  m_Camera: {fileID: 0}
+  m_RenderMode: 1
+  m_Camera: {fileID: 646461226}
   m_PlaneDistance: 100
   m_PixelPerfect: 0
   m_ReceivesEvents: 1
@@ -3694,7 +3698,7 @@ GameObject:
   - component: {fileID: 1314879243}
   - component: {fileID: 1314879242}
   m_Layer: 5
-  m_Name: Select
+  m_Name: SelectAnswer
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

@@ -33,6 +33,8 @@ public class GuGUDan_Fnc : GameSetting
 
     [SerializeField] Canvas canvas;
 
+    [SerializeField] private GameObject[] select;
+
     #region 변수 & 상태 관리
     public int Level;
     public int Step;
@@ -84,7 +86,16 @@ public class GuGUDan_Fnc : GameSetting
         Answer_num.text = "??";
         buttonText = "";
         
-    }    
+    }
+
+    private void Start()
+    {
+        for (int i = 0; i < select.Length; i++)
+        {
+            select[i].SetActive(false);
+        }
+    }
+
 
     private void Update()
     {
@@ -94,8 +105,6 @@ public class GuGUDan_Fnc : GameSetting
         }
 
         GameOver();
-
-        Click();
     }
 
 
@@ -127,18 +136,21 @@ public class GuGUDan_Fnc : GameSetting
                 Second_num.text = Second.ToString();
                 Answer_num.text = result.ToString();
                 CaseNum = 0;
+                //Select_onOff();
                 break;
             case 1: // y쪽을 역산
                 First_num.text = First.ToString();
                 Second_num.text = "?";
                 Answer_num.text = result.ToString();
                 CaseNum = 1;
+                //Select_onOff();
                 break;
             case 2: // 기본 연산
                 First_num.text = First.ToString();
                 Second_num.text = Second.ToString();
                 Answer_num.text = "??";
                 CaseNum = 2;
+                //Select_onOff();
                 break;
             default:
                 break;
@@ -501,24 +513,6 @@ public class GuGUDan_Fnc : GameSetting
         totalReactionTime = 0;
     }
 
-    //버튼이 아닌 다른 영역을 클릭하면 초기화 시켜주기
-    private void Click()
-    {
-
-        if (Input.GetMouseButtonDown(0))
-        {
-            //현재 게임화면에 마우스(손가락터치)를 입력시 그 좌표를 계산
-            Vector2 mousePosition = Input.mousePosition;
-            RectTransform canvasRectTransform = canvas.GetComponent<RectTransform>(); // YourCanvas에는 캔버스 GameObject를 할당
-            Vector2 canvasSize = canvasRectTransform.sizeDelta;
-            Vector2 canvasPosition = canvasRectTransform.position;
-            Vector2 canvasMousePosition = new Vector2(mousePosition.x / Screen.width * canvasSize.x, mousePosition.y / Screen.height * canvasSize.y) - (canvasSize / 2f);
-            //print(mousePosition.y / Screen.height * canvasSize.y);
-            //이 영역 위로 클릭시 Clear
-            //if (mousePosition.y / Screen.height * canvasSize.y > 255f) Clear_btn();
-        }
-    }
-
     public void Get_Score()
     {
         if(buttonType == ButtonType.First)
@@ -554,5 +548,20 @@ public class GuGUDan_Fnc : GameSetting
     private void AnswerRate()
     {
         answers = answersCount * 100 / StartQuestCount;
+    }
+
+    private void Select_onOff()
+    {
+        for (int i = 0; i < select.Length; i++)
+        {
+            if(CaseNum == i)
+            {
+                select[i].SetActive(true);
+            }
+            else
+            {
+                select[i].SetActive(false);
+            }
+        }
     }
 }
