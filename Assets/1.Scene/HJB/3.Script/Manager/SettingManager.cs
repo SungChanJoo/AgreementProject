@@ -17,6 +17,7 @@ public class SettingManager : MonoBehaviour
 	public static SettingManager Instance = null;
     
     public GameObject setting_Canvas;
+    [SerializeField] Canvas setting;
     [SerializeField] private GameObject InGameBtn_panel;
     [SerializeField] private GameObject ReQuestion_panel;        
     
@@ -106,7 +107,12 @@ public class SettingManager : MonoBehaviour
     }
     //환경설정 UI Off
     public void Setting_Btn()
-    {        
+    {
+        //캔버스의 할당된 카메라가 없다면
+        if (setting.worldCamera == null)
+        {
+            setting.worldCamera = Camera.main;
+        }
         if (TimeSlider.Instance != null&&!Stop)
         {
             TimeSlider.Instance.TimeSliderControll();
@@ -115,6 +121,11 @@ public class SettingManager : MonoBehaviour
     }
     public void NonTemporalSetting_Btn()
     {
+        //캔버스의 할당된 카메라가 없다면
+        if (setting.worldCamera == null)
+        {
+            setting.worldCamera = Camera.main;
+        }
         setting_Canvas.SetActive(!setting_Canvas.activeSelf);
     }
     

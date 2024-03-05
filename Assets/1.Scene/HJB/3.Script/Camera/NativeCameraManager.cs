@@ -38,8 +38,8 @@ public class NativeCameraManager : MonoBehaviour
 
         NativeCamera.Permission permission = NativeCamera.TakePicture((path) =>
         {            
-            string galaryPath = SavePath.Substring(0, SavePath.IndexOf("Android")) + "/DCIM/UnityCamera/";
-            if (false == string.IsNullOrEmpty("UnityCamera") && false == Directory.Exists("UnityCamera"))
+            string galaryPath = SavePath.Substring(0, SavePath.IndexOf("Android")) + "/DCIM/Camera/";
+            if (false == string.IsNullOrEmpty("Camera1") && false == Directory.Exists("Camera1"))
             {
                 //해당 디렉토리 없을 시 생성.
                 Directory.CreateDirectory(galaryPath);
@@ -81,7 +81,7 @@ public class NativeCameraManager : MonoBehaviour
                     galaryPath + "UnityCamera" + time + CaptureCounter.ToString() + ".png", snap.EncodeToPNG()
                     );
                 ++CaptureCounter;
-                Destroy(quad, 5f);                
+                Destroy(quad, 5f);
             }            
         }, 2048, true, NativeCamera.PreferredCamera.Front);
     }

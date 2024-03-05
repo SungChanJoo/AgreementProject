@@ -52,8 +52,7 @@ public class ObjectPooling_H : MonoBehaviour
         }
     }   
     private void TimeCheck()
-    {
-        Debug.Log("진입중");
+    {        
         if (TimeSlider.Instance.slider.value<=0)
         {
             timeOut = true;
@@ -97,7 +96,7 @@ public class ObjectPooling_H : MonoBehaviour
     private void CubeStart()
     {
         //준비된 문제가 끝났다면
-        if (problom_count == 0 && aopManager.isStop)
+        if (problom_count == 0)
         {
             GameOver();
             return;
