@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class MapScrolling : MonoBehaviour
@@ -10,18 +8,26 @@ public class MapScrolling : MonoBehaviour
 
     public RectTransform rectTransform;
 
-    Vector3 SavePosition;
+    Vector3 savePosition;
+    float initialScreenWidth;
+
     private void Start()
     {
-        SavePosition = new Vector3(target.transform.position.x, target.transform.position.y, target.transform.position.z);
+        savePosition = target.position;
+        initialScreenWidth = Screen.width;
     }
+
     private void Update()
     {
-        transform.position += dir * speed * Time.deltaTime;
-        if (rectTransform.transform.position.x < - 1920f)
-        {
-            //transform.position = SavePoint.transform.position;
-            transform.position = SavePosition;
-        }
+        float screenWidthRatio = Screen.width / initialScreenWidth;
+
+        transform.position += dir * speed * Time.deltaTime * screenWidthRatio;
     }
+
+    private void OnTriggerExit2D(Collider2D collision)
+    {
+        transform.position = new Vector3(savePosition.x - 15f, savePosition.y, savePosition.z);
+    }
+
+
 }

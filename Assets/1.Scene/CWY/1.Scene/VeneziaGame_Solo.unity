@@ -26,7 +26,7 @@ RenderSettings:
   m_AmbientIntensity: 1
   m_AmbientMode: 0
   m_SubtractiveShadowColor: {r: 0.42, g: 0.478, b: 0.627, a: 1}
-  m_SkyboxMaterial: {fileID: 2100000, guid: 56113b3b655ab7349bab4d7d405c258a, type: 2}
+  m_SkyboxMaterial: {fileID: 0}
   m_HaloStrength: 0.5
   m_FlareStrength: 1
   m_FlareFadeSpeed: 3
@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.94862026, g: 0.87804097, b: 0.7322973, a: 1}
+  m_IndirectSpecularColor: {r: 0, g: 0, b: 0, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -2904,7 +2904,7 @@ Light:
   m_Type: 1
   m_Shape: 0
   m_Color: {r: 1, g: 0.95686275, b: 0.8392157, a: 1}
-  m_Intensity: 1
+  m_Intensity: 0
   m_Range: 10
   m_SpotAngle: 30
   m_InnerSpotAngle: 21.80208
@@ -2961,14 +2961,14 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1164320615}
-  m_LocalRotation: {x: 0.0050289216, y: 0.2127061, z: -0.9238751, w: -0.3180969}
+  m_LocalRotation: {x: 0.7071068, y: 0, z: 0, w: 0.7071068}
   m_LocalPosition: {x: -100.9, y: 306.8, z: -14.5}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 1
-  m_LocalEulerAnglesHint: {x: 22.944, y: -9.035, z: -219.835}
+  m_LocalEulerAnglesHint: {x: 90, y: 0, z: 0}
 --- !u!114 &1164320618
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3567,6 +3567,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1566866588}
   - component: {fileID: 1566866589}
+  - component: {fileID: 1566866590}
   m_Layer: 0
   m_Name: Manager
   m_TagString: Untagged
@@ -3628,6 +3629,7 @@ MonoBehaviour:
     TotalScore: 0
   result_Printer: {fileID: 756554489}
   resultCanvas_UI: {fileID: 756554488}
+  isStop: 1
   gameover: {fileID: 1249587734}
   CubeParent: {fileID: 577192752}
   isGameover: 0
@@ -3661,6 +3663,20 @@ MonoBehaviour:
   ClickCount: 0
   LifeTime: 300
   DestroyTime: 0
+--- !u!114 &1566866590
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1566866587}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f2bc4f75ab027de4eade416d869c61f0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  MoningBox: {fileID: 2100000, guid: 56113b3b655ab7349bab4d7d405c258a, type: 2}
+  NightBox: {fileID: 2100000, guid: 5c80d49013691df48ac94280337e88ce, type: 2}
 --- !u!1 &1570566639
 GameObject:
   m_ObjectHideFlags: 0
@@ -3676,7 +3692,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &1570566640
 Transform:
   m_ObjectHideFlags: 0
@@ -3801,7 +3817,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &1703169622
 Transform:
   m_ObjectHideFlags: 0
