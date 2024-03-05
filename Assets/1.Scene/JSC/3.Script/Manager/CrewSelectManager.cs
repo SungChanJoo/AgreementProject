@@ -40,6 +40,8 @@ public class CrewSelectManager : MonoBehaviour
            AudioManager.Instance.BGM_Stop();
         //다음 씬으로 선택한 대원을 넘겨주기 위해 
         DontDestroyOnLoad(gameObject);
+        if(SettingManager.Instance != null)
+            SettingManager.Instance.IsMetaWorld = true;
     }
 
     public void OnViewSelectCrewUI()

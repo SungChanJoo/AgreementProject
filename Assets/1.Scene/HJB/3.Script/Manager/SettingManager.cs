@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.Android;
 using UnityEngine.UI;
+using Mirror;
 
 public enum Sound_
 {
@@ -36,6 +37,10 @@ public class SettingManager : MonoBehaviour
     int count = 0;
 
     private int sound_num;
+
+    [Header("MetaWorld")]
+    public bool IsMetaWorld = false;
+    [SerializeField] private GameObject Restart_Btn;
     private void Awake()
     {        
         if (Instance == null)
@@ -127,6 +132,10 @@ public class SettingManager : MonoBehaviour
             setting.worldCamera = Camera.main;
         }
         setting_Canvas.SetActive(!setting_Canvas.activeSelf);
+        if(IsMetaWorld)
+        {
+            Restart_Btn.SetActive(false);
+        }
     }
     
     public void MetaWorldSceneLoad_Btn()
@@ -143,8 +152,21 @@ public class SettingManager : MonoBehaviour
     }
     public void NextMainScene()
     {
+
         //메뉴 Scene 빌드번호 1로 지정
         SceneManager.LoadScene(1);
+        if (IsMetaWorld)
+        {
+            //메타월드안에서 호출하면 씬 이동을 하게 되면 들어오기 전 상태로 돌리기
+            Restart_Btn.SetActive(true);
+            NetworkClient.Disconnect();
+            Destroy(FindObjectOfType<PetSwitchNetworkManager>().gameObject);
+            Destroy(FindObjectOfType<CrewSelectManager>().gameObject);
+            if (AudioManager.Instance != null)
+                AudioManager.Instance.BGM_Play(0);
+            IsMetaWorld = false;
+        }
+
     }
     public void Sound_Num(int num)
     {
