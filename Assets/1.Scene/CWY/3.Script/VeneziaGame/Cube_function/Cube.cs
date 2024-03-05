@@ -465,4 +465,13 @@ public class Cube : MonoBehaviour
     }
 
 
+
+    public Color gizmoColor = Color.blue;
+    public float radius = 15f;
+
+    private void OnDrawGizmos()
+    {
+        Gizmos.color = gizmoColor;
+        Gizmos.DrawWireSphere(transform.position, radius);
+    }
 }
