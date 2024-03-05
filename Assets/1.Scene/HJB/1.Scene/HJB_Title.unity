@@ -4662,6 +4662,10 @@ PrefabInstance:
       propertyPath: setting
       value: 
       objectReference: {fileID: 1112078345}
+    - target: {fileID: 1882028035621369555, guid: 508bc214086e6934bbb736ff2e6ba6ae, type: 3}
+      propertyPath: Restart_Btn
+      value: 
+      objectReference: {fileID: 1882028035552361744}
     - target: {fileID: 1882028035621369556, guid: 508bc214086e6934bbb736ff2e6ba6ae, type: 3}
       propertyPath: m_Name
       value: Setting_Canvas
@@ -4852,6 +4856,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 508bc214086e6934bbb736ff2e6ba6ae, type: 3}
+--- !u!1 &1882028035552361744 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 1882028035695988137, guid: 508bc214086e6934bbb736ff2e6ba6ae, type: 3}
+  m_PrefabInstance: {fileID: 1882028035552361743}
+  m_PrefabAsset: {fileID: 0}
 --- !u!4 &1928953798320190415
 Transform:
   m_ObjectHideFlags: 0
