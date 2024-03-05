@@ -20,8 +20,9 @@ public class LoadImage : MonoBehaviour
     {
         SettingManager.Instance.Re_AppSetPermission();
         string pathFolder = Application.persistentDataPath;
-        string galaryPath = pathFolder.Substring(0, pathFolder.IndexOf("Android")) + "/DCIM/UnityCamera/";
-        string[] pngFiles = Directory.GetFiles(galaryPath,"*.png");
+        //string galaryPath = pathFolder.Substring(0, pathFolder.IndexOf("Android")) + "/DCIM/Camera/";
+        string galaryPath = $"{pathFolder}/";
+        string[] pngFiles = Directory.GetFiles(galaryPath,"*.jpg");
         Texture2D[] textures = new Texture2D[pngFiles.Length];
         Debug.Log(textures.Length);
         image_obj = new GameObject[pngFiles.Length];

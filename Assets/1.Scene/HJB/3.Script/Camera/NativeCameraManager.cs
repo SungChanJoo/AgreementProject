@@ -5,6 +5,7 @@ using UnityEngine.UI;
 using UnityEngine.Android;
 using System;
 using System.IO;
+using TMPro;
 
 
 public class NativeCameraManager : MonoBehaviour
@@ -12,7 +13,8 @@ public class NativeCameraManager : MonoBehaviour
     
     public Image captureImage;    
     public Texture2D captureTexture;
-
+    public TMP_Text a;
+    
     int CaptureCounter = 0;
 
     // Start is called before the first frame update
@@ -34,17 +36,17 @@ public class NativeCameraManager : MonoBehaviour
     void TakePicture()
     {
         //영구 파일 경로 저장
-        string SavePath = Application.persistentDataPath;        
-
+        string SavePath = Application.persistentDataPath;
+        
         NativeCamera.Permission permission = NativeCamera.TakePicture((path) =>
-        {            
-            string galaryPath = SavePath.Substring(0, SavePath.IndexOf("Android")) + "/DCIM/Camera/";
+        {
+            //string galaryPath = SavePath.Substring(0, SavePath.IndexOf("Android")) + "Data/com.Unity";
+            string galaryPath = $"{SavePath}/";
             if (false == string.IsNullOrEmpty("Camera1") && false == Directory.Exists("Camera1"))
             {
                 //해당 디렉토리 없을 시 생성.
                 Directory.CreateDirectory(galaryPath);
-            }
-            Debug.Log("Image path : " + galaryPath);
+            }            
             if (path != null)
             {
                 Texture2D texture = NativeCamera.LoadImageAtPath(path, 2048);
@@ -77,9 +79,16 @@ public class NativeCameraManager : MonoBehaviour
                 snap.Apply();
 
                 string time = DateTime.Now.ToString("yyyyMMddHHmmssfff");
-                File.WriteAllBytes(
-                    galaryPath + "UnityCamera" + time + CaptureCounter.ToString() + ".png", snap.EncodeToPNG()
-                    );
+                try
+                {
+                    File.WriteAllBytes(galaryPath + "Camera" + time + CaptureCounter.ToString()
+                        + ".jpg", snap.EncodeToPNG()
+                   );
+                }
+                catch(Exception e)
+                {
+                    a.text = e.Message;
+                }
                 ++CaptureCounter;
                 Destroy(quad, 5f);
             }            

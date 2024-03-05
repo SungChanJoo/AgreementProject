@@ -28,7 +28,7 @@ public class TouchManager : MonoBehaviour
     private void Start()
     {
         particles = new ParticleSystem[effect_obj.Length];
-        for (int i = 0; i < 10; i++)
+        for (int i = 0; i < effect_obj.Length; i++)
         {
             particles[i] = effect_obj[i].GetComponent<ParticleSystem>();
         }
