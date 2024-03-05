@@ -38,13 +38,16 @@ public class Client : MonoBehaviour
     // DB Table Name
     private TableName table;
 
-    // Rank data
+    // DB로부터 Load할 Data들을 담을 변수, 다른 곳에 반환할 수 있도록 class를 만듬
+    // 서버에 Request한 후 받는 Received Data를 담을 변수
+    private Player_DB clientPlayerData;
+    private AnalyticsData clientAnalyticsData;
     private RankData clientRankData;
 
     // timer
     private float transmissionTime = 1f;
 
-    // Handler
+    // 기타 데이터 처리용 Handler
     private IETCMethodHandler etcMethodHandler;
 
     public Client(NetworkStream _stream)
@@ -286,6 +289,12 @@ public class Client : MonoBehaviour
                 HandleLoadCharactorData(dataList);
                 Debug.Log($"[Client] RequestName : {requestName}, End handling data");
                 break;
+            case "[Load]AnalyticsData":
+                // dataList[0] = "[Load]AnalyticsData|value|value|...|value|E|"
+                Debug.Log($"[Client] RequestName : {requestName}, dataList[0] : {dataList[0]}");
+                HandleLoadAnalyticsData(dataList);
+                Debug.Log($"[Client] RequestName : {requestName}, End handling data");
+                break;
             case "[Load]RankData":
                 HandleLoadRankData(dataList);
                 Debug.Log($"[Client] RequestName : {requestName}, End handling data");
@@ -315,7 +324,7 @@ public class Client : MonoBehaviour
         // dataList[0] = "[Load]CharactorData|user_info|value|value..|value|E|";
         // dataList[1] = "rank|value|value|...|value|E|{gameTableName}|value|value|...|value|E|";
         // dataList[2] = "{gameTableName}|value|value|...|value|E|{gameTableName}|value|value|...|value|E|";
-        // ... dataList[Last] = "{gameTableName}|value|value|...|value|E|Finish|;
+        // ... dataList[Last] = "{gameTableName}|value|value|...|value|E|"
 
         Debug.Log("[Client] Handling LoadCharactorData");
 
@@ -340,7 +349,7 @@ public class Client : MonoBehaviour
         FilterCharactorData();
     }
 
-    // 최종적으로 사용할 수 있는 player data
+    // 최종적으로 사용할 수 있는 Player_DB(clientPlayerData)
     // 서버로부터 받고 1차적으로 정리한 data중 table name을 가지고 최종적으로 data 정리 
     private void FilterCharactorData()
     {
@@ -357,6 +366,162 @@ public class Client : MonoBehaviour
                 }
             }
         }
+
+        Debug.Log("[Client] Store CharactorData to clientPlayerData variable");
+        // clientPlayerData InitSetting
+        clientPlayerData = new Player_DB();
+        
+        // user_info columns -> "User_LicenseNumber", "User_Charactor", "User_Name", "User_Profile", "User_Birthday", "User_TotalAnswers", "User_TotalTime", "User_Coin"
+        
+        // CharactorData_Dic에 담긴 값
+        // CharactorData_Dic["user_info"] -> [0]:name / [1]:profile / [2]:birthday / [3]:totalanswers / [4]:totaltime / [5]:coin
+        clientPlayerData.playerName = CharactorData_Dic["user_info"][0];
+        clientPlayerData.image = Convert.FromBase64String(CharactorData_Dic["user_info"][1]);
+        clientPlayerData.Day = "";
+        clientPlayerData.BirthDay = CharactorData_Dic["user_info"][2];
+        clientPlayerData.TotalAnswers = int.Parse(CharactorData_Dic["user_info"][3]);
+        clientPlayerData.TotalTime = float.Parse(CharactorData_Dic["user_info"][4]);
+
+        string[] game_Names = { "venezia_kor", "venezia_eng", "venezia_chn", "calculation", "gugudan" };
+        int[] levels = { 1, 2, 3 };
+        int[] steps = { 1, 2, 3, 4, 5, 6 };
+
+        for (int i = 0; i < game_Names.Length; i++)
+        {
+            for (int j = 0; j < levels.Length; j++)
+            {
+                for (int k = 0; k < steps.Length; k++)
+                {
+                    Game_Type game_type;
+                    switch (i)
+                    {
+                        case 0:
+                            game_type = Game_Type.A;
+                            break;
+                        case 1:
+                            game_type = Game_Type.B;
+                            break;
+                        case 2:
+                            game_type = Game_Type.C;
+                            break;
+                        case 3:
+                            game_type = Game_Type.D;
+                            break;
+                        case 4:
+                            game_type = Game_Type.E;
+                            break;
+                        default:
+                            game_type = Game_Type.A;
+                            Debug.Log("[Client] AppStart_LoadAllDataFromDB() Game_Type default Problem");
+                            break;
+                    }
+
+                    string levelpart = $"level{levels[j]}";
+                    if (game_Names[i] == "venezia_chn")
+                    {
+                        j = 2; // venezia_chn 게임은 level이 1개뿐이므로 한번만 돌아야함.
+                        levelpart = "level";
+                    }
+
+                    string game_TableName = $"{game_Names[i]}_{levelpart}_step{steps[k]}";
+
+                    float reactionRate = float.Parse(CharactorData_Dic[$"{game_TableName}"][0]);
+                    int answersCount = Int32.Parse(CharactorData_Dic[$"{game_TableName}"][1]);
+                    int answers = Int32.Parse(CharactorData_Dic[$"{game_TableName}"][2]);
+                    float playTime = float.Parse(CharactorData_Dic[$"{game_TableName}"][3]);
+                    int totalScore = Int32.Parse(CharactorData_Dic[$"{game_TableName}"][4]);
+                    int starCount = Int32.Parse(CharactorData_Dic[$"{game_TableName}"][5]);
+
+                    Data_value datavalue = new Data_value(reactionRate, answersCount, answers, playTime, totalScore, starCount);
+
+                    clientPlayerData.Data.Add((game_type, j, k), datavalue);
+                }
+            }
+        }
+        Debug.Log("[Client] End HandleLoadCharactorData and Filter..");
+    }
+
+    // 분석 데이터 처리
+    private void HandleLoadAnalyticsData(List<string> dataList)
+    {
+        Debug.Log("[Client] HandleLoadAnlayticsData..");
+
+        // clientAnalyticsData InitSetting
+        clientAnalyticsData = new AnalyticsData();
+
+        for(int i = 0; i < dataList.Count; i++)
+        {
+            Debug.Log($"[Client] AnalyticsDataList[{i}] : {dataList[i]}");
+        }
+
+        // Filterd List or Array가 밑에처럼 구분되어야함
+        // dataList[0] = "[Load]AnalyticsData|E|"
+        // dataList[1] = "day1|venezia_kor_level1_analytics|ReactionRate|AnswerRate|E|"
+        // dataList[2] = "day1|venezia_kor_level2_analytics|ReactionRate|AnswerRate|E|"
+        // dataList[3] = "day1|venezia_kor_level3_analytics|ReactionRate|AnswerRate|E|"
+        // dataList[4] = "day1|venezia_eng_level1_analytics|ReactionRate|AnswerRate|E|"
+        // dataList[5] = "day1|venezia_eng_level2_analytics|ReactionRate|AnswerRate|E|"
+        // dataList[6] = "day1|venezia_eng_level3_analytics|ReactionRate|AnswerRate|E|"
+        // dataList[7] = "day1|venezia_chn_analytics|ReactionRate|AnswerRate|E|"
+        // dataList[8] = "day1|calculation_level1_anlaytics|ReactionRate|AnswerRate|E|"
+        // dataList[9] = "day1|calculation_level2_anlaytics|ReactionRate|AnswerRate|E|"
+        // dataList[10] = "day1|calculation_level3_anlaytics|ReactionRate|AnswerRate|E|"
+        // dataList[11] = "day1|gugudan_level1_analytics|ReactionRate|AnswerRate|E|"
+        // dataList[12] = "day1|gugudan_level2_analytics|ReactionRate|AnswerRate|E|"
+        // dataList[13] = "day1|gugudan_level3_analytics|ReactionRate|AnswerRate|E|"
+        // ...
+        // dataList[79] = "day7|venezia_kor_level1_analytics|ReactionRate|AnswerRate|E|"
+        // dataList[80] = "day7|venezia_kor_level2_analytics|ReactionRate|AnswerRate|E|"
+        // dataList[81] = "day7|venezia_kor_level3_analytics|ReactionRate|AnswerRate|E|"
+        // dataList[82] = "day7|venezia_eng_level1_analytics|ReactionRate|AnswerRate|E|"
+        // dataList[83] = "day7|venezia_eng_level2_analytics|ReactionRate|AnswerRate|E|"
+        // dataList[84] = "day7|venezia_eng_level3_analytics|ReactionRate|AnswerRate|E|"
+        // dataList[85] = "day7|venezia_chn_analytics|ReactionRate|AnswerRate|E|"
+        // dataList[86] = "day7|calculation_level1_anlaytics|ReactionRate|AnswerRate|E|"
+        // dataList[87] = "day7|calculation_level2_anlaytics|ReactionRate|AnswerRate|E|"
+        // dataList[88] = "day7|calculation_level3_anlaytics|ReactionRate|AnswerRate|E|"
+        // dataList[89] = "day7|gugudan_level1_analytics|ReactionRate|AnswerRate|E|"
+        // dataList[90] = "day7|gugudan_level2_analytics|ReactionRate|AnswerRate|E|"
+        // dataList[91] = "day7|gugudan_level3_analytics|ReactionRate|AnswerRate|E|"
+
+        // Filtering dataList 
+        List<string> filterDataList = new List<string>();
+        foreach(string str in dataList)
+        {
+            List<string> tempList = str.Split(separatorString, StringSplitOptions.RemoveEmptyEntries).ToList();
+            tempList.ForEach(data => filterDataList.Add(data));
+        }
+        //dataList.ForEach(data => filterDataList.Add(data.Split(separatorString, StringSplitOptions.RemoveEmptyEntries)[0]));
+
+        // clientAnalyticsData의 멤버변수인 Data에 Value 추가
+        etcMethodHandler.AddClientAnalyticsDataValue(filterDataList, clientAnalyticsData);
+
+        //string day = "24.03.04";
+        //float reactionRate = 34.5f;
+        //int answerRate = 33;
+        //AnalyticsData_Value analyticsData_value = new AnalyticsData_Value(day, reactionRate, answerRate);
+
+        // AnalyticsData_Value의 Key 개수 : 보여줘야 하는 일수 7일(없으면 null or 0) * GameType 5개 * level 3개 = 105개 (- venezia_chn=14) 91개?
+        // clientAnalyticsData.Data.Add((1, Game_Type.A, 1), analyticsData_value);
+        Debug.Log($"[Client] Check clientAnalyticsData.Data.Count : {clientAnalyticsData.Data.Count}");
+
+        int days = 7;
+        int games = 5;
+        int levels = 3;
+
+        for(int i = 0; i < days; i++)
+        {
+            for(int j = 0; j < games; j++)
+            {
+                for(int k = 0; k < levels; k++)
+                {
+                    Debug.Log($"[Client] Check clientAnalyticsData.Data.Value(reactionRate) : {clientAnalyticsData.Data[(i + 1, (Game_Type)j, k + 1)].reactionRate}");
+                }
+            }
+        }
+        //clientAnalyticsData.Data[(1, 0, 1)].answerRate;
+
+        Debug.Log("[Client] End HandleLoadAnalyticsData..");
     }
 
     // 랭크 데이터 처리
@@ -443,7 +608,6 @@ public class Client : MonoBehaviour
         }
 
         Debug.Log("[Client] End HandleLoadRankData..");
-
     }
 
     #region 클라이언트-서버요청
@@ -464,100 +628,40 @@ public class Client : MonoBehaviour
     // 앱 시작시 Player_DB Load
     public Player_DB AppStart_LoadAllDataFromDB()
     {
-        Player_DB playerDB = new Player_DB();
+        //Player_DB playerDB = new Player_DB();
 
-        // 컬럼순
-        // user_info columns -> "User_LicenseNumber", "User_Charactor", "User_Name", "User_Profile", "User_Birthday", "User_TotalAnswers", "User_TotalTime", "User_Coin"
-        // rank table - > [0]:User_LicenseNumber, [1]:User_Charactor, [2]:TotalTime, [3]:TotalScore
+        string requestData = $"[Load]CharactorData|{clientLicenseNumber}|{clientCharactor}|Finish";
+        RequestToServer(requestData);
 
-        // CharactorData_Dic에 담긴 값
-        // CharactorData_Dic["user_info"] -> [0]:name / [1]:profile / [2]:birthday / [3]:totalanswers / [4]:totaltime / [5]:coin
-        // CharactorData_Dic["rank"] -> [0]:TotalTime / [1]:TotalAnswers
-        playerDB.playerName = CharactorData_Dic["user_info"][0];
-        playerDB.image = Convert.FromBase64String(CharactorData_Dic["user_info"][1]);
-        playerDB.Day = "";
-        playerDB.BirthDay = CharactorData_Dic["user_info"][2];
-        playerDB.TotalAnswers = int.Parse(CharactorData_Dic["user_info"][3]);
-        playerDB.TotalTime = float.Parse(CharactorData_Dic["user_info"][4]);
+        //playerDB = clientPlayerData;
 
-        string[] game_Names = { "venezia_kor", "venezia_eng", "venezia_chn", "calculation", "gugudan" };
-        int[] levels = { 1, 2, 3 };
-        int[] steps = { 1, 2, 3, 4, 5, 6 };
-
-        for (int i = 0; i < game_Names.Length; i++)
-        {
-            for (int j = 0; j < levels.Length; j++)
-            {
-                for (int k = 0; k < steps.Length; k++)
-                {
-                    Game_Type game_type;
-                    switch (i)
-                    {
-                        case 0:
-                            game_type = Game_Type.A;
-                            break;
-                        case 1:
-                            game_type = Game_Type.B;
-                            break;
-                        case 2:
-                            game_type = Game_Type.C;
-                            break;
-                        case 3:
-                            game_type = Game_Type.D;
-                            break;
-                        case 4:
-                            game_type = Game_Type.E;
-                            break;
-                        default:
-                            game_type = Game_Type.A;
-                            Debug.Log("[Client] AppStart_LoadAllDataFromDB() Game_Type default Problem");
-                            break;
-                    }
-
-                    string levelpart = $"level{levels[j]}";
-                    if (game_Names[i] == "venezia_chn")
-                    {
-                        j = 2; // venezia_chn 게임은 level이 1개뿐이므로 한번만 돌아야함.
-                        levelpart = "level";
-                    }
-
-                    string game_TableName = $"{game_Names[i]}_{levelpart}_step{steps[k]}";
-
-                    float reactionRate = float.Parse(CharactorData_Dic[$"{game_TableName}"][0]);
-                    int answersCount = Int32.Parse(CharactorData_Dic[$"{game_TableName}"][1]);
-                    int answers = Int32.Parse(CharactorData_Dic[$"{game_TableName}"][2]);
-                    float playTime = float.Parse(CharactorData_Dic[$"{game_TableName}"][3]);
-                    int totalScore = Int32.Parse(CharactorData_Dic[$"{game_TableName}"][4]);
-                    int starCount = Int32.Parse(CharactorData_Dic[$"{game_TableName}"][5]);
-
-                    Data_value datavalue = new Data_value(reactionRate, answersCount, answers, playTime, totalScore,starCount);
-
-                    playerDB.Data.Add((game_type, j, k), datavalue);
-                }
-            }
-        }
-
-        return playerDB;
+        return clientPlayerData;
     }
 
     // 앱 시작시 GameAnalytics Load
-    public GameAnalytics AppStart_LoadGameAnalyticsDataFromDB()
+    public AnalyticsData AppStart_LoadGameAnalyticsDataFromDB()
     {
-        GameAnalytics gameAnalytics = new GameAnalytics();
+        //AnalyticsData return_AnalyticsData = new AnalyticsData();
 
-        return gameAnalytics;
+        string requestData = $"[Load]AnalyticsData|{clientLicenseNumber}|{clientCharactor}|Finish";
+        RequestToServer(requestData);
+
+        //return_AnalyticsData = ;
+
+        return clientAnalyticsData;
     }
 
+    // 앱 시작시 RankData Load
     public RankData AppStart_LoadRankDataFromDB()
     {
-        RankData return_RankData = new RankData();
+        //RankData return_RankData = new RankData();
 
         string requestData = $"[Load]RankData|{clientLicenseNumber}|{clientCharactor}|Finish";
         RequestToServer(requestData);
 
-        return_RankData = clientRankData;
+        //return_RankData = clientRankData;
 
-        return return_RankData;
+        return clientRankData;
     }
 
     // Charactor 생성시, 사용중인 Charactor Data Save
@@ -713,6 +817,7 @@ public class Client : MonoBehaviour
             Debug.Log($"reactionRate_List[i] : {reactionRate_List[i]}, count : {i}");
         }
 
+        // gameTable(i=4부터)
         for(int i = 4; i < table.list.Count; i++)
         {
             requestData += $"{table.list[i]}|{reactionRate_List[i - 4]}|{answersCount_List[i - 4]}|{answers_List[i - 4]}|{playTime_List[i - 4]}|{totalScore_List[i - 4]}|{starCount_List[i - 4]}|{separatorString}";

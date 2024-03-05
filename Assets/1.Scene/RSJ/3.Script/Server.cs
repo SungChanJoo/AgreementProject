@@ -332,6 +332,10 @@ public class Server : MonoBehaviour
                 tempAllocate = DBManager.instance.LoadCharactorData(clientLicenseNumber, clientCharactor);
                 tempAllocate.ForEach(data => replyRequestData_List.Add(data)); // TempList의 각 요소(data = string value) ReplyList에 추가
                 break;
+            case "[Load]AnalyticsData":
+                tempAllocate = DBManager.instance.LoadAnalyticsData(clientLicenseNumber, clientCharactor);
+                tempAllocate.ForEach(data => replyRequestData_List.Add(data));
+                break;
             case "[Load]RankData":
                 tempAllocate = DBManager.instance.RankOrderByUserData(clientLicenseNumber, clientCharactor);
                 tempAllocate.ForEach(data => replyRequestData_List.Add(data));

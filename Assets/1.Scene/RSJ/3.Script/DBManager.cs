@@ -786,6 +786,158 @@ public class DBManager : MonoBehaviour
         return return_TableData;
     }
 
+    // 분석 데이터 불러오기 
+    public List<string> LoadAnalyticsData(int licensenumber, int charactor)
+    {
+        // 클라이언트에서 받아야할 List 형식
+        // dataList[0] = "[Load]AnalyticsData|E|"
+        // dataList[1] = "day1|venezia_kor_level1_analytics|ReactionRate|AnswerRate|E|"
+        // dataList[2] = "day1|venezia_kor_level2_analytics|ReactionRate|AnswerRate|E|"
+        // dataList[3] = "day1|venezia_kor_level3_analytics|ReactionRate|AnswerRate|E|"
+        // dataList[4] = "day1|venezia_eng_level1_analytics|ReactionRate|AnswerRate|E|"
+        // dataList[5] = "day1|venezia_eng_level2_analytics|ReactionRate|AnswerRate|E|"
+        // dataList[6] = "day1|venezia_eng_level3_analytics|ReactionRate|AnswerRate|E|"
+        // dataList[7] = "day1|venezia_chn_analytics|ReactionRate|AnswerRate|E|"
+        // dataList[8] = "day1|calculation_level1_anlaytics|ReactionRate|AnswerRate|E|"
+        // dataList[9] = "day1|calculation_level2_anlaytics|ReactionRate|AnswerRate|E|"
+        // dataList[10] = "day1|calculation_level3_anlaytics|ReactionRate|AnswerRate|E|"
+        // dataList[11] = "day1|gugudan_level1_analytics|ReactionRate|AnswerRate|E|"
+        // dataList[12] = "day1|gugudan_level2_analytics|ReactionRate|AnswerRate|E|"
+        // dataList[13] = "day1|gugudan_level3_analytics|ReactionRate|AnswerRate|E|"
+
+        // 가장 최근 날짜부터 찾아들어가야 하므로(가정 및 정의) day1 = 가장 최근 날짜 (List index 앞순서에 배치되므로)
+        // day1 = 가장 최근 날짜 ... day7 = 가장 오래된 날짜
+        // 해당하는 날짜에 찾고자 하는 게임의 데이터가 없다면 그 앞 날짜
+        // 예를 들어 24.03.05 DB에 venezia_kor 게임의 level 1,2를 플레이한 데이터가 있고 level 3을 플레이한 데이터가 없고
+        // 24.03.04 DB에 veneiza_kor 게임의 level 1,2,3을 플레이한 데이터가 있다면
+        // 개인분석표에서 보여줄 때 24.03.05 일자에는 level 1,2 보여주고 level 3은 보여줄수없음 / 24.03.04 일자에는 level 1,2,3 모두 보여줌
+        // DB Name : "24.02.25", ... , "24.03.04", "24.03.05", "24.03.06" ...
+        // DB를 조회할 때 가장 오래 저장된 날짜까지(maximum 30일) 찾았는데도 저장된 데이터가 없어서 7일까지 채울수 없다면 default값으로 0을 넣는다.
+
+        Debug.Log("[DB] Come in LoadAnalyticsData Method");
+
+        List<string> return_List = new List<string>();
+
+        MySqlCommand mySqlCommand = new MySqlCommand();
+        mySqlCommand.Connection = connection;
+
+        // 조회할 DB Array
+        string[] DBName_Array = new string[30];
+        DateTime currentDate = DateTime.Now.AddDays(-1); // 오늘 전날
+        for(int i =0; i < DBName_Array.Length; i++)
+        {
+            currentDate = currentDate.AddDays(-1);
+            DBName_Array[i] = $"{currentDate.Year.ToString().Substring(2,2)}.{currentDate.Month:00}.{currentDate.Day:00}";
+        }
+
+        // 조회할 테이블 수만큼 String Type을 받는 List를 생성, 각 배열은 테이블을 의미하고, 해당 테이블의 value가 유의미 한지 아닌지 판단해서 Add로 추가할지 안할지 선택
+        List<string>[] tempList_Array = new List<string>[13];
+
+        // 조회할 테이블 Array
+        string[] tableName_Array = new string[13];
+        for(int i = 0; i < tableName_Array.Length; i++)
+        {
+            if(i < 3) // venezia_kor
+            {
+                tableName_Array[i] = $"venezia_kor_level{i+1}_anlaytics";
+            }   
+            else if(i < 6) // venezia_eng
+            {
+                tableName_Array[i] = $"venezia_eng_level{i-2}_anlaytics";
+            }
+            else if(i == 6) // venezia_chn
+            {
+                tableName_Array[i] = $"venezia_chn_anlaytics";
+            }
+            else if(i < 10) // calculation
+            {
+                tableName_Array[i] = $"calculation_level{i-6}_anlaytics";
+            }
+            else // gugudan
+            {
+                tableName_Array[i] = $"gugudan_level{i-9}_anlaytics";
+            }
+
+            // tempList_Array 객체 생성
+            tempList_Array[i] = new List<string>();
+        }
+
+        // 선택할 컬럼 Array
+        string[] columnName_Array = new string[4] { "User_LicenseNumber", "User_Charactor", "ReactionRate", "AnswerRate"};
+
+        // 30일 동안, 최근 날짜(어제)부터 DB조회
+        for(int i = 0; i < DBName_Array.Length; i++)
+        {
+            try
+            {
+                string useDB_Command = $"USE {DBName_Array[i]};";
+                mySqlCommand.CommandText = useDB_Command;
+                mySqlCommand.ExecuteNonQuery();
+
+                // DB내에 있는 라이센스와 캐릭터를 만족하는 테이블 컬럼 조회
+                for (int j = 0; j < tableName_Array.Length; j++)
+                {
+                    string selectTable_Command = $"SELECT * FROM `{tableName_Array[j]}` WHERE `{columnName_Array[0]}` = {licensenumber} AND `{columnName_Array[1]}` = {charactor};";
+                    mySqlCommand.CommandText = selectTable_Command;
+                    MySqlDataReader reader = mySqlCommand.ExecuteReader();
+                    float reactionRate = 0;
+                    int answerRate = 0;
+
+                    while (reader.Read())
+                    {
+                        reactionRate = reader.GetFloat(columnName_Array[2]);
+                        answerRate = reader.GetInt32(columnName_Array[3]);
+                    }
+                    reader.Close();
+
+                    if (reactionRate == 0 || answerRate == 0) continue; // 저장되어있는 데이터가 0이면(해당 날짜에 게임을 플레이한적없다면) continue
+
+                    // 배열안의 List index를 7개 까지만 채운다. -> 데이터를 가지고 있는 날짜중에 최근 날짜 7일만 
+                    if(tempList_Array[j].Count < 7)
+                    {
+                        // DB로부터 불러온 데이터가 유효하다면 최근 날짜대로 index 순서를 가지게 될것
+                        tempList_Array[j].Add($"{DBName_Array[i]}|{tableName_Array[j]}|{reactionRate}|{answerRate}|{separatorString}");
+                    }
+                }
+            }
+            catch(Exception e)
+            {
+                // 일자별로 생성되고 저장되는 DB가 없다면 바로 break / 어떤 날에 DB가 없다면 해당 일자의 이전 날도 DB도 없다(DB는 일자별로 매일 생성되기때문)
+                Debug.Log($"[DB] Select DB is not efficient, Maybe there is not existed database by date : {e.Message}");
+                break;
+            }
+        }
+
+        // 임시로 만든 List의 배열의 길이동안 -> 각 테이블마다
+        for(int i = 0; i < tempList_Array.Length; i++)
+        {
+            // DB에 저장된 날짜가 7일 미만이라서 일의 데이터가 없다면 또는
+            // 30일까지 기록된 일자별 DB에 해당 게임의 플레이 데이터가 없다면
+            // 등등의 이유로 7일간의 데이터기록이 없다면 나머지 일수(index)를 0으로 채워서 판단할수 있게 채운다
+            while (tempList_Array[i].Count < 7)
+            {
+                // day|game_name|reactionRate|answerRate|E| / value 값들에 들어가는 것이기 때문에 0000으로 보내도 상관없음
+                tempList_Array[i].Add($"0|0|0|0|{separatorString}");
+            }
+        }
+
+        // 일자별로 return_List에 옮겨 담기
+        //tempList_Array[0][0]
+        //tempList_Array[1][0]
+        //tempList_Array[2][0]
+        for(int i = 0; i < tempList_Array[0].Count; i++) 
+        {
+            for (int j = 0; j < tempList_Array.Length; j++)
+            {
+                return_List.Add(tempList_Array[j][i]);
+            }
+        }
+
+        Debug.Log("[DB] Complete Load AnalyticsData From DB");
+
+        return return_List;
+    }
+
     // 임시로 PresentDB에 있는 Rank Table 데이터 사용 / Score, Time 별 Rank 1~5위 및 6번째 자기 자신의 데이터 
     public List<string> RankOrderByUserData(int licensenumber, int charactor)
     {
