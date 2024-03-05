@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.44657898, g: 0.4964133, b: 0.5748178, a: 1}
+  m_IndirectSpecularColor: {r: 0.44657826, g: 0.49641263, b: 0.57481676, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -2447,7 +2447,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 0.5}
   m_AnchorMax: {x: 1, y: 0.5}
-  m_AnchoredPosition: {x: 199.99988, y: 0}
+  m_AnchoredPosition: {x: 199.99994, y: 0}
   m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &751775539
@@ -4065,7 +4065,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0.5}
   m_AnchorMax: {x: 0, y: 0.5}
-  m_AnchoredPosition: {x: -199.99988, y: 0}
+  m_AnchoredPosition: {x: -199.99994, y: 0}
   m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &1550004814
@@ -4362,6 +4362,11 @@ MonoBehaviour:
   master_slider: {fileID: 1250017953}
   bgm_slider: {fileID: 605074183}
   sfx_slider: {fileID: 1086764431}
+--- !u!1 &1620844462 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 1882028035695988137, guid: 508bc214086e6934bbb736ff2e6ba6ae, type: 3}
+  m_PrefabInstance: {fileID: 1882028035552361743}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1702896562
 GameObject:
   m_ObjectHideFlags: 0
@@ -6413,6 +6418,10 @@ PrefabInstance:
       propertyPath: Stop
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 1882028035621369555, guid: 508bc214086e6934bbb736ff2e6ba6ae, type: 3}
+      propertyPath: Restart_Btn
+      value: 
+      objectReference: {fileID: 1620844462}
     - target: {fileID: 1882028035621369556, guid: 508bc214086e6934bbb736ff2e6ba6ae, type: 3}
       propertyPath: m_Name
       value: Setting_Canvas
