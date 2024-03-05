@@ -140,6 +140,12 @@ public class PlayerMovement : NetworkBehaviour
         yield return new WaitForSeconds(TimebetUsingEmti);
         EmtiArray[index].SetActive(false);
         IsUseEmti = false;
-    } 
+    }
     #endregion
+
+    public void ViewSettingUI()
+    {
+        SettingManager.Instance.EnableSettingBtn();
+        SettingManager.Instance.NonTemporalSetting_Btn();
+    }
 }
