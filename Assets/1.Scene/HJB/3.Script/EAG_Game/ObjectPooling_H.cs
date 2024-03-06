@@ -7,11 +7,13 @@ public class ObjectPooling_H : MonoBehaviour
 
     [SerializeField] private GameObject cube_Obj;
     [SerializeField] private GameObject[] poolPosition;
-    
-    [SerializeField]private EAG_Manager aopManager;    
+    [SerializeField] private GameObject defaultPosition;
+    [SerializeField] private EAG_Manager aopManager;
+    [SerializeField] private EAG_Animation eag_ani;
+    [SerializeField] private int speed;
 
     private List<GameObject> cubePool = new List<GameObject>();
-    private List<GameObject> bool_Pool = new List<GameObject>();
+    private List<GameObject> bool_Pool = new List<GameObject>();    
     private List<float> reactionList = new List<float>();
     private MovingCube resultObject;
 
@@ -21,9 +23,16 @@ public class ObjectPooling_H : MonoBehaviour
     private int totalQuestions = 0;
     private float waitTime =0;
     private bool timeOut = false;
+    private bool touchEnable = false;
 
     private IEnumerator WaitExplosionBubble_co;
 
+    
+    private void Update()
+    {
+        Click_Obj();
+        TimeCheck();
+    }
     //Start 버튼 이벤트가 콜백되면 실행
     public void ObjectPooling()
     {
@@ -36,20 +45,14 @@ public class ObjectPooling_H : MonoBehaviour
         //문제 오브젝트의 갯수만큼 생성 및 Pool에 담기
         for (int i = 0; i < poolPosition.Length; i++)
         {
-            GameObject cube = Instantiate(cube_Obj);
-            cube.transform.position = poolPosition[i].transform.position;
+            GameObject cube = Instantiate(cube_Obj);            
             cube.SetActive(false);
-            cubePool.Add(cube);
+            cubePool.Add(cube);            
         }
-        CubeStart();
+        StartCoroutine(NextQuestionAni_Co());
     }
-    private void Update()
-    {        
-        Click_Obj();        
-        TimeCheck();        
-    }   
     private void TimeCheck()
-    {        
+    {
         //게임이 끝났다면
         if (aopManager.isStop || (timeOut && TimeSlider.Instance.TimeStop))
         {
@@ -73,7 +76,12 @@ public class ObjectPooling_H : MonoBehaviour
         }
     }
     private void Click_Obj()
-    {        
+    {
+        if (!touchEnable)
+        {
+            return;
+        }
+        //오브젝트를 터치 또는 클릭 했다면
         if (Input.GetMouseButtonDown(0)||
             Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Began)
         {            
@@ -117,7 +125,7 @@ public class ObjectPooling_H : MonoBehaviour
         for (int i = 0; i < 3; i++)
         {
             //문제 출시
-            cubePool[i].SetActive(true);            
+            cubePool[i].SetActive(true);
             //풀에 담겨있는 오브젝트에 값 지정
             MovingCube movingcube = cubePool[i].GetComponent<MovingCube>();
             //상태 True만 담기는 리스트
@@ -196,10 +204,8 @@ public class ObjectPooling_H : MonoBehaviour
         }
         else
         {
-            StartCoroutine(NextQuestionAni_Co());            
+            StartCoroutine(NextQuestionAni_Co());
         }
-        
-
     }
 
     //정답 결과 출력 메서드
@@ -251,17 +257,68 @@ public class ObjectPooling_H : MonoBehaviour
 
     private IEnumerator WaitExplosionBubble_Co(MovingCube obj)
     {
+        //방울 터지는 애니메이션
         obj.ExplosionAni();
         yield return new WaitForSeconds(1f);
         obj.DefaultAni();
         obj.gameObject.SetActive(false);
+        obj.transform.position = defaultPosition.transform.position;
+        
     }
 
     private IEnumerator NextQuestionAni_Co()
     {
-        yield return new WaitForSeconds(2f);
-        CubeStart();
-    }
+        touchEnable = false;        
+        yield return new WaitForSeconds(1f);
+        for (int i = 0; i < cubePool.Count; i++)
+        {
+            cubePool[i].SetActive(true);
+            cubePool[i].transform.localScale = new Vector3(5f, 5f, 1f);
+        }
+        eag_ani.CreateProblem();                
+        for (int i = 0; i < cubePool.Count; i++)
+        {
+            MovingCube bubble = cubePool[i].GetComponent<MovingCube>();
+            bubble.UpScale();
+        }
+        yield return new WaitForSeconds(0.3f);
+        //문제 애니메이션 넣기
+        //float currentTime = 0;
+        //while (currentTime<2f)
+        //{
+        //    for (int i = 0; i < cubePool.Count; i++)
+        //    {
+        //        currentTime += Time.fixedDeltaTime;
+        //        cubePool[i].transform.position =
+        //            Vector3.MoveTowards(cubePool[i].transform.position,
+        //            poolPosition[i].transform.position,speed);
+        //        yield return new WaitForFixedUpdate();
+        //    }
+        //}
+        float startTime = Time.time;
+        float duration = 0.7f;
 
+        while (Time.time - startTime < duration)
+        {
+            float fraction = (Time.time - startTime) / duration;
+
+            for (int i = 0; i < cubePool.Count; i++)
+            {
+                cubePool[i].transform.position = Vector3.Lerp(
+                    cubePool[i].transform.position,
+                    poolPosition[i].transform.position,
+                    fraction
+                );
+            }
+            if (fraction>0.8f)
+            {
+                CubeStart();
+                break;
+            }
+            
+            yield return null;
+        }
+        touchEnable = true;
+    }
 }
 

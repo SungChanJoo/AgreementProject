@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.44657826, g: 0.49641263, b: 0.57481676, a: 1}
+  m_IndirectSpecularColor: {r: 0.44657898, g: 0.4964133, b: 0.5748178, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -1137,7 +1137,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 0.5}
   m_AnchorMax: {x: 1, y: 0.5}
-  m_AnchoredPosition: {x: 199.99994, y: 0}
+  m_AnchoredPosition: {x: 199.99988, y: 0}
   m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &751775539
@@ -2541,7 +2541,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0.5}
   m_AnchorMax: {x: 0, y: 0.5}
-  m_AnchoredPosition: {x: -199.99994, y: 0}
+  m_AnchoredPosition: {x: -199.99988, y: 0}
   m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &1550004814
@@ -3586,7 +3586,8 @@ PrefabInstance:
       propertyPath: m_Name
       value: Character_Green
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 3614671809078554168, guid: 8b5817f12154c3c4aaba5768b9f941f4, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: 8b5817f12154c3c4aaba5768b9f941f4, type: 3}
 --- !u!224 &1937270640 stripped
 RectTransform:
@@ -5807,7 +5808,6 @@ GameObject:
   m_Component:
   - component: {fileID: 4185763740617800203}
   - component: {fileID: 9024872137175663621}
-  - component: {fileID: 6585889861698880351}
   - component: {fileID: 9024872137175663622}
   m_Layer: 0
   m_Name: LilRobotRed
@@ -6671,29 +6671,6 @@ SkinnedMeshRenderer:
     m_Center: {x: 4.656613e-10, y: 0.0013244969, z: 0.0027656043}
     m_Extent: {x: 0.0023544542, y: 0.0010209663, z: 0.00056687766}
   m_DirtyAABB: 0
---- !u!111 &6585889861698880351
-Animation:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4063131137536253282}
-  m_Enabled: 0
-  serializedVersion: 3
-  m_Animation: {fileID: 7400000, guid: a35fd094dea0d6e48b683e46ab5de632, type: 2}
-  m_Animations:
-  - {fileID: 7400000, guid: b3a7ce87b1be0c945a1f08f3371fc4dc, type: 2}
-  - {fileID: 7400000, guid: 03ad4054578521345a5a19e5449e7e70, type: 2}
-  - {fileID: 7400000, guid: 7bc87f3a77eb9df46b887e579452f428, type: 2}
-  - {fileID: 7400000, guid: cad137f70140c184d8e9499ea4e37b14, type: 2}
-  - {fileID: 7400000, guid: a35fd094dea0d6e48b683e46ab5de632, type: 2}
-  - {fileID: 7400000, guid: 70cbded1ccaf19b4eab719b2384b8a83, type: 2}
-  - {fileID: 7400000, guid: 214913e07638aa74ba10317450924ddc, type: 2}
-  - {fileID: 7400000, guid: a25d76fffc5a2f7429ae1d501f00a334, type: 2}
-  m_WrapMode: 0
-  m_PlayAutomatically: 1
-  m_AnimatePhysics: 0
-  m_CullingType: 0
 --- !u!1 &6635177159354330352
 GameObject:
   m_ObjectHideFlags: 0

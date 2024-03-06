@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 6712318739358553139}
   - component: {fileID: -7752856055721475215}
   - component: {fileID: 5915190840694312032}
-  m_Layer: 5
+  m_Layer: 0
   m_Name: Character_Yellow
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -52,8 +52,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fca3fcb423be2e74ea48292d2744d1b9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  vector3: {x: 0, y: 0, z: 0}
-  Direction: {x: 0, y: 0, z: 0}
+  speed: 10
+  hold: 0
 --- !u!54 &-7752856055721475215
 Rigidbody:
   m_ObjectHideFlags: 0

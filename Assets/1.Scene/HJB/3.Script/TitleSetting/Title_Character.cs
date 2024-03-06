@@ -12,8 +12,7 @@ public class Title_Character : MonoBehaviour
     }
 
     private void Start()
-    {
-        animator.SetTrigger("Run");
+    {        
         animator.SetFloat("Speed", 1f);
     }
 }
