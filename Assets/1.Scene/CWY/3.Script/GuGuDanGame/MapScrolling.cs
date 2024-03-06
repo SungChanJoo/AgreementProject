@@ -26,7 +26,7 @@ public class MapScrolling : MonoBehaviour
 
     private void OnTriggerExit2D(Collider2D collision)
     {
-        transform.position = new Vector3(savePosition.x - 15f, savePosition.y, savePosition.z);
+        transform.position = new Vector3(savePosition.x-4f, savePosition.y, savePosition.z);
     }
 
 

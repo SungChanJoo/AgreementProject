@@ -64,7 +64,7 @@ public class Cube : MonoBehaviour
 
     private void Start()
     {
-        
+
     }
 
     private void FixedUpdate()

@@ -143,7 +143,7 @@ public class VeneziaManager : GameSetting
 
             if (Physics.Raycast(ray, out hit) && !hit.collider.gameObject.CompareTag("Ground"))
             {
-                print(hit.collider.gameObject.name);
+                //print(hit.collider.gameObject.name);
                 //큐브 오브젝트 판단
                 Cube Questprefab = hit.collider.gameObject.GetComponent<Cube>();
                 if (Questprefab != null && Questprefab.objectType == ObjectType.CorrectAnswer) // 큐브를 눌렀을때 Quest 인지 알아야함
@@ -169,7 +169,7 @@ public class VeneziaManager : GameSetting
                 }
                 else if (Questprefab != null && Questprefab.objectType != ObjectType.CorrectAnswer)
                 {
-                    print("오답클릭!");
+                    //print("오답클릭!");
                     ClickCount++;
                     ObjectPooling.Instance.cubePool.Add(hit.collider.gameObject);
                     hit.collider.gameObject.SetActive(false);
@@ -182,7 +182,7 @@ public class VeneziaManager : GameSetting
                     ItemFnc item = hit.collider.gameObject.GetComponent<ItemFnc>();
                     if (item.veneziaItem == VeneziaItem.Meteor) // veneziaItem이 메테오인 경우
                     {
-                        print("메테오 클릭!"); // 또는 다른 동작을 수행
+                        //print("메테오 클릭!"); 
                         ObjectPooling.Instance.MeteorPool.Add(hit.collider.gameObject);
                         TimeSlider.Instance.DecreaseTime_Item(5);
                         hit.collider.gameObject.SetActive(false);
@@ -190,7 +190,7 @@ public class VeneziaManager : GameSetting
 
                     if (item.veneziaItem == VeneziaItem.Pause) // Pause
                     {
-                        print("멈춰!");
+                        //print("멈춰!");
                         ObjectPooling.Instance.PausePool.Add(hit.collider.gameObject);
                         hit.collider.gameObject.SetActive(false);
                         StartCoroutine(Pause_co());
