@@ -26,9 +26,7 @@ public class SkyBox : MonoBehaviour
                 ischange = true;
                 RenderSettings.skybox = NightBox;
             }
-        }
-        print(RenderSettings.skybox);
-        
+        }        
     }
 
 

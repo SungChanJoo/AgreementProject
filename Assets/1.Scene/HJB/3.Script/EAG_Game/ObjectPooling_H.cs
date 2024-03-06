@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -7,8 +8,7 @@ public class ObjectPooling_H : MonoBehaviour
     [SerializeField] private GameObject cube_Obj;
     [SerializeField] private GameObject[] poolPosition;
     
-    [SerializeField]private EAG_Manager aopManager;
-    [SerializeField] private Result_Printer result_Printer;
+    [SerializeField]private EAG_Manager aopManager;    
 
     private List<GameObject> cubePool = new List<GameObject>();
     private List<float> reactionList = new List<float>();
@@ -21,7 +21,7 @@ public class ObjectPooling_H : MonoBehaviour
     private float waitTime =0;
     private bool timeOut = false;
 
-
+    private IEnumerator WaitExplosionBubble_co;
 
     //Start 버튼 이벤트가 콜백되면 실행
     public void ObjectPooling()
@@ -44,28 +44,29 @@ public class ObjectPooling_H : MonoBehaviour
     }
     private void Update()
     {        
-        Click_Obj();
-        //게임이 끝나지 않았다면
-        if (!aopManager.isStop&&!timeOut&&!TimeSlider.Instance.TimeStop)
-        {
-            TimeCheck();
-        }
+        Click_Obj();        
+        TimeCheck();        
     }   
     private void TimeCheck()
     {        
+        //게임이 끝났다면
+        if (aopManager.isStop || (timeOut && TimeSlider.Instance.TimeStop))
+        {
+            return;
+        }
         if (TimeSlider.Instance.slider.value<=0)
         {
             timeOut = true;
             GameOver();
-        }
-        //문제를 못풀고 20초가 지났을 경우
+        }        
+        //문제를 못풀고 20초가 지났을 경우        
         waitTime += Time.deltaTime;
         if (waitTime >20f)
         {
             waitTime = 0;
-            resultObject.gameObject.SetActive(false);
             TimeSlider.Instance.DecreaseTime_Item(5);
-            Next_Result();
+            WaitExplosionBubble_co = WaitExplosionBubble_Co(resultObject, true);
+            StartCoroutine(WaitExplosionBubble_co);            
         }
     }
     private void Click_Obj()
@@ -75,18 +76,19 @@ public class ObjectPooling_H : MonoBehaviour
         {            
             Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
             RaycastHit hit;
-
             if (Physics.Raycast(ray, out hit) && !hit.collider.gameObject.CompareTag("Ground"))
-            {                
-                hit.collider.gameObject.SetActive(false);
+            {
                 //정답 체크
-                Answer_Check(hit.collider.gameObject);
+                MovingCube movingCube = hit.collider.GetComponent<MovingCube>();
+                WaitExplosionBubble_co = WaitExplosionBubble_Co(movingCube, true);
+                StartCoroutine(WaitExplosionBubble_co);
             }
         }
     }
 
     public void GameOver()
     {
+        StopCoroutine(WaitExplosionBubble_co);
         aopManager.isStop = true;
         aopManager.answersCount = answer_count;
         ReactionCalculation();
@@ -149,21 +151,19 @@ public class ObjectPooling_H : MonoBehaviour
         }
     }    
     
-    private void Answer_Check(GameObject cube)
-    {
-        MovingCube movingCube = cube.GetComponent<MovingCube>();
-        
+    private void Answer_Check(MovingCube movingCube)
+    {        
         if (movingCube.result.Equals(answer))
         {
             answer_count++;
             waitTime = 0;
             //정답오브젝트의 반응속도를 담기
             reactionList.Add(movingCube.reactionRate);
-            Next_Result();
+            
         }
         else
         {
-            //시간 감소            
+            //시간 감소                        
             TimeSlider.Instance.DecreaseTime_Item(5);
         }        
     }
@@ -231,10 +231,24 @@ public class ObjectPooling_H : MonoBehaviour
     private void AnswerRate()
     {
         //정답률 계산
-        aopManager.answers = answer_count * 100 / totalQuestions;        
+        aopManager.answers = answer_count * 100 / totalQuestions;
     }
 
-
+    private IEnumerator WaitExplosionBubble_Co(MovingCube obj,bool answer)
+    {
+        obj.ExplosionAni();
+        yield return new WaitForSeconds(1f);
+        obj.DefaultAni();
+        obj.gameObject.SetActive(false);
+        if (answer)
+        {
+            Answer_Check(obj);
+        }
+        else
+        {
+            Next_Result();
+        }
+    }
 
 
 }

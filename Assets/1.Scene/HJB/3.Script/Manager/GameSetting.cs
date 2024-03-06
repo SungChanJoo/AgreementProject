@@ -113,7 +113,15 @@ public abstract class GameSetting : MonoBehaviour
 
         //Result_Data에 게임결과 할당
         ScoreCalculation();
-        StartCoroutine(UpdateDatabaseFromData_co);
+        try
+        {
+            StartCoroutine(UpdateDatabaseFromData_co);
+        }
+        catch (System.Exception)
+        {
+
+            throw;
+        }
         //결과표 텍스트 출력
         ResultPrinter_UI();
     }
@@ -178,7 +186,7 @@ public abstract class GameSetting : MonoBehaviour
     }
     public void Setting_UI()
     {        
-        SettingManager.Instance.EnableSettingBtn();
+        SettingManager.Instance.EnableSettingBtn();        
         if (isStop)
         {   //게임 시작 전이라면 시간에 영향받지 않는 
             SettingManager.Instance.NonTemporalSetting_Btn();
