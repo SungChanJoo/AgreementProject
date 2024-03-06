@@ -11,6 +11,25 @@ public class ObjInteractor : NetworkBehaviour
     public int _clipIndex = 0;
     public float time = 0;
 
+    private void OnTriggerEnter(Collider other)
+    {
+        if (!isLocalPlayer) return;
+        if (other.gameObject.CompareTag("MusicKeyboard"))
+        {
+            other.GetComponent<MusicKeyboard>().InteractableParticle.SetActive(true);
+        }
+        if (other.gameObject.CompareTag("Potal"))
+        {
+            other.GetComponent<EnterToPotal>().InteractableParticle.SetActive(true);
+        }
+        if (other.gameObject.CompareTag("ObjInteractable"))
+        {
+            var obj = other.GetComponent<ObjInteractable>();
+            //현재 실행중이지 않으면 활성화
+            if(obj.currentPlayInterctable == null)
+                obj.InteractableParticle.SetActive(true);
+        }
+    }
     private void OnTriggerStay(Collider other)
     {
         if (!isLocalPlayer) return;
@@ -21,6 +40,22 @@ public class ObjInteractor : NetworkBehaviour
             OnClickObj();
         }
 
+    }
+    private void OnTriggerExit(Collider other)
+    {
+        if (!isLocalPlayer) return;
+        if (other.gameObject.CompareTag("MusicKeyboard"))
+        {
+            other.GetComponent<MusicKeyboard>().InteractableParticle.SetActive(false);
+        }
+        if (other.gameObject.CompareTag("Potal"))
+        {
+            other.GetComponent<EnterToPotal>().InteractableParticle.SetActive(false);
+        }
+        if (other.gameObject.CompareTag("ObjInteractable"))
+        {
+            other.GetComponent<ObjInteractable>().InteractableParticle.SetActive(false);
+        }
     }
     //상호작용 가능한 UI show or hide 
     public void InteractableUI(GameObject UI, bool value)

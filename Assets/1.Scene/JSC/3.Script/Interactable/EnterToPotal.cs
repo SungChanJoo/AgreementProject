@@ -10,6 +10,8 @@ public class EnterToPotal : MonoBehaviour
     public GameObject MoveButton;
     public Transform ExitPotal;
     public bool IsMove;
+    public GameObject InteractableParticle;
+
     private void Awake()
     {
         //버튼이 켜져있으면 끄기
