@@ -46,6 +46,7 @@ public class GuGUDan_Fnc : GameSetting
     bool isSecond_Click = false;
     bool isThird_Click = false;
     bool isGameOver = false;
+    bool isInputValue = false;
 
     //문제 개수 & 초기 문제 출제 개수 저장값 & 정답 입력 시도 총 횟수
     int QuestCount;
@@ -236,6 +237,7 @@ public class GuGUDan_Fnc : GameSetting
     private void GameProgress()
     {
         //정답을 맞춘경우에는 문제 다시생성
+        isInputValue = false;
         if (isAnswerCorrect)
         {
             QuestCount--;
@@ -259,6 +261,7 @@ public class GuGUDan_Fnc : GameSetting
             {
                 isGameOver = true;
                 answersCount = TrueAnswerCount;
+                totalQuestions = StartQuestCount;
                 reactionRate = ReactionTime;
                 AnswerRate();
                 EndGame();
@@ -271,6 +274,7 @@ public class GuGUDan_Fnc : GameSetting
                 ReactionTime = trueReactionTime / TrueAnswerCount;
                 isGameOver = true;
                 answersCount = TrueAnswerCount;
+                totalQuestions = StartQuestCount;
                 reactionRate = ReactionTime;
                 AnswerRate();
                 EndGame();
@@ -371,6 +375,7 @@ public class GuGUDan_Fnc : GameSetting
                     //19단 까지만 고려하기 때문에 x ,y 는 최대 2자리  z는 3자리까지 체크. 따라서, 입력도 최대 3번(19x19가 최대 3자리)
                 if (isFirst_Click)
                 {
+                    isInputValue = true;
                     First_num.text = num.ToString();
                     isFirst_Click = false;
                     isSecond_Click = true;
@@ -386,6 +391,7 @@ public class GuGUDan_Fnc : GameSetting
             case 1:
                 if (isFirst_Click)
                 {
+                    isInputValue = true;
                     Second_num.text = num.ToString();
                     isFirst_Click = false;
                     isSecond_Click = true;
@@ -401,6 +407,7 @@ public class GuGUDan_Fnc : GameSetting
             case 2:
                 if (isFirst_Click)
                 {
+                    isInputValue = true;
                     Answer_num.text = num.ToString();
                     isFirst_Click = false;
                     isSecond_Click = true;
@@ -489,6 +496,7 @@ public class GuGUDan_Fnc : GameSetting
         isSecond_Click = false;
         isThird_Click = false;
         Click_Count = 0;
+        isInputValue = false;
     }
 
 
@@ -557,7 +565,7 @@ public class GuGUDan_Fnc : GameSetting
 
     private void AnswerRate()
     {
-        answers = answersCount * 100 / StartQuestCount;
+        answers = TrueAnswerCount * 100 / StartQuestCount;
     }
 
 
@@ -580,7 +588,7 @@ public class GuGUDan_Fnc : GameSetting
     {
         for (int i = 0; i < QuestMark.Length; i++)
         {
-            if (i == caseNum)
+            if (i == caseNum && !isInputValue)
             {
                 QuestMark[i].SetActive(true);
             }
