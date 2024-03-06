@@ -9,6 +9,8 @@ public class ObjInteractable : NetworkBehaviour
     public ObjInteractor player;
     public int PlayTime;
     public int LimitTime;
+    public GameObject InteractableParticle;
+
     public virtual void Awake()
     {
         //버튼이 켜져있으면 끄기
