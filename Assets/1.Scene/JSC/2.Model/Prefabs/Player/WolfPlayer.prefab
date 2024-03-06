@@ -587,6 +587,7 @@ GameObject:
   - component: {fileID: 4071803896674508395}
   - component: {fileID: 1641884739534128703}
   - component: {fileID: 7252071543258554954}
+  - component: {fileID: 4341358705294210066}
   - component: {fileID: 9057074988763209025}
   - component: {fileID: -5325182023278415661}
   m_Layer: 6
@@ -730,6 +731,7 @@ MonoBehaviour:
   IsUseEmti: 0
   IsPress: 0
   PlayerInputUI: {fileID: 501284275633655237}
+  Anim: {fileID: 0}
 --- !u!114 &4071803896674508395
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -800,6 +802,23 @@ MonoBehaviour:
   positionSensitivity: 0.01
   rotationSensitivity: 0.01
   scaleSensitivity: 0.01
+--- !u!114 &4341358705294210066
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2377433268561859353}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7f6f3bf89aa97405989c802ba270f815, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  syncDirection: 1
+  syncMode: 0
+  syncInterval: 0
+  clientAuthority: 0
+  animator: {fileID: 2377433268561859358}
 --- !u!114 &9057074988763209025
 MonoBehaviour:
   m_ObjectHideFlags: 0

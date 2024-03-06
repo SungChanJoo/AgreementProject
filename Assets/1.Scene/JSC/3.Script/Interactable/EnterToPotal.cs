@@ -4,10 +4,12 @@ using System.Linq;
 using System.Net.NetworkInformation;
 using UnityEngine;
 using UnityEngine.UI;
+using Mirror;
 
-public class EnterToPotal : MonoBehaviour
+public class EnterToPotal : NetworkBehaviour
 {
     public GameObject MoveButton;
+    public ObjInteractor player;
     public Transform ExitPotal;
     public bool IsMove;
     public GameObject InteractableParticle;
@@ -24,9 +26,12 @@ public class EnterToPotal : MonoBehaviour
     //포탈안에 들어왔을 때
     private void OnTriggerEnter(Collider other)
     {
-        //버튼이 꺼져있으면 키기
+/*        //버튼이 꺼져있으면 키기
         if (!MoveButton.activeSelf)
-            MoveButton.SetActive(true);
+            MoveButton.SetActive(true);*/
+        player = other.GetComponent<ObjInteractor>();
+        if (player != null)
+            player.InteractableUI(MoveButton, true);//버튼이 꺼져있으면 키기
 
     }
     private void OnTriggerStay(Collider other)
@@ -44,9 +49,12 @@ public class EnterToPotal : MonoBehaviour
     //포탈을 나갔을 때
     private void OnTriggerExit(Collider other)
     {
-        //버튼이 켜져있으면 끄기
+/*        //버튼이 켜져있으면 끄기
         if (MoveButton.activeSelf)
-            MoveButton.SetActive(false);
+            MoveButton.SetActive(false);*/
+        if (player != null)
+            player.InteractableUI(MoveButton, false);//버튼이 켜져있으면 끄기
+        player = null; //초기화
     }
 
     public void OnMove()
@@ -73,7 +81,8 @@ public class EnterToPotal : MonoBehaviour
     IEnumerator MovePlayer(GameObject player)
     {
         Debug.Log("MovePlayerCoroutine");
-        while(tParam <1)
+        CmdPlayerJumpAnim(player);
+        while (tParam <1)
         {
             tParam += Time.deltaTime * speedModifier;
 
@@ -87,9 +96,33 @@ public class EnterToPotal : MonoBehaviour
         }
         tParam = 0f;
         IsMove = false;
+        CmdPlayerJumpEndAnim(player);
         _currentPlayerMovecoroutine = null;
     }
 
+    [Command(requiresAuthority = false)]
+    public void CmdPlayerJumpAnim(GameObject player)
+    {
+        RpcPlayerJumpAnim(player);
+    }
+    [ClientRpc]
+    public void RpcPlayerJumpAnim(GameObject player)
+    {
+        var playerAnim = player.GetComponent<PlayerMovement>().Anim;
+        playerAnim.SetTrigger("Jump");
+        playerAnim.SetBool("JumpEnd", false);
+    }
+    [Command(requiresAuthority = false)]
+    public void CmdPlayerJumpEndAnim(GameObject player)
+    {
+        RpcPlayerJumpEndAnim(player);
+    }
+    [ClientRpc]
+    public void RpcPlayerJumpEndAnim(GameObject player)
+    {
+        var playerAnim = player.GetComponent<PlayerMovement>().Anim;
+        playerAnim.SetBool("JumpEnd", true);
+    }
     //Bezier Curve의 라인 그리기
     private Vector3 gizomsPosition;
     private void OnDrawGizmos()

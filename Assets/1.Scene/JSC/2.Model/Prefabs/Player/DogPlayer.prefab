@@ -18,6 +18,7 @@ GameObject:
   - component: {fileID: 2180110907374331448}
   - component: {fileID: 984022323912271711}
   - component: {fileID: 2267451028067065538}
+  - component: {fileID: 692725417769735947}
   - component: {fileID: -2700020901996206483}
   - component: {fileID: -7739813066712417969}
   m_Layer: 6
@@ -92,7 +93,7 @@ Animator:
   m_GameObject: {fileID: 2861885958276034223}
   m_Enabled: 1
   m_Avatar: {fileID: 9000000, guid: 3260cc258d691cb49a3217333feb794e, type: 3}
-  m_Controller: {fileID: 9100000, guid: 8ae8684be6985b147a9a79b426d31a24, type: 2}
+  m_Controller: {fileID: 9100000, guid: 57cc5f6fc7eda054596226f100265ed8, type: 2}
   m_CullingMode: 0
   m_UpdateMode: 0
   m_ApplyRootMotion: 0
@@ -175,6 +176,7 @@ MonoBehaviour:
   IsUseEmti: 0
   IsPress: 0
   PlayerInputUI: {fileID: 5520256403949278700}
+  Anim: {fileID: 0}
 --- !u!114 &2180110907374331448
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -245,6 +247,23 @@ MonoBehaviour:
   positionSensitivity: 0.01
   rotationSensitivity: 0.01
   scaleSensitivity: 0.01
+--- !u!114 &692725417769735947
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2861885958276034223}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7f6f3bf89aa97405989c802ba270f815, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  syncDirection: 1
+  syncMode: 0
+  syncInterval: 0
+  clientAuthority: 0
+  animator: {fileID: 2861885958276034220}
 --- !u!114 &-2700020901996206483
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -275,7 +294,7 @@ AudioSource:
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 0}
   m_audioClip: {fileID: 0}
-  m_PlayOnAwake: 1
+  m_PlayOnAwake: 0
   m_Volume: 1
   m_Pitch: 1
   Loop: 0

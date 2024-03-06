@@ -370,6 +370,7 @@ GameObject:
   - component: {fileID: 8943498663837576339}
   - component: {fileID: -8853599077774827980}
   - component: {fileID: -1204204909477592036}
+  - component: {fileID: 3450003916364322412}
   m_Layer: 6
   m_Name: CatPlayer
   m_TagString: Player
@@ -442,7 +443,7 @@ Animator:
   m_GameObject: {fileID: 6752947195329775989}
   m_Enabled: 1
   m_Avatar: {fileID: 9000000, guid: 1b0b46dc3301bde48b59f013024cbec8, type: 3}
-  m_Controller: {fileID: 9100000, guid: cc96420140b3c6e4cae96633af1db9d2, type: 2}
+  m_Controller: {fileID: 9100000, guid: 775bc7c9b07989848866b65c24e67f2b, type: 2}
   m_CullingMode: 0
   m_UpdateMode: 0
   m_ApplyRootMotion: 0
@@ -511,6 +512,7 @@ MonoBehaviour:
   IsUseEmti: 0
   IsPress: 0
   PlayerInputUI: {fileID: 5007545813932814736}
+  Anim: {fileID: 0}
 --- !u!114 &5139183848948369799
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -696,6 +698,23 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+--- !u!114 &3450003916364322412
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6752947195329775989}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7f6f3bf89aa97405989c802ba270f815, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  syncDirection: 1
+  syncMode: 0
+  syncInterval: 0
+  clientAuthority: 0
+  animator: {fileID: 6752947195329775988}
 --- !u!1 &6752947196228482616
 GameObject:
   m_ObjectHideFlags: 0
