@@ -223,6 +223,8 @@ public class GuGUDan_Fnc : GameSetting
         //게임 시작을 알림
         if (!isStart)
         {
+            isStop = false;
+            Start_Btn();
             Set_QuestCount();
             QuestCount--;
             isStart = true;

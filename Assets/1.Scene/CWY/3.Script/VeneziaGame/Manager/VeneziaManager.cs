@@ -213,6 +213,8 @@ public class VeneziaManager : GameSetting
     }
     private void StartTime()
     {
+        isStop = false;
+        Start_Btn();
         TimeSlider.Instance.StartTime();
         TimeSlider.Instance.TimeStop = false;
 

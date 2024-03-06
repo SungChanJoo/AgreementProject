@@ -12,8 +12,7 @@ public class PlayerMod_Toggle : MonoBehaviour
     public int playerMod = 1;    
     RectTransform rectTransform;
     RectTransform[] rects;
-    Vector3 nextVector3;
-    float nextVector = 0;
+    Vector3 nextVector3;    
     bool onFilter = false;
     public bool playing = false;
     

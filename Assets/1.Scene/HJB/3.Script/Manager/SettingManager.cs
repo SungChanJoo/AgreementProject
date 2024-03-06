@@ -31,10 +31,7 @@ public class SettingManager : MonoBehaviour
     [SerializeField] private Image[] BgmSlider_color;
     [SerializeField] private Image[] SfxSlider_color;
 
-    public bool Stop = true;
-    
-    
-    int count = 0;
+    public bool Stop = true;   
 
     private int sound_num;
 

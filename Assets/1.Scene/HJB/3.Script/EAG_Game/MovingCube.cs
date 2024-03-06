@@ -13,7 +13,16 @@ public class MovingCube : MonoBehaviour
     public float result = 0;
 
     public float reactionRate = 0;
-    
+
+    Animator animator;
+    private void Awake()
+    {
+        animator = GetComponent<Animator>();
+    }
+    private void Start()
+    {        
+        transform.LookAt(Camera.main.transform);        
+    }
     private void Update()
     {
         reactionRate += Time.deltaTime;
@@ -23,5 +32,17 @@ public class MovingCube : MonoBehaviour
     {        
         cube_text.text = $"{_first} {_operator} {_second}";
     }    
+    public void ExplosionAni()
+    {
+        animator.SetTrigger("Explosion");
+        cube_text.text = "";
+
+
+    }
+    public void DefaultAni()
+    {
+        animator.SetTrigger("Default");
+
+    }
     
 }
