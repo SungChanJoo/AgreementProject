@@ -34,7 +34,7 @@ public class VeneziaManager : GameSetting
     //한글 및 영어 문제에 사용 할 이미지 sprite 한글과 영어는 공용으로 사용하고 , 한자는 따로 
     [SerializeField] private Sprite[] sprites_KE;    // 1번부터 ~ 5번까지는 step1 ,  step 2는 
     private string[] KorWord = { "학" , "말", "닭", "곰", "하마", "표범", "팬더",
-            "타조", "쿼카", "치타", "참새", "제비", "젖소", "염소", "여우", "악어", "사자", "사슴", "돼지", "기린"};
+            "타조", "쿼카", "치타", "참새", "제비", "젖소", "염소", "여우", "악어", "사자", "사슴", "돼지", "기린"}; // 20개 
     private string[] EnglishWord =
     {
         "Crane", "Horse", "Chicken", "Bear", "Hippo", "Leopard", "Panda",
@@ -219,8 +219,7 @@ public class VeneziaManager : GameSetting
     }
     #region Level설정
     protected override void Level_1(int step)
-    {
-        QuestRange = 5;
+    {   
         StartSet();
         switch (step)
         {
@@ -243,7 +242,6 @@ public class VeneziaManager : GameSetting
     }
     protected override void Level_2(int step)
     {
-        QuestRange = 10;
         StartSet();
         switch (step)
         {
@@ -266,7 +264,7 @@ public class VeneziaManager : GameSetting
     }
     protected override void Level_3(int step)
     {
-        QuestRange = 20;
+        StartSet();
         switch (step)
         {
             case 1:
@@ -343,14 +341,17 @@ public class VeneziaManager : GameSetting
         {
             case 60:
                 QuestCount = 10;
+                QuestRange = 5;
                 DestroyTime = 10;
                 break;
             case 180:
                 QuestCount = 14; // 예시 값
+                QuestRange = 7;
                 DestroyTime = 10;
                 break;
             case 300:
                 QuestCount = 20; // 예시 값
+                QuestRange = 10;
                 DestroyTime = 10;
                 break;
             default:

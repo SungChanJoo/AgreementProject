@@ -20,8 +20,9 @@ public class LoadImage : MonoBehaviour
     {
         SettingManager.Instance.Re_AppSetPermission();
         string pathFolder = Application.persistentDataPath;
-        string galaryPath = pathFolder.Substring(0, pathFolder.IndexOf("Android")) + "/DCIM/UnityCamera/";
-        string[] pngFiles = Directory.GetFiles(galaryPath,"*.png");
+        //string galaryPath = pathFolder.Substring(0, pathFolder.IndexOf("Android")) + "/DCIM/Camera/";
+        string galaryPath = $"{pathFolder}/";
+        string[] pngFiles = Directory.GetFiles(galaryPath,"*.jpg");
         Texture2D[] textures = new Texture2D[pngFiles.Length];
         Debug.Log(textures.Length);
         image_obj = new GameObject[pngFiles.Length];
@@ -47,40 +48,7 @@ public class LoadImage : MonoBehaviour
         texture2Ds = new Texture2D[pngFiles.Length];
         texture2Ds = textures;
 
-    }
-    //public void ImageFileLoad()
-    //{
-    //    SettingManager.Instance.Re_AppSetPermission();
-    //    string pathFolder = Application.persistentDataPath;
-    //    string galaryPath = pathFolder.Substring(0, pathFolder.IndexOf("Android")) + "/DCIM/UnityCamera/";
-    //    IEnumerable<string> pngFiles = Directory.EnumerateFiles(galaryPath, "*.png");
-    //    Debug.Log(galaryPath);        
-    //    List<Texture2D> textures = new List<Texture2D>();
-    //    List<GameObject> image_objs = new List<GameObject>();
-
-    //    foreach (string pngFile in pngFiles)
-    //    {
-    //        byte[] fileData = File.ReadAllBytes(pngFile);
-    //        Texture2D texture = new Texture2D(2, 2);
-    //        texture.LoadImage(fileData);
-    //        textures.Add(texture);
-    //        Sprite sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), new Vector2(0.5f, 0.5f));
-
-    //        GameObject image_obj = Instantiate(image_prefeb);
-    //        Button button = image_obj.GetComponent<Button>();
-    //        int index = textures.Count - 1; // textures 리스트의 현재 인덱스를 사용
-    //        button.onClick.AddListener(() => SelectProfile_Image(index));
-    //        image_obj.transform.SetParent(content_obj.transform);
-
-    //        Image img = image_obj.GetComponent<Image>();
-    //        img.sprite = sprite;
-
-    //        image_objs.Add(image_obj);
-    //    }
-    //    Debug.Log(textures.Count);
-    //    texture2Ds = textures.ToArray();
-    //    image_obj = image_objs.ToArray();
-    //}
+    }    
     public void SelectProfile_Image(int index)
     {
         Rect rect = new Rect(0, 0, texture2Ds[index].width, texture2Ds[index].height);
