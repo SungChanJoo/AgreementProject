@@ -36,6 +36,9 @@ public class StepManager : MonoBehaviour
     public int CurrentLevel { get; private set; }
     public int CurrentTime { get; private set; }
 
+    //여기에 탐험대원 받을 것.
+    public int SelectCharacter_num = 1;
+
     private void Awake()
     {
         if (Instance == null)

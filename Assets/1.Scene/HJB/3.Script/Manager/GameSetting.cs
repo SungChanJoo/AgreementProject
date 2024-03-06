@@ -40,8 +40,8 @@ public abstract class GameSetting : MonoBehaviour
 
     IEnumerator UpdateDatabaseFromData_co;
 
-    [HideInInspector] public bool isStop = true;
-   
+    [HideInInspector] public bool isStop = true;    
+
     private void Start()
     {
         UpdateDatabaseFromData_co = UpdateDatabaseFromData();
