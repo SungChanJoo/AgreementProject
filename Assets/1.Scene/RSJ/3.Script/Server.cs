@@ -357,7 +357,7 @@ public class Server : MonoBehaviour
         Debug.Log("[Server] Finish reply request data to client");
     }
 
-    // 하루가 지났을 때 PresentDB에 있는 gamedata들 새 DB(ex) 24-02-21)에 저장
+    // 하루가 지났을 때 PresentDB에 있는 gamedata들 새 DB(ex) 24.02.21)에 저장
     private void DayTimer()
     {
         // 현재 시간

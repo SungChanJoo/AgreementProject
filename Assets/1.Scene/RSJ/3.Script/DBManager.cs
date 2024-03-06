@@ -23,8 +23,9 @@ public class DBManager : MonoBehaviour
     // 연결할때 필요한 정보
     private string str_Connection;
 
-    // Table List
+    // Table List, AnalyticsTable List
     private TableName table;
+    private AnalyticsTableName analyticsTable;
 
     // Table - Columns
     private string[] userinfo_Columns;
@@ -32,6 +33,7 @@ public class DBManager : MonoBehaviour
     private string[] achievement_Columns;
     private string[] pet_Columns;
     private string[] game_Columns;
+    private string[] analytics_Columns;
 
     // 서버-클라이언트 string으로 data 주고받을때 구분하기 위한 문자열
     private const string separatorString = "E|";
@@ -90,6 +92,7 @@ public class DBManager : MonoBehaviour
         }
     }
 
+    // DB 재연결
     private bool CheckConnection(MySqlConnection con)
     {
         // open이 안되어있다면
@@ -116,12 +119,13 @@ public class DBManager : MonoBehaviour
         achievement_Columns = new string[] { "User_LicenseNumber", "User_Charactor", "Something" };
         pet_Columns = new string[] { "User_LicenseNumber", "User_Charactor", "White" };
         game_Columns = new string[]{ "User_LicenseNumber", "User_Charactor", "ReactionRate", "AnswerCount", "AnswerRate", "Playtime", "TotalScore", "StarPoint" };
+        analytics_Columns = new string[] { "User_LicenseNumber", "User_Charactor", "ReactionRate", "AnswerRate" };
     }
 
     // 계정등록 // todo 비동기화 생각해봐야함
     public string CreateLicenseNumber()
     {
-        Debug.Log("[DB] CreateLicenseNumber method");
+        Debug.Log("[DB] Come in CreateLicenseNumber method");
 
         if(!CheckConnection(connection))
         {
@@ -579,127 +583,7 @@ public class DBManager : MonoBehaviour
         update_SqlCmd.ExecuteNonQuery();
     }
 
-    // 하루가 지났을 때 presentDB gamedata -> 요일DB 생성하고 gamedata 저장
-    public void CreateDaysExGameDataDB()
-    {
-        Debug.Log("[DB] CreateDaysExGameDataDB");
-
-        // 생성할 DB 이름
-        string DBName = $"{DateTime.Now.Year}.{DateTime.Now.Month}.{DateTime.Now.Day}";
-        Debug.Log($"DBName : {DBName}");
-        // 게임 테이블 명, TableName은 생성되면 알아서 테이블들이 담김. 게임을 제외한 나머지 테이블 제거
-        TableName gameTable = new TableName();
-        string[] deleteTable = { "user_info", "rank", "achievement", "pet"};
-        for(int i =0; i < deleteTable.Length; i++)
-        {
-            gameTable.list.Remove(deleteTable[i]);
-        }
-
-        // DB생성 명령문
-        string createDB_Command = $"CREATE DATABASE IF NOT EXISTS `{DBName}`;";
-        // DB사용 명령문
-        string useDB_Command = $"USE `{DBName}`;";
-
-        // DB생성
-        MySqlCommand createDB_SqlCmd = new MySqlCommand(createDB_Command, connection);
-        createDB_SqlCmd.ExecuteNonQuery();
-
-        // DB사용
-        MySqlCommand useDB_SqlCmd = new MySqlCommand(useDB_Command, connection);
-        useDB_SqlCmd.ExecuteNonQuery();
-
-        // Table생성 명령문
-        // 한 테이블당 생성하고 컬럼들 생성
-        for(int i = 0; i < gameTable.list.Count; i++)
-        {
-            string createTable_Command = $"CREATE TABLE IF NOT EXISTS {gameTable.list[i]} (";
-            for(int j = 0; j < game_Columns.Length; j++)
-            {
-                if(j == 2 || j ==5) // float
-                {
-                    createTable_Command += $"{game_Columns[j]} float DEFAULT NULL,";
-                }
-                else // int
-                {
-                    createTable_Command += $"{game_Columns[j]} int(11) DEFAULT NULL,";
-                }
-            }
-            createTable_Command = createTable_Command.TrimEnd(','); // 마지막 쉼표 제거
-            createTable_Command += $") ENGINE = InnoDB DEFAULT CHARSET = latin1 COLLATE = latin1_swedish_ci;";
-            //ENGINE = InnoDB DEFAULT CHARSET = latin1 COLLATE = latin1_swedish_ci;
-
-            // Table 생성
-            MySqlCommand createTable_SqlCmd = new MySqlCommand(createTable_Command, connection);
-            createTable_SqlCmd.ExecuteNonQuery();
-        }
-
-        // PresentDB 사용
-        useDB_SqlCmd.CommandText = $"USE `PresentDB`";
-        useDB_SqlCmd.ExecuteNonQuery();
-
-        // PresentDB에 있는 gamedata들 불러오기
-        for(int i=0; i<gameTable.list.Count; i++)
-        {
-            // table에 몇 행이 있는지
-            string rowCount_Command = $"SELECT COUNT(*) FROM `{gameTable.list[i]}`";
-            MySqlCommand rowCount_SqlCmd = new MySqlCommand(rowCount_Command, connection);
-            int rowCountInTable = (int)rowCount_SqlCmd.ExecuteScalar(); // ExcuteScalar() 메서드는 쿼리를 실행하고 결과 집합의 첫 번째 행의 첫 번째 열의 값을 반환
-
-            string select_Command = $"SELECT * FROM {gameTable.list[i]}";
-            MySqlCommand select_SqlCmd = new MySqlCommand(select_Command, connection);
-            MySqlDataReader reader = select_SqlCmd.ExecuteReader();
-
-            // PresentDB 각 table에 있는 data를 받기위한 List
-            List<List<string>> table_Values = new List<List<string>>();
-
-            while(reader.Read())
-            {
-                for(int j = 0; j < rowCountInTable; j++)
-                {
-                    List<string> columns_Value = new List<string>();
-
-                    for(int k = 0; k < game_Columns.Length; k++)
-                    {
-                        if(k == 2 || k == 5) // float
-                        {
-                            columns_Value.Add(reader.GetFloat(game_Columns[k]).ToString());
-                        }
-                        else // int
-                        {
-                            columns_Value.Add(reader.GetInt32(game_Columns[k]).ToString());
-                        }
-                    }
-
-                    table_Values.Add(columns_Value);
-                }
-            }
-            reader.Close();
-
-            // 한 테이블씩 복사
-            
-
-        }
-        /*
-        네, 맞습니다. CREATE DATABASE와 CREATE TABLE은 각각의 명령문이므로, 한꺼번에 넘겨주어서는 안 됩니다. 
-        MariaDB나 MySQL과 같은 데이터베이스 시스템에서는 각각의 명령문을 구분하여 실행해야 합니다.
-        따라서 CREATE DATABASE와 USE 그리고 CREATE TABLE 등 여러 개의 SQL 명령문을 하나의 문자열로 합쳐서 실행하면 문법 오류가 발생할 수 있습니다. 
-         */
-        /*
-         CREATE DATABASE IF NOT EXISTS `test` /*!40100 DEFAULT CHARACTER SET latin1 COLLATE latin1_swedish_ci
-        USE `test`;
-
-        CREATE TABLE IF NOT EXISTS `calculation_level1_step1` (
-          `User_LicenseNumber` int(11) DEFAULT NULL,
-          `User_Charactor` int(11) DEFAULT NULL,
-          `ReactionRate` int(11) DEFAULT NULL,
-          `AnswerCount` int(11) DEFAULT NULL,
-          `AnswerRate` int(11) DEFAULT NULL,
-          `Playtime` int(11) DEFAULT NULL,
-          `TotalScore` int(11) DEFAULT NULL,
-          `StarPoint` int(11) DEFAULT NULL
-        ) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci; */
-
-    }
+    
 
     // 플레이어 데이터 불러오기, DB에서 불러와서 서버가 클라이언트한테 쏴줄수 있게 string으로 묶어서 반환형 string
     public List<string> LoadCharactorData(int clientlicensenumber, int clientcharactor)
@@ -1137,6 +1021,261 @@ public class DBManager : MonoBehaviour
         return return_List;
     }
 
+    // 하루가 지났을 때 presentDB gamedata -> 요일DB 생성하고 gamedata 저장
+    public void CreateDateDB()
+    {
+        Debug.Log("[DB] CreateDateDB");
 
+        // 생성할 DB 이름
+        string DBName = $"{DateTime.Now.Year.ToString().Substring(2,2)}.{DateTime.Now.Month:00}.{DateTime.Now.Day:00}";
+        Debug.Log($"DBName : {DBName}");
+        // 게임 테이블 명, TableName은 생성되면 알아서 테이블들이 담김. 게임을 제외한 나머지 테이블 제거
+        TableName gameTable = new TableName();
+        string[] deleteTable = { "user_info", "rank", "achievement", "pet" };
+        for (int i = 0; i < deleteTable.Length; i++)
+        {
+            gameTable.list.Remove(deleteTable[i]);
+        }
+
+        // 분석표 테이블 -> analyticsTable
+
+        // DateDB생성
+        MySqlCommand mySqlCommand = new MySqlCommand();
+        mySqlCommand.CommandText = $"CREATE DATABASE IF NOT EXISTS `{DBName}`;"; // DB생성 명령문
+        mySqlCommand.Connection = connection;
+        mySqlCommand.ExecuteNonQuery();
+
+        // DateDB사용
+        mySqlCommand.CommandText = $"USE `{DBName}`;";
+        mySqlCommand.ExecuteNonQuery();
+
+        // Table생성 명령문
+        // 한 테이블당 생성하고 컬럼들 생성
+        // game_Columns = new string[]{ "User_LicenseNumber", "User_Charactor", "ReactionRate", "AnswerCount", "AnswerRate", "Playtime", "TotalScore", "StarPoint" };
+        for (int i = 0; i < gameTable.list.Count; i++)
+        {
+            string createTable_Command = $"CREATE TABLE IF NOT EXISTS {gameTable.list[i]} (";
+            for (int j = 0; j < game_Columns.Length; j++)
+            {
+                if (j == 2 || j == 5) // float -> ReactionRate, Playtime
+                {
+                    createTable_Command += $"{game_Columns[j]} float DEFAULT NULL,";
+                }
+                else // int -> 나머지
+                {
+                    createTable_Command += $"{game_Columns[j]} int(11) DEFAULT NULL,";
+                }
+            }
+            createTable_Command = createTable_Command.TrimEnd(','); // 마지막 쉼표 제거
+            createTable_Command += $") ENGINE = InnoDB DEFAULT CHARSET = latin1 COLLATE = latin1_swedish_ci;";
+            //ENGINE = InnoDB DEFAULT CHARSET = latin1 COLLATE = latin1_swedish_ci;
+
+            // Table 생성
+            MySqlCommand createTable_SqlCmd = new MySqlCommand(createTable_Command, connection);
+            createTable_SqlCmd.ExecuteNonQuery();
+        }
+
+        // PresentDB 사용
+        mySqlCommand.CommandText = $"USE `PresentDB`";
+        mySqlCommand.ExecuteNonQuery();
+
+        // PresentDB의 (table에 있는 (한 행의 Column Data를 담은 List)들을 여러 행으로 담은 List)들을 Table개수만큼 Array를 가지는 변수
+        List<List<string>>[] valuesInColumnsInTable_Array = new List<List<string>>[gameTable.list.Count];
+
+        // PresentDB에 있는 gamedata들 불러와서 위 변수에 저장
+        for (int i = 0; i < gameTable.list.Count; i++)
+        {
+            // table에 몇 행이 있는지
+            string rowCount_Command = $"SELECT COUNT(*) FROM `{gameTable.list[i]}`";
+            MySqlCommand rowCount_SqlCmd = new MySqlCommand(rowCount_Command, connection);
+            int rowCountInTable = (int)rowCount_SqlCmd.ExecuteScalar(); // ExcuteScalar() 메서드는 쿼리를 실행하고 결과 집합의 첫 번째 행의 첫 번째 열의 값을 반환
+
+            string select_Command = $"SELECT * FROM {gameTable.list[i]}";
+            MySqlCommand select_SqlCmd = new MySqlCommand(select_Command, connection);
+            MySqlDataReader reader = select_SqlCmd.ExecuteReader();
+
+            List<List<string>> column_Values_List = new List<List<string>>();
+
+            while (reader.Read())
+            {
+                for (int j = 0; j < rowCountInTable; j++)
+                {
+                    // table에 있는 Column들의 Data를 담은 List
+                    List<string> column_Values = new List<string>();
+
+                    for (int k = 0; k < game_Columns.Length; k++)
+                    {
+                        if (k == 2 || k == 5) // float
+                        {
+                            column_Values.Add(reader.GetFloat(game_Columns[k]).ToString());
+                        }
+                        else // int
+                        {
+                            column_Values.Add(reader.GetInt32(game_Columns[k]).ToString());
+                        }
+                    }
+
+                    column_Values_List.Add(column_Values);
+                }
+            }
+            reader.Close();
+
+            valuesInColumnsInTable_Array[i] = column_Values_List;
+        }
+
+        // 생성한 DateDB 사용
+        mySqlCommand.CommandText = $"USE {DBName};";
+        mySqlCommand.ExecuteNonQuery();
+
+        // DateDB에 presentDB에서 가져온 데이터 복사 생성
+        for(int i = 0; i < gameTable.list.Count; i ++) // Table
+        {
+            for(int j=0; j < valuesInColumnsInTable_Array[i].Count; j ++) // Columns
+            {
+                // 0 -> licenseNumber, 1 -> charactor
+                string insert_Command = $"INSERT INTO {gameTable.list[i]} (`{game_Columns[0]}`,`{game_Columns[1]}`) " +
+                                        $"VALUES ({valuesInColumnsInTable_Array[i][j][0]},{valuesInColumnsInTable_Array[i][j][1]});";
+                mySqlCommand.CommandText = insert_Command;
+                mySqlCommand.ExecuteNonQuery();
+
+                for (int k = 2; k < valuesInColumnsInTable_Array[i][j].Count; k++) // Column
+                {
+                    string update_Command = $"UPDATE {gameTable.list[i]} SET `{game_Columns[k]}` = @value " +
+                                            $"WHERE `{game_Columns[0]}` = {valuesInColumnsInTable_Array[i][j][0]} AND `{game_Columns[1]}` = {valuesInColumnsInTable_Array[i][j][1]};";
+                    mySqlCommand.CommandText = update_Command;
+
+                    if(k == 2 || k == 5) // float
+                    {
+                        mySqlCommand.Parameters.Add("@value", MySqlDbType.Float).Value = float.Parse(valuesInColumnsInTable_Array[i][j][k]);
+                    }
+                    else // int
+                    {
+                        mySqlCommand.Parameters.Add("@value", MySqlDbType.Int32).Value = Int32.Parse(valuesInColumnsInTable_Array[i][j][k]);
+                    }
+                    mySqlCommand.ExecuteNonQuery();
+                }
+            }
+        }
+
+        // 분석테이블에 있는 반응속도, 정답률은 각 게임의 레벨별 스텝에 있는 반응속도, 정답률 갖고와서 평균을 낸 후 저장
+        // 예를들면 베네치아 게임 레벨 1의 6스텝중에 3개의 스텝만 플레이 했다면, 3개 스텝의 반응속도, 정답률 평균을 낸다. 즉 (x1+x2+x3)/3 해버린다.
+        // (∑n)/n
+        // 게임테이블에서 각 게임의 레벨별 스텝1~6의 Column중 ReactionRate와 AnswerRate만 참조한다. 값이 0이면 무시 
+        //string selectTable_Command = $"SELECT * FROM `{tableName_Array[j]}` WHERE `{columnName_Array[0]}` = {licensenumber} AND `{columnName_Array[1]}` = {charactor};"
+
+        내일 와서 이름바꿔;
+        // licensenumber, charactor, reactionRate, answerRate
+        // 클래스로 만들기 
+        List<Tuple<int, int, float, int>>[][] tuple_Structure = new List<Tuple<int, int, float, int>>[analyticsTable.list.Count][];
+
+        List<float>[][] reactionRate_List_List = new List<float>[analyticsTable.list.Count][]; // 초기화
+        List<int>[][] answerRate_List_List = new List<int>[analyticsTable.list.Count][];
+
+        for (int i = 0; i < gameTable.list.Count; i++)
+        {
+            switch(i/6) // 스텝1~6
+            {
+                case 0: // venezia_kor_level1_analytics 
+                    List<float> reactionRate_List = new List<float>();
+                    List<int> answerRate_List = new List<int>();
+                    string select_Command = $"SELECT * FROM `{gameTable.list[i]}` WHERE `{analytics_Columns[0]}` = {} AND `{analytics_Columns[1]}` = {};";
+
+                    // 중복되서 초기화되지 않도록 예외처리
+                    if (tuple_Structure[i / 6] == null)
+                    {
+                        tuple_Structure[i / 6] = new List<Tuple<int, int, float, int>>[valuesInColumnsInTable_Array[i].Count];
+                    }
+                    
+
+                    reactionRate_List_List[i / 6] = new List<float>();
+                    answerRate_List_List[i / 6] = new List<int>();
+
+                    // 중복되서 초기화되지 않도록 예외처리
+                    if(reactionRate_List_List[i/6] == null)
+                    {
+                        reactionRate_List_List[i / 6] = new List<float>[valuesInColumnsInTable_Array[i].Count];
+                    }
+                    
+
+                    for (int j = 0; j < valuesInColumnsInTable_Array[i].Count; i ++) // 테이블에 저장된 행수(유저와 캐릭터들)
+                    {
+                        // 중복되서 초기화되지 않도록 예외처리
+                        if (tuple_Structure[i / 6][j] == null)
+                        {
+                            tuple_Structure[i / 6] = new List<Tuple<int, int, float, int>>[valuesInColumnsInTable_Array[i].Count];
+                        }
+
+
+                        // 중복되서 초기화되지 않도록 예외처리
+                        if (reactionRate_List_List[i / 6][j] == null)
+                        {
+                            reactionRate_List_List[i / 6][j] = new List<float>();
+                        }
+
+                        // 데이터가 있다면(0이 아니라면) 추가
+                        if(float.Parse(valuesInColumnsInTable_Array[i][j][2]) != 0 && Int32.Parse(valuesInColumnsInTable_Array[i][j][4]) != 0)
+                        {
+                            reactionRate_List_List[i / 6][j].Add(float.Parse(valuesInColumnsInTable_Array[i][j][0]));
+                            reactionRate_List_List[i / 6][j].Add(float.Parse(valuesInColumnsInTable_Array[i][j][1]));
+                            reactionRate_List_List[i / 6][j].Add(float.Parse(valuesInColumnsInTable_Array[i][j][2]));
+                            reactionRate_List_List[i / 6][j].Add(Int32.Parse(valuesInColumnsInTable_Array[i][j][4]));
+                        }
+                        
+                    }
+                    valuesInColumnsInTable_Array[i][0][2]
+                    valuesInColumnsInTable_Array[i][0][4]
+
+                    break;
+                case 1: // venezia_kor_level2_analytics 
+                    break;
+                case 2: // venezia_kor_level3_analytics 
+                    break;
+                case 3: // venezia_eng_level1_analytics 
+                    break;         
+                case 4: // venezia_eng_level2_analytics 
+                    break;         
+                case 5: // venezia_eng_level3_analytics 
+                    break;
+                case 6: // venezia_chn_analytics 
+                    break;
+                case 7: // calculation_level1_analytics 
+                    break; 
+                case 8: // calculation_level2_analytics 
+                    break; 
+                case 9: // calculation_level3_analytics 
+                    break;
+                case 10: // gugudan_level1_analytics 
+                    break;  
+                case 11: // gugudan_level2_analytics 
+                    break;  
+                case 12: // gugudan_level3_analytics 
+                    break;
+
+            }
+        }
+
+
+
+        /*
+        네, 맞습니다. CREATE DATABASE와 CREATE TABLE은 각각의 명령문이므로, 한꺼번에 넘겨주어서는 안 됩니다. 
+        MariaDB나 MySQL과 같은 데이터베이스 시스템에서는 각각의 명령문을 구분하여 실행해야 합니다.
+        따라서 CREATE DATABASE와 USE 그리고 CREATE TABLE 등 여러 개의 SQL 명령문을 하나의 문자열로 합쳐서 실행하면 문법 오류가 발생할 수 있습니다. 
+         */
+        /*
+         CREATE DATABASE IF NOT EXISTS `test` /*!40100 DEFAULT CHARACTER SET latin1 COLLATE latin1_swedish_ci
+        USE `test`;
+
+        CREATE TABLE IF NOT EXISTS `calculation_level1_step1` (
+          `User_LicenseNumber` int(11) DEFAULT NULL,
+          `User_Charactor` int(11) DEFAULT NULL,
+          `ReactionRate` int(11) DEFAULT NULL,
+          `AnswerCount` int(11) DEFAULT NULL,
+          `AnswerRate` int(11) DEFAULT NULL,
+          `Playtime` int(11) DEFAULT NULL,
+          `TotalScore` int(11) DEFAULT NULL,
+          `StarPoint` int(11) DEFAULT NULL
+        ) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci; */
+
+    }
 
 }

@@ -39,3 +39,36 @@ public class TableName
         }
     }
 }
+
+public class AnalyticsTableName
+{
+    public List<string> list = new List<string>();
+
+    public AnalyticsTableName()
+    {
+        for(int i = 0; i < 13; i++)
+        {
+            if (i < 3) // venezia_kor
+            {
+                list.Add($"venezia_kor_level{i + 1}_anlaytics");
+            }
+            else if (i < 6) // venezia_eng
+            {
+                list.Add($"venezia_eng_level{i - 2}_anlaytics");
+            }
+            else if (i == 6) // venezia_chn
+            {
+                list.Add($"venezia_chn_anlaytics");
+            }
+            else if (i < 10) // calculation
+            {
+                list.Add($"calculation_level{i - 6}_anlaytics");
+            }
+            else // gugudan
+            {
+                list.Add($"gugudan_level{i - 9}_anlaytics");
+            }
+        }
+    }
+}
+
