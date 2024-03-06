@@ -11,10 +11,11 @@ public class ObjectPooling_H : MonoBehaviour
     [SerializeField]private EAG_Manager aopManager;    
 
     private List<GameObject> cubePool = new List<GameObject>();
+    private List<GameObject> bool_Pool = new List<GameObject>();
     private List<float> reactionList = new List<float>();
     private MovingCube resultObject;
 
-    public float answer;    
+    public float answer;
     private int problom_count=0;
     private int answer_count = 0;
     private int totalQuestions = 0;
@@ -65,8 +66,9 @@ public class ObjectPooling_H : MonoBehaviour
         {
             waitTime = 0;
             TimeSlider.Instance.DecreaseTime_Item(5);
-            WaitExplosionBubble_co = WaitExplosionBubble_Co(resultObject, true);
-            StartCoroutine(WaitExplosionBubble_co);            
+            WaitExplosionBubble_co = WaitExplosionBubble_Co(resultObject);
+            StartCoroutine(WaitExplosionBubble_co);
+            Next_Result();
         }
     }
     private void Click_Obj()
@@ -80,8 +82,11 @@ public class ObjectPooling_H : MonoBehaviour
             {
                 //정답 체크
                 MovingCube movingCube = hit.collider.GetComponent<MovingCube>();
-                WaitExplosionBubble_co = WaitExplosionBubble_Co(movingCube, true);
+                
+                WaitExplosionBubble_co = WaitExplosionBubble_Co(movingCube);                 
                 StartCoroutine(WaitExplosionBubble_co);
+                bool_Pool.Remove(movingCube.gameObject);
+                Answer_Check(movingCube);
             }
         }
     }
@@ -111,10 +116,15 @@ public class ObjectPooling_H : MonoBehaviour
         for (int i = 0; i < 3; i++)
         {
             //문제 출시
-            cubePool[i].SetActive(true);
+            cubePool[i].SetActive(true);            
             //풀에 담겨있는 오브젝트에 값 지정
-            MovingCube movingcube = cubePool[i].GetComponent<MovingCube>();            
-            movingcube.reactionRate = 0;
+            MovingCube movingcube = cubePool[i].GetComponent<MovingCube>();
+            //상태 True만 담기는 리스트
+            bool_Pool.Add(cubePool[i]);
+            movingcube.index = i;
+
+            movingcube.reactionRate = 0; //반응속도 초기화
+
             //문제 뽑기
             aopManager.SplitLevelAndStep();
             //같은 결과가 나오지 않도록 처리
@@ -159,7 +169,7 @@ public class ObjectPooling_H : MonoBehaviour
             waitTime = 0;
             //정답오브젝트의 반응속도를 담기
             reactionList.Add(movingCube.reactionRate);
-            
+            Next_Result();
         }
         else
         {
@@ -171,20 +181,24 @@ public class ObjectPooling_H : MonoBehaviour
     {
         //첫번째 문제를 맞추었을 경우 다음 문제를 랜덤으로 출시하기 위한 로직        
         int step = (Random.Range(0, 2) == 1) ? 1 : -1;
-        int start = (step == 1) ? 0 : cubePool.Count - 1;
+        int start = (step == 1) ? 0 : bool_Pool.Count - 1;
 
-        for (int i = start; i >= 0 && i < cubePool.Count; i += step)
+        if (bool_Pool.Count != 0)
         {
-            if (cubePool[i].activeSelf)
+            for (int i = start; i >= 0 && i < bool_Pool.Count; i += step)
             {
-                MovingCube movingCube = cubePool[i].GetComponent<MovingCube>();
+                MovingCube movingCube = bool_Pool[i].GetComponent<MovingCube>();
                 TakeResult(movingCube.result);
                 resultObject = movingCube;
                 return;
             }
         }
+        else
+        {
+            StartCoroutine(NextQuestionAni_Co());            
+        }
+        
 
-        CubeStart();
     }
 
     //정답 결과 출력 메서드
@@ -213,7 +227,7 @@ public class ObjectPooling_H : MonoBehaviour
         problom_count = problom;
         totalQuestions = problom;
         aopManager.totalQuestions = totalQuestions;
-        answer_count = 0;         
+        answer_count = 0;
     }
     
 
@@ -234,22 +248,19 @@ public class ObjectPooling_H : MonoBehaviour
         aopManager.answers = answer_count * 100 / totalQuestions;
     }
 
-    private IEnumerator WaitExplosionBubble_Co(MovingCube obj,bool answer)
+    private IEnumerator WaitExplosionBubble_Co(MovingCube obj)
     {
         obj.ExplosionAni();
         yield return new WaitForSeconds(1f);
         obj.DefaultAni();
         obj.gameObject.SetActive(false);
-        if (answer)
-        {
-            Answer_Check(obj);
-        }
-        else
-        {
-            Next_Result();
-        }
     }
 
+    private IEnumerator NextQuestionAni_Co()
+    {
+        yield return new WaitForSeconds(2f);
+        CubeStart();
+    }
 
 }
 

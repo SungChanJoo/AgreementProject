@@ -6,13 +6,15 @@ using TMPro;
 
 public class MovingCube : MonoBehaviour
 {
-    [SerializeField] private float timeSet;    
-    
-    [SerializeField]private TextMeshPro cube_text;
+    [SerializeField] private float timeSet;
+
+    [SerializeField] private TextMeshPro cube_text;
 
     public float result = 0;
 
     public float reactionRate = 0;
+
+    public int index;
 
     Animator animator;
     private void Awake()
