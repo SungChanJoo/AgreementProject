@@ -35,16 +35,18 @@ public class Result_Printer : MonoBehaviour
         //총 점수 계산
         totalScore.text = data.TotalScore.ToString();
 
+        Debug.Log(game_Type);
         //게임 종류에 따른 Text출력
         switch (game_Type)
         {
             case Game_Type.A:
-                answerCount.text = $"정답:{data.AnswersCount} / 총문제 수:{data.TotalQuestions}";
+                answerCount.text = $"정답:{data.AnswersCount} / 총 문제 수:{data.TotalQuestions}";
                 break;
             case Game_Type.B:
                 answerCount.text = $"정답:{data.AnswersCount} / 클릭 수:{data.TotalQuestions}";
                 break;
             case Game_Type.C:
+                answerCount.text = $"정답:{data.AnswersCount} / 총 문제 수:{data.TotalQuestions}";
                 break;
             case Game_Type.D:
                 break;
