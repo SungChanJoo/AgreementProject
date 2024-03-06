@@ -68,6 +68,7 @@ public class ObjectPooling_H : MonoBehaviour
             TimeSlider.Instance.DecreaseTime_Item(5);
             WaitExplosionBubble_co = WaitExplosionBubble_Co(resultObject);
             StartCoroutine(WaitExplosionBubble_co);
+            bool_Pool.Remove(resultObject.gameObject);
             Next_Result();
         }
     }
