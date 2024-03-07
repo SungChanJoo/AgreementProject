@@ -31,13 +31,16 @@ public class SettingManager : MonoBehaviour
     [SerializeField] private Image[] BgmSlider_color;
     [SerializeField] private Image[] SfxSlider_color;
 
-    public bool Stop = true;   
+    public bool Stop = true;
+    public bool IsActive = false;
 
     private int sound_num;
 
     [Header("MetaWorld")]
     public bool IsMetaWorld = false;
     [SerializeField] private GameObject Restart_Btn;
+
+    
     private void Awake()
     {        
         if (Instance == null)
@@ -110,6 +113,8 @@ public class SettingManager : MonoBehaviour
     //환경설정 UI Off
     public void Setting_Btn()
     {
+        
+        
         //캔버스의 할당된 카메라가 없다면
         if (setting.worldCamera == null)
         {
@@ -120,6 +125,7 @@ public class SettingManager : MonoBehaviour
             TimeSlider.Instance.TimeSliderControll();
         }
         setting_Canvas.SetActive(!setting_Canvas.activeSelf);
+        IsActive = setting_Canvas.activeSelf;
     }
     public void NonTemporalSetting_Btn()
     {

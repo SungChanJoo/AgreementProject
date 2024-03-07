@@ -186,7 +186,8 @@ public abstract class GameSetting : MonoBehaviour
     }
     public void Setting_UI()
     {        
-        SettingManager.Instance.EnableSettingBtn();        
+        SettingManager.Instance.EnableSettingBtn();
+        
         if (isStop)
         {   //게임 시작 전이라면 시간에 영향받지 않는 
             SettingManager.Instance.NonTemporalSetting_Btn();

@@ -25,9 +25,9 @@ public class ObjectPooling_H : MonoBehaviour
     private bool timeOut = false;
     private bool touchEnable = false;
 
-    private IEnumerator WaitExplosionBubble_co;
+    private IEnumerator WaitExplosionBubble_co;    
 
-    
+
     private void Update()
     {
         Click_Obj();
@@ -35,7 +35,7 @@ public class ObjectPooling_H : MonoBehaviour
     }
     //Start 버튼 이벤트가 콜백되면 실행
     public void ObjectPooling()
-    {
+    {        
         aopManager.isStop = false;
         //시간 흐르게
         TimeSlider.Instance.StartTime();
@@ -54,7 +54,8 @@ public class ObjectPooling_H : MonoBehaviour
     private void TimeCheck()
     {
         //게임이 끝났다면
-        if (aopManager.isStop || (timeOut && TimeSlider.Instance.TimeStop))
+        if (aopManager.isStop || (timeOut && TimeSlider.Instance.TimeStop)||
+            SettingManager.Instance.IsActive)
         {
             return;
         }
@@ -282,19 +283,7 @@ public class ObjectPooling_H : MonoBehaviour
             bubble.UpScale();
         }
         yield return new WaitForSeconds(0.3f);
-        //문제 애니메이션 넣기
-        //float currentTime = 0;
-        //while (currentTime<2f)
-        //{
-        //    for (int i = 0; i < cubePool.Count; i++)
-        //    {
-        //        currentTime += Time.fixedDeltaTime;
-        //        cubePool[i].transform.position =
-        //            Vector3.MoveTowards(cubePool[i].transform.position,
-        //            poolPosition[i].transform.position,speed);
-        //        yield return new WaitForFixedUpdate();
-        //    }
-        //}
+        //문제 연출 넣기        
         float startTime = Time.time;
         float duration = 0.7f;
 
