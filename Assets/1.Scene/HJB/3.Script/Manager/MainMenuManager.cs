@@ -23,8 +23,15 @@ public class MainMenuManager : MonoBehaviour
         SettingManager.Instance.EnableSettingBtn();
     }
     public void GameScene()
-    {
-        SceneManager.LoadScene((int)game_Type+2);
+    {        
+        if ((int)game_Type >= 2)
+        {
+            SceneManager.LoadScene(4);
+        }
+        else
+        {
+            SceneManager.LoadScene((int)game_Type+2);
+        }
     }
     public void GameType_Btn(int Type)
     {
