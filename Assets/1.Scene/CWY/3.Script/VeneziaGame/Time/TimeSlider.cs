@@ -167,7 +167,7 @@ public interface ITimeSlider
 
     public void PlayTimeChecker()
     {
-        if (startTime != 0)
+        if (startTime != 0 && !SettingManager.Instance.IsActive)
         {
             PlayTime += Time.deltaTime;
         }
