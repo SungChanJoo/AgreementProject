@@ -13,6 +13,7 @@ public class LoadImage : MonoBehaviour
     [SerializeField] private GameObject content_obj;
     [SerializeField] private GameObject image_prefeb;
     [SerializeField] private Image profile_Img;
+    [SerializeField] private Image select_img;
     private GameObject[] image_obj; 
     private Texture2D[] texture2Ds;
 
@@ -54,8 +55,11 @@ public class LoadImage : MonoBehaviour
         Rect rect = new Rect(0, 0, texture2Ds[index].width, texture2Ds[index].height);
 
         profile_Img.sprite = Sprite.Create(texture2Ds[index], rect, new Vector2(0.5f, 0.5f));
+    }
 
-
+    public void Selectprofile_Change()
+    {
+        select_img.sprite = profile_Img.sprite;
     }
 
     
