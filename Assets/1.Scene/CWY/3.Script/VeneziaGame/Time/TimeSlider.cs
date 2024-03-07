@@ -123,6 +123,7 @@ public interface ITimeSlider
         if(startTime < 0)
         {
             startTime = 0;
+            slider.value = 0;
         }
     }
 
@@ -135,11 +136,7 @@ public interface ITimeSlider
         else
         {
             time = Time.unscaledDeltaTime;
-        }
-        if (startTime>0)
-        {
-            
-        }
+        }        
     }
     public void StartTime()
     {
@@ -170,7 +167,7 @@ public interface ITimeSlider
 
     public void PlayTimeChecker()
     {
-        if (startTime != 0)
+        if (startTime != 0 && !SettingManager.Instance.IsActive)
         {
             PlayTime += Time.deltaTime;
         }

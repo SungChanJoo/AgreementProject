@@ -5,5 +5,5 @@ using UnityEngine;
 public class MusicKeyboard : MonoBehaviour
 {
     public List<AudioClip> audioClips;
-
+    public GameObject InteractableParticle;
 }

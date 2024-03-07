@@ -20,7 +20,14 @@ public class ProfileText_M : MonoBehaviour
 
     private void Start()
     {
-        StartLoadCharactorData();
+        try
+        {
+            StartLoadCharactorData();
+        }
+        catch (System.Exception)
+        {
+            Debug.Log("받아온 데이터가 없습니다.");
+        }
     }
     
     //플레이어 변경 Panel을 클릭 시 호출
@@ -60,25 +67,51 @@ public class ProfileText_M : MonoBehaviour
         Birthday.text = DataBase.Instance.PlayerCharacter[0].BirthDay;
         totalAnswer.text = DataBase.Instance.PlayerCharacter[0].TotalAnswers.ToString();
         //시간 계산 후 출력
-        CalculationPlayTime();
-        
+        CalculationPlayTime();        
     }
     public void NameChange()
     {
-        //데이터 바꾸기
-        DataBase.Instance.PlayerCharacter[0].playerName = ChangeName_Input.text;
-        //바꾼 이름 출력
-        characterName.text = ChangeName_Input.text;
-        CharacterChangeNameLoad();
-        Client.instance.RegisterCharactorName_SaveDataToDB(ChangeName_Input.text);
+        try
+        {
+            //데이터 바꾸기
+            DataBase.Instance.PlayerCharacter[0].playerName = ChangeName_Input.text;
+            //바꾼 이름 출력
+            characterName.text = ChangeName_Input.text;
+            //DB에 Load하기
+            CharacterChangeNameLoad();
+            Client.instance.RegisterCharactorName_SaveDataToDB(ChangeName_Input.text);            
+        }
+        catch (System.Exception)
+        {
+            characterName.text = ChangeName_Input.text;
+            Debug.Log("네트워크 연결 또는 DB에 접속이 불가합니다.");            
+        }
+        TextClear(ChangeName_Input);
     }
 
     public void BirthDayChange()
     {
-        //데이터 바꾸기
-        DataBase.Instance.PlayerCharacter[0].BirthDay = ChangeBirthday_Input.text;
-        //바꾼 생일 출력
-        Birthday.text = ChangeBirthday_Input.text;
+        try
+        {
+            //데이터 바꾸기
+            DataBase.Instance.PlayerCharacter[0].BirthDay = ChangeBirthday_Input.text;
+            //바꾼 생일 출력
+            Birthday.text = ChangeBirthday_Input.text;
+            //DB에 Load하기
+            
+        }
+        catch (System.Exception)
+        {
+            Birthday.text = ChangeBirthday_Input.text;
+            Debug.Log("네트워크 연결 또는 DB에 접속이 불가합니다.");
+        }
+        TextClear(ChangeBirthday_Input);
+        
+    }
+
+    public void TextClear(TextMeshProUGUI tmp)
+    {
+        tmp.text = string.Empty;
     }
 
 }

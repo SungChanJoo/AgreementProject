@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.Android;
 using UnityEngine.UI;
+using Mirror;
 
 public enum Sound_
 {
@@ -16,7 +17,8 @@ public class SettingManager : MonoBehaviour
 {
 	public static SettingManager Instance = null;
     
-    [SerializeField] private GameObject setting_Canvas;
+    public GameObject setting_Canvas;
+    [SerializeField] Canvas setting;
     [SerializeField] private GameObject InGameBtn_panel;
     [SerializeField] private GameObject ReQuestion_panel;        
     
@@ -28,11 +30,17 @@ public class SettingManager : MonoBehaviour
     [SerializeField] private Image[] MasterSlider_color;
     [SerializeField] private Image[] BgmSlider_color;
     [SerializeField] private Image[] SfxSlider_color;
-    
-    
-    int count = 0;
+
+    public bool Stop = true;
+    public bool IsActive = false;
 
     private int sound_num;
+
+    [Header("MetaWorld")]
+    public bool IsMetaWorld = false;
+    [SerializeField] private GameObject Restart_Btn;
+
+    
     private void Awake()
     {        
         if (Instance == null)
@@ -44,8 +52,8 @@ public class SettingManager : MonoBehaviour
         {
             Destroy(gameObject);
         }        
-    }
-    
+    }    
+
     private IEnumerator Start()
     {        
         yield return StartCoroutine(AppSetPermission_Co());
@@ -105,12 +113,34 @@ public class SettingManager : MonoBehaviour
     //환경설정 UI Off
     public void Setting_Btn()
     {
-        if (TimeSlider.Instance != null)
+        
+        
+        //캔버스의 할당된 카메라가 없다면
+        if (setting.worldCamera == null)
+        {
+            setting.worldCamera = Camera.main;
+        }
+        if (TimeSlider.Instance != null&&!Stop)
         {
             TimeSlider.Instance.TimeSliderControll();
         }
         setting_Canvas.SetActive(!setting_Canvas.activeSelf);
+        IsActive = setting_Canvas.activeSelf;
     }
+    public void NonTemporalSetting_Btn()
+    {
+        //캔버스의 할당된 카메라가 없다면
+        if (setting.worldCamera == null)
+        {
+            setting.worldCamera = Camera.main;
+        }
+        setting_Canvas.SetActive(!setting_Canvas.activeSelf);
+        if(IsMetaWorld)
+        {
+            Restart_Btn.SetActive(false);
+        }
+    }
+    
     public void MetaWorldSceneLoad_Btn()
     {
         SceneManager.LoadScene("JSC_Test_MetaWorld");
@@ -125,8 +155,21 @@ public class SettingManager : MonoBehaviour
     }
     public void NextMainScene()
     {
+
         //메뉴 Scene 빌드번호 1로 지정
         SceneManager.LoadScene(1);
+        if (IsMetaWorld)
+        {
+            //메타월드안에서 호출하면 씬 이동을 하게 되면 들어오기 전 상태로 돌리기
+            Restart_Btn.SetActive(true);
+            NetworkClient.Disconnect();
+            Destroy(FindObjectOfType<PetSwitchNetworkManager>().gameObject);
+            Destroy(FindObjectOfType<CrewSelectManager>().gameObject);
+            if (AudioManager.Instance != null)
+                AudioManager.Instance.BGM_Play(0);
+            IsMetaWorld = false;
+        }
+
     }
     public void Sound_Num(int num)
     {
@@ -189,9 +232,18 @@ public class SettingManager : MonoBehaviour
 
         
     }
+    private void PlayerSaveData()
+    { 
+        //여기서 상재형 메서드 받아서 Save 할 것.(Player_DB형식)
+        //DataBase.Instance.PlayerCharacter[0];
+    }
+     
+
+
     //Application 종료 버튼
     public void ApplicationExit_Btn()
     {
+        
 #if UNITY_EDITOR
         UnityEditor.EditorApplication.isPlaying = false;
 #endif

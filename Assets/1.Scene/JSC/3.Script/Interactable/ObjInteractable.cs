@@ -9,6 +9,8 @@ public class ObjInteractable : NetworkBehaviour
     public ObjInteractor player;
     public int PlayTime;
     public int LimitTime;
+    public GameObject InteractableParticle;
+
     public virtual void Awake()
     {
         //버튼이 켜져있으면 끄기
@@ -25,7 +27,8 @@ public class ObjInteractable : NetworkBehaviour
     //상호작용 오브젝트를 나갔을 때
     private void OnTriggerExit(Collider other)
     {
-        player.InteractableUI(InteractableButton, false);//버튼이 켜져있으면 끄기
+        if(player != null)
+            player.InteractableUI(InteractableButton, false);//버튼이 켜져있으면 끄기
         player = null; //초기화
     }
 

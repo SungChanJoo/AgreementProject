@@ -9,13 +9,12 @@ public class PlayerMod_Toggle : MonoBehaviour
     [SerializeField] private GameObject[] next_obj;
     [SerializeField] private GameObject filter_Canvas;
     [SerializeField] private GameObject nonfilter_Canvas;
-    private int playerMod = 1;    
+    public int playerMod = 1;    
     RectTransform rectTransform;
     RectTransform[] rects;
-    Vector3 nextVector3;
-    float nextVector = 0;
+    Vector3 nextVector3;    
     bool onFilter = false;
-    bool playing = false;
+    public bool playing = false;
     
     private void Start()
     {
@@ -44,8 +43,7 @@ public class PlayerMod_Toggle : MonoBehaviour
             onFilter = true;
             nextVector3 = rects[1].position;
         }
-        filter_Canvas.SetActive(!filter_Canvas.activeSelf);
-        nonfilter_Canvas.SetActive(!nonfilter_Canvas.activeSelf);
+        CollectionsManager.Instance?.ToggleOwnedCrew();
         StartCoroutine(MoveSelect_Obj(nextVector3));
         
     }

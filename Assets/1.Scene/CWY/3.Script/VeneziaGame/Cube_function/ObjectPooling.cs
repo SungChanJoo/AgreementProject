@@ -30,8 +30,7 @@ public class ObjectPooling : MonoBehaviour
     //메테오 , 프리즈 등 아이템 생성.
     public List<GameObject> MeteorPool = new List<GameObject>();
     public List<GameObject> PausePool = new List<GameObject>();
-    //큐브의 최대 반경거리 제한
-    public float MaxDistance;
+
     private void Awake()
     {
         #region Singleton 
@@ -49,8 +48,6 @@ public class ObjectPooling : MonoBehaviour
     private void Start()
     {
         CreateItem();
-        //아이템 프리팹 
-        //StartCoroutine(Cube_Co());
         StartCoroutine(Meteor_Co());
         StartCoroutine(Pause_Co());
     }
@@ -63,8 +60,8 @@ public class ObjectPooling : MonoBehaviour
     }
     public void ReStartCubePooling_co()
     {
-        CubePooling = Cube_Co();
-        StartCoroutine(ReStartCube_Co());
+        CubeRestartPooling = ReStartCube_Co();
+        StartCoroutine(CubeRestartPooling);
     }
     public IEnumerator Cube_Co()
     {
@@ -87,7 +84,7 @@ public class ObjectPooling : MonoBehaviour
         while (cubePool.Count > 0)
         {
             int Randnum = Random.Range(0, cubePool.Count);
-            float randomValue = Random.Range(-100, 101);
+            float randomValue = Random.Range(-90, 90);
             Vector3 offset = new Vector3(randomValue, 0, 0); // 좌우 변경을위한 랜덤값
             cubePool[Randnum].transform.position = Pool_Position.transform.position + offset;
             cubePool[Randnum].SetActive(true);
@@ -105,7 +102,7 @@ public class ObjectPooling : MonoBehaviour
             yield return new WaitForSeconds(cool); //난이도에 따라 재생되는 시간을 바꿀것
             //아이템 랜덤 생성
             int Randnum = Random.Range(0, MeteorPool.Count);
-            float randomValueX = Random.Range(-100, 101);
+            float randomValueX = Random.Range(-90, 90);
             //  float randomValueZ = Random.Range(-100, 101);
             Vector3 offset = new Vector3(randomValueX, 0, -40); // 좌우 변경을위한 랜덤값
             MeteorPool[Randnum].transform.position = Pool_Position.transform.position + offset;
@@ -122,7 +119,7 @@ public class ObjectPooling : MonoBehaviour
             yield return new WaitForSeconds(cool); //난이도에 따라 재생되는 시간을 바꿀것
             //아이템 랜덤 생성
             int Randnum = Random.Range(0, MeteorPool.Count);
-            float randomValue = Random.Range(-100, 101);
+            float randomValue = Random.Range(-80, 90);
             Vector3 offset = new Vector3(randomValue, 0, 0); // 좌우 변경을위한 랜덤값
             PausePool[Randnum].transform.position = Pool_Position.transform.position + offset;
             PausePool[Randnum].SetActive(true);

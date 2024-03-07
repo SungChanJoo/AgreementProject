@@ -34,7 +34,7 @@ public class VeneziaManager : GameSetting
     //한글 및 영어 문제에 사용 할 이미지 sprite 한글과 영어는 공용으로 사용하고 , 한자는 따로 
     [SerializeField] private Sprite[] sprites_KE;    // 1번부터 ~ 5번까지는 step1 ,  step 2는 
     private string[] KorWord = { "학" , "말", "닭", "곰", "하마", "표범", "팬더",
-            "타조", "쿼카", "치타", "참새", "제비", "젖소", "염소", "여우", "악어", "사자", "사슴", "돼지", "기린"};
+            "타조", "쿼카", "치타", "참새", "제비", "젖소", "염소", "여우", "악어", "사자", "사슴", "돼지", "기린"}; // 20개 
     private string[] EnglishWord =
     {
         "Crane", "Horse", "Chicken", "Bear", "Hippo", "Leopard", "Panda",
@@ -112,7 +112,7 @@ public class VeneziaManager : GameSetting
         trueReactionTime = 0;
         CorrectAnswerCount = 0;
         ClickCount = 0;
-        ObjectPooling.Instance.CreateQuestPrefab(QuestRange);
+        ObjectPooling.Instance.CreateQuestPrefab(QuestRange); //Todo: 임시
         DisplayRandomQuest();
         //시간 시작 
         StartTime();
@@ -126,19 +126,16 @@ public class VeneziaManager : GameSetting
     {
         //  GameStop();
         Click_Obj();
-        if (TimeSlider.Instance.startTime < 0 && !isGameover)
+        if (TimeSlider.Instance.startTime <= 0)
         {
             GameOver();
         }
-
-
-        print(totalReactionTime);
     }
     //오브젝트 클릭시 입력처리
-    //Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Began > 터치입력
+    //|| (Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Began)
     private void Click_Obj()
     {
-        CheckCubeTypes();
+       // CheckCubeTypes();
         if (Input.GetMouseButtonDown(0))
         {
             Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
@@ -146,7 +143,7 @@ public class VeneziaManager : GameSetting
 
             if (Physics.Raycast(ray, out hit) && !hit.collider.gameObject.CompareTag("Ground"))
             {
-                print(hit.collider.gameObject.name);
+                //print(hit.collider.gameObject.name);
                 //큐브 오브젝트 판단
                 Cube Questprefab = hit.collider.gameObject.GetComponent<Cube>();
                 if (Questprefab != null && Questprefab.objectType == ObjectType.CorrectAnswer) // 큐브를 눌렀을때 Quest 인지 알아야함
@@ -172,7 +169,7 @@ public class VeneziaManager : GameSetting
                 }
                 else if (Questprefab != null && Questprefab.objectType != ObjectType.CorrectAnswer)
                 {
-                    print("오답클릭!");
+                    //print("오답클릭!");
                     ClickCount++;
                     ObjectPooling.Instance.cubePool.Add(hit.collider.gameObject);
                     hit.collider.gameObject.SetActive(false);
@@ -185,7 +182,7 @@ public class VeneziaManager : GameSetting
                     ItemFnc item = hit.collider.gameObject.GetComponent<ItemFnc>();
                     if (item.veneziaItem == VeneziaItem.Meteor) // veneziaItem이 메테오인 경우
                     {
-                        print("메테오 클릭!"); // 또는 다른 동작을 수행
+                        //print("메테오 클릭!"); 
                         ObjectPooling.Instance.MeteorPool.Add(hit.collider.gameObject);
                         TimeSlider.Instance.DecreaseTime_Item(5);
                         hit.collider.gameObject.SetActive(false);
@@ -193,7 +190,7 @@ public class VeneziaManager : GameSetting
 
                     if (item.veneziaItem == VeneziaItem.Pause) // Pause
                     {
-                        print("멈춰!");
+                        //print("멈춰!");
                         ObjectPooling.Instance.PausePool.Add(hit.collider.gameObject);
                         hit.collider.gameObject.SetActive(false);
                         StartCoroutine(Pause_co());
@@ -204,11 +201,6 @@ public class VeneziaManager : GameSetting
         }
 
 
-    }
-    private void OnDrawGizmos()
-    {
-        Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-        Debug.DrawRay(ray.origin, ray.direction * 100f, Color.red);
     }
 
     IEnumerator Pause_co()
@@ -221,14 +213,15 @@ public class VeneziaManager : GameSetting
     }
     private void StartTime()
     {
+        isStop = false;
+        Start_Btn();
         TimeSlider.Instance.StartTime();
         TimeSlider.Instance.TimeStop = false;
 
     }
     #region Level설정
     protected override void Level_1(int step)
-    {
-        QuestRange = 5;
+    {   
         StartSet();
         switch (step)
         {
@@ -251,7 +244,6 @@ public class VeneziaManager : GameSetting
     }
     protected override void Level_2(int step)
     {
-        QuestRange = 10;
         StartSet();
         switch (step)
         {
@@ -274,7 +266,7 @@ public class VeneziaManager : GameSetting
     }
     protected override void Level_3(int step)
     {
-        QuestRange = 20;
+        StartSet();
         switch (step)
         {
             case 1:
@@ -351,14 +343,17 @@ public class VeneziaManager : GameSetting
         {
             case 60:
                 QuestCount = 10;
+                QuestRange = 5;
                 DestroyTime = 10;
                 break;
             case 180:
                 QuestCount = 14; // 예시 값
+                QuestRange = 7;
                 DestroyTime = 10;
                 break;
             case 300:
                 QuestCount = 20; // 예시 값
+                QuestRange = 10;
                 DestroyTime = 10;
                 break;
             default:
@@ -368,6 +363,7 @@ public class VeneziaManager : GameSetting
     #endregion
     private void GameOver()
     {
+        if (isGameover) return;
         TimeSlider.Instance.startTime = 0;
         isGameover = true;
         totalQuestions = ClickCount;

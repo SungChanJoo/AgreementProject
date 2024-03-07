@@ -7,6 +7,7 @@ using UnityEngine.Android;
 using System;
 
 
+
 public class LoadImage : MonoBehaviour
 {
     [SerializeField] private GameObject content_obj;
@@ -19,10 +20,11 @@ public class LoadImage : MonoBehaviour
     {
         SettingManager.Instance.Re_AppSetPermission();
         string pathFolder = Application.persistentDataPath;
-        string galaryPath = pathFolder.Substring(0, pathFolder.IndexOf("Android")) + "/DCIM/UnityCamera/";
-        string[] pngFiles = Directory.GetFiles(galaryPath,"*.png");
+        //string galaryPath = pathFolder.Substring(0, pathFolder.IndexOf("Android")) + "/DCIM/Camera/";
+        string galaryPath = $"{pathFolder}/";
+        string[] pngFiles = Directory.GetFiles(galaryPath,"*.jpg");
         Texture2D[] textures = new Texture2D[pngFiles.Length];
-
+        Debug.Log(textures.Length);
         image_obj = new GameObject[pngFiles.Length];
         for (int i = 0; i < pngFiles.Length; i++)
         {
@@ -46,7 +48,7 @@ public class LoadImage : MonoBehaviour
         texture2Ds = new Texture2D[pngFiles.Length];
         texture2Ds = textures;
 
-    }
+    }    
     public void SelectProfile_Image(int index)
     {
         Rect rect = new Rect(0, 0, texture2Ds[index].width, texture2Ds[index].height);

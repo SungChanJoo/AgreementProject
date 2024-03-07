@@ -21,6 +21,8 @@ public class PlayerMovement : NetworkBehaviour
     public float decceleration = 1f;
     public float velPower = 1f;
 
+    public float SetFowardRotateTime = 5f;
+    public float _setRotateTimebet;
     float moveInput;
     ButtonState buttonState = ButtonState.None;
 
@@ -33,12 +35,14 @@ public class PlayerMovement : NetworkBehaviour
     public bool IsPress = false;
     public GameObject PlayerInputUI;
     private Rigidbody _rb;
+    public Animator Anim;
     private CinemachineVirtualCamera CVcam;
     //public GameObject playerPrefeb;
 
     private void Awake()
     {
         _rb = GetComponent<Rigidbody>();
+        Anim = GetComponent<Animator>();
         if (PlayerInputUI.activeSelf)
             PlayerInputUI.SetActive(false);
     }
@@ -79,8 +83,16 @@ public class PlayerMovement : NetworkBehaviour
         }
         if (!IsPress)
         {
-            _rb.velocity = Vector3.zero;
-        } 
+            _rb.velocity = new Vector3(0, _rb.velocity.y, 0);
+
+            CmdSetWalkAnim(false);
+            _setRotateTimebet += Time.deltaTime;
+            if(_setRotateTimebet >= SetFowardRotateTime)
+            {
+                transform.rotation = Quaternion.Euler(0f, -180f, 0f);
+                _setRotateTimebet = 0f;
+            }
+        }
         #endregion
     }
 
@@ -90,6 +102,7 @@ public class PlayerMovement : NetworkBehaviour
     {
         IsPress = true;
         moveInput = Vector3.right.x;
+        CmdSetWalkAnim(true);
         if (buttonState != ButtonState.Right)
         {
             buttonState = ButtonState.Right;
@@ -100,6 +113,7 @@ public class PlayerMovement : NetworkBehaviour
     {
         IsPress = true;
         moveInput = Vector3.left.x;
+        CmdSetWalkAnim(true);
 
         if (buttonState != ButtonState.Left)
         {
@@ -140,6 +154,22 @@ public class PlayerMovement : NetworkBehaviour
         yield return new WaitForSeconds(TimebetUsingEmti);
         EmtiArray[index].SetActive(false);
         IsUseEmti = false;
-    } 
+    }
     #endregion
+
+    [Command(requiresAuthority = false)]
+    public void CmdSetWalkAnim(bool value)
+    {
+        RpcSetWalkAnim(value);
+    }
+    [ClientRpc]
+    public void RpcSetWalkAnim(bool value)
+    {
+        Anim.SetBool("IsWalk", value);
+    }
+    public void ViewSettingUI()
+    {
+        SettingManager.Instance.EnableSettingBtn();
+        SettingManager.Instance.NonTemporalSetting_Btn();
+    }
 }

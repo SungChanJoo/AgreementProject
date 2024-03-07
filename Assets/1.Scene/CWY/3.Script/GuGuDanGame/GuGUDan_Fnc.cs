@@ -31,6 +31,9 @@ public class GuGUDan_Fnc : GameSetting
 
     [SerializeField] private Button[] buttons; // 0~9 버튼 
 
+    [SerializeField] private GameObject[] select;
+    [SerializeField] private GameObject[] QuestMark;
+    [SerializeField] private Animator anim;
     [SerializeField] Canvas canvas;
 
     #region 변수 & 상태 관리
@@ -43,6 +46,7 @@ public class GuGUDan_Fnc : GameSetting
     bool isSecond_Click = false;
     bool isThird_Click = false;
     bool isGameOver = false;
+    bool isInputValue = false;
 
     //문제 개수 & 초기 문제 출제 개수 저장값 & 정답 입력 시도 총 횟수
     int QuestCount;
@@ -71,7 +75,7 @@ public class GuGUDan_Fnc : GameSetting
 
     string buttonText;
 
-    
+
 
     //스탭별 케이스 선택지 번호 확인
     int CaseNum;
@@ -83,8 +87,8 @@ public class GuGUDan_Fnc : GameSetting
         Second_num.text = "";
         Answer_num.text = "??";
         buttonText = "";
-        
-    }    
+
+    }
 
     private void Update()
     {
@@ -94,7 +98,9 @@ public class GuGUDan_Fnc : GameSetting
         }
 
         GameOver();
-
+ 
+        Select_onOff(CaseNum);
+        QuestMark_onOff(CaseNum);
         Click();
     }
 
@@ -102,7 +108,7 @@ public class GuGUDan_Fnc : GameSetting
     //랜덤숫자 생성 메서드
     public int Random_Num()
     {
-        int num = Random.Range(1, 10);        
+        int num = Random.Range(1, 10);
         return num;
     }
 
@@ -143,7 +149,7 @@ public class GuGUDan_Fnc : GameSetting
             default:
                 break;
         }
-        Debug.Log($"{level}:{ step}");
+        //Select_onOff(CaseNum);
     }
     #region Level , Step별 문제 제작 메서드 
     private void Lv1_RandomNum(int step)
@@ -171,7 +177,7 @@ public class GuGUDan_Fnc : GameSetting
             First_num.text = Random.Range(2, 10).ToString();
             Second_num.text = Random.Range(1, 20).ToString();
         }
-        
+
     }
     private void Lv3_RandomNum(int step)
     {
@@ -217,6 +223,8 @@ public class GuGUDan_Fnc : GameSetting
         //게임 시작을 알림
         if (!isStart)
         {
+            isStop = false;
+            Start_Btn();
             Set_QuestCount();
             QuestCount--;
             isStart = true;
@@ -224,13 +232,14 @@ public class GuGUDan_Fnc : GameSetting
             TimeSlider.Instance.StartTime();
             TimeSlider.Instance.TimeStop = false;
         }
-        
-        
+
+
     }
     //로직은 동일하지만 시작 - 진행 - 종료를 나누기위해 메서드 분개
     private void GameProgress()
     {
         //정답을 맞춘경우에는 문제 다시생성
+        isInputValue = false;
         if (isAnswerCorrect)
         {
             QuestCount--;
@@ -246,32 +255,33 @@ public class GuGUDan_Fnc : GameSetting
     private void GameOver()
     {
         //타임슬라이더의 Value 값이 0 일경우 게임 끝.
-        if(TimeSlider.Instance.slider.value == 0)
+        if (TimeSlider.Instance.slider.value == 0)
         {
             ReactionTime = trueReactionTime / TrueAnswerCount;
             totalReactionTime = 0;
             if (!isGameOver)
             {
-                print(TimeSlider.Instance.PlayTime);
                 isGameOver = true;
                 answersCount = TrueAnswerCount;
+                totalQuestions = StartQuestCount;
                 reactionRate = ReactionTime;
                 AnswerRate();
                 EndGame();
             }
-        }        
+        }
         else
         {
-            if(QuestCount < 0 && !isGameOver)
+            if (QuestCount < 0 && !isGameOver)
             {
                 ReactionTime = trueReactionTime / TrueAnswerCount;
                 isGameOver = true;
                 answersCount = TrueAnswerCount;
+                totalQuestions = StartQuestCount;
                 reactionRate = ReactionTime;
                 AnswerRate();
                 EndGame();
             }
-        }  
+        }
     }
 
     //정답 판단 함수
@@ -283,7 +293,7 @@ public class GuGUDan_Fnc : GameSetting
         int resulty = int.Parse(Answer_num.text) / int.Parse(First_num.text);
         int resultz = int.Parse(First_num.text) * int.Parse(Second_num.text);
         if (CaseNum == 0) //x 쪽 역산
-        {          
+        {
             if (First_num.text == $"{resultx}")
             {
                 Get_Score();
@@ -304,7 +314,7 @@ public class GuGUDan_Fnc : GameSetting
                 TimeSlider.Instance.DecreaseTime_Item(5);
             }
         }
-        else if(CaseNum == 1) // y쪽을 역산
+        else if (CaseNum == 1) // y쪽을 역산
         {
             if (Second_num.text == $"{resulty}")
             {
@@ -351,7 +361,6 @@ public class GuGUDan_Fnc : GameSetting
 
         //초기화 필요
         Clear_btn();
-        
         if (!isGameOver) GameProgress();
     }
 
@@ -368,6 +377,7 @@ public class GuGUDan_Fnc : GameSetting
                     //19단 까지만 고려하기 때문에 x ,y 는 최대 2자리  z는 3자리까지 체크. 따라서, 입력도 최대 3번(19x19가 최대 3자리)
                 if (isFirst_Click)
                 {
+                    isInputValue = true;
                     First_num.text = num.ToString();
                     isFirst_Click = false;
                     isSecond_Click = true;
@@ -383,6 +393,7 @@ public class GuGUDan_Fnc : GameSetting
             case 1:
                 if (isFirst_Click)
                 {
+                    isInputValue = true;
                     Second_num.text = num.ToString();
                     isFirst_Click = false;
                     isSecond_Click = true;
@@ -398,13 +409,14 @@ public class GuGUDan_Fnc : GameSetting
             case 2:
                 if (isFirst_Click)
                 {
+                    isInputValue = true;
                     Answer_num.text = num.ToString();
                     isFirst_Click = false;
                     isSecond_Click = true;
                     Click_Count++;
                 }
                 else if (isSecond_Click)
-                { 
+                {
                     Answer_num.text += num.ToString();
                     isSecond_Click = false;
                     isThird_Click = true;
@@ -432,7 +444,7 @@ public class GuGUDan_Fnc : GameSetting
                 if (SecondNumDigit == Click_Count) AnswerCheck();
                 break;
             case 2:
-                if (AnswerNumDigit == Click_Count)  AnswerCheck();
+                if (AnswerNumDigit == Click_Count) AnswerCheck();
                 break;
             default:
                 break;
@@ -470,8 +482,9 @@ public class GuGUDan_Fnc : GameSetting
         //Todo : 2인모드시 클리어버튼 초기화 위치 지정 필요.
         switch (CaseNum)
         {
-            case 0: First_num.text = "?";
-                    break;
+            case 0:
+                First_num.text = "?";
+                break;
             case 1:
                 Second_num.text = "?";
                 break;
@@ -485,6 +498,7 @@ public class GuGUDan_Fnc : GameSetting
         isSecond_Click = false;
         isThird_Click = false;
         Click_Count = 0;
+        isInputValue = false;
     }
 
 
@@ -521,7 +535,7 @@ public class GuGUDan_Fnc : GameSetting
 
     public void Get_Score()
     {
-        if(buttonType == ButtonType.First)
+        if (buttonType == ButtonType.First)
         {
             Score.Instance.Get_FirstScore();
         }
@@ -536,7 +550,7 @@ public class GuGUDan_Fnc : GameSetting
         switch (timeSet)
         {
             case 60:
-                QuestCount = 15;                
+                QuestCount = 15;
                 break;
             case 180:
                 QuestCount = 45; // 예시
@@ -553,6 +567,41 @@ public class GuGUDan_Fnc : GameSetting
 
     private void AnswerRate()
     {
-        answers = answersCount * 100 / StartQuestCount;
+        answers = TrueAnswerCount * 100 / StartQuestCount;
     }
+
+
+    private void Select_onOff(int caseNum)
+    {
+        for (int i = 0; i < select.Length; i++)
+        {
+            if(i == caseNum)
+            {
+                select[i].SetActive(true);
+            }
+            else
+            {
+                select[i].SetActive(false);
+            }
+        }
+    }
+
+    private void QuestMark_onOff(int caseNum)
+    {
+        for (int i = 0; i < QuestMark.Length; i++)
+        {
+            if (i == caseNum && !isInputValue)
+            {
+                QuestMark[i].SetActive(true);
+            }
+            else
+            {
+                QuestMark[i].SetActive(false);
+            }
+        }
+    }
+
+
 }
+
+

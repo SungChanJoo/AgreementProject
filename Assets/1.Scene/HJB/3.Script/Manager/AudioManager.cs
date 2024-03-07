@@ -38,6 +38,7 @@ public class AudioManager : MonoBehaviour
     {
         audioMixer.SetFloat("Master", Mathf.Log10(master_slider.value) * 20);
         audioMixer.SetFloat("BGM", Mathf.Log10(bgm_slider.value) * 20);
+        audioMixer.SetFloat("BGM", Mathf.Log10(sfx_slider.value) * 20);
         BGM_Play(0);
     }
 
@@ -46,6 +47,11 @@ public class AudioManager : MonoBehaviour
     {
         BGMAudio.clip = bgmClip[idx];
         BGMAudio.Play();
+    }
+    public void BGM_Stop()
+    {
+        if(BGMAudio.isPlaying)
+            BGMAudio.Stop();
     }
     public void SliderControll(int num, bool check)
     {
@@ -79,12 +85,12 @@ public class AudioManager : MonoBehaviour
             case 2:
                 if (check)
                 {
-                    //SFX_VolumeSet();
+                    SFX_VolumeSet();
                     sfx_slider.interactable = true;
                 }
                 else
                 {
-                    //audioMixer.SetFloat("SFX", -80f);
+                    audioMixer.SetFloat("SFX", -80f);
                     sfx_slider.interactable = false;
                 }
                 break;
@@ -102,7 +108,7 @@ public class AudioManager : MonoBehaviour
     }
     public void SFX_VolumeSet()
     {
-       
+        audioMixer.SetFloat("SFX", Mathf.Log10(sfx_slider.value) * 20f);
     }
 
 
