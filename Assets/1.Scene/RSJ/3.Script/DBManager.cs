@@ -41,6 +41,9 @@ public class DBManager : MonoBehaviour
     // LicenseNumber 기본, Table 게임명(편의성을 위해)
     private int clientLicenseNumber_Base = 10000;
 
+    // 기타 데이터 처리용 Handler
+    private IETCMethodHandler etcMethodHandler;
+
     public static DBManager instance = null; // 싱글톤 쓸거임
 
     private void Awake()
@@ -1044,6 +1047,7 @@ public class DBManager : MonoBehaviour
         mySqlCommand.CommandText = $"CREATE DATABASE IF NOT EXISTS `{DBName}`;"; // DB생성 명령문
         mySqlCommand.Connection = connection;
         mySqlCommand.ExecuteNonQuery();
+        Debug.Log("[DB] Complete Create DateDB");
 
         // DateDB사용
         mySqlCommand.CommandText = $"USE `{DBName}`;";
@@ -1074,6 +1078,7 @@ public class DBManager : MonoBehaviour
             MySqlCommand createTable_SqlCmd = new MySqlCommand(createTable_Command, connection);
             createTable_SqlCmd.ExecuteNonQuery();
         }
+        Debug.Log("[DB] Complete Create DateDB table");
 
         // PresentDB 사용
         mySqlCommand.CommandText = $"USE `PresentDB`";
@@ -1122,12 +1127,13 @@ public class DBManager : MonoBehaviour
 
             valuesInColumnsInTable_Array[i] = column_Values_List;
         }
+        Debug.Log("[DB] Complete copy presentDB");
 
         // 생성한 DateDB 사용
         mySqlCommand.CommandText = $"USE {DBName};";
         mySqlCommand.ExecuteNonQuery();
 
-        // DateDB에 presentDB에서 가져온 데이터 복사 생성
+        // DateDB에 presentDB에서 가져온 데이터(게임데이터만) 복사 생성
         for(int i = 0; i < gameTable.list.Count; i ++) // Table
         {
             for(int j=0; j < valuesInColumnsInTable_Array[i].Count; j ++) // Columns
@@ -1156,6 +1162,7 @@ public class DBManager : MonoBehaviour
                 }
             }
         }
+        Debug.Log("[DB] Complete paste presentDB to DateDB only gamedatas");
 
         // 분석테이블에 있는 반응속도, 정답률은 각 게임의 레벨별 스텝에 있는 반응속도, 정답률 갖고와서 평균을 낸 후 저장
         // 예를들면 베네치아 게임 레벨 1의 6스텝중에 3개의 스텝만 플레이 했다면, 3개 스텝의 반응속도, 정답률 평균을 낸다. 즉 (x1+x2+x3)/3 해버린다.
@@ -1163,119 +1170,160 @@ public class DBManager : MonoBehaviour
         // 게임테이블에서 각 게임의 레벨별 스텝1~6의 Column중 ReactionRate와 AnswerRate만 참조한다. 값이 0이면 무시 
         //string selectTable_Command = $"SELECT * FROM `{tableName_Array[j]}` WHERE `{columnName_Array[0]}` = {licensenumber} AND `{columnName_Array[1]}` = {charactor};"
 
-        내일 와서 이름바꿔;
-        // licensenumber, charactor, reactionRate, answerRate
         // 클래스로 만들기 
-        List<Tuple<int, int, float, int>>[][] tuple_Structure = new List<Tuple<int, int, float, int>>[analyticsTable.list.Count][];
-
-        List<float>[][] reactionRate_List_List = new List<float>[analyticsTable.list.Count][]; // 초기화
-        List<int>[][] answerRate_List_List = new List<int>[analyticsTable.list.Count][];
+        //List<Tuple<int, int, float, int>>[][] tuple_Structure = new List<Tuple<int, int, float, int>>[analyticsTable.list.Count][];
+        // 13개의 anlyticsTable -> Array, 테이블의 개수를 알고 있음
+        // 그 테이블의 행 개수 valuesInColumnsInTable_Array[i].Count -> Array, 위에서 presentDB의 데이터를 가져올 때 행의 개수를 알고 있음
+        // 한 행의 컬럼 수 -> List, List로 한 이유는 해당 게임을 플레이 하지 않았다면(값이 0) 데이터를 사용할 이유가 없어 추가할 필요가 없음
+        List<AnalyticsColumnValue>[][] valueList_ColumnArray_TableArray = new List<AnalyticsColumnValue>[analyticsTable.list.Count][];
 
         for (int i = 0; i < gameTable.list.Count; i++)
         {
             switch(i/6) // 스텝1~6
             {
                 case 0: // venezia_kor_level1_analytics 
-                    List<float> reactionRate_List = new List<float>();
-                    List<int> answerRate_List = new List<int>();
-                    string select_Command = $"SELECT * FROM `{gameTable.list[i]}` WHERE `{analytics_Columns[0]}` = {} AND `{analytics_Columns[1]}` = {};";
-
-                    // 중복되서 초기화되지 않도록 예외처리
-                    if (tuple_Structure[i / 6] == null)
-                    {
-                        tuple_Structure[i / 6] = new List<Tuple<int, int, float, int>>[valuesInColumnsInTable_Array[i].Count];
-                    }
-                    
-
-                    reactionRate_List_List[i / 6] = new List<float>();
-                    answerRate_List_List[i / 6] = new List<int>();
-
-                    // 중복되서 초기화되지 않도록 예외처리
-                    if(reactionRate_List_List[i/6] == null)
-                    {
-                        reactionRate_List_List[i / 6] = new List<float>[valuesInColumnsInTable_Array[i].Count];
-                    }
-                    
-
-                    for (int j = 0; j < valuesInColumnsInTable_Array[i].Count; i ++) // 테이블에 저장된 행수(유저와 캐릭터들)
-                    {
-                        // 중복되서 초기화되지 않도록 예외처리
-                        if (tuple_Structure[i / 6][j] == null)
-                        {
-                            tuple_Structure[i / 6] = new List<Tuple<int, int, float, int>>[valuesInColumnsInTable_Array[i].Count];
-                        }
-
-
-                        // 중복되서 초기화되지 않도록 예외처리
-                        if (reactionRate_List_List[i / 6][j] == null)
-                        {
-                            reactionRate_List_List[i / 6][j] = new List<float>();
-                        }
-
-                        // 데이터가 있다면(0이 아니라면) 추가
-                        if(float.Parse(valuesInColumnsInTable_Array[i][j][2]) != 0 && Int32.Parse(valuesInColumnsInTable_Array[i][j][4]) != 0)
-                        {
-                            reactionRate_List_List[i / 6][j].Add(float.Parse(valuesInColumnsInTable_Array[i][j][0]));
-                            reactionRate_List_List[i / 6][j].Add(float.Parse(valuesInColumnsInTable_Array[i][j][1]));
-                            reactionRate_List_List[i / 6][j].Add(float.Parse(valuesInColumnsInTable_Array[i][j][2]));
-                            reactionRate_List_List[i / 6][j].Add(Int32.Parse(valuesInColumnsInTable_Array[i][j][4]));
-                        }
-                        
-                    }
-                    valuesInColumnsInTable_Array[i][0][2]
-                    valuesInColumnsInTable_Array[i][0][4]
-
+                    etcMethodHandler.AddAnalyticsColumnValueInDB(valueList_ColumnArray_TableArray, valuesInColumnsInTable_Array, i);
+                    //// 중복해서 초기화되지 않도록 예외처리
+                    //if (valueList_ColumnArray_TableArray[i / 6] == null)
+                    //{
+                    //    valueList_ColumnArray_TableArray[i / 6] = new List<AnalyticsColumnValue>[valuesInColumnsInTable_Array[i].Count];
+                    //}
+                    //
+                    //for (int j = 0; j < valuesInColumnsInTable_Array[i].Count; i ++) // 테이블에 저장된 행수(유저와 캐릭터들)
+                    //{
+                    //    // 중복해서 초기화되지 않도록 예외처리
+                    //    if (valueList_ColumnArray_TableArray[i / 6][j] == null)
+                    //    {
+                    //        valueList_ColumnArray_TableArray[i / 6][j] = new List<AnalyticsColumnValue>();
+                    //    }
+                    //
+                    //    // 데이터가 있다면(0이 아니라면) 추가
+                    //    if(float.Parse(valuesInColumnsInTable_Array[i][j][2]) != 0 && Int32.Parse(valuesInColumnsInTable_Array[i][j][4]) != 0)
+                    //    {
+                    //        int _licenseNumber = Int32.Parse(valuesInColumnsInTable_Array[i][j][0]);
+                    //        int _charactor = Int32.Parse(valuesInColumnsInTable_Array[i][j][1]);
+                    //        float _reactionRate = float.Parse(valuesInColumnsInTable_Array[i][j][2]);
+                    //        int _answerRate = Int32.Parse(valuesInColumnsInTable_Array[i][j][4]);
+                    //        //AnalyticsColumnValue data = new AnalyticsColumnValue(_licenseNumber, _charactor, _reactionRate, _answerRate);
+                    //        valueList_ColumnArray_TableArray[i / 6][j].Add(new AnalyticsColumnValue(_licenseNumber, _charactor, _reactionRate, _answerRate));
+                    //    }
+                    //}
                     break;
-                case 1: // venezia_kor_level2_analytics 
+                case 1: // venezia_kor_level2_analytics
+                    etcMethodHandler.AddAnalyticsColumnValueInDB(valueList_ColumnArray_TableArray, valuesInColumnsInTable_Array, i);
                     break;
                 case 2: // venezia_kor_level3_analytics 
+                    etcMethodHandler.AddAnalyticsColumnValueInDB(valueList_ColumnArray_TableArray, valuesInColumnsInTable_Array, i);
                     break;
                 case 3: // venezia_eng_level1_analytics 
+                    etcMethodHandler.AddAnalyticsColumnValueInDB(valueList_ColumnArray_TableArray, valuesInColumnsInTable_Array, i);
                     break;         
                 case 4: // venezia_eng_level2_analytics 
+                    etcMethodHandler.AddAnalyticsColumnValueInDB(valueList_ColumnArray_TableArray, valuesInColumnsInTable_Array, i);
                     break;         
                 case 5: // venezia_eng_level3_analytics 
+                    etcMethodHandler.AddAnalyticsColumnValueInDB(valueList_ColumnArray_TableArray, valuesInColumnsInTable_Array, i);
                     break;
                 case 6: // venezia_chn_analytics 
+                    etcMethodHandler.AddAnalyticsColumnValueInDB(valueList_ColumnArray_TableArray, valuesInColumnsInTable_Array, i);
                     break;
                 case 7: // calculation_level1_analytics 
+                    etcMethodHandler.AddAnalyticsColumnValueInDB(valueList_ColumnArray_TableArray, valuesInColumnsInTable_Array, i);
                     break; 
                 case 8: // calculation_level2_analytics 
+                    etcMethodHandler.AddAnalyticsColumnValueInDB(valueList_ColumnArray_TableArray, valuesInColumnsInTable_Array, i);
                     break; 
                 case 9: // calculation_level3_analytics 
+                    etcMethodHandler.AddAnalyticsColumnValueInDB(valueList_ColumnArray_TableArray, valuesInColumnsInTable_Array, i);
                     break;
                 case 10: // gugudan_level1_analytics 
+                    etcMethodHandler.AddAnalyticsColumnValueInDB(valueList_ColumnArray_TableArray, valuesInColumnsInTable_Array, i);
                     break;  
                 case 11: // gugudan_level2_analytics 
+                    etcMethodHandler.AddAnalyticsColumnValueInDB(valueList_ColumnArray_TableArray, valuesInColumnsInTable_Array, i);
                     break;  
                 case 12: // gugudan_level3_analytics 
+                    etcMethodHandler.AddAnalyticsColumnValueInDB(valueList_ColumnArray_TableArray, valuesInColumnsInTable_Array, i);
                     break;
-
+                default:
+                    Debug.Log("[DB] index i is unexpected value In CreateDB");
+                    break;
             }
         }
+        Debug.Log("[DB] Complete etcMethodHandler.AddAnalyticsColumnValueInDB");
 
+        // 반복문 밖에서 매개변수 추가
+        mySqlCommand.Parameters.Clear();
+        mySqlCommand.Parameters.Add("@licenseNumber", MySqlDbType.Int32);
+        mySqlCommand.Parameters.Add("@charactor", MySqlDbType.Float);
+        mySqlCommand.Parameters.Add("@reactionRate", MySqlDbType.Int32);
+        mySqlCommand.Parameters.Add("@answerRate", MySqlDbType.Int32);
 
+        // 평균 반응속도, 정답률 구하고 분석 table 생성
+        for (int i = 0; i < valueList_ColumnArray_TableArray.Length; i++) // 13개 table
+        {
+            // 테이블을 만들고, 컬럼을 만든 후 데이터를 Insert하자.
+            string analyticsTableName = $"{analyticsTable.list[i]}";
+            string createAnalyticsTable_Command = $"CREATE TABLE IF NOT EXISTS {analyticsTable.list[i]} (";
 
-        /*
-        네, 맞습니다. CREATE DATABASE와 CREATE TABLE은 각각의 명령문이므로, 한꺼번에 넘겨주어서는 안 됩니다. 
-        MariaDB나 MySQL과 같은 데이터베이스 시스템에서는 각각의 명령문을 구분하여 실행해야 합니다.
-        따라서 CREATE DATABASE와 USE 그리고 CREATE TABLE 등 여러 개의 SQL 명령문을 하나의 문자열로 합쳐서 실행하면 문법 오류가 발생할 수 있습니다. 
-         */
-        /*
-         CREATE DATABASE IF NOT EXISTS `test` /*!40100 DEFAULT CHARACTER SET latin1 COLLATE latin1_swedish_ci
-        USE `test`;
+            for(int j = 0; j < analytics_Columns.Length; j++)
+            {
+                if(j ==2) // float -> ReactionRate
+                {
+                    createAnalyticsTable_Command += $"{analytics_Columns[j]} float DEFAULT NUll,";
+                }
+                else
+                {
+                    createAnalyticsTable_Command += $"{analytics_Columns[j]} int(11) DEFAULT NULL,";
+                }
+            }
+            createAnalyticsTable_Command = createAnalyticsTable_Command.TrimEnd(',');
+            createAnalyticsTable_Command += $") ENGINE = InnoDB DEFAULT CHARSET = latin1 COLLATE = latin1_swedish_ci;";
 
-        CREATE TABLE IF NOT EXISTS `calculation_level1_step1` (
-          `User_LicenseNumber` int(11) DEFAULT NULL,
-          `User_Charactor` int(11) DEFAULT NULL,
-          `ReactionRate` int(11) DEFAULT NULL,
-          `AnswerCount` int(11) DEFAULT NULL,
-          `AnswerRate` int(11) DEFAULT NULL,
-          `Playtime` int(11) DEFAULT NULL,
-          `TotalScore` int(11) DEFAULT NULL,
-          `StarPoint` int(11) DEFAULT NULL
-        ) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci; */
+            mySqlCommand.CommandText = createAnalyticsTable_Command;
+            mySqlCommand.ExecuteNonQuery();
 
+            // Insert Column's value in Rows
+            for (int j = 0; j < valueList_ColumnArray_TableArray[i].Length; j ++) // 각 table안에 존재하는 행의 개수(유저마다 가지고 있는 캐릭터의 합)
+            {
+                int licenseNumber = Int32.Parse(valuesInColumnsInTable_Array[i][j][0]);
+                int charactor = Int32.Parse(valuesInColumnsInTable_Array[i][j][1]);
+                float reactionRate;
+                int answerRate;
+
+                if (valueList_ColumnArray_TableArray[i][j].Count == 0) // 하루에 해당 게임(레벨,스텝)을 한번도 하지 않았다면
+                {
+                    // 해당 j행에 default 값 == 0 을 넣는다.
+                    reactionRate = 0;
+                    answerRate = 0;
+                }
+                else
+                {
+                    reactionRate = valueList_ColumnArray_TableArray[i][j].Sum(item => item.reactionRate) / valueList_ColumnArray_TableArray[i][j].Count;
+                    answerRate = (int)(valueList_ColumnArray_TableArray[i][j].Sum(item => item.answerRate) / valueList_ColumnArray_TableArray[i][j].Count);
+                }
+
+                //for (int k = 0; j < valueList_ColumnArray_TableArray[i][j].Count; k++)
+                //{
+                //
+                //}
+
+                // insertColumnsValueInAnalyticsTable_Command
+                string insert_Command = $"INSERT INTO `{analyticsTable.list[i]}` ({analytics_Columns[0]}, {analytics_Columns[1]}, {analytics_Columns[2]}, {analytics_Columns[3]}) " +
+                                        $"VALUES (@licenseNumber, @charactor, @reactionRate, @answerRate);";
+                mySqlCommand.CommandText = insert_Command;
+                // 반복문 안에서 매개변수 업데이트
+                mySqlCommand.Parameters["@licenseNumber"].Value = licenseNumber;
+                mySqlCommand.Parameters["@charactor"].Value = charactor;
+                mySqlCommand.Parameters["@reactionRate"].Value = reactionRate;
+                mySqlCommand.Parameters["@answerRate"].Value = answerRate;
+                mySqlCommand.ExecuteNonQuery();
+            }
+
+            Debug.Log($"[DB] Continue create valueList_ColumnArray_TableArray{i}");
+        }
+
+        Debug.Log("[DB] Finish create AnalayticsTable and columns");
     }
 
 }

@@ -76,7 +76,7 @@ public class Client : MonoBehaviour
         ETCInitSetting();
         ConnectToServer();
         ClientLoginSet();
-        Invoke("LoadCharactorDataFromDB", 6f);
+        //Invoke("LoadCharactorDataFromDB", 6f);
     }
 
     // Start시 기타 멤버변수 초기화
@@ -1001,6 +1001,13 @@ public class Client : MonoBehaviour
         }
 
         AppExit_SaveCharactorDataToDB(player_DB);
+    }
+
+    public void OnClickCreateDateDBTest()
+    {
+        string requestData = "[Test]CreateDB|Finish";
+
+        RequestToServer(requestData);
     }
 
     private void CloseSocket()

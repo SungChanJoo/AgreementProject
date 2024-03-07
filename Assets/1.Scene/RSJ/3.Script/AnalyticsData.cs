@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 
+// 클라이언트에서 사용
 public class AnalyticsData
 {
     // Dictionary 첫 번째 키는 int형식 1~7, 가장 최근 날짜부터(1) 가장 오래된 날짜까지(7)
@@ -9,6 +10,7 @@ public class AnalyticsData
     public Dictionary<(int, Game_Type, int), AnalyticsData_Value> Data = new Dictionary<(int, Game_Type, int), AnalyticsData_Value>();
 }
 
+// 클라이언트에서 사용
 public class AnalyticsData_Value
 {
     public string day; // 요일은 YY.MM.DD 
@@ -21,3 +23,20 @@ public class AnalyticsData_Value
         answerRate = _answerRate;
     }
 }
+
+// DBManager에서 사용, DateDB 만들때
+public class AnalyticsColumnValue
+{
+    public int licenseNumber;
+    public int charactor;
+    public float reactionRate;
+    public int answerRate;
+    public AnalyticsColumnValue(int _licenseNumber, int _charactor, float _reactionRate, int _answerRate)
+    {
+        licenseNumber = _licenseNumber;
+        charactor = _charactor;
+        reactionRate = _reactionRate;
+        answerRate = _answerRate;
+    }
+}
+

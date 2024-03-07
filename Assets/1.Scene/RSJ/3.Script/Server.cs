@@ -340,6 +340,9 @@ public class Server : MonoBehaviour
                 tempAllocate = DBManager.instance.RankOrderByUserData(clientLicenseNumber, clientCharactor);
                 tempAllocate.ForEach(data => replyRequestData_List.Add(data));
                 break;
+            case "[Test]CreateDB":
+                DBManager.instance.CreateDateDB();
+                break;
             default:
                 Debug.Log($"[Server] Handling error that request from client, request name : {requestName}");
                 break;
