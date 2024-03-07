@@ -29,7 +29,7 @@ public class StepManager : MonoBehaviour
 {   
 
     public static StepManager Instance = null;
-
+    public Game_Type game_Type;
     public Step _Setp;
     public Level _Level;
     public int CurrentStep { get; private set; }
