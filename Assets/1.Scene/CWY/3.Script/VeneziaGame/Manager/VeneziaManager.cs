@@ -31,15 +31,34 @@ public class VeneziaManager : GameSetting
     //문제 출제를 매니저에서 관리 , 출제 문제의 이미지와 이름을 기준으로 정답의 유무를 판단 할 수 있어야함.
     [SerializeField] public Image Quest_Img;
     [SerializeField] private TextMeshProUGUI Quest_text;
-    //한글 및 영어 문제에 사용 할 이미지 sprite 한글과 영어는 공용으로 사용하고 , 한자는 따로 
-    [SerializeField] private Sprite[] sprites_KE;    // 1번부터 ~ 5번까지는 step1 ,  step 2는 
-    private string[] KorWord = { "학" , "말", "닭", "곰", "하마", "표범", "팬더",
-            "타조", "쿼카", "치타", "참새", "제비", "젖소", "염소", "여우", "악어", "사자", "사슴", "돼지", "기린"}; // 20개 
-    private string[] EnglishWord =
+    //한글 및 영어 문제에 사용 할 이미지 sprite 한글과 영어, 한자 
+    [SerializeField] private Sprite[] sprites_K; 
+    [SerializeField] private Sprite[] sprites_E; 
+    [SerializeField] private Sprite[] sprites_H; 
+    private string[] KorWord =
     {
-        "Crane", "Horse", "Chicken", "Bear", "Hippo", "Leopard", "Panda",
-        "Ostrich", "Quokka", "Cheetah", "Sparrow", "Swallow", "Cow", "Goat", "Fox",
-        "Crocodile", "Lion", "Deer", "Pig", "Giraffe"
+          "학", "말", "닭", "곰", "하마", "표범", "팬더", "타조", "쿼카", "치타",
+          "참새", "제비", "젖소", "염소", "여우", "악어", "사자", "사슴", "돼지", "기린",
+          "개미", "오리", "문어", "공작", "배", "나비", "당근", "오이", "감자", "로봇",
+          "체리", "매미", "버섯", "호박", "거미", "사과", "꿀벌", "조개", "가지", "수박",
+          "꽃게", "포도", "레몬", "까치", "우유", "치즈", "택시", "칫솔", "트럭", "요트",
+          "버스", "주스", "다람쥐", "휴지", "기차", "자전거", "자동차", "독수리", "원숭이",
+          "코뿔소", "열기구", "크레인", "코끼리", "부엉이", "비행기", "경찰차", "잠수함", "고구마", "호랑이",
+          "얼룩말", "바나나", "소방차", "애벌레", "사마귀", "지하철", "잠자리", "소라게", "캥거루", "돛단배",
+          "달팽이", "브로콜리", "무당벌레", "파인애플", "사슴벌레", "딱다구리", "구급차", "지렁이", "헬리콥터", "오토바이", "불가사리" 
+    };
+
+    private string[] EnglishWord =
+     {
+      "pig","ant","fox","bee","car","bus","owl","deer","ship","duck",
+      "milk","crap","calm","bear","cake","taxi","goat","lion","pear","apple",
+      "grape","panda","lemon","juice","train","pizza","tiger","eagle","truck","zebra",
+      "robot","crane","snail","larva","plane","hippo","yacht","koala","donut","horse",
+      "spider","carrot","cherry","potato","monkey","flower","tissue","banana","mantis","subway",
+      "cheese","brocoli","quokka","giraffe","pumpkin","bicycle","peacock","octopus","chicken","cheetah",
+      "swallow","millkcow","eggplant","elephant","ladybug","leopard","starfish","icecream","butterfly","sandwich",
+      "sparrow","cucumber","airballon","hospital","squirrel","crocodile","mushroom","policecar","dragonfly","pharmacy",
+      "kangaroo","pineapple","watermelon","earthworm","sweetpotato","submarine","woodpecker","ambulance","motorcycle","supermarket"
     };
     public int QuestCount;  // 딕셔너리에 들어갈 퀘스트 갯수 //10문제 <
     public int QuestRange;
@@ -47,6 +66,10 @@ public class VeneziaManager : GameSetting
     public int CorrectAnswerCount; // 맞춘 정답 갯수
     public int ClickCount;
     public int LifeTime; // 게임 진행 시간
+
+    public int PoolingCool; // 오브젝트 생성 시간
+
+    private int index;
 
     public int DestroyTime;
 
@@ -81,21 +104,21 @@ public class VeneziaManager : GameSetting
     private void StartSet()
     {
         //1 3 4 B D E 한글 영어 한좌
-        if (game_Type == Game_Type.B)
+        if (game_Type == Game_Type.C) //한글
         {
-            for (int i = 0; i < sprites_KE.Length; i++)
+            for (int i = 0; i < sprites_K.Length; i++)
             {
                 string key = KorWord[i];
-                QuestData data = new QuestData(sprites_KE[i], KorWord[i]);
+                QuestData data = new QuestData(sprites_K[i], KorWord[i]);
                 Quest.Add(key, data);
             }
         }
-        else if (game_Type == Game_Type.D)
+        else if (game_Type == Game_Type.D) //영어 
         {
-            for (int i = 0; i < sprites_KE.Length; i++)
+            for (int i = 0; i < sprites_K.Length; i++)
             {
                 string key = EnglishWord[i];
-                QuestData data = new QuestData(sprites_KE[i], EnglishWord[i]);
+                QuestData data = new QuestData(sprites_K[i], EnglishWord[i]);
                 Quest.Add(key, data);
             }
         }
@@ -112,7 +135,7 @@ public class VeneziaManager : GameSetting
         trueReactionTime = 0;
         CorrectAnswerCount = 0;
         ClickCount = 0;
-        ObjectPooling.Instance.CreateQuestPrefab(QuestRange); //Todo: 임시
+        ObjectPooling.Instance.CreateQuestPrefab(index, 10); //Todo: 임시 0~9 10개 <
         DisplayRandomQuest();
         //시간 시작 
         StartTime();
@@ -226,17 +249,23 @@ public class VeneziaManager : GameSetting
         switch (step)
         {
             case 1:
+                index = 0;
                 NextQuest();
                 break;
             case 2:
+                index = 5;
                 break;
             case 3:
+                index = 10;
                 break;
             case 4:
+                index = 15;
                 break;
             case 5:
+                index = 20;
                 break;
             case 6:
+                index = 25;
                 break;
             default:
                 break;
@@ -248,17 +277,23 @@ public class VeneziaManager : GameSetting
         switch (step)
         {
             case 1:
+                index = 30;
                 NextQuest();
                 break;
             case 2:
+                index = 35;
                 break;
             case 3:
+                index = 40;
                 break;
             case 4:
+                index = 45;
                 break;
             case 5:
+                index = 50;
                 break;
             case 6:
+                index = 55;
                 break;
             default:
                 break;
@@ -270,16 +305,22 @@ public class VeneziaManager : GameSetting
         switch (step)
         {
             case 1:
+                index = 60;
                 break;
             case 2:
+                index = 65;
                 break;
             case 3:
+                index = 70;
                 break;
             case 4:
+                index = 75;
                 break;
             case 5:
+                index = 80;
                 break;
             case 6:
+                index = 85;
                 break;
             default:
                 break;
@@ -345,16 +386,19 @@ public class VeneziaManager : GameSetting
                 QuestCount = 10;
                 QuestRange = 5;
                 DestroyTime = 10;
+                PoolingCool = 5;
                 break;
             case 180:
-                QuestCount = 14; // 예시 값
+                QuestCount = 14; 
                 QuestRange = 7;
-                DestroyTime = 10;
+                DestroyTime = 20;
+                PoolingCool = 5;
                 break;
             case 300:
-                QuestCount = 20; // 예시 값
+                QuestCount = 20; 
                 QuestRange = 10;
-                DestroyTime = 10;
+                DestroyTime = 30;
+                PoolingCool = 5;
                 break;
             default:
                 break;
