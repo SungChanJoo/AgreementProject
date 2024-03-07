@@ -48,7 +48,7 @@ public class Client : MonoBehaviour
     private float transmissionTime = 1f;
 
     // 기타 데이터 처리용 Handler
-    private IETCMethodHandler etcMethodHandler;
+    private ETCMethodHandler etcMethodHandler;
 
     public Client(NetworkStream _stream)
     {
@@ -92,7 +92,10 @@ public class Client : MonoBehaviour
 
         // Dictionary 생성
         CharactorData_Dic = new Dictionary<string, List<string>>();
-    }
+
+        // 기타 데이터 처리용 Handler 생성
+        etcMethodHandler = new ETCMethodHandler();
+}
 
     // 클라이언트가 실행할 때 서버 연결 시도
     public void ConnectToServer()
@@ -194,19 +197,20 @@ public class Client : MonoBehaviour
                 List<string> endCheck = receivedRequestData.Split('|').ToList();
                 if (endCheck.Contains("Finish"))
                 {
+                    Debug.Log($"[Client] Received Finish Data from server : {receivedRequestData}");
                     // receivedRequestData에 Finish가 있는 경우 Finish를 제거
                     etcMethodHandler.RemoveFinish(receivedRequestData_List, endCheck);
-                   // receivedRequestData_List.RemoveAt(receivedRequestData_List.Count - 1);
-                   // endCheck.RemoveAt(endCheck.Count - 1);
-                   //
-                   // string fixLastIndexInList = null;
-                   //
-                   // for(int i = 0; i < endCheck.Count; i++)
-                   // {
-                   //     fixLastIndexInList += $"{endCheck[i]}|";
-                   // }
-                   //
-                   // receivedRequestData_List.Add(fixLastIndexInList);
+                    //receivedRequestData_List.RemoveAt(receivedRequestData_List.Count - 1);
+                    //endCheck.RemoveAt(endCheck.Count - 1);
+                    //
+                    //string fixLastIndexInList = null;
+                    //
+                    //for(int i = 0; i < endCheck.Count; i++)
+                    //{
+                    //    fixLastIndexInList += $"{endCheck[i]}|";
+                    //}
+                    //
+                    //receivedRequestData_List.Add(fixLastIndexInList);
 
                     Debug.Log($"[Client] Finish Receive Data From Server");
                     break;

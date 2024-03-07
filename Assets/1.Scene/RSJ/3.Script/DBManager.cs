@@ -42,7 +42,7 @@ public class DBManager : MonoBehaviour
     private int clientLicenseNumber_Base = 10000;
 
     // 기타 데이터 처리용 Handler
-    private IETCMethodHandler etcMethodHandler;
+    private ETCMethodHandler etcMethodHandler;
 
     public static DBManager instance = null; // 싱글톤 쓸거임
 
@@ -114,7 +114,10 @@ public class DBManager : MonoBehaviour
     private void InitSetting()
     {
         // Tables / TableName 객체 생성시 table.list 자동 생성
-        table = new TableName(); 
+        table = new TableName();
+
+        // 객체 생성
+        analyticsTable = new AnalyticsTableName();
 
         // Table - Columns
         userinfo_Columns = new string[]{ "User_LicenseNumber", "User_Charactor", "User_Name", "User_Profile", "User_Birthday", "User_TotalAnswers", "User_TotalTime", "User_Coin" };
@@ -123,6 +126,9 @@ public class DBManager : MonoBehaviour
         pet_Columns = new string[] { "User_LicenseNumber", "User_Charactor", "White" };
         game_Columns = new string[]{ "User_LicenseNumber", "User_Charactor", "ReactionRate", "AnswerCount", "AnswerRate", "Playtime", "TotalScore", "StarPoint" };
         analytics_Columns = new string[] { "User_LicenseNumber", "User_Charactor", "ReactionRate", "AnswerRate" };
+
+        // 기타 데이터 처리용 Handler
+        etcMethodHandler = new ETCMethodHandler();
     }
 
     // 계정등록 // todo 비동기화 생각해봐야함
@@ -469,6 +475,13 @@ public class DBManager : MonoBehaviour
         // DB gametable column순 : User_Licensenumber/User_Charactor/ReactionRate/AnswerCount/AnswerRate/Playtime/TotalScore/StarPoint
         // dataList는 [0]을 제외하고 value(int)만 있음. index순으로 RequestName[0]/level[1]/step[2]/User_Licensenumber[3]/User_Charactor[4]/ReactionRate[5]/.../TotalScore[9]
         Debug.Log("[DB] Come in SaveGameResultData method");
+
+        for(int i = 0; i < dataList.Count; i++)
+        {
+            Debug.Log($"[DB] Check dataList[{i}] : {dataList[i]}");
+        }
+
+
         Debug.Log($"[DB] SaveGameResultData, gameName : {dataList[0]}"); // [Save]gameName
         string gameName = dataList[0].Substring("[Save]".Length); // [Save] 제거
         Debug.Log($"[DB] gameName : {gameName}");
@@ -550,6 +563,8 @@ public class DBManager : MonoBehaviour
             MySqlCommand update_SqlCmd = new MySqlCommand(updateGameData_Command, connection);
             update_SqlCmd.ExecuteNonQuery();
         }
+
+        Debug.Log($"[DB] Finish SaveGameResultData To DB");
     }
 
     // 게임이 끝날때마다 rank table에 시간, 점수 누적
@@ -1040,7 +1055,13 @@ public class DBManager : MonoBehaviour
             gameTable.list.Remove(deleteTable[i]);
         }
 
-        // 분석표 테이블 -> analyticsTable
+        for(int i = 0; i < gameTable.list.Count; i++)
+        {
+            Debug.Log($"[DB] Check gameTable's index i:{i}, gameTable.list[i]:{gameTable.list[i]}");
+        }
+
+        // todo 그럴일은 없겠지만 나중에 DBName이 중복되는 DateDB가 이미 있다면 바로 return;
+        Debug.Log("[DB] Already existed DateDB So return");
 
         // DateDB생성
         MySqlCommand mySqlCommand = new MySqlCommand();
@@ -1048,6 +1069,7 @@ public class DBManager : MonoBehaviour
         mySqlCommand.Connection = connection;
         mySqlCommand.ExecuteNonQuery();
         Debug.Log("[DB] Complete Create DateDB");
+            
 
         // DateDB사용
         mySqlCommand.CommandText = $"USE `{DBName}`;";
@@ -1081,47 +1103,59 @@ public class DBManager : MonoBehaviour
         Debug.Log("[DB] Complete Create DateDB table");
 
         // PresentDB 사용
-        mySqlCommand.CommandText = $"USE `PresentDB`";
+        mySqlCommand.CommandText = $"USE `present`;";
         mySqlCommand.ExecuteNonQuery();
+        Debug.Log($"[DB] 1)");
 
-        // PresentDB의 (table에 있는 (한 행의 Column Data를 담은 List)들을 여러 행으로 담은 List)들을 Table개수만큼 Array를 가지는 변수
+        // PresentDB의 (table에 있는 (한 행의 Column Data를 담은 List)들(행 / 유저,캐릭터)으로 담은 List)들을 Table개수만큼 Array를 가지는 변수
         List<List<string>>[] valuesInColumnsInTable_Array = new List<List<string>>[gameTable.list.Count];
+        Debug.Log($"[DB] 2)");
 
         // PresentDB에 있는 gamedata들 불러와서 위 변수에 저장
         for (int i = 0; i < gameTable.list.Count; i++)
         {
+            Debug.Log($"[DB] 3)");
             // table에 몇 행이 있는지
             string rowCount_Command = $"SELECT COUNT(*) FROM `{gameTable.list[i]}`";
             MySqlCommand rowCount_SqlCmd = new MySqlCommand(rowCount_Command, connection);
-            int rowCountInTable = (int)rowCount_SqlCmd.ExecuteScalar(); // ExcuteScalar() 메서드는 쿼리를 실행하고 결과 집합의 첫 번째 행의 첫 번째 열의 값을 반환
+            // Int 캐스팅
+            object result = rowCount_SqlCmd.ExecuteScalar(); // ExcuteScalar() 메서드는 쿼리를 실행하고 결과 집합의 첫 번째 행의 첫 번째 열의 값을 반환
+            result = (result == DBNull.Value) ? null : result;
+            int rowCountInTable = Convert.ToInt32(result);
+            Debug.Log($"[DB] rowCountInTable : {rowCountInTable}");
 
             string select_Command = $"SELECT * FROM {gameTable.list[i]}";
             MySqlCommand select_SqlCmd = new MySqlCommand(select_Command, connection);
             MySqlDataReader reader = select_SqlCmd.ExecuteReader();
+            Debug.Log($"[DB] reader open? ");
+
+            // List<List<string>> i번째 index 초기화
+            valuesInColumnsInTable_Array[i] = new List<List<string>>();
 
             List<List<string>> column_Values_List = new List<List<string>>();
+            int count = 0;
 
-            while (reader.Read())
+            while (reader.Read()) //reader.Read()는 모든 행을 읽는데, 1행->2행->3행순으로.. 해당 테이블에 있는 모든 데이터를 읽는다
             {
-                for (int j = 0; j < rowCountInTable; j++)
+                //for (int j = 0; j < rowCountInTable; j++) // 근데 모든 행을 8번 더 읽는다. 그러니까 8*8하니까 64행을 읽는거지.
+                
+                // table에 있는 Column들의 Data를 담은 List
+                List<string> column_Values = new List<string>();
+
+                for (int k = 0; k < game_Columns.Length; k++)
                 {
-                    // table에 있는 Column들의 Data를 담은 List
-                    List<string> column_Values = new List<string>();
-
-                    for (int k = 0; k < game_Columns.Length; k++)
+                    if (k == 2 || k == 5) // float
                     {
-                        if (k == 2 || k == 5) // float
-                        {
-                            column_Values.Add(reader.GetFloat(game_Columns[k]).ToString());
-                        }
-                        else // int
-                        {
-                            column_Values.Add(reader.GetInt32(game_Columns[k]).ToString());
-                        }
+                        column_Values.Add(reader.GetFloat(game_Columns[k]).ToString());
                     }
-
-                    column_Values_List.Add(column_Values);
+                    else // int
+                    {
+                        column_Values.Add(reader.GetInt32(game_Columns[k]).ToString());
+                    }
+                    Debug.Log($"[DB] i:{i}, j:{count}, k:{k}, column_Values[k]:{column_Values[k]} ");
                 }
+
+                column_Values_List.Add(column_Values);
             }
             reader.Close();
 
@@ -1129,34 +1163,65 @@ public class DBManager : MonoBehaviour
         }
         Debug.Log("[DB] Complete copy presentDB");
 
+        // DataBase 새로고침 또는 갱신
+        mySqlCommand.CommandText = $"SHOW DATABASES";
+        MySqlDataReader showDBReader = mySqlCommand.ExecuteReader();
+        while(showDBReader.Read())
+        {
+            string showDBName = showDBReader.GetString(0);
+            Debug.Log($"[DB] showDBName = {showDBName}");
+            if (showDBName == DBName)
+            {
+                Debug.Log($"[DB] Date DB is Exist : {DBName}");
+            }
+        
+        }
+        showDBReader.Close();
+
         // 생성한 DateDB 사용
-        mySqlCommand.CommandText = $"USE {DBName};";
+        mySqlCommand.CommandText = $"USE `{DBName}`;"; // 24.03.07과 `24.03.07`은 SQL언어에서 다르게 받아들인다
         mySqlCommand.ExecuteNonQuery();
+        Debug.Log($"[DB] 1");
+        // @value Parameter 생성
+        MySqlParameter valueParameter = mySqlCommand.Parameters.Add("@value", MySqlDbType.Float);
+        Debug.Log($"[DB] 1.5");
 
         // DateDB에 presentDB에서 가져온 데이터(게임데이터만) 복사 생성
-        for(int i = 0; i < gameTable.list.Count; i ++) // Table
+        for (int i = 0; i < gameTable.list.Count; i ++) // Table
         {
-            for(int j=0; j < valuesInColumnsInTable_Array[i].Count; j ++) // Columns
+            Debug.Log($"[DB] 2");
+            for (int j=0; j < valuesInColumnsInTable_Array[i].Count; j ++) // Columns
             {
+                Debug.Log($"[DB] maybe count is 8, valuesInColumnsInTable_Array[i].Count : {valuesInColumnsInTable_Array[i].Count}");
                 // 0 -> licenseNumber, 1 -> charactor
                 string insert_Command = $"INSERT INTO {gameTable.list[i]} (`{game_Columns[0]}`,`{game_Columns[1]}`) " +
-                                        $"VALUES ({valuesInColumnsInTable_Array[i][j][0]},{valuesInColumnsInTable_Array[i][j][1]});";
+                                        $"VALUES ('{Int32.Parse(valuesInColumnsInTable_Array[i][j][0])}','{Int32.Parse(valuesInColumnsInTable_Array[i][j][1])}');";
+                Debug.Log($"[DB] insert_Command : {insert_Command}");
+                Debug.Log($"[DB] Int32.Parse(valuesInColumnsInTable_Array[i][j][0]) : {Int32.Parse(valuesInColumnsInTable_Array[i][j][0])}");
+                Debug.Log($"[DB] Int32.Parse(valuesInColumnsInTable_Array[i][j][1]) : {Int32.Parse(valuesInColumnsInTable_Array[i][j][1])}");
                 mySqlCommand.CommandText = insert_Command;
                 mySqlCommand.ExecuteNonQuery();
+                Debug.Log($"[DB] Insert i:{i}, j:{j}");
 
                 for (int k = 2; k < valuesInColumnsInTable_Array[i][j].Count; k++) // Column
                 {
                     string update_Command = $"UPDATE {gameTable.list[i]} SET `{game_Columns[k]}` = @value " +
-                                            $"WHERE `{game_Columns[0]}` = {valuesInColumnsInTable_Array[i][j][0]} AND `{game_Columns[1]}` = {valuesInColumnsInTable_Array[i][j][1]};";
+                                            $"WHERE `{game_Columns[0]}` = '{Int32.Parse(valuesInColumnsInTable_Array[i][j][0])}' AND `{game_Columns[1]}` = '{Int32.Parse(valuesInColumnsInTable_Array[i][j][1])}';";
                     mySqlCommand.CommandText = update_Command;
 
-                    if(k == 2 || k == 5) // float
+                    Debug.Log($"[DB] Update i:{i}, j:{j}, k:{k}");
+
+                    if (k == 2 || k == 5) // float
                     {
-                        mySqlCommand.Parameters.Add("@value", MySqlDbType.Float).Value = float.Parse(valuesInColumnsInTable_Array[i][j][k]);
+                        valueParameter.MySqlDbType = MySqlDbType.Float;
+                        valueParameter.Value = float.Parse(valuesInColumnsInTable_Array[i][j][k]);
+                        //mySqlCommand.Parameters.Add("@value", MySqlDbType.Float).Value = float.Parse(valuesInColumnsInTable_Array[i][j][k]);
                     }
                     else // int
                     {
-                        mySqlCommand.Parameters.Add("@value", MySqlDbType.Int32).Value = Int32.Parse(valuesInColumnsInTable_Array[i][j][k]);
+                        valueParameter.MySqlDbType = MySqlDbType.Int32;
+                        valueParameter.Value = Int32.Parse(valuesInColumnsInTable_Array[i][j][k]);
+                        //mySqlCommand.Parameters.Add("@value", MySqlDbType.Int32).Value = Int32.Parse(valuesInColumnsInTable_Array[i][j][k]);
                     }
                     mySqlCommand.ExecuteNonQuery();
                 }
@@ -1177,26 +1242,39 @@ public class DBManager : MonoBehaviour
         // 한 행의 컬럼 수 -> List, List로 한 이유는 해당 게임을 플레이 하지 않았다면(값이 0) 데이터를 사용할 이유가 없어 추가할 필요가 없음
         List<AnalyticsColumnValue>[][] valueList_ColumnArray_TableArray = new List<AnalyticsColumnValue>[analyticsTable.list.Count][];
 
+        Debug.Log($"[DB] Check etcMethodHandler is null? : {(etcMethodHandler == null ? "it's null" : "it's initialized")}");
+
         for (int i = 0; i < gameTable.list.Count; i++)
         {
             switch(i/6) // 스텝1~6
             {
                 case 0: // venezia_kor_level1_analytics 
+                    Wrapper wrapper = new Wrapper();
+                    wrapper.wrap = "[DB] before etcMethodHadler.TestMethod";
+                    Debug.Log(wrapper.wrap);
+                    etcMethodHandler.TestMethod(wrapper);
+                    Debug.Log(wrapper.wrap);
                     etcMethodHandler.AddAnalyticsColumnValueInDB(valueList_ColumnArray_TableArray, valuesInColumnsInTable_Array, i);
-                    //// 중복해서 초기화되지 않도록 예외처리
+                    Debug.Log($"[DB] i:{i}, creating analyticsTable");
+                    Debug.Log($"[DB] List<AnalyticsColumnValue>[][] valueList_ColumnArray_TableArray.Length = {valueList_ColumnArray_TableArray.Length}");
+                    Debug.Log($"[DB] valueList_ColumnArray_TableArray[i/6] = {(valueList_ColumnArray_TableArray[i/6] == null? "null":"have")}");
+                    // 중복해서 초기화되지 않도록 예외처리
                     //if (valueList_ColumnArray_TableArray[i / 6] == null)
                     //{
+                    //    Debug.Log($"[DB] Come in create object ");
                     //    valueList_ColumnArray_TableArray[i / 6] = new List<AnalyticsColumnValue>[valuesInColumnsInTable_Array[i].Count];
                     //}
-                    //
-                    //for (int j = 0; j < valuesInColumnsInTable_Array[i].Count; i ++) // 테이블에 저장된 행수(유저와 캐릭터들)
+                    
+                    //for (int j = 0; j < valuesInColumnsInTable_Array[i].Count; j ++) // 테이블에 저장된 행수(유저와 캐릭터들)
                     //{
+                    //    Debug.Log($"[DB] valuesInColumnsInTable_Array[i].Count = {valuesInColumnsInTable_Array[i].Count}");
                     //    // 중복해서 초기화되지 않도록 예외처리
                     //    if (valueList_ColumnArray_TableArray[i / 6][j] == null)
                     //    {
+                    //        Debug.Log($"[DB] Come in create object in j ");
                     //        valueList_ColumnArray_TableArray[i / 6][j] = new List<AnalyticsColumnValue>();
                     //    }
-                    //
+                    
                     //    // 데이터가 있다면(0이 아니라면) 추가
                     //    if(float.Parse(valuesInColumnsInTable_Array[i][j][2]) != 0 && Int32.Parse(valuesInColumnsInTable_Array[i][j][4]) != 0)
                     //    {
@@ -1324,6 +1402,8 @@ public class DBManager : MonoBehaviour
         }
 
         Debug.Log("[DB] Finish create AnalayticsTable and columns");
+        mySqlCommand.CommandText = "USE `present`";
+        mySqlCommand.ExecuteNonQuery();
     }
 
 }
