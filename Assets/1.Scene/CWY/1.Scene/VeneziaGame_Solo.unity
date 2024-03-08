@@ -284,7 +284,8 @@ MonoBehaviour:
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 15fb799ad5ebe4046924938f8511ab77, type: 2}
   m_sharedMaterial: {fileID: -1571892271189879514, guid: 15fb799ad5ebe4046924938f8511ab77, type: 2}
-  m_fontSharedMaterials: []
+  m_fontSharedMaterials:
+  - {fileID: -1571892271189879514, guid: 15fb799ad5ebe4046924938f8511ab77, type: 2}
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
   m_fontColor32:
@@ -1496,7 +1497,8 @@ MonoBehaviour:
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 15fb799ad5ebe4046924938f8511ab77, type: 2}
   m_sharedMaterial: {fileID: -1571892271189879514, guid: 15fb799ad5ebe4046924938f8511ab77, type: 2}
-  m_fontSharedMaterials: []
+  m_fontSharedMaterials:
+  - {fileID: -1571892271189879514, guid: 15fb799ad5ebe4046924938f8511ab77, type: 2}
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
   m_fontColor32:
@@ -2502,27 +2504,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 016f8acf90b099a40807819b1ecf004b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  CubePrefab:
-  - {fileID: 1079827597520798626, guid: 42324beeb234f8b4b876e05c9fb72576, type: 3}
-  - {fileID: 1079827597520798626, guid: 33189d79ff959af4ba9c7afeb6d9d974, type: 3}
-  - {fileID: 1079827597520798626, guid: 595e84be506fffc4cab8800cf5f7808d, type: 3}
-  - {fileID: 1079827597520798626, guid: f716e0d6343b652409d1935b63d8c279, type: 3}
-  - {fileID: 1079827597520798626, guid: 860d2892839b6f24b890ad46d494a3e4, type: 3}
-  - {fileID: 1079827597520798626, guid: 130d530c4e47cd540a5f32ced44df962, type: 3}
-  - {fileID: 1079827597520798626, guid: 6a69bc9a194094e46b0569c3eb939627, type: 3}
-  - {fileID: 1079827597520798626, guid: 241ae76cb42dfbc48be54b6f40361dea, type: 3}
-  - {fileID: 1079827597520798626, guid: 57ff032c9d8e7404287d558b96ab3f60, type: 3}
-  - {fileID: 1079827597520798626, guid: 6a7d44526dfdb934abe0865bf35339e2, type: 3}
-  - {fileID: 1079827597520798626, guid: 4c6f0473d5757cb4ba9b75f508f2b999, type: 3}
-  - {fileID: 1079827597520798626, guid: 0afb0bb9c359f10448f29d1f1f50af95, type: 3}
-  - {fileID: 1079827597520798626, guid: 91c7bed0914c4124bb609a41107f101a, type: 3}
-  - {fileID: 1079827597520798626, guid: dba4d76d03434bd49bf7c1805d480252, type: 3}
-  - {fileID: 1079827597520798626, guid: ba805f850956e3a48bd17d40bec9b798, type: 3}
-  - {fileID: 1079827597520798626, guid: f3895247912869e458c302f2ee05c587, type: 3}
-  - {fileID: 1079827597520798626, guid: 213b51e4fa42e664085e0e9918da24df, type: 3}
-  - {fileID: 1079827597520798626, guid: 36a78e6b285e4a640afd663e242f3e0d, type: 3}
-  - {fileID: 1079827597520798626, guid: 723906ca41418984a90628f629286c46, type: 3}
-  - {fileID: 1079827597520798626, guid: 6298f8856c104b14984c1179d96763ee, type: 3}
+  Prefab_K: []
+  Prefab_E: []
+  Prefab_H: []
   Pool_Position: {fileID: 788314112}
   CubeParentObject: {fileID: 577192753}
   ItemParentObject: {fileID: 1774103092}
@@ -2533,7 +2517,6 @@ MonoBehaviour:
   cubePool: []
   MeteorPool: []
   PausePool: []
-  cool: 3
 --- !u!1 &935920901
 GameObject:
   m_ObjectHideFlags: 0
@@ -3556,33 +3539,16 @@ MonoBehaviour:
   isGameover: 0
   Quest_Img: {fileID: 240970841}
   Quest_text: {fileID: 1885517469}
-  sprites_KE:
-  - {fileID: 21300000, guid: 088f070eb522174439e18b6eebb58e6e, type: 3}
-  - {fileID: 21300000, guid: 52d7412bff6c7674a9a9bd476f49a1a9, type: 3}
-  - {fileID: 21300000, guid: 2218c0c90cdb276418f6bf71e437505a, type: 3}
-  - {fileID: 21300000, guid: bf482cc86c2692d40ad964bdf5c167d1, type: 3}
-  - {fileID: 21300000, guid: 780ee15c6a21ded4eb0115df4de3a5cf, type: 3}
-  - {fileID: 21300000, guid: a0c46e98289bdb14a8776e34ab80d14d, type: 3}
-  - {fileID: 21300000, guid: dd10260738713d44c9b7383afa325821, type: 3}
-  - {fileID: 21300000, guid: 07b3f36212193db4e8190fe8bcc3a157, type: 3}
-  - {fileID: 21300000, guid: 5280c6713ce272347ae9b0952e5e1bb0, type: 3}
-  - {fileID: 21300000, guid: 7dbbe09f0bdabf243ab9fbae5f7dd8ab, type: 3}
-  - {fileID: 21300000, guid: 2ad1f70752b43eb41b536f8809b5161d, type: 3}
-  - {fileID: 21300000, guid: 0c0320509f8118044b4b750766795a30, type: 3}
-  - {fileID: 21300000, guid: 111b5a4b83108da439a97ae3839fb770, type: 3}
-  - {fileID: 21300000, guid: 7ebc78f31d74778449ecd83dfb492a38, type: 3}
-  - {fileID: 21300000, guid: aa47a575a0225ae468dd7dbae150b557, type: 3}
-  - {fileID: 21300000, guid: 8abb6e46451bc9d4c8093b96cbe5a5dc, type: 3}
-  - {fileID: 21300000, guid: 7fa6c0fa6a88d6b478f5ef6aa69035c5, type: 3}
-  - {fileID: 21300000, guid: b6bbf8d71753605488950dc70a907636, type: 3}
-  - {fileID: 21300000, guid: 6cbcd38e96e215041b3f74b145b17ab3, type: 3}
-  - {fileID: 21300000, guid: 4019238692475d048ba002c60a3ac1f3, type: 3}
+  sprites_K: []
+  sprites_E: []
+  sprites_H: []
   QuestCount: 5
   QuestRange: 0
   RemainAnswer: 0
   CorrectAnswerCount: 0
   ClickCount: 0
   LifeTime: 300
+  PoolingCool: 0
   DestroyTime: 0
 --- !u!114 &1566866590
 MonoBehaviour:
@@ -4134,7 +4100,8 @@ MonoBehaviour:
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 15fb799ad5ebe4046924938f8511ab77, type: 2}
   m_sharedMaterial: {fileID: -1571892271189879514, guid: 15fb799ad5ebe4046924938f8511ab77, type: 2}
-  m_fontSharedMaterials: []
+  m_fontSharedMaterials:
+  - {fileID: -1571892271189879514, guid: 15fb799ad5ebe4046924938f8511ab77, type: 2}
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
   m_fontColor32:

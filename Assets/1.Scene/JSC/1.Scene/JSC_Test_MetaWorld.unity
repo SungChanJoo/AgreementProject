@@ -10046,10 +10046,18 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 2238151618707453351, guid: bd27581ef9f80624a9cc3f01fa7d4e48, type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: e823cd5b5d27c0f4b8256e7c12ee3e6d, type: 2}
     - target: {fileID: 2282071157721181868, guid: bd27581ef9f80624a9cc3f01fa7d4e48, type: 3}
       propertyPath: m_IsActive
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 2282071157721181870, guid: bd27581ef9f80624a9cc3f01fa7d4e48, type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: e823cd5b5d27c0f4b8256e7c12ee3e6d, type: 2}
     - target: {fileID: 2282071157783900819, guid: bd27581ef9f80624a9cc3f01fa7d4e48, type: 3}
       propertyPath: m_LocalScale.x
       value: 10
@@ -10182,6 +10190,10 @@ PrefabInstance:
       propertyPath: m_ConstrainProportionsScale
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 7950344850036905404, guid: bd27581ef9f80624a9cc3f01fa7d4e48, type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: e823cd5b5d27c0f4b8256e7c12ee3e6d, type: 2}
     - target: {fileID: 7950344850036905406, guid: bd27581ef9f80624a9cc3f01fa7d4e48, type: 3}
       propertyPath: m_IsActive
       value: 0
@@ -10250,6 +10262,10 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 8113290010368778138, guid: bd27581ef9f80624a9cc3f01fa7d4e48, type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: e823cd5b5d27c0f4b8256e7c12ee3e6d, type: 2}
     - target: {fileID: 8113290010368778139, guid: bd27581ef9f80624a9cc3f01fa7d4e48, type: 3}
       propertyPath: m_LocalScale.x
       value: 1
@@ -10346,6 +10362,10 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 8117647483008063330, guid: bd27581ef9f80624a9cc3f01fa7d4e48, type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: e823cd5b5d27c0f4b8256e7c12ee3e6d, type: 2}
     - target: {fileID: 8722113825729280071, guid: bd27581ef9f80624a9cc3f01fa7d4e48, type: 3}
       propertyPath: m_LocalScale.x
       value: 5
@@ -10394,6 +10414,10 @@ PrefabInstance:
       propertyPath: m_ConstrainProportionsScale
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 8722113826775523393, guid: bd27581ef9f80624a9cc3f01fa7d4e48, type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: e823cd5b5d27c0f4b8256e7c12ee3e6d, type: 2}
     - target: {fileID: 8722113826775523395, guid: bd27581ef9f80624a9cc3f01fa7d4e48, type: 3}
       propertyPath: m_IsActive
       value: 0
