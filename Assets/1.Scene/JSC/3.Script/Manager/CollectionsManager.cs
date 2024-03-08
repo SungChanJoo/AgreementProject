@@ -147,6 +147,7 @@ public class CollectionsManager : MonoBehaviour
             if (_crewInfo[crewNumber] != null)
             {
                 _crewModel[crewNumber].SetActive(true);
+                _crewModel[crewNumber].transform.rotation = Quaternion.Euler(0f, 157f, 0f);
                 _crewName.text = $"대원이름 : {_crewInfo[crewNumber].CrewName}";
                 _crewDescript.text = $"대원설명 : {_crewInfo[crewNumber].CrewDescript}";
                 _seletedDetailModel = crewNumber;
@@ -251,12 +252,14 @@ public class CollectionsManager : MonoBehaviour
         int selectedCrew = 0;
         List<bool> ownedCrew = new List<bool>();
         ownedCrew.Add(true);
-        ownedCrew.Add(false);
-        ownedCrew.Add(false);
-        ownedCrew.Add(false);
-        ownedCrew.Add(false);
-        ownedCrew.Add(false);
-        ownedCrew.Add(false);
+        ownedCrew.Add(true);
+        ownedCrew.Add(true);
+        ownedCrew.Add(true);
+        ownedCrew.Add(true);
+        for(int i = 0; i < 32; i++)
+        {
+            ownedCrew.Add(false);
+        }
         Collections = new ExpenditionCrew(selectedCrew, ownedCrew);
 
         //텍스트, 버튼 초기화
