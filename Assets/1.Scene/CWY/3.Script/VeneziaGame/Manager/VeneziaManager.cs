@@ -102,6 +102,7 @@ public class VeneziaManager : GameSetting
 
     private void StartSet()
     {
+        Debug.Log(game_Type);
         //1 3 4 B D E 한글 영어 한좌
         if (game_Type == Game_Type.C) //한글
         {
