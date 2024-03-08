@@ -32,34 +32,33 @@ public class VeneziaManager : GameSetting
     [SerializeField] public Image Quest_Img;
     [SerializeField] private TextMeshProUGUI Quest_text;
     //한글 및 영어 문제에 사용 할 이미지 sprite 한글과 영어, 한자 
-    [SerializeField] private Sprite[] sprites_K; 
-    [SerializeField] private Sprite[] sprites_E; 
-    [SerializeField] private Sprite[] sprites_H; 
+    [SerializeField] public Sprite[] sprites_K; 
+    [SerializeField] public Sprite[] sprites_E; 
+    [SerializeField] public Sprite[] sprites_H;
     private string[] KorWord =
-    {
-          "학", "말", "닭", "곰", "하마", "표범", "팬더", "타조", "쿼카", "치타",
-          "참새", "제비", "젖소", "염소", "여우", "악어", "사자", "사슴", "돼지", "기린",
-          "개미", "오리", "문어", "공작", "배", "나비", "당근", "오이", "감자", "로봇",
-          "체리", "매미", "버섯", "호박", "거미", "사과", "꿀벌", "조개", "가지", "수박",
-          "꽃게", "포도", "레몬", "까치", "우유", "치즈", "택시", "칫솔", "트럭", "요트",
-          "버스", "주스", "다람쥐", "휴지", "기차", "자전거", "자동차", "독수리", "원숭이",
-          "코뿔소", "열기구", "크레인", "코끼리", "부엉이", "비행기", "경찰차", "잠수함", "고구마", "호랑이",
-          "얼룩말", "바나나", "소방차", "애벌레", "사마귀", "지하철", "잠자리", "소라게", "캥거루", "돛단배",
-          "달팽이", "브로콜리", "무당벌레", "파인애플", "사슴벌레", "딱다구리", "구급차", "지렁이", "헬리콥터", "오토바이", "불가사리" 
-    };
+    {"학","말","닭","곰","하마","표범","팬더","타조","쿼카","치타","참새",
+     "제비","젖소","염소","여우","악어","사자","사슴","돼지","기린","개미","오리",
+     "문어","공작","배","나비","당근","오이","감자","로봇","장미","튤립","수국",
+     "짬뽕","우동","체리","매미","버섯","호박","거미","사과","꿀벌","조개","가지",
+     "수박","꽃게","포도","레몬","까치","우유","치즈","택시","칫솔","트럭","요트",
+     "버스","주스","다람쥐","휴지","기차","자전거","자동차","독수리","원숭이","코뿔소","짜장면",
+     "부침개","비빔밥","떡볶이","탕수육","열기구","크레인","코끼리","부엉이","비행기","경찰차","잠수함",
+     "고구마","호랑이","얼룩말","바나나","소방차","애벌레","사마귀","지하철","잠자리","소라게","캥거루",
+     "돛단배","달팽이","브로콜리","무당벌레","파인애플","사슴벌레","딱다구리","구급차","지렁이","헬리콥터","오토바이",
+     "불가사리","슈퍼마켓","피뿔고둥","해바라기","말뚝망둥어","큰구슬우렁이"};
 
     private string[] EnglishWord =
-     {
-      "pig","ant","fox","bee","car","bus","owl","deer","ship","duck",
-      "milk","crap","calm","bear","cake","taxi","goat","lion","pear","apple",
-      "grape","panda","lemon","juice","train","pizza","tiger","eagle","truck","zebra",
-      "robot","crane","snail","larva","plane","hippo","yacht","koala","donut","horse",
-      "spider","carrot","cherry","potato","monkey","flower","tissue","banana","mantis","subway",
-      "cheese","brocoli","quokka","giraffe","pumpkin","bicycle","peacock","octopus","chicken","cheetah",
-      "swallow","millkcow","eggplant","elephant","ladybug","leopard","starfish","icecream","butterfly","sandwich",
-      "sparrow","cucumber","airballon","hospital","squirrel","crocodile","mushroom","policecar","dragonfly","pharmacy",
-      "kangaroo","pineapple","watermelon","earthworm","sweetpotato","submarine","woodpecker","ambulance","motorcycle","supermarket"
-    };
+    {"pig","ant","fox","bee","car","bus","owl","deer","ship","duck","milk","crap",
+     "clam","bear","cake","taxi","goat","lion","pear","rose","udon","apple","grape","panda",
+     "lemon","juice","train","pizza","tiger","eagle","truck","zebra","tulip","robot","crane",
+     "snail","larva","plane","sloth","hippo","yacht","koala","donut","horse","spider","carrot",
+     "cosmos","cherry","potato","monkey","yogurt","tissue","banana","mantis","subway","cheese",
+     "brocoli","quokka","giraffe","pumpkin","bicycle","peacock","octopus","chicken","cheetah",
+     "swallow","millkcow","meerkat","eggplant","anteater","platypus","elephant","ladybug","leopard",
+     "starfish","icecream","butterfly","sandwich","sparrow","cucumber","airballon","hospital","squirrel",
+     "crocodile","mushroom","policecar","dragonfly","pharmacy","kangaroo","forsythia","sunflower","pineapple",
+     "watermelon","earthworm","sweetpotato","submarine","woodpecker","ambulance","motorcycle","supermarket",
+     "viviparidae","dandelion","hermitcrap","hydrangea","rapanavenosa"};
     public int QuestCount;  // 딕셔너리에 들어갈 퀘스트 갯수 //10문제 <
     public int QuestRange;
     public int RemainAnswer; // 게임 진행중 남은 정답 갯수

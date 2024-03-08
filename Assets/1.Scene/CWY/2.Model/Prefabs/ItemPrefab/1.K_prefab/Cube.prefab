@@ -15,7 +15,7 @@ GameObject:
   - component: {fileID: 1079827597520798624}
   - component: {fileID: 1079827597520798628}
   m_Layer: 9
-  m_Name: 8.ostrich
+  m_Name: Cube
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -29,7 +29,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1079827597520798626}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 11, y: 57.4, z: 0}
+  m_LocalPosition: {x: 41, y: 57.4, z: 0}
   m_LocalScale: {x: 30, y: 30, z: 30}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -119,10 +119,12 @@ MonoBehaviour:
   AccelerationSpeed: 1.05
   removeTime: 0
   isStart: 1
-  sprite: {fileID: 21300000, guid: 07b3f36212193db4e8190fe8bcc3a157, type: 3}
+  sprite: {fileID: 21300000, guid: 088f070eb522174439e18b6eebb58e6e, type: 3}
   moveX: 0
   moveY: 0
   count: 0
+  gizmoColor: {r: 0, g: 0, b: 1, a: 1}
+  radius: 15
 --- !u!54 &1079827597520798628
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -206,7 +208,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 07b3f36212193db4e8190fe8bcc3a157, type: 3}
+  m_Sprite: {fileID: 21300000, guid: e0369afdd4543ea40b4769129f46c9de, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
