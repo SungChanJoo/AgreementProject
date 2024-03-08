@@ -1,7 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
-using UnityEditor.Searcher;
 using UnityEngine;
+using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 
 public class CrewMovementManager : MonoBehaviour
@@ -20,7 +20,8 @@ public class CrewMovementManager : MonoBehaviour
     public int SeletedCrewIndex;
     List<Transform> CrewPos;
     int finalPos;
-    public GameObject FadeCanvas;
+    public GameObject FadeObj;
+    private Image FadeImg;
     private void Awake()
     {
         if (Instance == null)
@@ -32,6 +33,7 @@ public class CrewMovementManager : MonoBehaviour
             Destroy(gameObject);
         //FinalPlayStepTable.Add((Game_Type.A, 1), 1); // Game_Type.A, 1레벨에서 마지막으로 플레이한 스텝이 1스텝
         //FinalPlayStepTable[(Game_Type.A, 1)] = 2;// 스텝 2로 변경
+        //todo 0308 DB연동해서 최종 플레이한 스텝 초기화해줘
         FinalPlayStepTable = new Dictionary<(Game_Type, int), int>();
 
         for (int i = 0; i<= (int)Game_Type.E; i++)//게임 타입 5개
@@ -46,7 +48,7 @@ public class CrewMovementManager : MonoBehaviour
             if (SeleteableCrew[i].activeSelf)
                 SeleteableCrew[i].SetActive(false);
         }
-
+        FadeImg = FadeObj.GetComponent<Image>();
     }
     //레벨 선택시 현재 대원보이기
     public void ViewCrew()
@@ -95,7 +97,7 @@ public class CrewMovementManager : MonoBehaviour
         SelectedStep = StepManager.Instance.CurrentStep;
         Debug.Log($"CrewMovementManager : {SelectedGame},{SelectedLevel},{SelectedStep}");
         StartCoroutine(MoveCrew_co());
-        FadeCanvas.SetActive(true);
+        FadeObj.SetActive(true);
     }
     //대원 움직이기
     IEnumerator MoveCrew_co()
@@ -148,13 +150,33 @@ public class CrewMovementManager : MonoBehaviour
         SeleteableCrew[SeletedCrewIndex].transform.LookAt(Camera.main.transform.position);
         //마지막으로 플레이한 스텝
         FinalPlayStepTable[(SelectedGame, SelectedLevel)] = SelectedStep;
-        StartCoroutine(FadeOutScene());
+        StartCoroutine(FadeOutImg());
     }
     //화면 전환 효과
-    IEnumerator FadeOutScene()
+    IEnumerator FadeOutImg()
     {
-        yield return new WaitForSeconds(1f);
+        var fadeCount = 0f;
+        while (FadeImg.color.a < 1)
+        {
+            fadeCount += 0.01f;
+            FadeImg.color = new Color(0,0,0, fadeCount);
+            yield return null;
+        }
         SceneManager.LoadScene((int)SelectedGame + 2);
+        StartCoroutine(FadeInImg());
         ExitStep();
     }
+    IEnumerator FadeInImg()
+    {
+        var fadeCount = 1f;
+        while (FadeImg.color.a > 0)
+        {
+            fadeCount -= 0.01f;
+            FadeImg.color = new Color(0, 0, 0, fadeCount);
+            yield return null;
+        }
+        FadeObj.SetActive(false);
+
+    }
+
 }
