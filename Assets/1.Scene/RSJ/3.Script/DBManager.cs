@@ -31,9 +31,10 @@ public class DBManager : MonoBehaviour
     private string[] userinfo_Columns;
     private string[] rank_Columns;
     private string[] achievement_Columns;
-    private string[] pet_Columns;
+    private string[] crew_Columns;
     private string[] game_Columns;
     private string[] analytics_Columns;
+    private string[] finallyselectedgame_Columns;
 
     // 서버-클라이언트 string으로 data 주고받을때 구분하기 위한 문자열
     private const string separatorString = "E|";
@@ -44,7 +45,7 @@ public class DBManager : MonoBehaviour
     // 기타 데이터 처리용 Handler
     private ETCMethodHandler etcMethodHandler;
 
-    public static DBManager instance = null; // 싱글톤 쓸거임
+    public static DBManager instance = null;
 
     private void Awake()
     {
@@ -67,6 +68,7 @@ public class DBManager : MonoBehaviour
         InitSetting();
     }
 
+    #region Start() Methods, Setting
     // DB 세션에 연결할 때 필요한 정보 초기화
     private void SetStringConnection()
     {
@@ -116,22 +118,25 @@ public class DBManager : MonoBehaviour
         // Tables / TableName 객체 생성시 table.list 자동 생성
         table = new TableName();
 
-        // 객체 생성
+        // analyticsTable 객체 생성
         analyticsTable = new AnalyticsTableName();
 
         // Table - Columns
         userinfo_Columns = new string[]{ "User_LicenseNumber", "User_Charactor", "User_Name", "User_Profile", "User_Birthday", "User_TotalAnswers", "User_TotalTime", "User_Coin" };
         rank_Columns = new string[] { "User_LicenseNumber", "User_Charactor", "User_Profile", "User_Name", "TotalTime", "TotalScore" };
         achievement_Columns = new string[] { "User_LicenseNumber", "User_Charactor", "Something" };
-        pet_Columns = new string[] { "User_LicenseNumber", "User_Charactor", "White" };
+        crew_Columns = new string[] { "User_LicenseNumber", "User_Charactor", "FinallySelectedCrew", "루즈비", "블루비", "베르비", "로조비", "블랙비", "똘이", "고릴라", "고슴도치", "고양이", "까마귀", "남생이", "늑대", "다람쥐", "독수리", "돌고래", "라쿤", "물범", "방울뱀", "범고래", "병아리", "북극여우", "쇠족제비", "수탉", "악어", "양", "여우", "오리너구리", "치타", "캥거루", "코뿔소", "쿼카", "팬더", "펭귄", "해달", "호랑이", "흰토끼", "황금독수리" };
         game_Columns = new string[]{ "User_LicenseNumber", "User_Charactor", "ReactionRate", "AnswerCount", "AnswerRate", "Playtime", "TotalScore", "StarPoint" };
         analytics_Columns = new string[] { "User_LicenseNumber", "User_Charactor", "ReactionRate", "AnswerRate" };
+        finallyselectedgame_Columns = new string[] { "User_LicenseNumber", "User_Charactor", "venezia_kor_level1", "venezia_kor_level2", "venezia_kor_level3", "venezia_eng_level1", "venezia_eng_level2", "venezia_eng_level3", "venezia_chn_level", "calculation_level1", "calculation_level2", "calculation_level3", "gugudan_level1", "gugudan_level2", "gugudan_level3" };
 
         // 기타 데이터 처리용 Handler
         etcMethodHandler = new ETCMethodHandler();
     }
+    #endregion
 
-    // 계정등록 // todo 비동기화 생각해봐야함
+    #region Server-Client Data Communication
+    // 계정등록, 단 한번 실행 
     public string CreateLicenseNumber()
     {
         Debug.Log("[DB] Come in CreateLicenseNumber method");
@@ -159,126 +164,154 @@ public class DBManager : MonoBehaviour
         }
         reader.Close(); // DataReader가 열려있는 동안 추가적인 명령 실행 불가
 
-        // user_info 변수
-        string table_Name = "user_info";
-        string[] columns = { "User_LicenseNumber", "User_Charactor", "User_Name", "User_Profile", "User_Birthday", "User_TotalAnswers", "User_TotalTime", "User_Coin" };
+        //// user_info 변수
+        //string table_Name = "user_info";
+        //string[] columns = { "User_LicenseNumber", "User_Charactor", "User_Name", "User_Profile", "User_Birthday", "User_TotalAnswers", "User_TotalTime", "User_Coin" };
         int clientLicenseNumber = clientLicenseNumber_Base + count;
-        int user_Charactor = 1;
-        string user_Name = "Guest";
-        byte[] user_Profile = { 0x00};
-        string user_Birthday = "96.02.01";
-        int user_TotalAnswers = 0;
-        float user_TotalTime = 0f;
-        int user_Coin = 0;
+        //int user_Charactor = 1;
+        //string user_Name = "Guest";
+        //byte[] user_Profile = { 0x00};
+        //string user_Birthday = "96.02.01";
+        //int user_TotalAnswers = 0;
+        //float user_TotalTime = 0f;
+        //int user_Coin = 0;
+        //
+        //// Binary Parameter
+        ////MySqlParameter binaryParameter = new MySqlParameter
+        //
+        //// 생성하는 쿼리문
+        //string createAccount_Command = $"INSERT INTO {table_Name} ({columns[0]}, {columns[1]}, {columns[2]}, {columns[3]}, {columns[4]}, {columns[5]}, {columns[6]}, {columns[7]}) " +
+        //                                $"VALUES (@clientLicenseNumber, @user_Charactor, @user_Name, @user_Profile, @user_Birthday, @user_TotalAnswers, @user_TotalTime, @user_Coin)"; // `(따옴표), '(백틱) 구분하기
+        //MySqlCommand insert_SqlCmd = new MySqlCommand(createAccount_Command, connection);
+        //insert_SqlCmd.Parameters.Add("@clientLicenseNumber", MySqlDbType.Int32).Value = clientLicenseNumber;
+        //insert_SqlCmd.Parameters.Add("@user_Charactor", MySqlDbType.Int32).Value = user_Charactor;
+        //insert_SqlCmd.Parameters.Add("@user_Name", MySqlDbType.VarChar).Value = user_Name;
+        //insert_SqlCmd.Parameters.Add("@user_Profile", MySqlDbType.MediumBlob).Value = user_Profile;
+        //insert_SqlCmd.Parameters.Add("@user_Birthday", MySqlDbType.MediumBlob).Value = user_Birthday;
+        //insert_SqlCmd.Parameters.Add("@user_TotalAnswers", MySqlDbType.MediumBlob).Value = user_TotalAnswers;
+        //insert_SqlCmd.Parameters.Add("@user_TotalTime", MySqlDbType.MediumBlob).Value = user_TotalTime;
+        //insert_SqlCmd.Parameters.Add("@user_Coin", MySqlDbType.Int32).Value = user_Coin;
+        //
+        //insert_SqlCmd.ExecuteNonQuery(); // command.ExecuteNonQuery()은 DB에서 변경 작업을 수행하는 SQL 명령문을 실행하고, 영향을 받은 행의 수를 반환하는 메서드
+        //
+        //string returnData = $"{clientLicenseNumber}|{user_Charactor}";
+        string returnData = $"{clientLicenseNumber}|1|";
 
-        // Binary Parameter
-        //MySqlParameter binaryParameter = new MySqlParameter
-
-        // 생성하는 쿼리문
-        string createAccount_Command = $"INSERT INTO {table_Name} ({columns[0]}, {columns[1]}, {columns[2]}, {columns[3]}, {columns[4]}, {columns[5]}, {columns[6]}, {columns[7]}) " +
-                                        $"VALUES (@clientLicenseNumber, @user_Charactor, @user_Name, @user_Profile, @user_Birthday, @user_TotalAnswers, @user_TotalTime, @user_Coin)"; // `(따옴표), '(백틱) 구분하기
-        MySqlCommand insert_SqlCmd = new MySqlCommand(createAccount_Command, connection);
-        insert_SqlCmd.Parameters.Add("@clientLicenseNumber", MySqlDbType.Int32).Value = clientLicenseNumber;
-        insert_SqlCmd.Parameters.Add("@user_Charactor", MySqlDbType.Int32).Value = user_Charactor;
-        insert_SqlCmd.Parameters.Add("@user_Name", MySqlDbType.VarChar).Value = user_Name;
-        insert_SqlCmd.Parameters.Add("@user_Profile", MySqlDbType.MediumBlob).Value = user_Profile;
-        insert_SqlCmd.Parameters.Add("@user_Birthday", MySqlDbType.MediumBlob).Value = user_Birthday;
-        insert_SqlCmd.Parameters.Add("@user_TotalAnswers", MySqlDbType.MediumBlob).Value = user_TotalAnswers;
-        insert_SqlCmd.Parameters.Add("@user_TotalTime", MySqlDbType.MediumBlob).Value = user_TotalTime;
-        insert_SqlCmd.Parameters.Add("@user_Coin", MySqlDbType.Int32).Value = user_Coin;
-        
-        insert_SqlCmd.ExecuteNonQuery(); // command.ExecuteNonQuery()은 DB에서 변경 작업을 수행하는 SQL 명령문을 실행하고, 영향을 받은 행의 수를 반환하는 메서드
-
-        string returnData = $"{clientLicenseNumber}|{user_Charactor}";
         return returnData;
     }
 
     // 새 캐릭터 데이터 생성
     public void CreateNewCharactorData(int clientlicensenumber, int clientcharactor)
     {
-        Debug.Log($"[DB] Create new Charactor data, client's licensenumber : {clientlicensenumber}");
+        Debug.Log($"[DB] Create new Charactor data, client's licensenumber : {clientlicensenumber}, clients's charactor : {clientcharactor}");
 
-        // ClientLicenseNumber가 발급되면 새 플레이어 정보를 만드는 것이므로, 모든 테이블에 data를 추가해야함
-        string insertCreatePlayerData_Command;
-        MySqlCommand insert_SqlCmd = new MySqlCommand();
-        insert_SqlCmd.Connection = connection;
+        MySqlCommand mySqlCommand = new MySqlCommand();
+        mySqlCommand.Connection = connection;
+        
+        // Insert Query
+        string insertCharactorData_Command;
 
         // Update Query
-        string updatePlayerData_Command;
-        MySqlCommand update_SqlCmd = new MySqlCommand();
-        update_SqlCmd.Connection = connection;
+        string updateCharactorData_Command;
 
-        // table.list[0] -> userinfo, [1]->rank, [2]->achievement, [3]->pet
+        // table.list[0] -> user_info, [1] -> rank, [2] -> crew, [3] -> finallyselectedgame, [4]~ -> gameTables~
 
-        // rank table
-        // table.list[1] = "rank"
-        // rank_Columns = { "User_LicenseNumber", "User_Charactor", "User_Profile", "User_Name", "TotalTime", "TotalScore" };
-        int rank_valuepart;
+        // user_info table
+        // userinfo_Columns = { "User_LicenseNumber", "User_Charactor", "User_Name", "User_Profile", "User_Birthday", "User_TotalAnswers", "User_TotalTime", "User_Coin" };
+        insertCharactorData_Command = $"INSERT INTO `{table.list[0]}` (`{userinfo_Columns[0]}`, `{userinfo_Columns[1]}`) VALUES ({clientlicensenumber},{clientcharactor})";
+        mySqlCommand.CommandText = insertCharactorData_Command;
+        mySqlCommand.ExecuteNonQuery();
 
-        // insert row
-        insertCreatePlayerData_Command = $"INSERT INTO {table.list[1]} ({rank_Columns[0]}) VALUES ({clientlicensenumber})";
-        insert_SqlCmd.CommandText = insertCreatePlayerData_Command;
-        insert_SqlCmd.ExecuteNonQuery();
+        MySqlParameter valueParameter = mySqlCommand.Parameters.Add("@value", MySqlDbType.VarChar);
+        string defaultProfile = "/9j/4AAQSkZJRgABAQAAAQABAAD/4gIoSUNDX1BST0ZJTEUAAQEAAAIYAAAAAAQwAABtbnRyUkdCIFhZWiAAAAAAAAAAAAAAAABhY3NwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAA9tYAAQAAAADTLQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAlkZXNjAAAA8AAAAHRyWFlaAAABZAAAABRnWFlaAAABeAAAABRiWFlaAAABjAAAABRyVFJDAAABoAAAAChnVFJDAAABoAAAAChiVFJDAAABoAAAACh3dHB0AAAByAAAABRjcHJ0AAAB3AAAADxtbHVjAAAAAAAAAAEAAAAMZW5VUwAAAFgAAAAcAHMAUgBHAEIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAFhZWiAAAAAAAABvogAAOPUAAAOQWFlaIAAAAAAAAGKZAAC3hQAAGNpYWVogAAAAAAAAJKAAAA+EAAC2z3BhcmEAAAAAAAQAAAACZmYAAPKnAAANWQAAE9AAAApbAAAAAAAAAABYWVogAAAAAAAA9tYAAQAAAADTLW1sdWMAAAAAAAAAAQAAAAxlblVTAAAAIAAAABwARwBvAG8AZwBsAGUAIABJAG4AYwAuACAAMgAwADEANv/bAEMAAgEBAQEBAgEBAQICAgICBAMCAgICBQQEAwQGBQYGBgUGBgYHCQgGBwkHBgYICwgJCgoKCgoGCAsMCwoMCQoKCv/bAEMBAgICAgICBQMDBQoHBgcKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCv/AABEIBDkEOAMBIgACEQEDEQH/xAAdAAEAAQUBAQEAAAAAAAAAAAAABwECBAUGAwgJ/8QAQRABAAEDAgMGBQIEAgkEAwEAAAECAwQFEQYHIQkSGTFBWRNRcZfUImEUMoGRCFIVIzNCYpKhscEkU3KTFjRD8P/EABwBAQABBQEBAAAAAAAAAAAAAAAGAQMEBQcCCP/EADYRAQACAgIBAwMCBQIFBAMAAAABAgMEBREGEiExB0FREyIUIzJhcRWBFjORobE0QkNSweHw/9oADAMBAAIRAxEAPwD9a/Cl7Ln22uQX2d0T8U8KXsufba5BfZ3RPxU+jE7ll9QgLwpey59trkF9ndE/FPCl7Ln22uQX2d0T8VPodydQgLwpey59trkF9ndE/FPCl7Ln22uQX2d0T8VPodydQgLwpey59trkF9ndE/FPCl7Ln22uQX2d0T8VPodydQgLwpey59trkF9ndE/FPCl7Ln22uQX2d0T8VPodydQgLwpey59trkF9ndE/FPCl7Ln22uQX2d0T8VPodydQgLwpey59trkF9ndE/FPCl7Ln22uQX2d0T8VPodydQgLwpey59trkF9ndE/FPCl7Ln22uQX2d0T8VPodydQgLwpey59trkF9ndE/FPCl7Ln22uQX2d0T8VPodydQgLwpey59trkF9ndE/FPCl7Ln22uQX2d0T8VPodydQgLwpey59trkF9ndE/FPCl7Ln22uQX2d0T8VPodydQgLwpey59trkF9ndE/FPCl7Ln22uQX2d0T8VPodydQgLwpey59trkF9ndE/FPCl7Ln22uQX2d0T8VPodydQgLwpey59trkF9ndE/FPCl7Ln22uQX2d0T8VPodydQgLwpey59trkF9ndE/FPCl7Ln22uQX2d0T8VPodydQgLwpey59trkF9ndE/FPCl7Ln22uQX2d0T8VPodydQgLwpey59trkF9ndE/FPCl7Ln22uQX2d0T8VPodydQgLwpey59trkF9ndE/FPCl7Ln22uQX2d0T8VPodydQgLwpey59trkF9ndE/FPCl7Ln22uQX2d0T8VPodydQgLwpey59trkF9ndE/FPCl7Ln22uQX2d0T8VPodydQgLwpey59trkF9ndE/FPCl7Ln22uQX2d0T8VPodydQgLwpey59trkF9ndE/FPCl7Ln22uQX2d0T8VPodydQgLwpey59trkF9ndE/FPCl7Ln22uQX2d0T8VPodydQgLwpey59trkF9ndE/FPCl7Ln22uQX2d0T8VPodydQgLwpey59trkF9ndE/FPCl7Ln22uQX2d0T8VPodydQgLwpey59trkF9ndE/FPCl7Ln22uQX2d0T8VPodydQgLwpey59trkF9ndE/FPCl7Ln22uQX2d0T8VPodydQgLwpey59trkF9ndE/FPCl7Ln22uQX2d0T8VPodydQgLwpey59trkF9ndE/FPCl7Ln22uQX2d0T8VPodydQgLwpey59trkF9ndE/FPCl7Ln22uQX2d0T8VPodydQgLwpey59trkF9ndE/FPCl7Ln22uQX2d0T8VPodydQgLwpey59trkF9ndE/FPCl7Ln22uQX2d0T8VPodydQgLwpey59trkF9ndE/FPCl7Ln22uQX2d0T8VPodydQgLwpey59trkF9ndE/FPCl7Ln22uQX2d0T8VPodydQgLwpey59trkF9ndE/FPCl7Ln22uQX2d0T8VPodydQgLwpey59trkF9ndE/FPCl7Ln22uQX2d0T8VPodydQgLwpey59trkF9ndE/FPCl7Ln22uQX2d0T8VPodydQgLwpey59trkF9ndE/FPCl7Ln22uQX2d0T8VPodydQgLwpey59trkF9ndE/FPCl7Ln22uQX2d0T8VPodydQgLwpey59trkF9ndE/FPCl7Ln22uQX2d0T8VPodydQgLwpey59trkF9ndE/FPCl7Ln22uQX2d0T8VPodydQgLwpey59trkF9ndE/FPCl7Ln22uQX2d0T8VPodydQgLwpey59trkF9ndE/FPCl7Ln22uQX2d0T8VPodydQgLwpey59trkF9ndE/FPCl7Ln22uQX2d0T8VPodydQgLwpey59trkF9ndE/FPCl7Ln22uQX2d0T8VPodydQgLwpey59trkF9ndE/FPCl7Ln22uQX2d0T8VPodydQgLwpey59trkF9ndE/FPCl7Ln22uQX2d0T8VPodydQgLwpey59trkF9ndE/FPCl7Ln22uQX2d0T8VPodydQgLwpey59trkF9ndE/FPCl7Ln22uQX2d0T8VPodydQgLwpey59trkF9ndE/FPCl7Ln22uQX2d0T8VPodydQgLwpey59trkF9ndE/FPCl7Ln22uQX2d0T8VPodydQgLwpey59trkF9ndE/FPCl7Ln22uQX2d0T8VPodydQgLwpey59trkF9ndE/FPCl7Ln22uQX2d0T8VPodydQgLwpey59trkF9ndE/FPCl7Ln22uQX2d0T8VPodydQgLwpey59trkF9ndE/FPCl7Ln22uQX2d0T8VPodydQgLwpey59trkF9ndE/FPCl7Ln22uQX2d0T8VPodydQgLwpey59trkF9ndE/FPCl7Ln22uQX2d0T8VPodydQgLwpey59trkF9ndE/FPCl7Ln22uQX2d0T8VPodydQgLwpey59trkF9ndE/FPCl7Ln22uQX2d0T8VPodydQgLwpey59trkF9ndE/FPCl7Ln22uQX2d0T8VPodydQgLwpey59trkF9ndE/FPCl7Ln22uQX2d0T8VPodydQgLwpey59trkF9ndE/FPCl7Ln22uQX2d0T8VPodydQgLwpey59trkF9ndE/FPCl7Ln22uQX2d0T8VPodydQgLwpey59trkF9ndE/FPCl7Ln22uQX2d0T8VPodydQgLwpey59trkF9ndE/FPCl7Ln22uQX2d0T8VPodydQgLwpey59trkF9ndE/FPCl7Ln22uQX2d0T8VPodydQgLwpey59trkF9ndE/FPCl7Ln22uQX2d0T8VPodydQgLwpey59trkF9ndE/FE+h3J1AAoqAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA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AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAH//Z";
 
-        for (int i = 0; i < rank_Columns.Length; i++) // 0->licensenumber, 1->charactor
+        for(int i = 2; i < userinfo_Columns.Length; i++) // 0 -> licenseNumber, 1 -> charactor
         {
-            if (i == 0) rank_valuepart = clientlicensenumber;
-            else if (i == 1) rank_valuepart = clientcharactor;
-            else rank_valuepart = 0;
+            updateCharactorData_Command = $"UPDATE `{table.list[0]}` SET `{userinfo_Columns[i]}` = '@value' " +
+                                          $"WHERE `{userinfo_Columns[0]}` = '{clientlicensenumber}' AND `{userinfo_Columns[1]}` = '{clientcharactor}';";
+            mySqlCommand.CommandText = updateCharactorData_Command;
 
-            updatePlayerData_Command = $"UPDATE `{table.list[1]}` SET `{rank_Columns[i]}` = '{rank_valuepart}' WHERE `{rank_Columns[0]}` = '{clientlicensenumber}'";
-            update_SqlCmd.CommandText = updatePlayerData_Command;
-            update_SqlCmd.ExecuteNonQuery();
+            if (i == 2) // User_Name
+            {
+                valueParameter.MySqlDbType = MySqlDbType.VarChar;
+                valueParameter.Value = "Guest";
+            }
+            else if (i == 3) // User_Profile
+            {
+                valueParameter.MySqlDbType = MySqlDbType.MediumBlob;
+                valueParameter.Value = defaultProfile;
+            }
+            else if (i == 4) // User_Birthday
+            {
+                valueParameter.MySqlDbType = MySqlDbType.VarChar;
+                valueParameter.Value = "2015.02.02";
+            }
+            else if (i == 6) // float
+            {
+                valueParameter.MySqlDbType = MySqlDbType.Float;
+                valueParameter.Value = 0;
+            }
+            else // int
+            {
+                valueParameter.MySqlDbType = MySqlDbType.Int32;
+                valueParameter.Value = 0;
+            }
+            mySqlCommand.ExecuteNonQuery();
+        }
+        Debug.Log("[DB] User_info table complete!");
+        
+        // rank table
+        // rank_Columns = { "User_LicenseNumber", "User_Charactor", "User_Profile", "User_Name", "TotalTime", "TotalScore" };
+        insertCharactorData_Command = $"INSERT INTO `{table.list[1]}` (`{rank_Columns[0]}`, `{rank_Columns[1]}`) VALUES ({clientlicensenumber},{clientcharactor})";
+        mySqlCommand.CommandText = insertCharactorData_Command;
+        mySqlCommand.ExecuteNonQuery();
+        int rank_valuepart = 0;
+
+        for (int i = 2; i < rank_Columns.Length; i++) // 0->licensenumber, 1->charactor
+        {
+            updateCharactorData_Command = $"UPDATE `{table.list[1]}` SET `{rank_Columns[i]}` = '{rank_valuepart}' " +
+                                          $"WHERE `{rank_Columns[0]}` = '{clientlicensenumber}' AND `{rank_Columns[1]}` = '{clientcharactor}';";
+            mySqlCommand.CommandText = updateCharactorData_Command;
+            mySqlCommand.ExecuteNonQuery();
         }
         Debug.Log("[DB] Rank table complete!");
 
-        // achievement table
-        //string achievement_TableName = "achievement";
-        //string[] achievement_Columns = { "User_LicenseNumber", "User_Charactor", "Something"};
-        int achievement_valuepart;
+        // crew table
+        // crew_Columns { "User_LicenseNumber", "User_Charactor", "FinallySelectedCrew", "루즈비", "블루비", "베르비", "로조비", "블랙비", "똘이", "고릴라", "고슴도치", "고양이", "까마귀", "남생이", "늑대", "다람쥐", "독수리", "돌고래", "라쿤", "물범", "방울뱀", "범고래", "병아리", "북극여우", "쇠족제비", "수탉", "악어", "양", "여우", "오리너구리", "치타", "캥거루", "코뿔소", "쿼카", "팬더", "펭귄", "해달", "호랑이", "흰토끼", "황금독수리" };
+        insertCharactorData_Command = $"INSERT INTO `{table.list[2]}` (`{crew_Columns[0]}`, `{crew_Columns[1]}`) VALUES ({clientlicensenumber},{clientcharactor})";
+        mySqlCommand.CommandText = insertCharactorData_Command;
+        mySqlCommand.ExecuteNonQuery();
+        int crew_valuepart;
 
-        // insert row
-        insertCreatePlayerData_Command = $"INSERT INTO {table.list[2]} ({achievement_Columns[0]}) VALUES ({clientlicensenumber})";
-        insert_SqlCmd.CommandText = insertCreatePlayerData_Command;
-        insert_SqlCmd.ExecuteNonQuery();
-
-        for (int i = 0; i < achievement_Columns.Length; i++)
+        for (int i = 2; i < crew_Columns.Length; i++)
         {
-            if (i == 0) achievement_valuepart = clientlicensenumber;
-            else if (i == 1) achievement_valuepart = 1;
-            else achievement_valuepart = 0;
+            if (i == 2) crew_valuepart = 0; // 0번째 crew는 루즈비, crew들 중 0번째 index를 선택했음을 Default로
+            else if (2 < i && i <= 7) crew_valuepart = 1; // value == 1 -> 해당 crew들을 보유하고 있음. Default로 보유한 탐사대원 5마리
+            else crew_valuepart = 0; // value == 0 -> 해당 crew들을 보유하고 있지 않음
 
-            updatePlayerData_Command = $"UPDATE `{table.list[2]}` SET `{achievement_Columns[i]}` = '{achievement_valuepart}' WHERE `{achievement_Columns[0]}` = '{clientlicensenumber}'";
-            update_SqlCmd.CommandText = updatePlayerData_Command;
-            update_SqlCmd.ExecuteNonQuery();
+            updateCharactorData_Command = $"UPDATE `{table.list[2]}` SET `{crew_Columns[i]}` = '{crew_valuepart}' " +
+                                          $"WHERE `{crew_Columns[0]}` = '{clientlicensenumber}' AND `{crew_Columns[1]}` = '{clientcharactor}';"; 
+            mySqlCommand.CommandText = updateCharactorData_Command;
+            mySqlCommand.ExecuteNonQuery();
         }
-        Debug.Log("[DB] achievement table complete!");
+        Debug.Log("[DB] Crew table complete!");
 
-        // pet table
-        //string pet_TableName = "pet";
-        //string[] pet_Columns = { "User_LicenseNumber", "User_Charactor", "White" };
-        int pet_valuepart;
+        // finallyselectedgame table
+        // finallyselectedgame_Columns = { "User_LicenseNumber", "User_Charactor", "venezia_kor_level1", "venezia_kor_level2", "venezia_kor_level3", "venezia_eng_level1", "venezia_eng_level2", "venezia_eng_level3", "venezia_chn_level", "calculation_level1", "calculation_level2", "calculation_level3", "gugudan_level1", "vgugudan_level2", "gugudan_level3" };
+        // 마지막으로 플레이 한 게임이 무엇인지 저장하기 위한 테이블 / 게임,레벨의 밸류(1~6)가 해당 스텝을 플레이함
+        insertCharactorData_Command = $"INSERT INTO `{table.list[3]}` (`{finallyselectedgame_Columns[0]}`, `{finallyselectedgame_Columns[1]}`) VALUES ({clientlicensenumber}, {clientcharactor})";
+        mySqlCommand.CommandText = insertCharactorData_Command;
+        mySqlCommand.ExecuteNonQuery();
+        int finallyselectedgame_valuepart = 1; // default 값 1 -> 스텝 1을 플레이했음
 
-        // insert row
-        insertCreatePlayerData_Command = $"INSERT INTO `{table.list[3]}` (`{pet_Columns[0]}`) VALUES ('{clientlicensenumber}')";
-        insert_SqlCmd.CommandText = insertCreatePlayerData_Command;
-        insert_SqlCmd.ExecuteNonQuery();
-
-        for (int i = 0; i < pet_Columns.Length; i++)
+        for (int i = 2; i < finallyselectedgame_Columns.Length; i++)
         {
-            if (i == 0) pet_valuepart = clientlicensenumber;
-            else if (i == 1) pet_valuepart = 1;
-            else pet_valuepart = 0;
-
-            updatePlayerData_Command = $"UPDATE `{table.list[3]}` SET `{pet_Columns[i]}` = '{pet_valuepart}' WHERE `{pet_Columns[0]}` = '{clientlicensenumber}'";
-            if (i==2) // float
-            {
-                updatePlayerData_Command = $"UPDATE `{table.list[3]}` SET `{pet_Columns[i]}` = '{(float)pet_valuepart}'";
-            }
-            update_SqlCmd.CommandText = updatePlayerData_Command;
-            update_SqlCmd.ExecuteNonQuery();
+            updateCharactorData_Command = $"UPDATE `{table.list[2]}` SET `{crew_Columns[i]}` = '{finallyselectedgame_valuepart}' " +
+                                          $"WHERE `{crew_Columns[0]}` = '{clientlicensenumber}' AND `{crew_Columns[1]}` = '{clientcharactor}';";
+            mySqlCommand.CommandText = updateCharactorData_Command;
+            mySqlCommand.ExecuteNonQuery();
         }
-        Debug.Log("[DB] pet table complete!");
+        Debug.Log("[DB] Finallyselectedgame table complete!");
 
         // game table
         string game_TableName;
@@ -318,32 +351,33 @@ public class DBManager : MonoBehaviour
         for (int i = 0; i < game_TableList.Count; i++)
         {
             // insert row
-            insertCreatePlayerData_Command = $"INSERT INTO {game_TableList[i]} (`User_LicenseNumber`, `User_Charactor`) VALUES ({clientlicensenumber}, {user_Charactor})";
-            insert_SqlCmd.CommandText = insertCreatePlayerData_Command;
-            insert_SqlCmd.ExecuteNonQuery();
+            insertCharactorData_Command = $"INSERT INTO {game_TableList[i]} (`User_LicenseNumber`, `User_Charactor`) VALUES ({clientlicensenumber}, {user_Charactor})";
+            mySqlCommand.CommandText = insertCharactorData_Command;
+            mySqlCommand.ExecuteNonQuery();
 
             // update rowm j=2부터 시작하는 이유는 0은 licensenumber고 1은 charactor번호이고 insert로 넣어줬기 때문에 굳이 또 업데이트를 할 필요가 없음
             for (int j = 2; j < game_Columns.Length; j++)
             {
-                updatePlayerData_Command = $"UPDATE {game_TableList[i]} SET {game_Columns[j]} = @value  WHERE `{game_Columns[0]}` = '{clientlicensenumber}'" ;
-                update_SqlCmd.CommandText = updatePlayerData_Command;
+                updateCharactorData_Command = $"UPDATE {game_TableList[i]} SET {game_Columns[j]} = @value  WHERE `{game_Columns[0]}` = '{clientlicensenumber}'" ;
+                mySqlCommand.CommandText = updateCharactorData_Command;
 
                 // parameter 초기화
-                update_SqlCmd.Parameters.Clear();
+                mySqlCommand.Parameters.Clear();
 
                 if (j == 2 || j == 5)
                 {
-                    update_SqlCmd.Parameters.Add("@value", MySqlDbType.Float).Value = init_Float;
+                    mySqlCommand.Parameters.Add("@value", MySqlDbType.Float).Value = init_Float;
                 }
                 else
                 {
-                    update_SqlCmd.Parameters.Add("@value", MySqlDbType.Int32).Value = init_Int;
+                    mySqlCommand.Parameters.Add("@value", MySqlDbType.Int32).Value = init_Int;
                 }
-                update_SqlCmd.ExecuteNonQuery();
+                mySqlCommand.ExecuteNonQuery();
             }
         }
+        Debug.Log("[DB] Game table complete!");
 
-        Debug.Log("[DB] game table complete!");
+        Debug.Log($"[DB] End Create new Charactor data, client's licensenumber : {clientlicensenumber}, clients's charactor : {clientcharactor}");
     }
 
     // DB에 캐릭터 이름 저장
@@ -414,6 +448,8 @@ public class DBManager : MonoBehaviour
         {
             Debug.Log($"[DB] charactor dataList{i} : {dataList[i]}");
         }
+        여기 메서드에 crew table하고 finallyselectdgame table 추가할까.. 
+        
         string update_Command;
         MySqlCommand update_SqlCmd = new MySqlCommand();
         update_SqlCmd.Connection = connection;
@@ -601,8 +637,6 @@ public class DBManager : MonoBehaviour
         update_SqlCmd.ExecuteNonQuery();
     }
 
-    
-
     // 플레이어 데이터 불러오기, DB에서 불러와서 서버가 클라이언트한테 쏴줄수 있게 string으로 묶어서 반환형 string
     public List<string> LoadCharactorData(int clientlicensenumber, int clientcharactor)
     {
@@ -627,12 +661,12 @@ public class DBManager : MonoBehaviour
                 while (reader.Read())
                 {
                     int dbLicenseNumber = reader.GetInt32("User_LicenseNumber");
-                    // int dbcharactor = reader.GetInt32("User_Charactor"); 나중에 캐릭터 변경시 필요할 변수. todo
+                    int dbcharactor = reader.GetInt32("User_Charactor"); 
 
-                    // 클라이언트 라이센스와 db에 있는 라이센스가 같다면 데이터를 불러온다
-                    if (clientlicensenumber == dbLicenseNumber)
+                    // client license와 db에 있는 license가 같고 client charactor와 db에 있는 charactor가 같다면 데이터를 불러온다
+                    if ((clientlicensenumber == dbLicenseNumber) && (clientcharactor == dbcharactor))
                     {
-                        Debug.Log($"[DB] tableName : {table.list[i]}, dbLicenseNumber : {dbLicenseNumber},");
+                        Debug.Log($"[DB] tableName : {table.list[i]}, dbLicenseNumber : {dbLicenseNumber}, dbcharactor : {dbcharactor}");
                         switch (table.list[i])
                         {
                             case "user_info":
@@ -648,23 +682,41 @@ public class DBManager : MonoBehaviour
                                 return_TempData = $"{table.list[i]}|{user_Name}|{user_Profile}|{user_Birthday}|{user_TotalAnswers}|{user_TotalTime}|{user_Coin}|{separatorString}"; 
                                 return_TableData.Add(return_TempData);
                                 break;
-                            case "rank":
+                            case "rank": // todo presentdb에 있는 rank table이 아니라 `rank` db에 있는 데이터들을 가져와야함
                                 Debug.Log("[DB] LoadCharactorData - rank table");
                                 string rank_TotalTime = reader.GetString("TotalTime");
                                 string rank_TotalScore = reader.GetString("TotalScore");
                                 return_TempData = $"{table.list[i]}|{rank_TotalTime}|{rank_TotalScore}|{separatorString}";
                                 return_TableData.Add(return_TempData);
                                 break;
-                            case "achievement":
-                                Debug.Log("[DB] LoadCharactorData - achievement table");
-                                string achievement_Something = reader.GetInt32("Something").ToString();
-                                return_TempData = $"{table.list[i]}|{achievement_Something}|{separatorString}";
+                            case "crew":
+                                Debug.Log("[DB] LoadCharactorData - crew table");
+                                return_TempData = $"{table.list[i]}|";
+                                for (int j = 2; j < crew_Columns.Length; j++) // 0->licensenumber, 1->charactor
+                                {
+                                    string tempStr = reader.GetInt32(crew_Columns[j]).ToString();
+                                    return_TempData += $"{tempStr}|";
+                                    //if(j == 2) // finallyselectedcrew column
+                                    //{
+                                    //    tempStr = reader.GetInt32(crew_Columns[j]).ToString(); INT
+                                    //}
+                                    //else
+                                    //{
+                                    //    tempStr = reader.GetInt32 DB에 저장된 타입이 TINYINT인데, 제대로 꺼내와지나 체크해봐야함
+                                    //}
+                                }
+                                return_TempData += $"{separatorString}";
                                 return_TableData.Add(return_TempData);
                                 break;
-                            case "pet":
-                                Debug.Log("[DB] LoadCharactorData - pet table");
-                                string pet_White = reader.GetInt32("White").ToString();
-                                return_TempData = $"{table.list[i]}|{pet_White}|{separatorString}";
+                            case "finallyselectedgame":
+                                Debug.Log("[DB] LoadCharactorData - finallyselectedgame table");
+                                return_TempData = $"{table.list[i]}";
+                                for(int j = 2; j < finallyselectedgame_Columns.Length; j ++) // 0->licensenumber, 1->charactor
+                                {
+                                    string tempStr = reader.GetInt32(finallyselectedgame_Columns[j]).ToString();
+                                    return_TempData += $"{tempStr}|";
+                                }
+                                return_TempData += $"{separatorString}";
                                 return_TableData.Add(return_TempData);
                                 break;
                             default:
@@ -685,6 +737,7 @@ public class DBManager : MonoBehaviour
             reader.Close();
         }
 
+        Debug.Log("[DB] End LoadCharactorData method");
         return return_TableData;
     }
 
@@ -840,7 +893,7 @@ public class DBManager : MonoBehaviour
         return return_List;
     }
 
-    // 임시로 PresentDB에 있는 Rank Table 데이터 사용 / Score, Time 별 Rank 1~5위 및 6번째 자기 자신의 데이터 
+    // 랭크 데이터 불러오기 / 임시로 PresentDB에 있는 Rank Table 데이터 사용 / Score, Time 별 Rank 1~5위 및 6번째 자기 자신의 데이터 
     public List<string> RankOrderByUserData(int licensenumber, int charactor)
     {
         Debug.Log("[DB] Come in RankOrderByUserData Method");
@@ -1038,8 +1091,10 @@ public class DBManager : MonoBehaviour
 
         return return_List;
     }
+    #endregion
 
-    // 하루가 지났을 때 presentDB gamedata -> 요일DB 생성하고 gamedata 저장
+    #region Server only use
+    // DateDB 생성 / 하루가 지났을 때 presentDB gamedata -> 요일DB 생성하고 gamedata 저장
     public void CreateDateDB()
     {
         Debug.Log("[DB] CreateDateDB");
@@ -1049,7 +1104,7 @@ public class DBManager : MonoBehaviour
         Debug.Log($"DBName : {DBName}");
         // 게임 테이블 명, TableName은 생성되면 알아서 테이블들이 담김. 게임을 제외한 나머지 테이블 제거
         TableName gameTable = new TableName();
-        string[] deleteTable = { "user_info", "rank", "achievement", "pet" };
+        string[] deleteTable = { "user_info", "rank", "crew", "finallyselectedgame" };
         for (int i = 0; i < deleteTable.Length; i++)
         {
             gameTable.list.Remove(deleteTable[i]);
@@ -1185,6 +1240,7 @@ public class DBManager : MonoBehaviour
         // @value Parameter 생성
         MySqlParameter valueParameter = mySqlCommand.Parameters.Add("@value", MySqlDbType.Float);
         Debug.Log($"[DB] 1.5");
+        
 
         // DateDB에 presentDB에서 가져온 데이터(게임데이터만) 복사 생성
         for (int i = 0; i < gameTable.list.Count; i ++) // Table
@@ -1405,5 +1461,5 @@ public class DBManager : MonoBehaviour
         mySqlCommand.CommandText = "USE `present`";
         mySqlCommand.ExecuteNonQuery();
     }
-
+    #endregion
 }

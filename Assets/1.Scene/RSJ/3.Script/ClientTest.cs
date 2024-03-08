@@ -13,5 +13,4 @@ public class ClientTest : MonoBehaviour
         RankData rankData = Client.instance.AppStart_LoadRankDataFromDB();
         Debug.Log($"[ClientTest] use Client.instance.AppStart_LoadRankDataFromDB(), Current time : {System.DateTime.Now}");
     }
-    
 }

@@ -11,8 +11,9 @@ public class TableName
     {
         list.Add("user_info");
         list.Add("rank");
-        list.Add("achievement"); 
-        list.Add("pet");
+        //list.Add("achievement"); 
+        list.Add("crew");
+        list.Add("finallyselectedgame");
 
         // Game tablename
         string game_TableName;

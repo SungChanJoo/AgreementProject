@@ -43,6 +43,7 @@ public class Client : MonoBehaviour
     private Player_DB clientPlayerData;
     private AnalyticsData clientAnalyticsData;
     private RankData clientRankData;
+    private ExpenditionCrew clientExpenditionCrew;
 
     // timer
     private float transmissionTime = 1f;
@@ -76,9 +77,9 @@ public class Client : MonoBehaviour
         ETCInitSetting();
         ConnectToServer();
         ClientLoginSet();
-        //Invoke("LoadCharactorDataFromDB", 6f);
     }
 
+    #region Start() Methods, Setting and Connect to Server
     // Start시 기타 멤버변수 초기화
     private void ETCInitSetting()
     {
@@ -146,16 +147,9 @@ public class Client : MonoBehaviour
         Debug.Log($"[Client] This client's licensenumber(have) : {clientLicenseNumber}");
         Debug.Log($"[Client] This client's charactor(last charactor) : {clientCharactor}");
     }
+    #endregion 
 
-    // 게임 시작할 때 유저정보 불러오기 - 서버에 요청(서버-DB) // 나중에 Player Class 정리되면 수정해야함. todo
-    private void LoadCharactorDataFromDB()
-    {
-        Debug.Log("[Clinet] Request LoadCharactorDataFromDB");
-        string requestData; // 이 메서드에서 requestData는 requestName/clientLicenseNumber/clientCharactor
-        requestData = $"[Load]CharactorData|{clientLicenseNumber}|{clientCharactor}|Finish";
-        RequestToServer(requestData);
-    }
-
+    #region Server-Client Communication
     // 서버 요청 - 매개변수로 string으로 받고, requestName으로 요청사항 구분
     private void RequestToServer(string requestData)
     {
@@ -224,7 +218,9 @@ public class Client : MonoBehaviour
             Debug.Log($"[Client] Error receiving data from server : {e.Message}");
         }
     }
+    #endregion
 
+    #region Handle Data
     // 서버로부터 받은 데이터 처리
     private void HandleReceivedRequestData(List<string> dataList)
     {
@@ -301,6 +297,10 @@ public class Client : MonoBehaviour
                 break;
             case "[Load]RankData":
                 HandleLoadRankData(dataList);
+                Debug.Log($"[Client] RequestName : {requestName}, End handling data");
+                break;
+            case "[Load]ExpenditionCrew":
+                HandleLoadExpenditionCrew(dataList);
                 Debug.Log($"[Client] RequestName : {requestName}, End handling data");
                 break;
             default:
@@ -614,19 +614,58 @@ public class Client : MonoBehaviour
         Debug.Log("[Client] End HandleLoadRankData..");
     }
 
+    // 탐험대원 처리
+    private void HandleLoadExpenditionCrew(List<string> dataList)
+    {
+        Debug.Log("[Client] HandleLoadExpenditionCrew..");
+
+        for (int i = 0; i < dataList.Count; i++)
+        {
+            Debug.Log($"[Client] ExpenditionCrewList[{i}] : {dataList[i]}");
+        }
+
+        int SelectedCrew; //선택한 대원
+        List<bool> OwnedCrew = new List<bool>(); //보유한 대원 리스트
+
+        SelectedCrew = Int32.Parse(dataList[0]);
+        bool haveThatCrew;
+        for(int i = 0; i < dataList.Count; i ++)
+        {
+            if (dataList[i] == "0") haveThatCrew = false;
+            else haveThatCrew = true;
+
+            OwnedCrew.Add(haveThatCrew);
+        }
+
+        // clientExpenditionCrew Initiate
+        clientExpenditionCrew = new ExpenditionCrew(SelectedCrew, OwnedCrew);
+
+        Debug.Log("[Client] End HandleLoadExpendtionCrew...");
+    }
+    #endregion
+
     #region 클라이언트-서버요청
 
     /*
     Client가 DB에 있는 파일을 Save Load 하는 경우
-    1. 앱 시작 -> Player_DB Load (모든 데이터를 한번에 받아오는 것이 맞으나, 반환타입별로 나눠서 받음.)
-    2. 앱 시작 -> GameAnalytics Load (개인 분석표)
-    3. 앱 시작 -> RankData Load (랭킹)
-    4. 플레이어(charactor) 생성 -> Save, Load
-    5. Charactor Name 등록
-    6. Charactor Profile 등록
-    7. 앱 게임 시작 -> TotalScore(int형) Load (game_type, level, step 받음) -> Save GameData
-    8. 랭킹 UI 접속 시(or 랭킹새로고침) -> rank Load  // 일단 테스트용
-    9. 앱 종료 -> Save (모든 데이터)
+    1. 앱 시작 -> Player_DB Load (Charactor Info, GameData) // DB - Client
+    1. 앱 시작 -> GameAnalytics Load (개인 분석표) // Only DB
+    1. 앱 시작 -> RankData Load (랭킹) // Only DB
+    1. 앱 시작 -> ExpenditionCrew Load (탐험대원) // DB = Client
+    2. 플레이어(charactor) 생성 -> Save, Load
+    2-1. Player_DB Save (기존 CharactorData)
+    2-1. ExpendtionCrew Save (기존 CharactorData)
+    2-2. New Charactor Create (새 ChractorData 생성)
+    2-3. Player_DB Load (새 CharactorData)
+    2-3. GameAnalytics Load (새 CharactorData)
+    2-3. RankData Load (새 CharactorData)
+    2-3. ExpenditionCrew Load (새 CharactorData)
+    3. Charactor Name 등록
+    4. Charactor Profile 등록
+    5. 앱 게임 시작 -> TotalScore(int형) Load (game_type, level, step 받음) -> Save GameData
+    --. 랭킹 UI 접속 시(or 랭킹새로고침) -> rank Load  // 일단 테스트용
+    6. 앱 종료 -> Player_DB Save 
+    6. 앱 종료 -> ExpenditionCrew Save 
     */
 
     // 앱 시작시 Player_DB Load
@@ -668,12 +707,19 @@ public class Client : MonoBehaviour
         return clientRankData;
     }
 
-    // Charactor 생성시, 사용중인 Charactor Data Save
-    public void CreateCharactor_SaveCharactorDataToDB(Player_DB resultdb)
+    // 앱 시작시 ExpenditionCrew Load
+    public ExpenditionCrew AppStart_LoadExpenditionCrewFromDB()
     {
-        string requestData = $"[Save]CharactorData|Finish";
-
+        string requestData = $"[Load]ExpenditionCrew|{clientLicenseNumber}|{clientCharactor}|Finish";
         RequestToServer(requestData);
+
+        return clientExpenditionCrew;
+    }
+
+    // Charactor 생성시, 사용중인 Charactor Data Save
+    public void CreateCharactor_SaveCharactorDataToDB(Player_DB playerdb)
+    {
+        SaveCharactorDataToDB(playerdb);
     }
 
     // Charactor 생성 Load (새로 생성한 Charatror Data)
@@ -780,6 +826,14 @@ public class Client : MonoBehaviour
     // 앱 종료시 Charactor Data Save
     public void AppExit_SaveCharactorDataToDB(Player_DB playerdb)
     {
+        SaveCharactorDataToDB(playerdb);
+    }
+
+    #endregion
+
+    // 중복된 기능 SaveCharactorDataToDB
+    private void SaveCharactorDataToDB(Player_DB playerdb)
+    {
         string requestData;
         string requestName = $"[Save]CharactorData";
         requestData = $"{requestName}|{clientLicenseNumber}|{clientCharactor}|{separatorString}";
@@ -806,23 +860,23 @@ public class Client : MonoBehaviour
         List<int> starCount_List = new List<int>();
 
         ICollection<Data_value> allvalues = playerdb.Data.Values;
-        foreach(Data_value datavalue in allvalues)
+        foreach (Data_value datavalue in allvalues)
         {
             reactionRate_List.Add(datavalue.ReactionRate);
-            answersCount_List.Add(datavalue.AnswersCount);  
+            answersCount_List.Add(datavalue.AnswersCount);
             answers_List.Add(datavalue.Answers);
             playTime_List.Add(datavalue.PlayTime);
             totalScore_List.Add(datavalue.TotalScore);
             starCount_List.Add(datavalue.StarCount);
         }
 
-        for(int i = 0; i < reactionRate_List.Count; i++)
+        for (int i = 0; i < reactionRate_List.Count; i++)
         {
             Debug.Log($"reactionRate_List[i] : {reactionRate_List[i]}, count : {i}");
         }
 
         // gameTable(i=4부터)
-        for(int i = 4; i < table.list.Count; i++)
+        for (int i = 4; i < table.list.Count; i++)
         {
             requestData += $"{table.list[i]}|{reactionRate_List[i - 4]}|{answersCount_List[i - 4]}|{answers_List[i - 4]}|{playTime_List[i - 4]}|{totalScore_List[i - 4]}|{starCount_List[i - 4]}|{separatorString}";
         }
@@ -832,8 +886,7 @@ public class Client : MonoBehaviour
         RequestToServer(requestData);
     }
 
-    #endregion
-
+    #region TestMethods
     public void OnClickSaveGameDataTest()
     {
         Game_Type game_Type = Game_Type.A;
@@ -1013,6 +1066,7 @@ public class Client : MonoBehaviour
 
         RequestToServer(requestData);
     }
+    #endregion
 
     private void CloseSocket()
     {

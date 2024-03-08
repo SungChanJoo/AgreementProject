@@ -281,18 +281,19 @@ public class Server : MonoBehaviour
                 // 새 라이센스 발급 (유저(플레이어), 로컬에 저장되는 한 개의 라이센스)
                 Debug.Log($"[Server] Creating... User_LicenseNumber");
                 string clientdata = DBManager.instance.CreateLicenseNumber(); 
+                clientLicenseNumber = Int32.Parse(clientdata.Split('|')[0]);
 
                 // 새 캐릭터 정보 생성 (유저 한명당 가지는 첫 캐릭터)
                 Debug.Log($"[Server] Creating... new Charactor Data");
-                clientLicenseNumber = Int32.Parse(clientdata.Split('|')[0]);
                 DBManager.instance.CreateNewCharactorData(clientLicenseNumber, 1); 
 
                 Debug.Log($"[Server] Finish Create LicenseNumber and new CharactorData");
-                replyRequestData_List.Add($"{clientdata}|");
+                replyRequestData_List.Add($"{clientdata}");
                 break;
             case "[Create]Charactor":
                 // to do fix
                 DBManager.instance.CreateNewCharactorData(clientLicenseNumber, clientCharactor);
+                Debug.Log($"[Server] Finish Create new CharactorData");
                 break;
             case "[Save]CharactorName":
                 DBManager.instance.SaveCharactorName(dataList);
