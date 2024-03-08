@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 
 
@@ -8,9 +9,7 @@ public class ObjectPooling : MonoBehaviour
 {
     public static ObjectPooling Instance = null;
 
-    [SerializeField] private GameObject[] Prefab_K; //풀링할 정답 & 오답 큐브 프리팹
-    [SerializeField] private GameObject[] Prefab_E; //풀링할 정답 & 오답 큐브 프리팹
-    [SerializeField] private GameObject[] Prefab_H; //풀링할 정답 & 오답 큐브 프리팹
+    [SerializeField] private GameObject Cube;
     [SerializeField] private Transform Pool_Position; //풀의 위치
     [SerializeField] private Transform CubeParentObject; // 풀링된 오브젝트를 저장할 더미오브젝트
     [SerializeField] private Transform ItemParentObject; // 풀링된 오브젝트를 저장할 더미오브젝트
@@ -22,7 +21,8 @@ public class ObjectPooling : MonoBehaviour
     public IEnumerator CubePooling;
     public IEnumerator CubeRestartPooling;
 
-    [SerializeField] Sprite[] sprites;
+    [SerializeField] Sprite sprite;
+    [SerializeField] Image QuestImg;
 
     //생성할 큐브 갯수
     public int CubeCount;
@@ -33,7 +33,7 @@ public class ObjectPooling : MonoBehaviour
     //메테오 , 프리즈 등 아이템 생성.
     public List<GameObject> MeteorPool = new List<GameObject>();
     public List<GameObject> PausePool = new List<GameObject>();
-
+   
     private void Awake()
     {
         #region Singleton 
@@ -68,26 +68,33 @@ public class ObjectPooling : MonoBehaviour
     }
     public IEnumerator Cube_Co(int cool)
     {
-        int Count = cubePool.Count - VeneziaManager.Instance.QuestRange; //풀링 갯수에 맞게 생성하는 조건  5
-        while (cubePool.Count >= Count)
+        if (cubePool.Count <= VeneziaManager.Instance.limitCount) yield break;
+        while (cubePool.Count > VeneziaManager.Instance.limitCount)
         {
-            //
             int Randnum = Random.Range(0, cubePool.Count);
             float randomValue = Random.Range(-100, 101);
             Vector3 offset = new Vector3(randomValue, 0, 0); // 좌우 변경을위한 랜덤값
-            if (cubePool.Count - Count == 1)
+            if (cubePool.Count - VeneziaManager.Instance.limitCount == 1)
             {
+                bool foundSameSprite = false;
                 foreach (var cube in cubePool)
                 {
-                    Cube cubeType = cube.GetComponent<Cube>();
+                    Cube cubeScript = cube.GetComponent<Cube>();
 
-                    if (cubeType.objectType == ObjectType.CorrectAnswer)
+                    if (cubeScript.sprite == QuestImg.sprite)
                     {
                         cube.SetActive(true);
                         cube.transform.position = Pool_Position.transform.position + offset;
                         cubePool.Remove(cube);
-                        yield break;
+                        foundSameSprite = true;
+                        break;
                     }
+                }
+                if (!foundSameSprite)
+                {
+                    cubePool[Randnum].transform.position = Pool_Position.transform.position + offset;
+                    cubePool[Randnum].SetActive(true);
+                    cubePool.Remove(cubePool[Randnum]);
                 }
             }
             else
@@ -103,16 +110,42 @@ public class ObjectPooling : MonoBehaviour
 
     public IEnumerator ReStartCube_Co(int cool)
     {
-        int Count = cubePool.Count - VeneziaManager.Instance.QuestRange;
         yield return new WaitForSeconds(cool);
-        while (cubePool.Count >= Count)
+        while (cubePool.Count > VeneziaManager.Instance.limitCount)
         {
             int Randnum = Random.Range(0, cubePool.Count);
-            float randomValue = Random.Range(-90, 90);
+            float randomValue = Random.Range(-100, 101);
             Vector3 offset = new Vector3(randomValue, 0, 0); // 좌우 변경을위한 랜덤값
-            cubePool[Randnum].transform.position = Pool_Position.transform.position + offset;
-            cubePool[Randnum].SetActive(true);
-            cubePool.Remove(cubePool[Randnum]);
+            if (cubePool.Count - VeneziaManager.Instance.limitCount == 1)
+            {
+                bool foundSameSprite = false;
+                foreach (var cube in cubePool)
+                {
+                    Cube cubeScript = cube.GetComponent<Cube>();
+
+                    if (cubeScript.sprite == QuestImg.sprite)
+                    {
+                        cube.SetActive(true);
+                        cube.transform.position = Pool_Position.transform.position + offset;
+                        cubePool.Remove(cube);
+                        foundSameSprite = true;
+                        break;
+                    }
+                }
+                if (!foundSameSprite)
+                {
+                    cubePool[Randnum].transform.position = Pool_Position.transform.position + offset;
+                    cubePool[Randnum].SetActive(true);
+                    cubePool.Remove(cubePool[Randnum]);
+                }
+            }
+            else
+            {
+                cubePool[Randnum].transform.position = Pool_Position.transform.position + offset;
+                cubePool[Randnum].SetActive(true);
+                cubePool.Remove(cubePool[Randnum]);
+            }
+
             yield return new WaitForSeconds(cool); //난이도에 따라 재생되는 시간을 바꿀것
         }
     }
@@ -174,34 +207,36 @@ public class ObjectPooling : MonoBehaviour
 
     public void CreateQuestPrefab(int index, int count) //추후 범위제어할때 인수좀더 넣을 것.
     {
-        int PrefabCount = count + index;  
-        for (int i = index; i < PrefabCount; i++) 
+        for (int i = index; i < count; i++) 
         {
             for (int j = 0; j < CubeCount; j++)
             {
-                if(VeneziaManager.Instance.game_Type == Game_Type.B)
+                if(VeneziaManager.Instance.game_Type == Game_Type.C)
                 {
-                    GameObject QuestPrefab = Instantiate(Prefab_K[i]); // 한글 오브젝트 생성
-                    SpriteRenderer spriteRenderer = QuestPrefab.GetComponent<SpriteRenderer>();
-                    spriteRenderer.sprite = VeneziaManager.Instance.sprites_K[i];
+                    GameObject QuestPrefab = Instantiate(Cube); // 한글 오브젝트 생성
+                    Cube Cube_sprite = QuestPrefab.GetComponent<Cube>();
+                    Sprite sprite = VeneziaManager.Instance.sprites_K[i];
+                    Cube_sprite.sprite = sprite;
                     QuestPrefab.SetActive(false);
                     QuestPrefab.transform.SetParent(CubeParentObject);
                     cubePool.Add(QuestPrefab);
                 }
                 else if(VeneziaManager.Instance.game_Type == Game_Type.D)
                 {
-                    GameObject QuestPrefab = Instantiate(Prefab_E[i]); // 영어 오브젝트 생성
-                    SpriteRenderer spriteRenderer = QuestPrefab.GetComponent<SpriteRenderer>();
-                    spriteRenderer.sprite = VeneziaManager.Instance.sprites_E[i];
+                    GameObject QuestPrefab = Instantiate(Cube); // 영어 오브젝트 생성
+                    Cube Cube_sprite = QuestPrefab.GetComponent<Cube>();
+                    Sprite sprite = VeneziaManager.Instance.sprites_E[i];
+                    Cube_sprite.sprite = sprite;
                     QuestPrefab.SetActive(false);
                     QuestPrefab.transform.SetParent(CubeParentObject);
                     cubePool.Add(QuestPrefab);
                 }
                 else
                 {
-                    GameObject QuestPrefab = Instantiate(Prefab_H[i]); // 한자 오브젝트 생성
-                    SpriteRenderer spriteRenderer = QuestPrefab.GetComponent<SpriteRenderer>();
-                    spriteRenderer.sprite = VeneziaManager.Instance.sprites_H[i];
+                    GameObject QuestPrefab = Instantiate(Cube); // 한자 오브젝트 생성
+                    Cube Cube_sprite = QuestPrefab.GetComponent<Cube>();
+                    Sprite sprite = VeneziaManager.Instance.sprites_H[i];
+                    Cube_sprite.sprite = sprite;
                     QuestPrefab.SetActive(false);
                     QuestPrefab.transform.SetParent(CubeParentObject);
                     cubePool.Add(QuestPrefab);

@@ -29,7 +29,7 @@ public class Cube : MonoBehaviour
     public float removeTime = 0;
 
     [SerializeField] private bool isStart;
-    [SerializeField] private Sprite sprite;
+    [SerializeField] public Sprite sprite;
     private Rigidbody rb;
     private bool isFloor = false;
     private bool isLeftWall = false;
@@ -53,6 +53,9 @@ public class Cube : MonoBehaviour
     private IEnumerator Start_Left;
     private IEnumerator Start_Right;
 
+    private float StartDirX;
+    private float StartDirY;
+
     private void Awake()
     {
         TryGetComponent(out rb);
@@ -64,12 +67,8 @@ public class Cube : MonoBehaviour
 
     private void Start()
     {
-
-    }
-
-    private void FixedUpdate()
-    {
-        
+        StartDirX = Random.Range(0, 3);
+        StartDirY = Random.Range(0, 2) == 0 ? -1f : 1f;
     }
 
     private void Update()
@@ -87,7 +86,6 @@ public class Cube : MonoBehaviour
             isDirRightSelect = false;
         }
 
-        // if (gameObject.activeSelf) isStart = true;
         if (isStart && gameObject.activeSelf)
         {
             Cube_StartMove_();
@@ -98,14 +96,18 @@ public class Cube : MonoBehaviour
         ShootRaycasts();
     }
 
+    public Sprite GetCubeSprite()
+    {
+        return sprite;
+    }
+
     //처음 시작 했을 때는 아래로 움직이게 
     //Todo : 기획팀 기획안 넘어오면 처음 시작했을때 움직이는 로직은 변경할 예정
     private void Cube_StartMove_()
     {
         // 오브젝트를 아래 방향으로 이동할 속도 설정
-        float moveSpeedY = -StartSpeed;
         CurrentSpeed = StartSpeed;
-        rb.velocity = new Vector3(0f, moveSpeedY, 0f);
+        rb.velocity = new Vector3(StartSpeed*StartDirX, StartSpeed*StartDirY, 0f);
     }
 
 
@@ -299,11 +301,7 @@ public class Cube : MonoBehaviour
                 ObjectPooling.Instance.cubePool.Add(gameObject);
                 gameObject.SetActive(false);
                 removeTime = 0;
-                if (ObjectPooling.Instance.cubePool.Count != 0)
-                {
-                    StopCoroutine(ObjectPooling.Instance.CubePooling);
-                    ObjectPooling.Instance.ReStartCubePooling_co();
-                }
+                VeneziaManager.Instance.ResetCube();
             }
             else
             {
@@ -352,7 +350,6 @@ public class Cube : MonoBehaviour
                 {
                     isDirFloorSelect = true;
                     float randomDir = Random.Range(0, 2) == 0 ? -1f : 1f;
-                    print(randomDir);
                     moveX = randomDir * CurrentSpeed;
                 }
                 moveY = Mathf.Abs(CurrentSpeed); // y축 방향은 위로 설정
@@ -386,7 +383,6 @@ public class Cube : MonoBehaviour
                 {
                     isDirCelingSelect = true;
                     float randomDir = Random.Range(0, 2) == 0 ? -1f : 1f;
-                    print(randomDir);
                     moveX = randomDir * CurrentSpeed;
                 }
                 moveY = -Mathf.Abs(CurrentSpeed); // y축 방향은 위로 설정
@@ -420,7 +416,6 @@ public class Cube : MonoBehaviour
                 {
                     isDirLeftSelect = true;
                     float randomDir = Random.Range(0, 2) == 0 ? -1f : 1f;
-                    print(randomDir);
                     moveY = randomDir * CurrentSpeed;
                 }
                 moveX = Mathf.Abs(CurrentSpeed); // y축 방향은 위로 설정
@@ -454,7 +449,6 @@ public class Cube : MonoBehaviour
                 {
                     isDirRightSelect = true;
                     float randomDir = Random.Range(0, 2) == 0 ? -1f : 1f;
-                    print(randomDir);
                     moveY = randomDir * CurrentSpeed;
                 }
                 moveX = -Mathf.Abs(CurrentSpeed); // y축 방향은 위로 설정

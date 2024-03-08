@@ -59,6 +59,7 @@ public class VeneziaManager : GameSetting
      "crocodile","mushroom","policecar","dragonfly","pharmacy","kangaroo","forsythia","sunflower","pineapple",
      "watermelon","earthworm","sweetpotato","submarine","woodpecker","ambulance","motorcycle","supermarket",
      "viviparidae","dandelion","hermitcrap","hydrangea","rapanavenosa"};
+    private string[] HanJa = { };
     public int QuestCount;  // 딕셔너리에 들어갈 퀘스트 갯수 //10문제 <
     public int QuestRange;
     public int RemainAnswer; // 게임 진행중 남은 정답 갯수
@@ -69,6 +70,8 @@ public class VeneziaManager : GameSetting
     public int PoolingCool; // 오브젝트 생성 시간
 
     private int index;
+
+    public int limitCount;
 
     public int DestroyTime;
 
@@ -115,16 +118,22 @@ public class VeneziaManager : GameSetting
         }
         else if (game_Type == Game_Type.D) //영어 
         {
-            for (int i = 0; i < sprites_K.Length; i++)
+            for (int i = 0; i < sprites_E.Length; i++)
             {
                 string key = EnglishWord[i];
-                QuestData data = new QuestData(sprites_K[i], EnglishWord[i]);
+                QuestData data = new QuestData(sprites_E[i], EnglishWord[i]);
                 Quest.Add(key, data);
             }
         }
         else
         {
             //Todo : 한자 문제 셋팅 해주세요..........
+            for (int i = 0; i < sprites_H.Length; i++)
+            {
+                string key = HanJa[i];
+                QuestData data = new QuestData(sprites_H[i], HanJa[i]);
+                Quest.Add(key, data);
+            }
         }
 
         gameover.SetActive(false);
@@ -135,15 +144,12 @@ public class VeneziaManager : GameSetting
         trueReactionTime = 0;
         CorrectAnswerCount = 0;
         ClickCount = 0;
-        ObjectPooling.Instance.CreateQuestPrefab(index, 10); //Todo: 임시 0~9 10개 <
+        ObjectPooling.Instance.CreateQuestPrefab(index, 10+index);
+        limitCount = ObjectPooling.Instance.cubePool.Count - QuestRange;
         DisplayRandomQuest();
         //시간 시작 
         StartTime();
         ObjectPooling.Instance.StartCubePooling_co();
-
-        
-
-
     }
     private void Update()
     {
@@ -244,28 +250,28 @@ public class VeneziaManager : GameSetting
     }
     #region Level설정
     protected override void Level_1(int step)
-    {   
+    {
+        GetIndex(1, step);
         StartSet();
         switch (step)
         {
             case 1:
-                index = 0;
                 NextQuest();
                 break;
             case 2:
-                index = 5;
+                NextQuest();
                 break;
             case 3:
-                index = 10;
+                NextQuest();
                 break;
             case 4:
-                index = 15;
+                NextQuest();
                 break;
             case 5:
-                index = 20;
+                NextQuest();
                 break;
             case 6:
-                index = 25;
+                NextQuest();
                 break;
             default:
                 break;
@@ -273,27 +279,27 @@ public class VeneziaManager : GameSetting
     }
     protected override void Level_2(int step)
     {
+        GetIndex(2, step);
         StartSet();
         switch (step)
         {
             case 1:
-                index = 30;
                 NextQuest();
                 break;
             case 2:
-                index = 35;
+                NextQuest();
                 break;
             case 3:
-                index = 40;
+                NextQuest();
                 break;
             case 4:
-                index = 45;
+                NextQuest();
                 break;
             case 5:
-                index = 50;
+                NextQuest();
                 break;
             case 6:
-                index = 55;
+                NextQuest();
                 break;
             default:
                 break;
@@ -301,26 +307,27 @@ public class VeneziaManager : GameSetting
     }
     protected override void Level_3(int step)
     {
+        GetIndex(3, step);
         StartSet();
         switch (step)
         {
             case 1:
-                index = 60;
+                NextQuest();
                 break;
             case 2:
-                index = 65;
+                NextQuest();
                 break;
             case 3:
-                index = 70;
+                NextQuest();
                 break;
             case 4:
-                index = 75;
+                NextQuest();
                 break;
             case 5:
-                index = 80;
+                NextQuest();
                 break;
             case 6:
-                index = 85;
+                NextQuest();
                 break;
             default:
                 break;
@@ -357,9 +364,10 @@ public class VeneziaManager : GameSetting
         QuestCount--;
         QuestData selectedQuest;
         //연속 출제를 방지
+        randomIndex = Random.Range(index, 10 + index); //첫 출제시 랜덤 인댁스 정하기 
         while (randomIndex == SaverandomIndex)
         {
-            randomIndex = Random.Range(0, ((QuestRange)));  // Todo : prototype이 아닌 cbt 제작 과정에서는 0 < 부분을 스텝에 맞는 인덱스를 가져 올 수 있도록 설정 변경 할 것.
+            randomIndex = Random.Range(index, 10+index);  // Todo : prototype이 아닌 cbt 제작 과정에서는 0 < 부분을 스텝에 맞는 인덱스를 가져 올 수 있도록 설정 변경 할 것.
         }
         // 퀘스트가 1개남은상태에서 들어오면 QuestCount에의해 -- 되어 0개가된다. 01234<
         selectedQuest = questArray[randomIndex]; // 
@@ -386,7 +394,7 @@ public class VeneziaManager : GameSetting
                 QuestCount = 10;
                 QuestRange = 5;
                 DestroyTime = 10;
-                PoolingCool = 5;
+                PoolingCool = 1;
                 break;
             case 180:
                 QuestCount = 14; 
@@ -433,13 +441,135 @@ public class VeneziaManager : GameSetting
 
     public void ResetCube()
     {
-        if (ObjectPooling.Instance.cubePool.Count != 0)
+        bool isFirst = true;
+        if (ObjectPooling.Instance.cubePool.Count > limitCount && isFirst)
         {
+            isFirst = false;
             StopCoroutine(ObjectPooling.Instance.CubePooling);
+            ObjectPooling.Instance.ReStartCubePooling_co();
+        }
+        else if(ObjectPooling.Instance.cubePool.Count > limitCount && !isFirst)
+        {
+            StopCoroutine(ObjectPooling.Instance.CubeRestartPooling);
             ObjectPooling.Instance.ReStartCubePooling_co();
         }
     }
 
+
+    private void GetIndex(int lv, int step)
+    {
+        if (game_Type == Game_Type.C || game_Type == Game_Type.D)
+        {
+            switch (lv)
+            {
+                case 1:
+                    switch (step)
+                    {
+                        case 1:
+                            index = 0;
+                            break;
+                        case 2:
+                            index = 5;
+                            break;
+                        case 3:
+                            index = 10;
+                            break;
+                        case 4:
+                            index = 15;
+                            break;
+                        case 5:
+                            index = 20;
+                            break;
+                        case 6:
+                            index = 25;
+                            break;
+                        default:
+                            break;
+                    }
+                    break;
+                case 2:
+                    switch (step)
+                    {
+                        case 1:
+                            index = 30;
+                            break;
+                        case 2:
+                            index = 35;
+                            break;
+                        case 3:
+                            index = 40;
+                            break;
+                        case 4:
+                            index = 45;
+                            break;
+                        case 5:
+                            index = 50;
+                            break;
+                        case 6:
+                            index = 55;
+                            break;
+                        default:
+                            break;
+                    }
+                    break;
+                case 3:
+                    switch (step)
+                    {
+                        case 1:
+                            index = 60;
+                            break;
+                        case 2:
+                            index = 65;
+                            break;
+                        case 3:
+                            index = 70;
+                            break;
+                        case 4:
+                            index = 75;
+                            break;
+                        case 5:
+                            index = 80;
+                            break;
+                        case 6:
+                            index = 85;
+                            break;
+                        default:
+                            break;
+                    }
+                    break;
+                default:
+                    break;
+            }
+        }
+        //한자는 lv가 없음 따로 인댁스 지정
+        if(game_Type == Game_Type.E)
+        {
+            switch (step)
+            {
+                case 1:
+                    index = 0;
+                    break;
+                case 2:
+                    index = 10;
+                    break;
+                case 3:
+                    index = 20;
+                    break;
+                case 4:
+                    index = 30;
+                    break;
+                case 5:
+                    index = 40;
+                    break;
+                case 6:
+                    index = 50;
+                    break;
+                default:
+                    break;
+            }
+        }
+
+    }
 
     private void CheckCubeTypes()
     {
