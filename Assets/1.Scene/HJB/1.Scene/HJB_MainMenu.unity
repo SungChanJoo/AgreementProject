@@ -59152,7 +59152,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6007792112358236995, guid: 5eabf3b8eb3a2da4fa062bc140d5379e, type: 3}
       propertyPath: setTime
-      value: 0.3
+      value: 0.05
       objectReference: {fileID: 0}
     - target: {fileID: 6564215273223679812, guid: 5eabf3b8eb3a2da4fa062bc140d5379e, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
