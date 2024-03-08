@@ -25,7 +25,8 @@ public class ObjectPooling_H : MonoBehaviour
     private bool timeOut = false;
     private bool touchEnable = false;
 
-    private IEnumerator WaitExplosionBubble_co;    
+    private IEnumerator WaitExplosionBubble_co;
+    private IEnumerator NextQuestionAni_co;
 
 
     private void Update()
@@ -36,7 +37,7 @@ public class ObjectPooling_H : MonoBehaviour
     //Start 버튼 이벤트가 콜백되면 실행
     public void ObjectPooling()
     {        
-        aopManager.isStop = false;
+        aopManager.isStop = false;        
         //시간 흐르게
         TimeSlider.Instance.StartTime();
         TimeSlider.Instance.TimeStop = false;
@@ -49,7 +50,8 @@ public class ObjectPooling_H : MonoBehaviour
             cube.SetActive(false);
             cubePool.Add(cube);            
         }
-        StartCoroutine(NextQuestionAni_Co());
+        NextQuestionAni_co = NextQuestionAni_Co();
+        StartCoroutine(NextQuestionAni_co);
     }
     private void TimeCheck()
     {
@@ -88,10 +90,12 @@ public class ObjectPooling_H : MonoBehaviour
         {            
             Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
             RaycastHit hit;
-            if (Physics.Raycast(ray, out hit) && !hit.collider.gameObject.CompareTag("Ground"))
-            {
+            if (Physics.Raycast(ray, out hit) && !hit.collider.gameObject.CompareTag("Ground") && !hit.collider.CompareTag("AnswerCheck"))
+            {                
                 //정답 체크
                 MovingCube movingCube = hit.collider.GetComponent<MovingCube>();
+                //중복터치 방지를 위한 Tag 변경
+                hit.collider.tag = "AnswerCheck";
                 
                 WaitExplosionBubble_co = WaitExplosionBubble_Co(movingCube);                 
                 StartCoroutine(WaitExplosionBubble_co);
@@ -103,7 +107,7 @@ public class ObjectPooling_H : MonoBehaviour
 
     public void GameOver()
     {
-        StopCoroutine(WaitExplosionBubble_co);
+        StopAllCoroutines();
         aopManager.isStop = true;
         aopManager.answersCount = answer_count;
         ReactionCalculation();
@@ -127,6 +131,7 @@ public class ObjectPooling_H : MonoBehaviour
         {
             //문제 출시
             cubePool[i].SetActive(true);
+            cubePool[i].tag = "Untagged";
             //풀에 담겨있는 오브젝트에 값 지정
             MovingCube movingcube = cubePool[i].GetComponent<MovingCube>();
             //상태 True만 담기는 리스트
@@ -205,7 +210,8 @@ public class ObjectPooling_H : MonoBehaviour
         }
         else
         {
-            StartCoroutine(NextQuestionAni_Co());
+            NextQuestionAni_co = NextQuestionAni_Co();
+            StartCoroutine(NextQuestionAni_co);
         }
     }
 
