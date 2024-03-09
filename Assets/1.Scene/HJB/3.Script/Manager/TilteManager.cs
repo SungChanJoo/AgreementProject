@@ -53,7 +53,7 @@ public class TilteManager : MonoBehaviour
         }
         else
         {
-            inputError_text.text = "Please enter your name";
+            inputError_text.text = "이름을 입력해주세요.";
         }
     }
 }
