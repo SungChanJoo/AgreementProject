@@ -27,6 +27,9 @@ public class Server : MonoBehaviour
     // 서버-클라이언트 string으로 data 주고받을때 구분하기 위한 문자열
     private const string separatorString = "E|";
 
+    // 기타 데이터 처리용 Handler
+    private ETCMethodHandler etcMethodHandler = new ETCMethodHandler();
+
     // Rank용 Timer 변수, 5분마다 실시간 갱신(DB데이터 불러와서) 그 후 클라이언트한테 쏴줘야함(UDP) todo
     private float rankTime = 300f;
 
@@ -219,9 +222,11 @@ public class Server : MonoBehaviour
                         dataList = receivedRequestData.Split('|', StringSplitOptions.RemoveEmptyEntries).ToList(); // 받은 data 분할해서 list에 담음
                     }
 
+                    // 클라이언트로부터 데이터 전송이 끝나면(Finish) break;
                     if (receivedRequestData.Contains("Finish"))
                     {
-                        Debug.Log("[Server] received data contains Finish from client");
+                        etcMethodHandler.RemoveFinish(dataList);
+                        Debug.Log("[Server] Received data contains Finish from client");
                         break;
                     }
                 }
@@ -292,8 +297,9 @@ public class Server : MonoBehaviour
                 break;
             case "[Create]Charactor":
                 // to do fix
-                DBManager.instance.CreateNewCharactorData(clientLicenseNumber, clientCharactor);
+                string newClientCharactor = DBManager.instance.CreateNewCharactorData(clientLicenseNumber, clientCharactor);
                 Debug.Log($"[Server] Finish Create new CharactorData");
+                replyRequestData_List.Add($"{newClientCharactor}|");
                 break;
             case "[Save]CharactorName":
                 DBManager.instance.SaveCharactorName(dataList);
@@ -310,6 +316,22 @@ public class Server : MonoBehaviour
                     Debug.Log($"[Server] Check charactor dataList{i}, : {dataList[i]}");
                 }
                 DBManager.instance.SaveCharactorData(dataList);
+                break;
+            case "[Save]ExpenditionCrew":
+                Debug.Log($"[Server] Check come in expenditioncrew, dataList[0] : {dataList[0]}");
+                for (int i = 0; i < dataList.Count; i++)
+                {
+                    Debug.Log($"[Server] Check expenditioncrew dataList{i}, : {dataList[i]}");
+                }
+                DBManager.instance.SaveCrewData(dataList);
+                break;
+            case "[Save]LastPlayData":
+                Debug.Log($"[Server] Check come in lastplaydata, dataList[0] : {dataList[0]}");
+                for (int i = 0; i < dataList.Count; i++)
+                {
+                    Debug.Log($"[Server] Check lastplaydata dataList{i}, : {dataList[i]}");
+                }
+                DBManager.instance.SaveLastPlayData(dataList);
                 break;
             case "[Save]GameResult":
                 break;
@@ -328,6 +350,8 @@ public class Server : MonoBehaviour
             case "[Save]calculation":
                 DBManager.instance.SaveGameResultData(dataList);
                 break;
+            case "[Load]UserData":
+                break;
             case "[Load]CharactorData":
                 // dataList[1] = user_LicenseNumber, dataList[2] = user_Charactor
                 tempAllocate = DBManager.instance.LoadCharactorData(clientLicenseNumber, clientCharactor);
@@ -340,6 +364,16 @@ public class Server : MonoBehaviour
             case "[Load]RankData":
                 tempAllocate = DBManager.instance.RankOrderByUserData(clientLicenseNumber, clientCharactor);
                 tempAllocate.ForEach(data => replyRequestData_List.Add(data));
+                break;
+            case "[Load]ExpenditionCrew":
+                tempAllocate = DBManager.instance.LoadExpenditionCrew(clientLicenseNumber, clientCharactor);
+                tempAllocate.ForEach(data => replyRequestData_List.Add(data));
+                break;
+            case "[Load]LastPlayData":
+                tempAllocate = DBManager.instance.LoadLastPlayData(clientLicenseNumber, clientCharactor);
+                tempAllocate.ForEach(data => replyRequestData_List.Add(data));
+                break;
+            case "[Change]Charactor":
                 break;
             case "[Test]CreateDB":
                 DBManager.instance.CreateDateDB();

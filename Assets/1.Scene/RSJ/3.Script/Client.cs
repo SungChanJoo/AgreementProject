@@ -40,10 +40,12 @@ public class Client : MonoBehaviour
 
     // DB로부터 Load할 Data들을 담을 변수, 다른 곳에 반환할 수 있도록 class를 만듬
     // 서버에 Request한 후 받는 Received Data를 담을 변수
+    private UserData clientUserData;
     private Player_DB clientPlayerData;
     private AnalyticsData clientAnalyticsData;
     private RankData clientRankData;
     private ExpenditionCrew clientExpenditionCrew;
+    private LastPlayData clientLastPlayData;
 
     // timer
     private float transmissionTime = 1f;
@@ -96,7 +98,7 @@ public class Client : MonoBehaviour
 
         // 기타 데이터 처리용 Handler 생성
         etcMethodHandler = new ETCMethodHandler();
-}
+    }
 
     // 클라이언트가 실행할 때 서버 연결 시도
     public void ConnectToServer()
@@ -239,7 +241,7 @@ public class Client : MonoBehaviour
             case "[Create]LicenseNumber":
                 // dataList[1] = {clientLicenseNumber}|{clientCharactor}|
                 string tempAllocate = null;
-                for(int i = 0; i < dataList.Count; i ++)
+                for (int i = 0; i < dataList.Count; i++)
                 {
                     tempAllocate += dataList[i];
                     Debug.Log($"[Client] Check User dataList{i} : {dataList[i]}");
@@ -252,7 +254,12 @@ public class Client : MonoBehaviour
                 Debug.Log($"[Client] RequestName : {requestName}, get and save licenseNumber to jsonfile");
                 break;
             case "[Create]Charactor": // todo
-                clientCharactor = "22";
+                for (int i = 0; i < dataList.Count; i++)
+                {
+                    Debug.Log($"[Client] Check [Create]Charactor, dateList[{i}] : {dataList[i]}");
+                }
+                clientCharactor = dataList[0].Split('|')[1];
+                Debug.Log($"[Client] RequestName : {requestName}, get new charactor number : {clientCharactor}");
                 SaveClientDataToJsonFile();
                 break;
             case "[Save]CharactorName":
@@ -284,6 +291,10 @@ public class Client : MonoBehaviour
             case "[Save]calculation":
                 Debug.Log($"[Client] RequestName : {requestName}, End handling data");
                 break;
+            case "[Load]UserData":
+                HanlelLoadUserData(dataList);
+                Debug.Log($"[Client] RequestName : {requestName}, End handling data");
+                break;
             case "[Load]CharactorData":
                 // dataList[0] = "[Load]CharactorData|value|value..|value|E|";
                 HandleLoadCharactorData(dataList);
@@ -303,6 +314,12 @@ public class Client : MonoBehaviour
                 HandleLoadExpenditionCrew(dataList);
                 Debug.Log($"[Client] RequestName : {requestName}, End handling data");
                 break;
+            case "[Load]LastPlayData":
+                HandleLoadLastPlayData(dataList);
+                Debug.Log($"[Client] RequestName : {requestName}, End handling data");
+                break;
+            case "[Change]Charactor":
+                break;
             default:
                 Debug.Log("[Client] HandleRequestData Method Something Happend");
                 break;
@@ -320,6 +337,56 @@ public class Client : MonoBehaviour
         // Json 데이터를 문자열로 변환하여 파일에 저장
         string jsonString = JsonMapper.ToJson(client_Json);
         File.WriteAllText(licenseFolderPath + "/clientlicense.json", jsonString);
+    }
+
+    // 유저 데이터 처리
+    private void HanlelLoadUserData(List<string> dataList)
+    {
+        Debug.Log("[Client] HandleLoadUserData..");
+
+        // 들어오는 형태
+        // dataList[0] = "[Load]UserData|createdCharactorCount|E|CharactorNumber|Name|Profile|E|"
+        // dataList[1] = "CharactorNumber|Name|Profile|E|CharactorNumber|Name|Profile|E|"
+        // ... dataList[Last] = "CharactorNumber|Name|Profile|E|
+        // 원하는 형태(filter)
+        // filterList[0] = [Load]UserData|createdCharactorCount|
+        // filterList[1] = CharactorNumber|Name|Profile|"
+        // filterList[2] = CharactorNumber|Name|Profile|"
+        // ... dataList[Last] = CharactorNumber|Name|Profile|
+        // '|' Split후 각 데이터를 UserData_Value 생성자에 대입해서 사용
+
+
+        // clientUserData Initiate
+        clientUserData = new UserData();
+        clientUserData.user = new List<UserData_Value>();
+
+        // Filtering dataList
+        List<string> filterList = new List<string>();
+
+        for(int i = 0; i < dataList.Count; i++)
+        {
+            // E| 제거 후 filterList에 추가
+            List<string> tempAllocate = dataList[i].Split($"{separatorString}", StringSplitOptions.RemoveEmptyEntries).ToList();
+            foreach(string str in tempAllocate)
+            {
+                filterList.Add(str);
+            }
+        }
+
+        // clientUserData에 data 할당
+        for(int i = 0; i < filterList.Count; i++)
+        {
+            if (i == 0) clientUserData.createdCharactorCount = Int32.Parse(filterList[i].Split('|', StringSplitOptions.RemoveEmptyEntries)[1]);
+            else
+            {
+                List<string> part = filterList[i].Split('|', StringSplitOptions.RemoveEmptyEntries).ToList();
+                int _charactorNumber = Int32.Parse(part[0]);
+                string _name = part[1];
+                byte[] _profile = Convert.FromBase64String(part[2]);
+                UserData_Value userdata_value = new UserData_Value(_charactorNumber, _name, _profile);
+                clientUserData.user.Add(userdata_value);
+            }
+        }
     }
 
     // 플레이어 데이터 처리
@@ -540,8 +607,8 @@ public class Client : MonoBehaviour
 
         // clientRankData InitSetting
         clientRankData = new RankData();
-        clientRankData.rank_Score = new Rank_Score[6];
-        clientRankData.rank_Time = new Rank_Time[6];
+        clientRankData.rankdata_score = new RankData_value[6];
+        clientRankData.rankdata_time = new RankData_value[6];
 
         // separatorString ( "E|" )을 기준으로 Split 한 List
         List<string> filterDataList = new List<string>();
@@ -569,44 +636,44 @@ public class Client : MonoBehaviour
             {
                 for (int j = 0; j < parts.Count; j++)
                 {
-                    if (j == 0) clientRankData.rank_Score[i].place = Int32.Parse(parts[j]);
-                    else if (j == 1) clientRankData.rank_Score[i].userProfile = Convert.FromBase64String(parts[j]);
-                    else if (j == 2) clientRankData.rank_Score[i].userName = parts[j];
-                    else if (j == 3) clientRankData.rank_Score[i].totalScore = Int32.Parse(parts[j]);
+                    if (j == 0) clientRankData.rankdata_score[i].scorePlace = Int32.Parse(parts[j]);
+                    else if (j == 1) clientRankData.rankdata_score[i].userProfile = Convert.FromBase64String(parts[j]);
+                    else if (j == 2) clientRankData.rankdata_score[i].userName = parts[j];
+                    else if (j == 3) clientRankData.rankdata_score[i].totalScore = Int32.Parse(parts[j]);
                 }
 
                 // 자기 자신의 userlicensenumber와 usercharactor를 저장해둬야 개인의 데이터를 가져다 쓸수있다.
                 if(i == 5)
                 {
-                    clientRankData.rank_Score[i].userlicensenumber = Int32.Parse(clientLicenseNumber);
-                    clientRankData.rank_Score[i].usercharactor = Int32.Parse(clientCharactor);
+                    clientRankData.rankdata_score[i].userlicensenumber = Int32.Parse(clientLicenseNumber);
+                    clientRankData.rankdata_score[i].usercharactor = Int32.Parse(clientCharactor);
                 }
                 else
                 {
-                    clientRankData.rank_Score[i].userlicensenumber = 0;
-                    clientRankData.rank_Score[i].usercharactor = 0;
+                    clientRankData.rankdata_score[i].userlicensenumber = 0;
+                    clientRankData.rankdata_score[i].usercharactor = 0;
                 }
             }
             else // time
             {
                 for (int j = 0; j < parts.Count; j++)
                 {
-                    if (j == 0) clientRankData.rank_Time[i].place = Int32.Parse(parts[j]);
-                    else if (j == 1) clientRankData.rank_Time[i].userProfile = Convert.FromBase64String(parts[j]);
-                    else if (j == 2) clientRankData.rank_Time[i].userName = parts[j];
-                    else if (j == 3) clientRankData.rank_Time[i].totalTime = float.Parse(parts[j]);
+                    if (j == 0) clientRankData.rankdata_time[i].timePlace = Int32.Parse(parts[j]);
+                    else if (j == 1) clientRankData.rankdata_time[i].userProfile = Convert.FromBase64String(parts[j]);
+                    else if (j == 2) clientRankData.rankdata_time[i].userName = parts[j];
+                    else if (j == 3) clientRankData.rankdata_time[i].totalTime = float.Parse(parts[j]);
                 }
 
                 // 자기 자신의 userlicensenumber와 usercharactor를 저장해둬야 개인의 데이터를 가져다 쓸수있다.
                 if (i == 11)
                 {
-                    clientRankData.rank_Score[i].userlicensenumber = Int32.Parse(clientLicenseNumber);
-                    clientRankData.rank_Score[i].usercharactor = Int32.Parse(clientCharactor);
+                    clientRankData.rankdata_score[i].userlicensenumber = Int32.Parse(clientLicenseNumber);
+                    clientRankData.rankdata_score[i].usercharactor = Int32.Parse(clientCharactor);
                 }
                 else
                 {
-                    clientRankData.rank_Score[i].userlicensenumber = 0;
-                    clientRankData.rank_Score[i].usercharactor = 0;
+                    clientRankData.rankdata_score[i].userlicensenumber = 0;
+                    clientRankData.rankdata_score[i].usercharactor = 0;
                 }
             }
         }
@@ -624,12 +691,36 @@ public class Client : MonoBehaviour
             Debug.Log($"[Client] ExpenditionCrewList[{i}] : {dataList[i]}");
         }
 
+        // dataList[0] = "[Load]ExpenditionCrew|LastSelectCrew|crew1|crew2|...|crew(n)|"
+
+        // '|'를 기준으로 Split한 List
+        // 사용하고자 하는 List 형태
+        // filterDataList[0] = [Load]ExpenditionCrew
+        // filterDataList[1] = LastSelectCrew
+        // filterDataList[2] = crew1
+        // ...
+        // filterDataList[n] = crew(n)
+        List<string> filterDataList = new List<string>();
+
+        // 데이터를 받아올 때 dataList가 여러 index로 나눠질 수 있기 때문에 한번 더 Filtering
+        foreach (string str1 in dataList)
+        {
+            List<string> tempList = str1.Split('|', StringSplitOptions.RemoveEmptyEntries).ToList();
+            foreach(string str2 in tempList)
+            {
+                filterDataList.Add(str2);
+            }
+        }
+
+        // requestName 제거
+        filterDataList.RemoveAt(0);
+
         int SelectedCrew; //선택한 대원
         List<bool> OwnedCrew = new List<bool>(); //보유한 대원 리스트
 
-        SelectedCrew = Int32.Parse(dataList[0]);
+        SelectedCrew = Int32.Parse(filterDataList[0]);
         bool haveThatCrew;
-        for(int i = 0; i < dataList.Count; i ++)
+        for(int i = 1; i < filterDataList.Count; i ++) // index 1부터 crew 보유여부
         {
             if (dataList[i] == "0") haveThatCrew = false;
             else haveThatCrew = true;
@@ -637,10 +728,60 @@ public class Client : MonoBehaviour
             OwnedCrew.Add(haveThatCrew);
         }
 
-        // clientExpenditionCrew Initiate
+        // clientExpenditionCrew Initiate and Setting
         clientExpenditionCrew = new ExpenditionCrew(SelectedCrew, OwnedCrew);
 
         Debug.Log("[Client] End HandleLoadExpendtionCrew...");
+    }
+
+    // 마지막 플레이 게임 처리
+    private void HandleLoadLastPlayData(List<string> dataList)
+    {
+        Debug.Log("[Client] HandleLoadLastPlayData..");
+
+        for (int i = 0; i < dataList.Count; i++)
+        {
+            Debug.Log($"[Client] LastPlayDataList[{i}] : {dataList[i]}");
+        }
+
+        // clientLastPlayData Initiate
+        clientLastPlayData = new LastPlayData();
+
+        // dataList[0] = [Load]LastPlayData|(game1_level1)의 value|(game1_level2)의 value| ... |(game5_level3)의 value|
+
+        // '|'를 기준으로 Split한 List
+        // 사용하고자 하는 List 형태
+        // filterDataList[0] = [Load]LastPlayData
+        // filterDataList[1] = (game1_level1)의 value
+        // filterDataList[2] = (game1_level2)의 value
+        // ...
+        // filterDataList[n] = (game5_level3)의 value
+        List<string> filterDataList = new List<string>();
+
+        // 데이터를 받아올 때 dataList가 여러 index로 나눠질 수 있기 때문에 한번 더 Filtering
+        foreach (string str1 in dataList)
+        {
+            List<string> tempList = str1.Split('|', StringSplitOptions.RemoveEmptyEntries).ToList(); 
+            foreach (string str2 in tempList)
+            {
+                filterDataList.Add(str2);
+            }
+        }
+
+        // requestName 제거
+        filterDataList.RemoveAt(0);
+
+        // clientLastPlayData Setting
+        for(int i = 0; i < filterDataList.Count; i++)
+        {
+            if (i < 3) clientLastPlayData.Step.Add((Game_Type.A, i + 1), Int32.Parse(filterDataList[i])); // venezia_kor
+            else if (i < 6) clientLastPlayData.Step.Add((Game_Type.B, (i + 1) - 3), Int32.Parse(filterDataList[i])); // venezia_eng
+            else if (i == 6) clientLastPlayData.Step.Add((Game_Type.C, (i + 1) - 6), Int32.Parse(filterDataList[i])); // venezia_chn
+            else if (i < 10) clientLastPlayData.Step.Add((Game_Type.D, (i + 1) - 7), Int32.Parse(filterDataList[i])); // calculation
+            else clientLastPlayData.Step.Add((Game_Type.E, (i + 1) - 10), Int32.Parse(filterDataList[i])); // gugudan;
+        }
+
+        Debug.Log("[Client] End HandleLoadLastPlayData...");
     }
     #endregion
 
@@ -648,25 +789,58 @@ public class Client : MonoBehaviour
 
     /*
     Client가 DB에 있는 파일을 Save Load 하는 경우
-    1. 앱 시작 -> Player_DB Load (Charactor Info, GameData) // DB - Client
+    1. 앱 시작 -> UserData Load (User Charactors) // Only DB
+    1. 앱 시작 -> Player_DB Load (Charactor Info, GameData) // DB <-> Client
     1. 앱 시작 -> GameAnalytics Load (개인 분석표) // Only DB
     1. 앱 시작 -> RankData Load (랭킹) // Only DB
-    1. 앱 시작 -> ExpenditionCrew Load (탐험대원) // DB = Client
+    1. 앱 시작 -> ExpenditionCrew Load (탐험대원) // DB <-> Client
+    1. 앱 시작 -> LastPlay Load (마지막으로 한 게임) // DB <-> Client
+    ------------------------------------------------------------------------------------
     2. 플레이어(charactor) 생성 -> Save, Load
     2-1. Player_DB Save (기존 CharactorData)
     2-1. ExpendtionCrew Save (기존 CharactorData)
+    2-1. LastPlay Save (기존 CharactorData)
     2-2. New Charactor Create (새 ChractorData 생성)
+    2-3. UserData Load (새 CharactorData 기준으로)
     2-3. Player_DB Load (새 CharactorData)
     2-3. GameAnalytics Load (새 CharactorData)
     2-3. RankData Load (새 CharactorData)
     2-3. ExpenditionCrew Load (새 CharactorData)
-    3. Charactor Name 등록
-    4. Charactor Profile 등록
-    5. 앱 게임 시작 -> TotalScore(int형) Load (game_type, level, step 받음) -> Save GameData
+    2-3. LastPlay Load (새 CharactorData)
+    -------------------------------------------------------------------------------------
+    3. 플레이어(Charactor) 변경 -> Save, Load
+    3-1. Player_DB Save (기존 CharactorData)
+    3-1. ExpendtionCrew Save (기존 CharactorData)
+    3-1. LastPlay Save (기존 CharactorData)
+    3-2. UserData Load (새 CharactorData 기준으로)
+    3-2. Player_DB Load (새 CharactorData)
+    3-2. GameAnalytics Load (새 CharactorData)
+    3-2. RankData Load (새 CharactorData)
+    3-2. ExpenditionCrew Load (새 CharactorData)
+    3-2. LastPlay Load (새 CharactorData)
+    ---------------------------------------------------------------------------------------
+    4. Charactor Name 등록
+    5. Charactor Profile 등록
+    6. 게임 끝났을 때 Game Data(reactionrate, score, time 등) DB에 저장
+    ---------------------------------------------------------------------------------------
+    7. 앱 종료 -> Player_DB Save 
+    7. 앱 종료 -> ExpenditionCrew Save 
+    7. 앱 종료 -> LastPlay Save
+    
+    7. 앱 종료 -> 마지막 접속한 Charactor - LitJson파일로 로컬 저장(clientlicense)
+
+    ##. 앱 게임 시작 -> TotalScore(int형) Load (game_type, level, step 받음) -> Save GameData
     --. 랭킹 UI 접속 시(or 랭킹새로고침) -> rank Load  // 일단 테스트용
-    6. 앱 종료 -> Player_DB Save 
-    6. 앱 종료 -> ExpenditionCrew Save 
     */
+
+    // 앱 시작시 UserData Load
+    public UserData AppStart_LoadUserDataFromDB()
+    {
+        string requestData = $"[Load]UserData|{clientLicenseNumber}|Finish";
+        RequestToServer(requestData);
+
+        return clientUserData;
+    }
 
     // 앱 시작시 Player_DB Load
     public Player_DB AppStart_LoadAllDataFromDB()
@@ -716,18 +890,155 @@ public class Client : MonoBehaviour
         return clientExpenditionCrew;
     }
 
-    // Charactor 생성시, 사용중인 Charactor Data Save
+    // 앱 시작시 LastPlay Load
+    public LastPlayData AppStart_LoadLastPlayFromDB()
+    {
+        string requestData = $"[Load]LastPlayData|{clientLicenseNumber}|{clientCharactor}|Finish";
+        RequestToServer(requestData);
+
+        return clientLastPlayData;
+    }
+
+    // Charactor 생성시 Player_DB Save (기존 CharactorData)
     public void CreateCharactor_SaveCharactorDataToDB(Player_DB playerdb)
     {
         SaveCharactorDataToDB(playerdb);
     }
 
-    // Charactor 생성 Load (새로 생성한 Charatror Data)
+    // Charactor 생성시 ExpenditionCrew Save (기존 CharactorData)
+    public void CreateCharactor_SaveExpenditionCrewDataToDB(ExpenditionCrew crew)
+    {
+        SaveExpenditionCrewDataToDB(crew);
+    }
+
+    // Charactor 생성시 LastPlay Save (기존 CharactorData)
+    public void CreateCharactor_SaveLastPlayDataToDB(LastPlayData lastplaydata)
+    {
+        SaveLastPlayDataToDB(lastplaydata);
+    }
+
+    // Charactor 생성 요청 -> Server에서 보낸 데이터 받았을 때 clientCharactor -> 생성한 charactor번호로 변경
+    public void CreateCharactorData()
+    {
+        string reqeustData = $"[Create]Charactor|{clientLicenseNumber}|{clientCharactor}|Finish";
+
+        RequestToServer(reqeustData);
+    }
+
+    // Charactor 생성시 Player_DB Load (새 CharatrorData)
     public Player_DB CreateCharactor_LoadCharactorDataFromDB()
     {
-        Player_DB resultdb = new Player_DB();
+        string requestData = $"[Load]CharactorData|{clientLicenseNumber}|{clientCharactor}|Finish";
+        RequestToServer(requestData);
 
-        return resultdb;
+        return clientPlayerData;
+    }
+
+    // Charactor 생성시 GameAnalytics Load (새 CharactorData)
+    public AnalyticsData CreateCharactor_LoadGameAnalyticsDataFromDB()
+    {
+        string requestData = $"[Load]AnalyticsData|{clientLicenseNumber}|{clientCharactor}|Finish";
+        RequestToServer(requestData);
+
+        return clientAnalyticsData;
+    }
+
+    // Charactor 생성시 RankData Load (새 CharactorData)
+    public RankData CreateCharactor_LoadRankDataFromDB()
+    {
+        string requestData = $"[Load]RankData|{clientLicenseNumber}|{clientCharactor}|Finish";
+        RequestToServer(requestData);
+
+        return clientRankData;
+    }
+
+    // Charactor 생성시 ExpenditionCrew Load (새 CharactorData) 
+    public ExpenditionCrew CreateCharactor_LoadExpenditionCrewFromDB()
+    {
+        string requestData = $"[Load]ExpenditionCrew|{clientLicenseNumber}|{clientCharactor}|Finish";
+        RequestToServer(requestData);
+
+        return clientExpenditionCrew;
+    }
+
+    // Charactor 생성시 LastPlay Load (새 CharactorData) 
+    public LastPlayData CreateCharactor_LoadLastPlayFromDB()
+    {
+        string requestData = $"[Load]LastPlayData|{clientLicenseNumber}|{clientCharactor}|Finish";
+        RequestToServer(requestData);
+
+        return clientLastPlayData;
+    }
+
+    // Charactor 변경시 Player_DB Save (기존 CharactorData)
+    public void ChangeCharactor_SaveCharactorDataToDB(Player_DB playerdb)
+    {
+        SaveCharactorDataToDB(playerdb);
+    }
+
+    // Charactor 변경시 ExpenditionCrew Save (기존 CharactorData)
+    public void ChangeCharactor_SaveExpenditionCrewDataToDB(ExpenditionCrew crew)
+    {
+        SaveExpenditionCrewDataToDB(crew);
+    }
+
+    // Charactor 변경시 LastPlay Save (기존 CharactorData)
+    public void ChangeCharactor_SaveLastPlayDataToDB(LastPlayData lastplaydata)
+    {
+        SaveLastPlayDataToDB(lastplaydata);
+    }
+
+    // Charactor 변경 요청 -> Server에서 보낸 데이터 받았을 때 clientCharactor -> 변경한 charactor번호로 변경, todo
+    public void ChangeCharactorData(int changeCharactor)
+    {
+        string reqeustData = $"[Change]Charactor|{clientLicenseNumber}|{changeCharactor}|Finish";
+
+        RequestToServer(reqeustData);
+    }
+
+    // Charactor 변경시 Player_DB Load (새 CharatrorData)
+    public Player_DB ChangeCharactor_LoadCharactorDataFromDB()
+    {
+        string requestData = $"[Load]CharactorData|{clientLicenseNumber}|{clientCharactor}|Finish";
+        RequestToServer(requestData);
+
+        return clientPlayerData;
+    }
+
+    // Charactor 변경시 GameAnalytics Load (새 CharactorData)
+    public AnalyticsData ChangeCharactor_LoadGameAnalyticsDataFromDB()
+    {
+        string requestData = $"[Load]AnalyticsData|{clientLicenseNumber}|{clientCharactor}|Finish";
+        RequestToServer(requestData);
+
+        return clientAnalyticsData;
+    }
+
+    // Charactor 변경시 RankData Load (새 CharactorData)
+    public RankData ChangeCharactor_LoadRankDataFromDB()
+    {
+        string requestData = $"[Load]RankData|{clientLicenseNumber}|{clientCharactor}|Finish";
+        RequestToServer(requestData);
+
+        return clientRankData;
+    }
+
+    // Charactor 변경시 ExpenditionCrew Load (새 CharactorData) 
+    public ExpenditionCrew ChangeCharactor_LoadExpenditionCrewFromDB()
+    {
+        string requestData = $"[Load]ExpenditionCrew|{clientLicenseNumber}|{clientCharactor}|Finish";
+        RequestToServer(requestData);
+
+        return clientExpenditionCrew;
+    }
+
+    // Charactor 변경시 LastPlay Load (새 CharactorData) 
+    public LastPlayData ChangeCharactor_LoadLastPlayFromDB()
+    {
+        string requestData = $"[Load]LastPlayData|{clientLicenseNumber}|{clientCharactor}|Finish";
+        RequestToServer(requestData);
+
+        return clientLastPlayData;
     }
 
     // Charactor Name 등록
@@ -823,15 +1134,28 @@ public class Client : MonoBehaviour
         return return_RankData;
     }
 
-    // 앱 종료시 Charactor Data Save
+    // 앱 종료시 Player_DB Save
     public void AppExit_SaveCharactorDataToDB(Player_DB playerdb)
     {
         SaveCharactorDataToDB(playerdb);
     }
 
+    // 앱 종료시 ExpendtionCrew Save
+    public void AppExit_SaveExpenditionCrewDataToDB(ExpenditionCrew crew)
+    {
+        SaveExpenditionCrewDataToDB(crew);
+    }
+
+    // 앱 종료시 LastPlay Save
+    public void AppExit_SaveLastPlayDataToDB(LastPlayData lastplaydata)
+    {
+        SaveLastPlayDataToDB(lastplaydata);
+    }
+
     #endregion
 
-    // 중복된 기능 SaveCharactorDataToDB
+    #region 중복 기능 Method (Save)
+    // Save Charactor(Player_DB) Data To DB
     private void SaveCharactorDataToDB(Player_DB playerdb)
     {
         string requestData;
@@ -885,6 +1209,52 @@ public class Client : MonoBehaviour
 
         RequestToServer(requestData);
     }
+
+    // Save ExpendtionCrew Data To DB
+    private void SaveExpenditionCrewDataToDB(ExpenditionCrew crew)
+    {
+        //requestData = [Save]ExpenditionCrew|license|charactor|LastSelectCrew|Crew1|Crew2|... |Crew(n)|Finish
+        string requestName = "[Save]ExpenditionCrew";
+        string requestData = $"{requestName}|{clientLicenseNumber}|{clientCharactor}|";
+
+        // SelectedCrew 추가
+        requestData += $"{crew.SelectedCrew}|";
+
+        // True(보유) -> 1 / False(미보유) -> 0
+        for(int i = 0; i < crew.OwnedCrew.Count; i++)
+        {
+            if (crew.OwnedCrew[i]) requestData += "1|";
+            else requestData += "0|";
+        }
+
+        requestData += "Finish";
+
+        RequestToServer(requestData);
+    }
+
+    // Save LastPlay Data To DB
+    private void SaveLastPlayDataToDB(LastPlayData lastplaydata)
+    {
+        //requestData = [Save]LastPlayData|license|charactor| (game1_level1)의 value | (game1_level2)의 value | ... | (game5_level3)의 value |Finish
+        string requestName = "[Save]LastPlayData";
+        string requestData = $"{requestName}|{clientLicenseNumber}|{clientCharactor}|";
+
+        for(int i = 0; i < lastplaydata.Step.Values.Count; i++)
+        {
+            if (i < 3) requestData += $"{lastplaydata.Step[(Game_Type.A, i + 1)]}|"; // venezia_kor
+            else if (i < 6) requestData += $"{lastplaydata.Step[(Game_Type.B, (i + 1) - 3)]}|"; // venezia_kor
+            else if (i == 6) requestData += $"{lastplaydata.Step[(Game_Type.C, (i + 1) - 6)]}|"; // venezia_chn
+            else if (i < 10) requestData += $"{lastplaydata.Step[(Game_Type.D, (i + 1) - 7)]}|"; // calculation
+            else requestData += $"{lastplaydata.Step[(Game_Type.E, (i + 1) - 10)]}|"; // gugudan
+        }
+
+        requestData += "Finish";
+
+        RequestToServer(requestData);
+    }
+
+
+    #endregion
 
     #region TestMethods
     public void OnClickSaveGameDataTest()
@@ -955,20 +1325,20 @@ public class Client : MonoBehaviour
 
     public void OnClickLoadRankDataTest()
     {
-        for(int i = 0; i< clientRankData.rank_Score.Length; i++)
+        for(int i = 0; i< clientRankData.rankdata_score.Length; i++)
         {
-            Debug.Log($"clientRankData.rank_Score[i].place : {clientRankData.rank_Score[i].place}");
-            Debug.Log($"clientRankData.rank_Score[i].userProfile : {clientRankData.rank_Score[i].userProfile}");
-            Debug.Log($"clientRankData.rank_Score[i].userName : {clientRankData.rank_Score[i].userName}");
-            Debug.Log($"clientRankData.rank_Score[i].totalScore : {clientRankData.rank_Score[i].totalScore}");
+            Debug.Log($"clientRankData.rankdata_score[i].place : {clientRankData.rankdata_score[i].scorePlace}");
+            Debug.Log($"clientRankData.rankdata_score[i].userProfile : {clientRankData.rankdata_score[i].userProfile}");
+            Debug.Log($"clientRankData.rankdata_score[i].userName : {clientRankData.rankdata_score[i].userName}");
+            Debug.Log($"clientRankData.rankdata_score[i].totalScore : {clientRankData.rankdata_score[i].totalScore}");
         }
 
-        for (int i = 0; i < clientRankData.rank_Time.Length; i++)
+        for (int i = 0; i < clientRankData.rankdata_time.Length; i++)
         {
-            Debug.Log($"clientRankData.rank_Time[i].place : {clientRankData.rank_Time[i].place}");
-            Debug.Log($"clientRankData.rank_Time[i].userProfile : {clientRankData.rank_Time[i].userProfile}");
-            Debug.Log($"clientRankData.rank_Time[i].userName : {clientRankData.rank_Time[i].userName}");
-            Debug.Log($"clientRankData.rank_Time[i].totalScore : {clientRankData.rank_Time[i].totalTime}");
+            Debug.Log($"clientRankData.rankdata_time[i].place : {clientRankData.rankdata_time[i].timePlace}");
+            Debug.Log($"clientRankData.rankdata_time[i].userProfile : {clientRankData.rankdata_time[i].userProfile}");
+            Debug.Log($"clientRankData.rankdata_time[i].userName : {clientRankData.rankdata_time[i].userName}");
+            Debug.Log($"clientRankData.rankdata_time[i].totalScore : {clientRankData.rankdata_time[i].totalTime}");
         }
 
     }

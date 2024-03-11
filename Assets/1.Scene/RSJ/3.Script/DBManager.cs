@@ -34,7 +34,7 @@ public class DBManager : MonoBehaviour
     private string[] crew_Columns;
     private string[] game_Columns;
     private string[] analytics_Columns;
-    private string[] finallyselectedgame_Columns;
+    private string[] lastplaygame_Columns;
 
     // 서버-클라이언트 string으로 data 주고받을때 구분하기 위한 문자열
     private const string separatorString = "E|";
@@ -125,10 +125,10 @@ public class DBManager : MonoBehaviour
         userinfo_Columns = new string[]{ "User_LicenseNumber", "User_Charactor", "User_Name", "User_Profile", "User_Birthday", "User_TotalAnswers", "User_TotalTime", "User_Coin" };
         rank_Columns = new string[] { "User_LicenseNumber", "User_Charactor", "User_Profile", "User_Name", "TotalTime", "TotalScore" };
         achievement_Columns = new string[] { "User_LicenseNumber", "User_Charactor", "Something" };
-        crew_Columns = new string[] { "User_LicenseNumber", "User_Charactor", "FinallySelectedCrew", "루즈비", "블루비", "베르비", "로조비", "블랙비", "똘이", "고릴라", "고슴도치", "고양이", "까마귀", "남생이", "늑대", "다람쥐", "독수리", "돌고래", "라쿤", "물범", "방울뱀", "범고래", "병아리", "북극여우", "쇠족제비", "수탉", "악어", "양", "여우", "오리너구리", "치타", "캥거루", "코뿔소", "쿼카", "팬더", "펭귄", "해달", "호랑이", "흰토끼", "황금독수리" };
+        crew_Columns = new string[] { "User_LicenseNumber", "User_Charactor", "LastSelectCrew", "루즈비", "블루비", "베르비", "로조비", "블랙비", "똘이", "고릴라", "고슴도치", "고양이", "까마귀", "남생이", "늑대", "다람쥐", "독수리", "돌고래", "라쿤", "물범", "방울뱀", "범고래", "병아리", "북극여우", "쇠족제비", "수탉", "악어", "양", "여우", "오리너구리", "치타", "캥거루", "코뿔소", "쿼카", "팬더", "펭귄", "해달", "호랑이", "흰토끼", "황금독수리" };
         game_Columns = new string[]{ "User_LicenseNumber", "User_Charactor", "ReactionRate", "AnswerCount", "AnswerRate", "Playtime", "TotalScore", "StarPoint" };
         analytics_Columns = new string[] { "User_LicenseNumber", "User_Charactor", "ReactionRate", "AnswerRate" };
-        finallyselectedgame_Columns = new string[] { "User_LicenseNumber", "User_Charactor", "venezia_kor_level1", "venezia_kor_level2", "venezia_kor_level3", "venezia_eng_level1", "venezia_eng_level2", "venezia_eng_level3", "venezia_chn_level", "calculation_level1", "calculation_level2", "calculation_level3", "gugudan_level1", "gugudan_level2", "gugudan_level3" };
+        lastplaygame_Columns = new string[] { "User_LicenseNumber", "User_Charactor", "venezia_kor_level1", "venezia_kor_level2", "venezia_kor_level3", "venezia_eng_level1", "venezia_eng_level2", "venezia_eng_level3", "venezia_chn_level", "calculation_level1", "calculation_level2", "calculation_level3", "gugudan_level1", "gugudan_level2", "gugudan_level3" };
 
         // 기타 데이터 처리용 Handler
         etcMethodHandler = new ETCMethodHandler();
@@ -168,6 +168,7 @@ public class DBManager : MonoBehaviour
         //string table_Name = "user_info";
         //string[] columns = { "User_LicenseNumber", "User_Charactor", "User_Name", "User_Profile", "User_Birthday", "User_TotalAnswers", "User_TotalTime", "User_Coin" };
         int clientLicenseNumber = clientLicenseNumber_Base + count;
+        int defaultClientCharactor = 1;
         //int user_Charactor = 1;
         //string user_Name = "Guest";
         //byte[] user_Profile = { 0x00};
@@ -195,13 +196,13 @@ public class DBManager : MonoBehaviour
         //insert_SqlCmd.ExecuteNonQuery(); // command.ExecuteNonQuery()은 DB에서 변경 작업을 수행하는 SQL 명령문을 실행하고, 영향을 받은 행의 수를 반환하는 메서드
         //
         //string returnData = $"{clientLicenseNumber}|{user_Charactor}";
-        string returnData = $"{clientLicenseNumber}|1|";
+        string returnData = $"{clientLicenseNumber}|{defaultClientCharactor}|";
 
         return returnData;
     }
 
     // 새 캐릭터 데이터 생성
-    public void CreateNewCharactorData(int clientlicensenumber, int clientcharactor)
+    public string CreateNewCharactorData(int clientlicensenumber, int clientcharactor)
     {
         Debug.Log($"[DB] Create new Charactor data, client's licensenumber : {clientlicensenumber}, clients's charactor : {clientcharactor}");
 
@@ -214,7 +215,29 @@ public class DBManager : MonoBehaviour
         // Update Query
         string updateCharactorData_Command;
 
-        // table.list[0] -> user_info, [1] -> rank, [2] -> crew, [3] -> finallyselectedgame, [4]~ -> gameTables~
+        // Select Query -> clientCharactor Count
+        string selectCharactorCount_Command;
+
+        // table.list[0] -> user_info, [1] -> rank, [2] -> crew, [3] -> lastplaygame, [4]~ -> gameTables~
+
+        // User가 Charactor를 얼마나 보유하고 있는지 체크
+        selectCharactorCount_Command = $"SELECT `{userinfo_Columns[1]}` FROM `{table.list[0]}` WHERE `{userinfo_Columns[0]}` = '{clientlicensenumber}';";
+        mySqlCommand.CommandText = selectCharactorCount_Command;
+        MySqlDataReader reader = mySqlCommand.ExecuteReader();
+
+        // Check charactor count 
+        int count = 0;
+
+        while(reader.Read())
+        {
+            count++;
+        }
+        reader.Close();
+
+        // 처음 라이센스 발급 받아서 캐릭터 생성시 count == 0
+        // 프로필 화면에서 캐릭터 생성시 적어도 count는 1이상
+        // 추가로 생성하는 캐릭터 번호는 db에 저장되어있는 총 캐릭터의 개수(count) + 1
+        clientcharactor = count + 1; 
 
         // user_info table
         // userinfo_Columns = { "User_LicenseNumber", "User_Charactor", "User_Name", "User_Profile", "User_Birthday", "User_TotalAnswers", "User_TotalTime", "User_Coin" };
@@ -296,17 +319,17 @@ public class DBManager : MonoBehaviour
         }
         Debug.Log("[DB] Crew table complete!");
 
-        // finallyselectedgame table
-        // finallyselectedgame_Columns = { "User_LicenseNumber", "User_Charactor", "venezia_kor_level1", "venezia_kor_level2", "venezia_kor_level3", "venezia_eng_level1", "venezia_eng_level2", "venezia_eng_level3", "venezia_chn_level", "calculation_level1", "calculation_level2", "calculation_level3", "gugudan_level1", "vgugudan_level2", "gugudan_level3" };
+        // lastplaygame table
+        // lastplaygame_Columns = { "User_LicenseNumber", "User_Charactor", "venezia_kor_level1", "venezia_kor_level2", "venezia_kor_level3", "venezia_eng_level1", "venezia_eng_level2", "venezia_eng_level3", "venezia_chn_level", "calculation_level1", "calculation_level2", "calculation_level3", "gugudan_level1", "vgugudan_level2", "gugudan_level3" };
         // 마지막으로 플레이 한 게임이 무엇인지 저장하기 위한 테이블 / 게임,레벨의 밸류(1~6)가 해당 스텝을 플레이함
-        insertCharactorData_Command = $"INSERT INTO `{table.list[3]}` (`{finallyselectedgame_Columns[0]}`, `{finallyselectedgame_Columns[1]}`) VALUES ({clientlicensenumber}, {clientcharactor})";
+        insertCharactorData_Command = $"INSERT INTO `{table.list[3]}` (`{lastplaygame_Columns[0]}`, `{lastplaygame_Columns[1]}`) VALUES ({clientlicensenumber}, {clientcharactor})";
         mySqlCommand.CommandText = insertCharactorData_Command;
         mySqlCommand.ExecuteNonQuery();
-        int finallyselectedgame_valuepart = 1; // default 값 1 -> 스텝 1을 플레이했음
+        int lastplaygame_valuepart = 1; // default 값 1 -> 스텝 1을 플레이했음
 
-        for (int i = 2; i < finallyselectedgame_Columns.Length; i++)
+        for (int i = 2; i < lastplaygame_Columns.Length; i++)
         {
-            updateCharactorData_Command = $"UPDATE `{table.list[2]}` SET `{crew_Columns[i]}` = '{finallyselectedgame_valuepart}' " +
+            updateCharactorData_Command = $"UPDATE `{table.list[2]}` SET `{crew_Columns[i]}` = '{lastplaygame_valuepart}' " +
                                           $"WHERE `{crew_Columns[0]}` = '{clientlicensenumber}' AND `{crew_Columns[1]}` = '{clientcharactor}';";
             mySqlCommand.CommandText = updateCharactorData_Command;
             mySqlCommand.ExecuteNonQuery();
@@ -378,6 +401,8 @@ public class DBManager : MonoBehaviour
         Debug.Log("[DB] Game table complete!");
 
         Debug.Log($"[DB] End Create new Charactor data, client's licensenumber : {clientlicensenumber}, clients's charactor : {clientcharactor}");
+
+        return clientcharactor.ToString();
     }
 
     // DB에 캐릭터 이름 저장
@@ -435,7 +460,7 @@ public class DBManager : MonoBehaviour
         Debug.Log("[DB] Complete save charactor profile to DB");
     }
 
-    // DB에 캐릭터 데이터 저장 (캐릭터 변경 또는 게임 종료시)
+    // DB에 캐릭터 데이터(Charactor info, GameData) 저장 (캐릭터 변경 또는 게임 종료시)
     public void SaveCharactorData(List<string> dataList)
     {
         Debug.Log("[DB] Come in save charactor data");
@@ -448,7 +473,6 @@ public class DBManager : MonoBehaviour
         {
             Debug.Log($"[DB] charactor dataList{i} : {dataList[i]}");
         }
-        여기 메서드에 crew table하고 finallyselectdgame table 추가할까.. 
         
         string update_Command;
         MySqlCommand update_SqlCmd = new MySqlCommand();
@@ -503,6 +527,56 @@ public class DBManager : MonoBehaviour
         }
 
         Debug.Log("[DB] Complete save charactor data");
+    }
+
+    // DB에 탐험대원 데이터 저장
+    public void SaveCrewData(List<string> dataList)
+    {
+        Debug.Log("[DB] Come in save crew data");
+
+        //requestData = [Save]ExpenditionCrew|license|charactor|LastSelectCrew|Crew1|Crew2|... |Crew(n)|Finish
+        //dataList[0] = [Save]ExpenditionCrew
+        //dataList[1] = license
+        MySqlCommand mySqlCommand = new MySqlCommand();
+        mySqlCommand.Connection = connection;
+
+        string update_Command = $"UPDATE `{table.list[2]}` SET ";
+        for(int i = 2; i < crew_Columns.Length; i++) // license, charactor 제외
+        {
+            update_Command += $"`{crew_Columns[i]}` = '{Int32.Parse(dataList[i + 1])}', ";
+        }
+        update_Command = update_Command.TrimEnd(',');
+        update_Command += $"WHERE `{crew_Columns[0]}` = '{Int32.Parse(dataList[1])}' AND `{crew_Columns[1]}` = '{Int32.Parse(dataList[2])}';";
+
+        mySqlCommand.CommandText = update_Command;
+        mySqlCommand.ExecuteNonQuery();
+
+        Debug.Log("[DB] Complete save crew data");
+    }
+
+    // DB에 마지막으로 플레이한 스텝 저장
+    public void SaveLastPlayData(List<string> dataList)
+    {
+        Debug.Log("[DB] Come in save lastplay data");
+
+        //requestData = [Save]LastPlayData|license|charactor| (game1_level1)의 value | (game1_level2)의 value | ... | (game5_level3)의 value |Finish
+        //dataList[0] = [Save]LastPlayData
+        //dataList[1] = license
+        MySqlCommand mySqlCommand = new MySqlCommand();
+        mySqlCommand.Connection = connection;
+
+        string update_Command = $"UPDATE `{table.list[3]}` SET ";
+        for(int i = 2; i < lastplaygame_Columns.Length; i++) // license, charactor 제외
+        {
+            update_Command += $"`{lastplaygame_Columns[i]}` = '{Int32.Parse(dataList[i+1])}', ";
+        }
+        update_Command = update_Command.TrimEnd(',');
+        update_Command += $"WHERE `{lastplaygame_Columns[0]}` = '{Int32.Parse(dataList[1])}' AND `{lastplaygame_Columns[1]}` = '{Int32.Parse(dataList[2])}';";
+
+        mySqlCommand.CommandText = update_Command;
+        mySqlCommand.ExecuteNonQuery();
+
+        Debug.Log("[DB] Complete save lastplay data");
     }
 
     // DB에 게임결과 저장
@@ -708,12 +782,12 @@ public class DBManager : MonoBehaviour
                                 return_TempData += $"{separatorString}";
                                 return_TableData.Add(return_TempData);
                                 break;
-                            case "finallyselectedgame":
-                                Debug.Log("[DB] LoadCharactorData - finallyselectedgame table");
+                            case "lastplaygame":
+                                Debug.Log("[DB] LoadCharactorData - lastplaygame table");
                                 return_TempData = $"{table.list[i]}";
-                                for(int j = 2; j < finallyselectedgame_Columns.Length; j ++) // 0->licensenumber, 1->charactor
+                                for(int j = 2; j < lastplaygame_Columns.Length; j ++) // 0->licensenumber, 1->charactor
                                 {
-                                    string tempStr = reader.GetInt32(finallyselectedgame_Columns[j]).ToString();
+                                    string tempStr = reader.GetInt32(lastplaygame_Columns[j]).ToString();
                                     return_TempData += $"{tempStr}|";
                                 }
                                 return_TempData += $"{separatorString}";
@@ -744,7 +818,7 @@ public class DBManager : MonoBehaviour
     // 분석 데이터 불러오기 
     public List<string> LoadAnalyticsData(int licensenumber, int charactor)
     {
-        // 클라이언트에서 받아야할 List 형식
+        // 클라이언트에서 사용할 List 형식
         // dataList[0] = "[Load]AnalyticsData|E|"
         // dataList[1] = "day1|venezia_kor_level1_analytics|ReactionRate|AnswerRate|E|"
         // dataList[2] = "day1|venezia_kor_level2_analytics|ReactionRate|AnswerRate|E|"
@@ -966,13 +1040,13 @@ public class DBManager : MonoBehaviour
 
         // 직접적인 순위비교
         // Score - rankdata[i][5]
-        List<Rank_Score> scoreList = new List<Rank_Score>();
+        List<RankData_value> scoreList = new List<RankData_value>();
 
         for(int i= 0; i < rankdata.Count; i++)
         {
-            Rank_Score score = new Rank_Score();
+            RankData_value score = new RankData_value();
 
-            score.place = 0;
+            score.scorePlace = 0;
             score.userlicensenumber = Int32.Parse(rankdata[i][0]);
             score.usercharactor = Int32.Parse(rankdata[i][1]);
             score.userProfile = System.Text.Encoding.UTF8.GetBytes(rankdata[i][2]);
@@ -1028,13 +1102,13 @@ public class DBManager : MonoBehaviour
         }
 
         // Time 기준
-        List<Rank_Time> timeList = new List<Rank_Time>();
+        List<RankData_value> timeList = new List<RankData_value>();
 
         for (int i = 0; i < rankdata.Count; i++)
         {
-            Rank_Time time = new Rank_Time();
+            RankData_value time = new RankData_value();
 
-            time.place = 0;
+            time.timePlace = 0;
             time.userlicensenumber = Int32.Parse(rankdata[i][0]);
             time.usercharactor = Int32.Parse(rankdata[i][1]);
             time.userProfile = System.Text.Encoding.UTF8.GetBytes(rankdata[i][2]);
@@ -1091,6 +1165,75 @@ public class DBManager : MonoBehaviour
 
         return return_List;
     }
+
+    // 탐험대원 데이터 불러오기
+    public List<string> LoadExpenditionCrew(int licensenumber, int charactor)
+    {
+        Debug.Log("[DB] Come in LoadExpenditionCrew Method");
+
+        // 클라이언트에서 사용할 데이터 형식 
+        // dataList[0] = "[Load]ExpenditionCrew|LastSelectCrew|crew1|crew2|...|crew(n)|"
+        // DB가 보내줘야할 형식
+        // List = [0] -> LastSelectCrew|, [1] -> crew1|, [2] -> crew2|, ...|, [n] -> crew(n)|
+        // presentdb 사용
+
+        List<string> return_List = new List<string>();
+
+        MySqlCommand mySqlCommand = new MySqlCommand();
+        mySqlCommand.Connection = connection;
+
+        // 조회할 table
+        string select_Command = $"SELECT * FROM `{table.list[2]}` WHERE `{crew_Columns[0]}` = {licensenumber} AND `{crew_Columns[1]}` = {charactor};";
+        mySqlCommand.CommandText = select_Command;
+        MySqlDataReader reader = mySqlCommand.ExecuteReader();
+
+        while(reader.Read())
+        {
+            for(int i = 2; i < crew_Columns.Length; i++) // licensenumber, charactor 제외
+            {
+                return_List.Add(reader.GetInt32(crew_Columns[i]).ToString());
+            }
+        }
+
+        Debug.Log("[DB] Complete Load ExpenditionCrew From DB");
+
+        return return_List;
+    }
+
+    // 마지막 플레이 데이터 불러오기
+    public List<string> LoadLastPlayData(int licensenumber, int charactor)
+    {
+        Debug.Log("[DB] Come in LoadLastPlayData Method");
+
+        // 클라이언트에서 사용할 데이터 형식 
+        // dataList[0] = [Load]LastPlayData|(game1_level1)의 value|(game1_level2)의 value| ... |(game5_level3)의 value|
+        // DB가 보내줘야할 형식
+        // List = [0] -> (game1_level1)의 value|, [1] -> (game1_level2)의 value, ...|, [n] -> (game5_level3)의 value|
+        // presentdb 사용
+
+        List<string> return_List = new List<string>();
+
+        MySqlCommand mySqlCommand = new MySqlCommand();
+        mySqlCommand.Connection = connection;
+
+        // 조회할 table
+        string select_Command = $"SELECT * FROM `{table.list[3]}` WHERE `{lastplaygame_Columns[0]}` = {licensenumber} AND `{lastplaygame_Columns[1]}` = {charactor};";
+        mySqlCommand.CommandText = select_Command;
+        MySqlDataReader reader = mySqlCommand.ExecuteReader();
+
+        while (reader.Read())
+        {
+            for (int i = 2; i < lastplaygame_Columns.Length; i++) // licensenumber, charactor 제외
+            {
+                return_List.Add(reader.GetInt32(lastplaygame_Columns[i]).ToString());
+            }
+        }
+
+        Debug.Log("[DB] Complete Load LastPlayData From DB");
+
+        return return_List;
+    }
+
     #endregion
 
     #region Server only use
@@ -1104,7 +1247,7 @@ public class DBManager : MonoBehaviour
         Debug.Log($"DBName : {DBName}");
         // 게임 테이블 명, TableName은 생성되면 알아서 테이블들이 담김. 게임을 제외한 나머지 테이블 제거
         TableName gameTable = new TableName();
-        string[] deleteTable = { "user_info", "rank", "crew", "finallyselectedgame" };
+        string[] deleteTable = { "user_info", "rank", "crew", "lastplaygame" };
         for (int i = 0; i < deleteTable.Length; i++)
         {
             gameTable.list.Remove(deleteTable[i]);

@@ -13,7 +13,7 @@ public class TableName
         list.Add("rank");
         //list.Add("achievement"); 
         list.Add("crew");
-        list.Add("finallyselectedgame");
+        list.Add("lastplaygame");
 
         // Game tablename
         string game_TableName;

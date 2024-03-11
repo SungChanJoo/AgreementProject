@@ -5,7 +5,20 @@ using System.Linq;
 
 public class ETCMethodHandler
 {
-    // Server or Client -> string 끝에 Finish가 있으면 제거
+    // Server -> List Index에 Finish가 있으면 제거
+    public void RemoveFinish(List<string> dataList)
+    {
+        for(int i = 0;  i < dataList.Count; i++)
+        {
+            if(dataList[i].Contains("Finish"))
+            {
+                dataList.RemoveAt(i);
+                break;
+            }
+        }
+    }
+
+    // Client -> string 끝에 Finish가 있으면 제거
     public void RemoveFinish(List<string> dataList, List<string> endCheck)
     {
         dataList.RemoveAt(dataList.Count - 1);
