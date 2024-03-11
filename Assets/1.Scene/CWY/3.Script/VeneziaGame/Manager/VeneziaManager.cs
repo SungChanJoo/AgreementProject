@@ -32,34 +32,34 @@ public class VeneziaManager : GameSetting
     [SerializeField] public Image Quest_Img;
     [SerializeField] private TextMeshProUGUI Quest_text;
     //한글 및 영어 문제에 사용 할 이미지 sprite 한글과 영어, 한자 
-    [SerializeField] private Sprite[] sprites_K; 
-    [SerializeField] private Sprite[] sprites_E; 
-    [SerializeField] private Sprite[] sprites_H; 
+    [SerializeField] public Sprite[] sprites_K; 
+    [SerializeField] public Sprite[] sprites_E; 
+    [SerializeField] public Sprite[] sprites_H;
     private string[] KorWord =
-    {
-          "학", "말", "닭", "곰", "하마", "표범", "팬더", "타조", "쿼카", "치타",
-          "참새", "제비", "젖소", "염소", "여우", "악어", "사자", "사슴", "돼지", "기린",
-          "개미", "오리", "문어", "공작", "배", "나비", "당근", "오이", "감자", "로봇",
-          "체리", "매미", "버섯", "호박", "거미", "사과", "꿀벌", "조개", "가지", "수박",
-          "꽃게", "포도", "레몬", "까치", "우유", "치즈", "택시", "칫솔", "트럭", "요트",
-          "버스", "주스", "다람쥐", "휴지", "기차", "자전거", "자동차", "독수리", "원숭이",
-          "코뿔소", "열기구", "크레인", "코끼리", "부엉이", "비행기", "경찰차", "잠수함", "고구마", "호랑이",
-          "얼룩말", "바나나", "소방차", "애벌레", "사마귀", "지하철", "잠자리", "소라게", "캥거루", "돛단배",
-          "달팽이", "브로콜리", "무당벌레", "파인애플", "사슴벌레", "딱다구리", "구급차", "지렁이", "헬리콥터", "오토바이", "불가사리" 
-    };
+    {"학","말","닭","곰","하마","표범","팬더","타조","쿼카","치타","참새",
+     "제비","젖소","염소","여우","악어","사자","사슴","돼지","기린","개미","오리",
+     "문어","공작","배","나비","당근","오이","감자","로봇","장미","튤립","수국",
+     "짬뽕","우동","체리","매미","버섯","호박","거미","사과","꿀벌","조개","가지",
+     "수박","꽃게","포도","레몬","까치","우유","치즈","택시","칫솔","트럭","요트",
+     "버스","주스","다람쥐","휴지","기차","자전거","자동차","독수리","원숭이","코뿔소","짜장면",
+     "부침개","비빔밥","떡볶이","탕수육","열기구","크레인","코끼리","부엉이","비행기","경찰차","잠수함",
+     "고구마","호랑이","얼룩말","바나나","소방차","애벌레","사마귀","지하철","잠자리","소라게","캥거루",
+     "돛단배","달팽이","브로콜리","무당벌레","파인애플","사슴벌레","딱다구리","구급차","지렁이","헬리콥터","오토바이",
+     "불가사리","슈퍼마켓","피뿔고둥","해바라기","말뚝망둥어","큰구슬우렁이"};
 
     private string[] EnglishWord =
-     {
-      "pig","ant","fox","bee","car","bus","owl","deer","ship","duck",
-      "milk","crap","calm","bear","cake","taxi","goat","lion","pear","apple",
-      "grape","panda","lemon","juice","train","pizza","tiger","eagle","truck","zebra",
-      "robot","crane","snail","larva","plane","hippo","yacht","koala","donut","horse",
-      "spider","carrot","cherry","potato","monkey","flower","tissue","banana","mantis","subway",
-      "cheese","brocoli","quokka","giraffe","pumpkin","bicycle","peacock","octopus","chicken","cheetah",
-      "swallow","millkcow","eggplant","elephant","ladybug","leopard","starfish","icecream","butterfly","sandwich",
-      "sparrow","cucumber","airballon","hospital","squirrel","crocodile","mushroom","policecar","dragonfly","pharmacy",
-      "kangaroo","pineapple","watermelon","earthworm","sweetpotato","submarine","woodpecker","ambulance","motorcycle","supermarket"
-    };
+    {"pig","ant","fox","bee","car","bus","owl","deer","ship","duck","milk","crap",
+     "clam","bear","cake","taxi","goat","lion","pear","rose","udon","apple","grape","panda",
+     "lemon","juice","train","pizza","tiger","eagle","truck","zebra","tulip","robot","crane",
+     "snail","larva","plane","sloth","hippo","yacht","koala","donut","horse","spider","carrot",
+     "cosmos","cherry","potato","monkey","yogurt","tissue","banana","mantis","subway","cheese",
+     "brocoli","quokka","giraffe","pumpkin","bicycle","peacock","octopus","chicken","cheetah",
+     "swallow","millkcow","meerkat","eggplant","anteater","platypus","elephant","ladybug","leopard",
+     "starfish","icecream","butterfly","sandwich","sparrow","cucumber","airballon","hospital","squirrel",
+     "crocodile","mushroom","policecar","dragonfly","pharmacy","kangaroo","forsythia","sunflower","pineapple",
+     "watermelon","earthworm","sweetpotato","submarine","woodpecker","ambulance","motorcycle","supermarket",
+     "viviparidae","dandelion","hermitcrap","hydrangea","rapanavenosa"};
+    private string[] HanJa = { };
     public int QuestCount;  // 딕셔너리에 들어갈 퀘스트 갯수 //10문제 <
     public int QuestRange;
     public int RemainAnswer; // 게임 진행중 남은 정답 갯수
@@ -70,6 +70,8 @@ public class VeneziaManager : GameSetting
     public int PoolingCool; // 오브젝트 생성 시간
 
     private int index;
+
+    public int limitCount;
 
     public int DestroyTime;
 
@@ -116,16 +118,22 @@ public class VeneziaManager : GameSetting
         }
         else if (game_Type == Game_Type.D) //영어 
         {
-            for (int i = 0; i < sprites_K.Length; i++)
+            for (int i = 0; i < sprites_E.Length; i++)
             {
                 string key = EnglishWord[i];
-                QuestData data = new QuestData(sprites_K[i], EnglishWord[i]);
+                QuestData data = new QuestData(sprites_E[i], EnglishWord[i]);
                 Quest.Add(key, data);
             }
         }
         else
         {
             //Todo : 한자 문제 셋팅 해주세요..........
+            for (int i = 0; i < sprites_H.Length; i++)
+            {
+                string key = HanJa[i];
+                QuestData data = new QuestData(sprites_H[i], HanJa[i]);
+                Quest.Add(key, data);
+            }
         }
 
         gameover.SetActive(false);
@@ -136,15 +144,12 @@ public class VeneziaManager : GameSetting
         trueReactionTime = 0;
         CorrectAnswerCount = 0;
         ClickCount = 0;
-        ObjectPooling.Instance.CreateQuestPrefab(index, 10); //Todo: 임시 0~9 10개 <
+        ObjectPooling.Instance.CreateQuestPrefab(index, 10+index);
+        limitCount = ObjectPooling.Instance.cubePool.Count - QuestRange;
         DisplayRandomQuest();
         //시간 시작 
         StartTime();
         ObjectPooling.Instance.StartCubePooling_co();
-
-        
-
-
     }
     private void Update()
     {
@@ -245,28 +250,28 @@ public class VeneziaManager : GameSetting
     }
     #region Level설정
     protected override void Level_1(int step)
-    {   
+    {
+        GetIndex(1, step);
         StartSet();
         switch (step)
         {
             case 1:
-                index = 0;
                 NextQuest();
                 break;
             case 2:
-                index = 5;
+                NextQuest();
                 break;
             case 3:
-                index = 10;
+                NextQuest();
                 break;
             case 4:
-                index = 15;
+                NextQuest();
                 break;
             case 5:
-                index = 20;
+                NextQuest();
                 break;
             case 6:
-                index = 25;
+                NextQuest();
                 break;
             default:
                 break;
@@ -274,27 +279,27 @@ public class VeneziaManager : GameSetting
     }
     protected override void Level_2(int step)
     {
+        GetIndex(2, step);
         StartSet();
         switch (step)
         {
             case 1:
-                index = 30;
                 NextQuest();
                 break;
             case 2:
-                index = 35;
+                NextQuest();
                 break;
             case 3:
-                index = 40;
+                NextQuest();
                 break;
             case 4:
-                index = 45;
+                NextQuest();
                 break;
             case 5:
-                index = 50;
+                NextQuest();
                 break;
             case 6:
-                index = 55;
+                NextQuest();
                 break;
             default:
                 break;
@@ -302,26 +307,27 @@ public class VeneziaManager : GameSetting
     }
     protected override void Level_3(int step)
     {
+        GetIndex(3, step);
         StartSet();
         switch (step)
         {
             case 1:
-                index = 60;
+                NextQuest();
                 break;
             case 2:
-                index = 65;
+                NextQuest();
                 break;
             case 3:
-                index = 70;
+                NextQuest();
                 break;
             case 4:
-                index = 75;
+                NextQuest();
                 break;
             case 5:
-                index = 80;
+                NextQuest();
                 break;
             case 6:
-                index = 85;
+                NextQuest();
                 break;
             default:
                 break;
@@ -358,9 +364,10 @@ public class VeneziaManager : GameSetting
         QuestCount--;
         QuestData selectedQuest;
         //연속 출제를 방지
+        randomIndex = Random.Range(index, 10 + index); //첫 출제시 랜덤 인댁스 정하기 
         while (randomIndex == SaverandomIndex)
         {
-            randomIndex = Random.Range(0, ((QuestRange)));  // Todo : prototype이 아닌 cbt 제작 과정에서는 0 < 부분을 스텝에 맞는 인덱스를 가져 올 수 있도록 설정 변경 할 것.
+            randomIndex = Random.Range(index, 10+index);  // Todo : prototype이 아닌 cbt 제작 과정에서는 0 < 부분을 스텝에 맞는 인덱스를 가져 올 수 있도록 설정 변경 할 것.
         }
         // 퀘스트가 1개남은상태에서 들어오면 QuestCount에의해 -- 되어 0개가된다. 01234<
         selectedQuest = questArray[randomIndex]; // 
@@ -387,7 +394,7 @@ public class VeneziaManager : GameSetting
                 QuestCount = 10;
                 QuestRange = 5;
                 DestroyTime = 10;
-                PoolingCool = 5;
+                PoolingCool = 1;
                 break;
             case 180:
                 QuestCount = 14; 
@@ -434,13 +441,135 @@ public class VeneziaManager : GameSetting
 
     public void ResetCube()
     {
-        if (ObjectPooling.Instance.cubePool.Count != 0)
+        bool isFirst = true;
+        if (ObjectPooling.Instance.cubePool.Count > limitCount && isFirst)
         {
+            isFirst = false;
             StopCoroutine(ObjectPooling.Instance.CubePooling);
+            ObjectPooling.Instance.ReStartCubePooling_co();
+        }
+        else if(ObjectPooling.Instance.cubePool.Count > limitCount && !isFirst)
+        {
+            StopCoroutine(ObjectPooling.Instance.CubeRestartPooling);
             ObjectPooling.Instance.ReStartCubePooling_co();
         }
     }
 
+
+    private void GetIndex(int lv, int step)
+    {
+        if (game_Type == Game_Type.C || game_Type == Game_Type.D)
+        {
+            switch (lv)
+            {
+                case 1:
+                    switch (step)
+                    {
+                        case 1:
+                            index = 0;
+                            break;
+                        case 2:
+                            index = 5;
+                            break;
+                        case 3:
+                            index = 10;
+                            break;
+                        case 4:
+                            index = 15;
+                            break;
+                        case 5:
+                            index = 20;
+                            break;
+                        case 6:
+                            index = 25;
+                            break;
+                        default:
+                            break;
+                    }
+                    break;
+                case 2:
+                    switch (step)
+                    {
+                        case 1:
+                            index = 30;
+                            break;
+                        case 2:
+                            index = 35;
+                            break;
+                        case 3:
+                            index = 40;
+                            break;
+                        case 4:
+                            index = 45;
+                            break;
+                        case 5:
+                            index = 50;
+                            break;
+                        case 6:
+                            index = 55;
+                            break;
+                        default:
+                            break;
+                    }
+                    break;
+                case 3:
+                    switch (step)
+                    {
+                        case 1:
+                            index = 60;
+                            break;
+                        case 2:
+                            index = 65;
+                            break;
+                        case 3:
+                            index = 70;
+                            break;
+                        case 4:
+                            index = 75;
+                            break;
+                        case 5:
+                            index = 80;
+                            break;
+                        case 6:
+                            index = 85;
+                            break;
+                        default:
+                            break;
+                    }
+                    break;
+                default:
+                    break;
+            }
+        }
+        //한자는 lv가 없음 따로 인댁스 지정
+        if(game_Type == Game_Type.E)
+        {
+            switch (step)
+            {
+                case 1:
+                    index = 0;
+                    break;
+                case 2:
+                    index = 10;
+                    break;
+                case 3:
+                    index = 20;
+                    break;
+                case 4:
+                    index = 30;
+                    break;
+                case 5:
+                    index = 40;
+                    break;
+                case 6:
+                    index = 50;
+                    break;
+                default:
+                    break;
+            }
+        }
+
+    }
 
     private void CheckCubeTypes()
     {
