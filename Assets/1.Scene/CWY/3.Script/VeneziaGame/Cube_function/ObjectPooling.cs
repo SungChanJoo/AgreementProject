@@ -81,7 +81,7 @@ public class ObjectPooling : MonoBehaviour
                 {
                     Cube cubeScript = cube.GetComponent<Cube>();
 
-                    if (cubeScript.sprite == QuestImg.sprite)
+                        if (cubeScript.sprite == QuestImg.sprite)
                     {
                         cube.SetActive(true);
                         cube.transform.position = Pool_Position.transform.position + offset;
