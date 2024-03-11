@@ -81,7 +81,7 @@ public class ObjectPooling : MonoBehaviour
                 {
                     Cube cubeScript = cube.GetComponent<Cube>();
 
-                    if (cubeScript.sprite == QuestImg.sprite)
+                        if (cubeScript.sprite == QuestImg.sprite)
                     {
                         cube.SetActive(true);
                         cube.transform.position = Pool_Position.transform.position + offset;
@@ -172,8 +172,7 @@ public class ObjectPooling : MonoBehaviour
     {
         while (PausePool.Count > 0)
         {
-            //float cool = Random.Range(45, 61f);
-            float cool = 1f;
+            float cool = Random.Range(45, 61f);
             yield return new WaitForSeconds(cool); //난이도에 따라 재생되는 시간을 바꿀것
             //아이템 랜덤 생성
             int Randnum = Random.Range(0, MeteorPool.Count);
