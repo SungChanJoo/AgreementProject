@@ -222,6 +222,7 @@ public class VeneziaManager : GameSetting
                         //print("∏ÿ√Á!");
                         ObjectPooling.Instance.PausePool.Add(hit.collider.gameObject);
                         hit.collider.gameObject.SetActive(false);
+                        StartCoroutine(Pause_co());
                     }
                 }
             }
