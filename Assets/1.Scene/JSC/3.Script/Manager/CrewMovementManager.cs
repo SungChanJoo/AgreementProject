@@ -189,7 +189,15 @@ public class CrewMovementManager : MonoBehaviour
             FadeImg.color = new Color(0,0,0, fadeCount);
             yield return null;
         }
-        SceneManager.LoadScene((int)SelectedGame + 2);
+        
+        if ((int)SelectedGame >= 2)
+        {
+            SceneManager.LoadScene(4);
+        }
+        else
+        {
+            SceneManager.LoadScene((int)SelectedGame + 2);
+        }        
         StartCoroutine(FadeInImg());
         ExitStep();
     }
