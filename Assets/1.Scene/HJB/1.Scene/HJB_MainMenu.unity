@@ -1387,6 +1387,17 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 8967376487243067865, guid: db53d46824d13d948bf1846b2abf82ee, type: 3}
   m_PrefabInstance: {fileID: 158866389}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &161859347 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 6007792112358236995, guid: 5eabf3b8eb3a2da4fa062bc140d5379e, type: 3}
+  m_PrefabInstance: {fileID: 8900661102665963496}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4f5f30bec01963c44adc2ccbb390ca11, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &167725654
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -14741,6 +14752,10 @@ PrefabInstance:
       propertyPath: select_img
       value: 
       objectReference: {fileID: 1708615157}
+    - target: {fileID: 1410689742614138342, guid: c66928650a525e64b8f16af5958eb27d, type: 3}
+      propertyPath: profileText_
+      value: 
+      objectReference: {fileID: 1446171332}
     - target: {fileID: 1410689742614138349, guid: c66928650a525e64b8f16af5958eb27d, type: 3}
       propertyPath: m_Name
       value: AlbumLoad_Canvas
@@ -27851,9 +27866,13 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 248298012837969279, guid: 095f79abef64e1047bd7d30f48ccc1d5, type: 3}
+      propertyPath: m_Name
+      value: PlayerName_title
+      objectReference: {fileID: 0}
     - target: {fileID: 2647092257347052083, guid: 095f79abef64e1047bd7d30f48ccc1d5, type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 131.42859
+      value: 320
       objectReference: {fileID: 0}
     - target: {fileID: 2647092258438077024, guid: 095f79abef64e1047bd7d30f48ccc1d5, type: 3}
       propertyPath: m_Camera
@@ -27875,6 +27894,10 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 2647092258438077342, guid: 095f79abef64e1047bd7d30f48ccc1d5, type: 3}
+      propertyPath: profileText
+      value: 
+      objectReference: {fileID: 1446171332}
     - target: {fileID: 2647092258438077342, guid: 095f79abef64e1047bd7d30f48ccc1d5, type: 3}
       propertyPath: answersRate_Line
       value: 
@@ -72776,6 +72799,10 @@ PrefabInstance:
       objectReference: {fileID: 1550020595}
     - target: {fileID: 353325706159778905, guid: 5eabf3b8eb3a2da4fa062bc140d5379e, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.size
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 353325706159778905, guid: 5eabf3b8eb3a2da4fa062bc140d5379e, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[1].m_Mode
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 353325706159778905, guid: 5eabf3b8eb3a2da4fa062bc140d5379e, type: 3}
@@ -72785,7 +72812,23 @@ PrefabInstance:
     - target: {fileID: 353325706159778905, guid: 5eabf3b8eb3a2da4fa062bc140d5379e, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[1].m_Target
       value: 
-      objectReference: {fileID: 1550020595}
+      objectReference: {fileID: 161859347}
+    - target: {fileID: 353325706159778905, guid: 5eabf3b8eb3a2da4fa062bc140d5379e, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[1].m_MethodName
+      value: DefaultVeneziaGame
+      objectReference: {fileID: 0}
+    - target: {fileID: 353325706159778905, guid: 5eabf3b8eb3a2da4fa062bc140d5379e, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[1].m_TargetAssemblyTypeName
+      value: SelectVenezia, Assembly-CSharp
+      objectReference: {fileID: 0}
+    - target: {fileID: 353325706159778905, guid: 5eabf3b8eb3a2da4fa062bc140d5379e, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[1].m_Arguments.m_IntArgument
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 353325706159778905, guid: 5eabf3b8eb3a2da4fa062bc140d5379e, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[1].m_Arguments.m_ObjectArgumentAssemblyTypeName
+      value: UnityEngine.Object, UnityEngine
+      objectReference: {fileID: 0}
     - target: {fileID: 695829127037466026, guid: 5eabf3b8eb3a2da4fa062bc140d5379e, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 

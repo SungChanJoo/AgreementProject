@@ -10,13 +10,14 @@ using System;
 
 public class LoadImage : MonoBehaviour
 {
+    [SerializeField] private ProfileText_M profileText_;
     [SerializeField] private GameObject content_obj;
     [SerializeField] private GameObject image_prefeb;
     [SerializeField] private Image profile_Img;
     [SerializeField] private Image select_img;
     private GameObject[] image_obj; 
     private Texture2D[] texture2Ds;
-    private bool loading = false;
+    private bool loading = false;    
 
     public void ImageFileLoad()
     {
@@ -77,6 +78,7 @@ public class LoadImage : MonoBehaviour
     public void Selectprofile_Change()
     {
         select_img.sprite = profile_Img.sprite;
+        profileText_.PlayerSprite = profile_Img.sprite;
     }
 
     
