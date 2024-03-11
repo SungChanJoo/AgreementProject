@@ -155,16 +155,17 @@ public class ObjectPooling : MonoBehaviour
     {
         while (MeteorPool.Count > 0)
         {
-            float cool = Random.Range(10, 16f);
+          //  float cool = Random.Range(10, 16f);
+            float cool = 1f;
             yield return new WaitForSeconds(cool); //난이도에 따라 재생되는 시간을 바꿀것
             //아이템 랜덤 생성
             int Randnum = Random.Range(0, MeteorPool.Count);
             float randomValueX = Random.Range(-90, 90);
             //  float randomValueZ = Random.Range(-100, 101);
             Vector3 offset = new Vector3(randomValueX, 0, -40); // 좌우 변경을위한 랜덤값
-            MeteorPool[Randnum].transform.position = Pool_Position.transform.position + offset;
-            MeteorPool[Randnum].SetActive(true);
-            MeteorPool.Remove(MeteorPool[Randnum]);
+            MeteorPool[0].transform.position = Pool_Position.transform.position + offset;
+            MeteorPool[0].SetActive(true);
+            MeteorPool.Remove(MeteorPool[0]);
         }
     }
 
@@ -172,15 +173,16 @@ public class ObjectPooling : MonoBehaviour
     {
         while (PausePool.Count > 0)
         {
-            float cool = Random.Range(45, 61f);
+            //float cool = Random.Range(45, 61f);
+            float cool = 1f;
             yield return new WaitForSeconds(cool); //난이도에 따라 재생되는 시간을 바꿀것
             //아이템 랜덤 생성
             int Randnum = Random.Range(0, MeteorPool.Count);
             float randomValue = Random.Range(-80, 90);
             Vector3 offset = new Vector3(randomValue, 0, 0); // 좌우 변경을위한 랜덤값
-            PausePool[Randnum].transform.position = Pool_Position.transform.position + offset;
-            PausePool[Randnum].SetActive(true);
-            PausePool.Remove(PausePool[Randnum]);
+            PausePool[0].transform.position = Pool_Position.transform.position + offset;
+            PausePool[0].SetActive(true);
+            PausePool.Remove(PausePool[0]);
         }
     }
 
