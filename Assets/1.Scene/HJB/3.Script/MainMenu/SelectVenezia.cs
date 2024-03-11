@@ -20,6 +20,7 @@ public class SelectVenezia : MonoBehaviour
     Color closeColor = new Color(0.5f, 0.5f, 0.5f, 1f);
     Color SelectColor = new Color(1f, 1f, 1f, 1f);
     private bool isPlay = false;
+    private Game_Type game_Type = Game_Type.C;
 
 
     private void Awake()
@@ -32,9 +33,10 @@ public class SelectVenezia : MonoBehaviour
             select_Image[i] = venezia_Btn[i].GetComponent<Image>();
         }
     }
-    private void Start()
+    
+    public void DefaultVeneziaGame()
     {
-        
+        SelectVeneziaGame((int)game_Type);
     }
     public void SelectVeneziaGame(int num)
     {
@@ -44,6 +46,7 @@ public class SelectVenezia : MonoBehaviour
         }
         isPlay = true;
         StepManager.Instance.game_Type = (Game_Type)num;
+        game_Type = (Game_Type)num;
         venezia.sprite = select_venezia[num-2]; 
         //num 파라미터를 (빌드 순서)2,3,4로 받아오기 때문에 인덱스랑 일치시기기 위해서 -2
         StartCoroutine(SelectVeneziaGame_Co(num-2));

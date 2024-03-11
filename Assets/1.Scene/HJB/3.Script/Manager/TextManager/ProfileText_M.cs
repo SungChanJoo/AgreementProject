@@ -20,6 +20,8 @@ public class ProfileText_M : MonoBehaviour
 
     private ProfileManager profileManager;
 
+    public string PlayerName;
+    public Sprite PlayerSprite;
     private void Awake()
     {
         profileManager = GetComponent<ProfileManager>();
@@ -92,6 +94,7 @@ public class ProfileText_M : MonoBehaviour
             characterName.text = ChangeName_Input.text;
             Debug.Log("네트워크 연결 또는 DB에 접속이 불가합니다.");            
         }
+        PlayerName = characterName.text;
         TextClear(ChangeName_Input);
     }
 

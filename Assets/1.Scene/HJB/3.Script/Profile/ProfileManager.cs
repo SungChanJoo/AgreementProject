@@ -11,6 +11,7 @@ public class ProfileManager : MonoBehaviour
     [SerializeField] private GameObject RecordDelete_panel;
     [SerializeField] private GameObject PlayerImage_panel;
 
+    
     public void PlayerChange_UI()
     {
         PlayerChange_panel.SetActive(!PlayerChange_panel.activeSelf);        

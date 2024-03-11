@@ -6,6 +6,12 @@ using TMPro;
 
 public class AnalysisChart : MonoBehaviour
 {
+    [Header("프로필 데이터")]
+    [SerializeField] private Image profile_img;
+    [SerializeField] private TextMeshProUGUI playerName;
+    [SerializeField] private ProfileText_M profileText;
+
+    [Header("차트 참조")]
     [SerializeField] private GameObject BackGroundTile_obj;    
     [SerializeField] private GameObject reactionRate_Dot;
     [SerializeField] private GameObject answersRate_Dot;
@@ -28,9 +34,7 @@ public class AnalysisChart : MonoBehaviour
        new Dictionary<(Game_Type, int), List<float>>();
 
     private Game_Type game_type=0;
-    private int level_num=0;
-
-
+    private int level_num=0;   
 
     Player_DB result_Data = new Player_DB();
 
@@ -40,6 +44,11 @@ public class AnalysisChart : MonoBehaviour
         DataSet();
         SelectType();
         
+    }
+    private void OnEnable()
+    {
+        profile_img.sprite = profileText.PlayerSprite;
+        playerName.text = $"({profileText.PlayerName})의 분석표";
     }
     private void ObjectPooling()
     {
@@ -63,7 +72,7 @@ public class AnalysisChart : MonoBehaviour
     private void DataSet()
     {
         
-        for (int x = 0; x < 3; x++)
+        for (int x = 0; x < 5; x++)
         {
             for (int y = 0; y < 3; y++)
             {
@@ -89,14 +98,14 @@ public class AnalysisChart : MonoBehaviour
     {
         //그래프가 그려질 오브젝트의 컴포넌트 가져오기
         RectTransform backRect = BackGroundTile_obj.GetComponent<RectTransform>();
-        float Back_Height = backRect.rect.height - 100;
+        float Back_Height = backRect.rect.height - 200;
         //날짜의 길이만큼 반복
         for (int i = 0; i < dayText.Length; i++)
         {            
             //그래프가 이미지 틀 안에서 그려지기 위해 보간하여 비율로 나타내기
             float a = Mathf.Lerp(0, Back_Height, data[i]);
             //점이 찍히는 기본위치를 0으로 지정하기 위한 계산
-            float b = a - (Back_Height*0.5f);            
+            float b = a - (Back_Height*0.5f+50f);            
             //여기에서 Y축의 값을 받아서 넣어야함
             Vector2 dayVector2 = new Vector2(dayText[i].rectTransform.localPosition.x, b );
             
@@ -157,24 +166,19 @@ public class AnalysisChart : MonoBehaviour
 
     private void SelectType()
     {
-        //이전 그래프 삭제
-        //ObjectyDestory();
-
         List<float> answer_data= answer_Type[(game_type, level_num)];
         List<float> reaction_data = reaction_Type[(game_type, level_num)];
         DrawGraph_Dot(answer_data,anDot_obj,true);
         DrawGraph_Dot(reaction_data,reDot_obj,false);
         DrawGraph_Line(anLine_obj, answersRate_vector2);
         DrawGraph_Line(reLine_obj, reactionRate_vector2);
-        LineVectorList_Clear();
-        
+        LineVectorList_Clear();        
     }
     private void LineVectorList_Clear()
     {
-        //이전 점의 위치도 삭제
+        //이전 점의 위치 삭제
         answersRate_vector2.Clear();
-        reactionRate_vector2.Clear();
-        
+        reactionRate_vector2.Clear();        
     }
 
     public void  ReactionRate_Btn(bool check)
@@ -191,13 +195,21 @@ public class AnalysisChart : MonoBehaviour
     
     private void ReactionRateSetActive(List<GameObject> dot_obj, List<GameObject> line_obj)
     {
-        for (int i = 0; i < dayText.Length; i++)
+        foreach (var obj in dot_obj)
         {
-            dot_obj[i].SetActive(!dot_obj[i].activeInHierarchy);            
+            obj.SetActive(!obj.activeInHierarchy);   
         }
-        for (int i = 0; i < dayText.Length-1; i++)
+        foreach (var obj in line_obj)
         {
-            line_obj[i].SetActive(!line_obj[i].activeInHierarchy);
+            obj.SetActive(!obj.activeInHierarchy);
         }
+        //for (int i = 0; i < dayText.Length; i++)
+        //{
+        //    dot_obj[i].SetActive(!dot_obj[i].activeInHierarchy);            
+        //}
+        //for (int i = 0; i < dayText.Length-1; i++)
+        //{
+        //    line_obj[i].SetActive(!line_obj[i].activeInHierarchy);
+        //}
     }
 }      
