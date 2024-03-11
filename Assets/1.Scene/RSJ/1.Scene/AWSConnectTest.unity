@@ -2259,11 +2259,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   server_IP: 15.165.159.141
   server_Port: 2421
-  login_ID_Input: {fileID: 0}
-  login_PW_Input: {fileID: 0}
-  loginLog: {fileID: 0}
-  create_ID_Input: {fileID: 0}
-  create_PW_Input: {fileID: 0}
+  licenseFolderPath: 
+  CharactorData_FromServer: []
 --- !u!4 &1823038814
 Transform:
   m_ObjectHideFlags: 0

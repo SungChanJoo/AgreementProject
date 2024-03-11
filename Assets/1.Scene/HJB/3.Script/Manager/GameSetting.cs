@@ -57,6 +57,7 @@ public abstract class GameSetting : MonoBehaviour
         timeSet = StepManager.Instance.CurrentTime;        
         TimeSlider.Instance.startTime = timeSet;
         TimeSlider.Instance.duration = timeSet;
+        Debug.Log($"game_Type : {game_Type}, level : {level}, step: {step} ");
         //로직에 의한 시작
         SplitLevelAndStep();
     }

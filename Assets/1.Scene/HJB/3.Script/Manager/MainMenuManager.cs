@@ -16,6 +16,8 @@ public class MainMenuManager : MonoBehaviour
     [SerializeField] private GameObject StepCanvas;
     [SerializeField] private GameObject ChartCanvas;
 
+    [SerializeField] private List<GameObject> StepOfLevel;
+
     public Game_Type game_Type;
     
     private void Start()
@@ -23,19 +25,23 @@ public class MainMenuManager : MonoBehaviour
         SettingManager.Instance.EnableSettingBtn();
     }
     public void GameScene()
-    {        
-        if ((int)game_Type >= 2)
-        {
-            SceneManager.LoadScene(4);
-        }
-        else
-        {
-            SceneManager.LoadScene((int)game_Type+2);
-        }
+    {
+        /*        if ((int)game_Type >= 2)
+                {
+                    SceneManager.LoadScene(4);
+                }
+                else
+                {
+                    SceneManager.LoadScene((int)game_Type+2);
+                }*/
+        if(CrewMovementManager.Instance != null)
+            CrewMovementManager.Instance.SelectStep();
     }
     public void GameType_Btn(int Type)
     {
         game_Type = (Game_Type)Type;
+        StepManager.Instance.game_Type = game_Type;
+
     }
     //Application 종료 버튼
     public void Exit_Btn()
@@ -58,7 +64,20 @@ public class MainMenuManager : MonoBehaviour
             Step_UI();
             Level_UI();
         }
-        StepManager.Instance.SelectLevel(level);        
+        StepManager.Instance.SelectLevel(level);
+        if (CrewMovementManager.Instance != null)
+            CrewMovementManager.Instance.ViewCrew();
+        for (int i = 0; i < StepOfLevel.Count; i++)
+        {
+            if (level - 1 == i)
+            {
+                StepOfLevel[i].SetActive(true);
+            }
+            else
+            {
+                StepOfLevel[i].SetActive(false);
+            }
+        }
     }
     
     
@@ -66,6 +85,8 @@ public class MainMenuManager : MonoBehaviour
     public void SelectStep(int step)
     {
         StepManager.Instance.SelectStep(step);
+        if(CrewMovementManager.Instance != null)
+            CrewMovementManager.Instance.ViewCrew();
         GameScene();
     }
     public void SelectTime(int time)
@@ -108,5 +129,7 @@ public class MainMenuManager : MonoBehaviour
     public void Step_UI()
     {
         StepCanvas.SetActive(!StepCanvas.activeSelf);
+        if (CrewMovementManager.Instance != null)
+            CrewMovementManager.Instance.ExitStep();
     }
 }

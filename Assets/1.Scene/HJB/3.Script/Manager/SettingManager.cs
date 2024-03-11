@@ -168,7 +168,10 @@ public class SettingManager : MonoBehaviour
             if (AudioManager.Instance != null)
                 AudioManager.Instance.BGM_Play(0);
             IsMetaWorld = false;
+            return;
         }
+        if (CrewMovementManager.Instance != null)
+            CrewMovementManager.Instance.ExitStep();
 
     }
     public void Sound_Num(int num)

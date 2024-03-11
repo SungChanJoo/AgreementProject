@@ -5,9 +5,13 @@ using UnityEngine;
 public class RotationCharacter : MonoBehaviour
 {
     [SerializeField] private bool hold_Y = false;
-    [SerializeField] private float SetRotation;
+    [SerializeField] private bool hold_Z = false;
+    [SerializeField] private float SetRotation;    
     Vector3 rotation;
     
+
+
+
 
     void Start()
     {
@@ -15,14 +19,18 @@ public class RotationCharacter : MonoBehaviour
         
     }
     private void FixedUpdate()
-    {
-        transform.Rotate(rotation, 1f);
+    {        
+        transform.Rotate(rotation, 1f);        
     }
     private void RandomRotaion()
-    {
+    {        
         if (hold_Y)
         {
             rotation = new Vector3(0, SetRotation, 0);
+        }
+        else if (hold_Z)
+        {
+            rotation = new Vector3(0, 0, SetRotation);
         }
         else
         {

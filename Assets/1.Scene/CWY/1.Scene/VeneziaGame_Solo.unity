@@ -284,7 +284,8 @@ MonoBehaviour:
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 15fb799ad5ebe4046924938f8511ab77, type: 2}
   m_sharedMaterial: {fileID: -1571892271189879514, guid: 15fb799ad5ebe4046924938f8511ab77, type: 2}
-  m_fontSharedMaterials: []
+  m_fontSharedMaterials:
+  - {fileID: -1571892271189879514, guid: 15fb799ad5ebe4046924938f8511ab77, type: 2}
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
   m_fontColor32:
@@ -1496,7 +1497,8 @@ MonoBehaviour:
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 15fb799ad5ebe4046924938f8511ab77, type: 2}
   m_sharedMaterial: {fileID: -1571892271189879514, guid: 15fb799ad5ebe4046924938f8511ab77, type: 2}
-  m_fontSharedMaterials: []
+  m_fontSharedMaterials:
+  - {fileID: -1571892271189879514, guid: 15fb799ad5ebe4046924938f8511ab77, type: 2}
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
   m_fontColor32:
@@ -2582,7 +2584,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 016f8acf90b099a40807819b1ecf004b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Cube: {fileID: 1079827597520798626, guid: 42324beeb234f8b4b876e05c9fb72576, type: 3}
+  Prefab_K: []
+  Prefab_E: []
+  Prefab_H: []
   Pool_Position: {fileID: 788314112}
   CubeParentObject: {fileID: 577192753}
   ItemParentObject: {fileID: 1774103092}
@@ -3878,6 +3882,10 @@ MonoBehaviour:
   - {fileID: 21300000, guid: 5b94c8ee8dcda3a44899ccd6c01a47f4, type: 3}
   - {fileID: 21300000, guid: 6fffc10936635524ebca7efd020500ac, type: 3}
   - {fileID: 21300000, guid: 56b3f30c67b48f148a9d8da070cbfbb7, type: 3}
+
+  sprites_K: []
+  sprites_E: []
+
   sprites_H: []
   QuestCount: 5
   QuestRange: 0
@@ -3887,6 +3895,7 @@ MonoBehaviour:
   LifeTime: 300
   PoolingCool: 0
   limitCount: 0
+
   DestroyTime: 0
 --- !u!114 &1566866590
 MonoBehaviour:
@@ -4438,7 +4447,8 @@ MonoBehaviour:
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 15fb799ad5ebe4046924938f8511ab77, type: 2}
   m_sharedMaterial: {fileID: -1571892271189879514, guid: 15fb799ad5ebe4046924938f8511ab77, type: 2}
-  m_fontSharedMaterials: []
+  m_fontSharedMaterials:
+  - {fileID: -1571892271189879514, guid: 15fb799ad5ebe4046924938f8511ab77, type: 2}
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
   m_fontColor32:
