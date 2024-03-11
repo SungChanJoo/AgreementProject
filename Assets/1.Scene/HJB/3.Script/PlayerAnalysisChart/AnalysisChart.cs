@@ -9,14 +9,23 @@ public class AnalysisChart : MonoBehaviour
     [SerializeField] private GameObject BackGroundTile_obj;    
     [SerializeField] private GameObject reactionRate_Dot;
     [SerializeField] private GameObject answersRate_Dot;
-    [SerializeField] private GameObject Line_obj;
+    [SerializeField] private GameObject reactionRate_Line;
+    [SerializeField] private GameObject answersRate_Line;
     [SerializeField] private TextMeshProUGUI[] dayText;
     
-    private List<float> playerdata=new List<float>();
-    private List<Vector2> Dot_vector2 = new List<Vector2>();
 
-    private Dictionary<(Game_Type, int), List<float>> select_Type =
+    private List<float> playerdata=new List<float>();
+    private List<Vector2> answersRate_vector2 = new List<Vector2>();
+    private List<Vector2> reactionRate_vector2 = new List<Vector2>();
+    private List<GameObject> reDot_obj = new List<GameObject>();
+    private List<GameObject> anDot_obj = new List<GameObject>();
+    private List<GameObject> reLine_obj = new List<GameObject>();
+    private List<GameObject> anLine_obj = new List<GameObject>();
+
+    private Dictionary<(Game_Type, int), List<float>> answer_Type =
         new Dictionary<(Game_Type, int), List<float>>();
+    private Dictionary<(Game_Type, int), List<float>> reaction_Type =
+       new Dictionary<(Game_Type, int), List<float>>();
 
     private Game_Type game_type=0;
     private int level_num=0;
@@ -27,9 +36,29 @@ public class AnalysisChart : MonoBehaviour
 
     private void Start()
     {
+        ObjectPooling();
         DataSet();
         SelectType();
         
+    }
+    private void ObjectPooling()
+    {
+        for (int i = 0; i < dayText.Length; i++)
+        {
+            anDot_obj.Add(Instantiate(answersRate_Dot,BackGroundTile_obj.transform));
+            reDot_obj.Add(Instantiate(reactionRate_Dot, BackGroundTile_obj.transform));
+           
+            anDot_obj[i].SetActive(false);
+            reDot_obj[i].SetActive(false);
+            
+        }
+        for (int i = 0; i < dayText.Length-1; i++)
+        {
+            anLine_obj.Add(Instantiate(answersRate_Line, BackGroundTile_obj.transform));
+            reLine_obj.Add(Instantiate(reactionRate_Line, BackGroundTile_obj.transform));
+            anLine_obj[i].SetActive(false);
+            reLine_obj[i].SetActive(false);
+        }
     }
     private void DataSet()
     {
@@ -38,66 +67,80 @@ public class AnalysisChart : MonoBehaviour
         {
             for (int y = 0; y < 3; y++)
             {
-                List<float> playerdata = new List<float>();
+                List<float> answerData = new List<float>();
+                List<float> reactionData = new List<float>();
                 for (int i = 0; i < 7; i++)
                 {
                     //Data_value data = new Data_value(i, i, i, i, i);
                     //result_Data.Data.Add((Game_Type.A, 1, 1), data);
 
-                    playerdata.Add(Random.Range(0, 1f));
+                    answerData.Add(Random.Range(0, 100));
+                    answerData[i] = (answerData[i] - (answerData[i]%5)) / 100f;
+                    reactionData.Add(Random.Range(0, 20f));                    
+                    reactionData[i] = Mathf.Abs((reactionData[i] - (reactionData[i] % 0.5f)) - 20f) / 20f;
                 }
-                select_Type.Add(((Game_Type)x, y), playerdata);                
+                answer_Type.Add(((Game_Type)x, y), answerData);
+                reaction_Type.Add(((Game_Type)x, y), reactionData);
             }
         }
 
     }    
-    private void DrawGraph_Dot(List<float> data)
+    private void DrawGraph_Dot(List<float> data,List<GameObject> dot_obj,bool first)
     {
         //그래프가 그려질 오브젝트의 컴포넌트 가져오기
         RectTransform backRect = BackGroundTile_obj.GetComponent<RectTransform>();
         float Back_Height = backRect.rect.height - 100;
         //날짜의 길이만큼 반복
         for (int i = 0; i < dayText.Length; i++)
-        {
+        {            
             //그래프가 이미지 틀 안에서 그려지기 위해 보간하여 비율로 나타내기
             float a = Mathf.Lerp(0, Back_Height, data[i]);
             //점이 찍히는 기본위치를 0으로 지정하기 위한 계산
             float b = a - (Back_Height*0.5f);            
             //여기에서 Y축의 값을 받아서 넣어야함
             Vector2 dayVector2 = new Vector2(dayText[i].rectTransform.localPosition.x, b );
-            GameObject R_Dot = Instantiate(reactionRate_Dot,BackGroundTile_obj.transform);
-            RectTransform rectTransform = R_Dot.GetComponent<RectTransform>();
-            //점의 데이터 Text로 표시
-            Dot_Data dot = R_Dot.GetComponent<Dot_Data>();
-            dot.Print_DotData(data[i]);
-            //각 점의 위치 지정
+            
+            RectTransform rectTransform = dot_obj[i].GetComponent<RectTransform>();
             rectTransform.anchoredPosition = dayVector2;
-            Dot_vector2.Add(dayVector2);
+            //점의 데이터 Text로 표시
+            Dot_Data dot = dot_obj[i].GetComponent<Dot_Data>();
+            if (first)
+            {
+                dot.Print_DotData(data[i]*100f,first);
+                answersRate_vector2.Add(dayVector2);
+            }
+            else
+            {
+                dot.Print_DotData(Mathf.Abs(data[i]-1f)*20f,first);
+                reactionRate_vector2.Add(dayVector2);
+            }
+            //각 점의 위치 지정
+            dot_obj[i].SetActive(true);
         }
     }
-    private void DrawGraph_Line()
+    private void DrawGraph_Line(List<GameObject> line,List<Vector2> vector2)
     {        
-        for (int i = 0; i < Dot_vector2.Count; i++)
+        for (int i = 0; i < vector2.Count; i++)
         {
             if (i==6)
             {
                 //마지막 점이면 종료
                 return;
-            }
-            GameObject Line = Instantiate(Line_obj, BackGroundTile_obj.transform);
-            RectTransform RT_Line = Line.GetComponent<RectTransform>();
+            }            
+            RectTransform RT_Line = line[i].GetComponent<RectTransform>();
             //점과 점사이의 길이 구하기
-            float lineWidth = Vector2.Distance(Dot_vector2[i], Dot_vector2[i + 1]);
+            float lineWidth = Vector2.Distance(vector2[i], vector2[i + 1]);
             //선의 위치 설정
-            float linePivot_X = (Dot_vector2[i].x + Dot_vector2[i + 1].x) / 2;
-            float linePivot_Y = (Dot_vector2[i].y + Dot_vector2[i + 1].y) / 2;
+            float linePivot_X = (vector2[i].x + vector2[i + 1].x) / 2;
+            float linePivot_Y = (vector2[i].y + vector2[i + 1].y) / 2;
             //점과 점사이의
-            Vector2 direction = (Dot_vector2[i] - Dot_vector2[i + 1]).normalized;
+            Vector2 direction = (vector2[i] - vector2[i + 1]).normalized;
             //역탄젠트 값을 계산하여 두변의 각도를 계산
             float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
             RT_Line.anchoredPosition = new Vector2(linePivot_X, linePivot_Y);
             RT_Line.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, lineWidth);
             RT_Line.localRotation = Quaternion.Euler(0,0,angle);
+            line[i].SetActive(true);
         }
     }
 
@@ -115,25 +158,46 @@ public class AnalysisChart : MonoBehaviour
     private void SelectType()
     {
         //이전 그래프 삭제
-        ObjectyDestory();
+        //ObjectyDestory();
 
-        List<float> data= select_Type[(game_type, level_num)];        
-        DrawGraph_Dot(data);
-        DrawGraph_Line();
+        List<float> answer_data= answer_Type[(game_type, level_num)];
+        List<float> reaction_data = reaction_Type[(game_type, level_num)];
+        DrawGraph_Dot(answer_data,anDot_obj,true);
+        DrawGraph_Dot(reaction_data,reDot_obj,false);
+        DrawGraph_Line(anLine_obj, answersRate_vector2);
+        DrawGraph_Line(reLine_obj, reactionRate_vector2);
+        LineVectorList_Clear();
+        
     }
-    private void ObjectyDestory()
+    private void LineVectorList_Clear()
     {
         //이전 점의 위치도 삭제
-        Dot_vector2.Clear();
+        answersRate_vector2.Clear();
+        reactionRate_vector2.Clear();
+        
+    }
 
-        Transform[] childObjects = BackGroundTile_obj.GetComponentsInChildren<Transform>();
-
-        //배열의 첫 번째 요소는 부모 자체이므로 무시하고 인덱스 1부터 시작합니다.
-        for (int i = 1; i < childObjects.Length; i++)
+    public void  ReactionRate_Btn(bool check)
+    {
+        if (check)
         {
-            //각 자식 GameObject를 삭제합니다.
-            Destroy(childObjects[i].gameObject);
+            ReactionRateSetActive(anDot_obj, anLine_obj);
+        }
+        else
+        {
+            ReactionRateSetActive(reDot_obj, reLine_obj);
         }
     }
     
+    private void ReactionRateSetActive(List<GameObject> dot_obj, List<GameObject> line_obj)
+    {
+        for (int i = 0; i < dayText.Length; i++)
+        {
+            dot_obj[i].SetActive(!dot_obj[i].activeInHierarchy);            
+        }
+        for (int i = 0; i < dayText.Length-1; i++)
+        {
+            line_obj[i].SetActive(!line_obj[i].activeInHierarchy);
+        }
+    }
 }      
