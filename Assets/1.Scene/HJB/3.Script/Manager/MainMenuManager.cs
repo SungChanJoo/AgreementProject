@@ -16,6 +16,8 @@ public class MainMenuManager : MonoBehaviour
     [SerializeField] private GameObject StepCanvas;
     [SerializeField] private GameObject ChartCanvas;
 
+    [SerializeField] private List<GameObject> StepOfLevel;
+
     public Game_Type game_Type;
     
     private void Start()
@@ -65,6 +67,17 @@ public class MainMenuManager : MonoBehaviour
         StepManager.Instance.SelectLevel(level);
         if (CrewMovementManager.Instance != null)
             CrewMovementManager.Instance.ViewCrew();
+        for (int i = 0; i < StepOfLevel.Count; i++)
+        {
+            if (level - 1 == i)
+            {
+                StepOfLevel[i].SetActive(true);
+            }
+            else
+            {
+                StepOfLevel[i].SetActive(false);
+            }
+        }
     }
     
     

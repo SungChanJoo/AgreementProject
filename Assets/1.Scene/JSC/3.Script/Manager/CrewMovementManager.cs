@@ -13,6 +13,7 @@ public class CrewMovementManager : MonoBehaviour
     public Game_Type SelectedGame;
     public int SelectedLevel;
     public int SelectedStep;
+    public List<GameObject> Level;
     public List<Transform> Level1;
     public List<Transform> Level2;
     public List<Transform> Level3;
@@ -43,13 +44,23 @@ public class CrewMovementManager : MonoBehaviour
                 FinalPlayStepTable.Add(((Game_Type)i, j), 1); //(Game_Type)i, j레벨에서 마지막으로 플레이한 스텝
             }
         }
+
+
         for(int i = 0; i < SeleteableCrew.Count; i++)
         {
             if (SeleteableCrew[i].activeSelf)
                 SeleteableCrew[i].SetActive(false);
         }
         FadeImg = FadeObj.GetComponent<Image>();
+
+        for(int i = 0; i< Level.Count; i++)
+        {
+            if(Level[i].activeSelf)
+                Level[i].SetActive(false);
+        }
+
     }
+
     //레벨 선택시 현재 대원보이기
     public void ViewCrew()
     {
@@ -63,6 +74,18 @@ public class CrewMovementManager : MonoBehaviour
 
         SelectedGame = StepManager.Instance.game_Type;
         SelectedLevel = StepManager.Instance.CurrentLevel;
+
+        for(int i = 0; i < Level.Count; i++)
+        {
+            if(SelectedLevel -1 == i)
+            {
+                Level[i].SetActive(true);
+            }
+            else
+            {
+                Level[i].SetActive(false);
+            }
+        }
 
         CrewPos = SelectedLevel switch
         { 
@@ -86,6 +109,10 @@ public class CrewMovementManager : MonoBehaviour
     {
         if (SeleteableCrew[SeletedCrewIndex].activeSelf)
             SeleteableCrew[SeletedCrewIndex].SetActive(false);
+        for (int i = 0; i < Level.Count; i++)
+        {
+            Level[i].SetActive(false);
+        }
     }
 
     //스텝 선택시
