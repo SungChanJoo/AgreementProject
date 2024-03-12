@@ -11,11 +11,15 @@ public class TableName
     {
         list.Add("user_info");
         list.Add("rank");
-        //list.Add("achievement"); 
         list.Add("crew");
         list.Add("lastplaygame");
 
-        // Game tablename
+        // AnalyticsProfile table
+        list.Add("analyltics_level1_profile");
+        list.Add("analyltics_level2_profile");
+        list.Add("analyltics_level3_profile");
+
+        // Game table
         string game_TableName;
         string[] game_Names = { "venezia_kor", "venezia_eng", "venezia_chn", "calculation", "gugudan" };
         int[] levels = { 1, 2, 3 };

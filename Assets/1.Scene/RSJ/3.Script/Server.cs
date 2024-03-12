@@ -251,6 +251,9 @@ public class Server : MonoBehaviour
         string requestName = dataList[0];
         int clientLicenseNumber = 0;
         int clientCharactor = 0;
+
+        // 일반적으로 클라이언트에서 보내진 데이터를 처리하는 메서드로 들어올 때, '|'를 제거해서 들어오는데
+        // 일부 클라이언트에서 E|를 붙여서 보내는 경우에는 '|'가 붙여져서 들어온다
         if (dataList[0].Contains('|'))
         {
             Debug.Log($"[Server] dataList[0] have '|' so check dataList[0], {dataList[0]}");
@@ -261,6 +264,10 @@ public class Server : MonoBehaviour
         {
             clientLicenseNumber = Int32.Parse(dataList[1]);
             clientCharactor = Int32.Parse(dataList[2]);
+        }
+        else if (dataList.ElementAtOrDefault(1) != null) // UserData는 LicenseNumber만 가지고 판단하므로, dataList가 index를 1까지만 가지고 있을 경우 따로 예외처리해야함
+        {
+            clientLicenseNumber = Int32.Parse(dataList[1]);
         }
 
         //// 예외처리, index 1,2가 없으면 넘어감 
@@ -274,7 +281,7 @@ public class Server : MonoBehaviour
         List<string> replyRequestData_List = new List<string>();
         replyRequestData_List.Add($"{requestName}|");
 
-        // TempAllocate -> DB에서 받아오는 List<string> 임시로 담기
+        // TempAllocate -> DB에서 반환하는 List<string> 임시로 담기
         List<string> tempAllocate = new List<string>();
 
         switch (requestName)
@@ -296,7 +303,6 @@ public class Server : MonoBehaviour
                 replyRequestData_List.Add($"{clientdata}");
                 break;
             case "[Create]Charactor":
-                // to do fix
                 string newClientCharactor = DBManager.instance.CreateNewCharactorData(clientLicenseNumber, clientCharactor);
                 Debug.Log($"[Server] Finish Create new CharactorData");
                 replyRequestData_List.Add($"{newClientCharactor}|");
@@ -308,6 +314,9 @@ public class Server : MonoBehaviour
                 // dataList[1] = user_LicenseNumber, dataList[2] = user_Charactor, dataList[3] = profile
                 Debug.Log($"[Server] Check Profile Data, dataList[3], Base64 : {dataList[3]}");
                 DBManager.instance.SaveCharactorProfile(dataList);
+                break;
+            case "[Save]CharactorBirthday":
+                DBManager.instance.SaveCharactorBirthday(dataList);
                 break;
             case "[Save]CharactorData":
                 Debug.Log($"[Server] Check come in charactordata, dataList[0] : {dataList[0]}");
@@ -351,6 +360,8 @@ public class Server : MonoBehaviour
                 DBManager.instance.SaveGameResultData(dataList);
                 break;
             case "[Load]UserData":
+                tempAllocate = DBManager.instance.LoadUserData(clientLicenseNumber);
+                tempAllocate.ForEach(data => replyRequestData_List.Add(data));
                 break;
             case "[Load]CharactorData":
                 // dataList[1] = user_LicenseNumber, dataList[2] = user_Charactor
@@ -373,7 +384,16 @@ public class Server : MonoBehaviour
                 tempAllocate = DBManager.instance.LoadLastPlayData(clientLicenseNumber, clientCharactor);
                 tempAllocate.ForEach(data => replyRequestData_List.Add(data));
                 break;
+            case "[Load]AnalyticsProfileData":
+                tempAllocate = DBManager.instance.LoadAnalyticsProfileData(clientLicenseNumber, clientCharactor);
+                tempAllocate.ForEach(data => replyRequestData_List.Add(data));
+                break;
             case "[Change]Charactor":
+                tempAllocate = DBManager.instance.ChangeCharactor(clientLicenseNumber, clientCharactor);
+                tempAllocate.ForEach(data => replyRequestData_List.Add(data));
+                break;
+            case "[Delete]Charactor":
+                DBManager.instance.DeleteCharactor(clientLicenseNumber, clientCharactor);
                 break;
             case "[Test]CreateDB":
                 DBManager.instance.CreateDateDB();

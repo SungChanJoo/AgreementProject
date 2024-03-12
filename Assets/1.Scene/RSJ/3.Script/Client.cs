@@ -46,6 +46,7 @@ public class Client : MonoBehaviour
     private RankData clientRankData;
     private ExpenditionCrew clientExpenditionCrew;
     private LastPlayData clientLastPlayData;
+    private AnalyticsProfileData clientAnalyticsProfileData;
 
     // timer
     private float transmissionTime = 1f;
@@ -268,9 +269,12 @@ public class Client : MonoBehaviour
             case "[Save]CharactorProfile":
                 Debug.Log($"[Client] RequestName : {requestName}, End handling data");
                 break;
+            case "[Save]CharactorBirthday":
+                Debug.Log($"[Client] RequestName : {requestName}, End handling data");
+                break;
             case "[Save]CharactorData": // todo
                 //clientCharactor = "22";
-                //SaveClientDataToJsonFile();
+                SaveClientDataToJsonFile();
                 Debug.Log($"[Client] RequestName : {requestName}, End handling data");
                 break;
             case "[Save]GameResult": // todo
@@ -318,7 +322,17 @@ public class Client : MonoBehaviour
                 HandleLoadLastPlayData(dataList);
                 Debug.Log($"[Client] RequestName : {requestName}, End handling data");
                 break;
+            case "[Load]AnalyticsProfileData":
+                HandleLoadAnalyticsProfileData(dataList);
+                Debug.Log($"[Client] RequestName : {requestName}, End handling data");
+                break;
             case "[Change]Charactor":
+                HandleChangeCharactorData(dataList);
+                Debug.Log($"[Client] RequestName : {requestName}, End handling data");
+                break;
+            case "[Delete]Charactor":
+                // DB에 있는 data만 삭제하면 되므로 따로 클라이언트가 처리할 필요 없음
+                Debug.Log($"[Client] RequestName : {requestName}, End handling data");
                 break;
             default:
                 Debug.Log("[Client] HandleRequestData Method Something Happend");
@@ -737,7 +751,7 @@ public class Client : MonoBehaviour
     // 마지막 플레이 게임 처리
     private void HandleLoadLastPlayData(List<string> dataList)
     {
-        Debug.Log("[Client] HandleLoadLastPlayData..");
+        Debug.Log("[Client] Come in HandleLoadLastPlayData..");
 
         for (int i = 0; i < dataList.Count; i++)
         {
@@ -783,6 +797,82 @@ public class Client : MonoBehaviour
 
         Debug.Log("[Client] End HandleLoadLastPlayData...");
     }
+
+    // 프로필용 분석데이터 처리
+    private void HandleLoadAnalyticsProfileData(List<string> dataList)
+    {
+        Debug.Log("[Client] Come in HandleLoadAnalyticsProfileData..");
+
+        for (int i = 0; i < dataList.Count; i++)
+        {
+            Debug.Log($"[Client] dataList[{i}] : {dataList[i]}");
+        }
+
+        // clientAnalyticsProfileData Initiate
+        clientAnalyticsProfileData = new AnalyticsProfileData();
+
+        // 들어오는 dataList
+        // dataList[0] = [Load]AnalyticsProfileData|Level1_게임명|Level1_평균반응속도|Level1_평균정답률|
+        //                + Level2_게임명|Leve2_평균반응속도|Level2_평균정답률|Level3_게임명|Leve3_평균반응속도|Level3_평균정답률|
+
+        // '|'를 기준으로 Split한 List
+        // 사용하고자 하는 List 형태
+        // filterDataList[0] = [Load]AnalyticsProfileData
+        // filterDataList[1] = Level1_게임명
+        // filterDataList[2] = Level1_평균반응속도
+        // ...
+        // filterDataList[n] = Level3_평균정답률
+        List<string> filterDataList = new List<string>();
+
+        // 데이터를 받아올 때 dataList가 여러 index로 나눠질 수 있기 때문에 한번 더 Filtering
+        foreach (string str1 in dataList)
+        {
+            List<string> tempList = str1.Split('|', StringSplitOptions.RemoveEmptyEntries).ToList();
+            foreach (string str2 in tempList)
+            {
+                filterDataList.Add(str2);
+            }
+        }
+
+        // requestName 제거
+        filterDataList.RemoveAt(0);
+
+        // clientAnalyticsProfileData Setting
+        for (int i = 0; i < filterDataList.Count; i++)
+        {
+            if(i % 3 == 0)
+            {
+                string mostPlayedGame = filterDataList[i];
+                float reactionRate = float.Parse(filterDataList[i + 1]);
+                int answerRate = Int32.Parse(filterDataList[i + 2]);
+                clientAnalyticsProfileData.Data[i / 3] = new Tuple<string, float, int>(mostPlayedGame, reactionRate, answerRate);
+            }
+        }
+
+        Debug.Log("[Client] End HandleLoadAnalyticsProfileData..");
+    }
+
+    // 캐릭터 변경시 데이터 처리 - clientCharactor만 변경
+    private void HandleChangeCharactorData(List<string> dataList)
+    {
+        Debug.Log("[Client] HandleChangeCharactorData..");
+
+        for (int i = 0; i < dataList.Count; i++)
+        {
+            Debug.Log($"[Client] ChangeCharactorData[{i}] : {dataList[i]}");
+        }
+
+        // dataList[0] = [Change]Charactor|ChangeCharctorNumber|
+        List<string> filterList = dataList[0].Split('|', StringSplitOptions.RemoveEmptyEntries).ToList();
+
+        // requestName 제거
+        filterList.RemoveAt(0);
+
+        // clientCharactor 변경
+        clientCharactor = filterList[0];
+
+        Debug.Log("[Client] End ChangeCharactorData..");
+    }
     #endregion
 
     #region 클라이언트-서버요청
@@ -795,6 +885,7 @@ public class Client : MonoBehaviour
     1. 앱 시작 -> RankData Load (랭킹) // Only DB
     1. 앱 시작 -> ExpenditionCrew Load (탐험대원) // DB <-> Client
     1. 앱 시작 -> LastPlay Load (마지막으로 한 게임) // DB <-> Client
+    1. 앱 시작 -> AnalyticsProfileData Load (프로필용 분석표) // Only DB
     ------------------------------------------------------------------------------------
     2. 플레이어(charactor) 생성 -> Save, Load
     2-1. Player_DB Save (기존 CharactorData)
@@ -807,21 +898,26 @@ public class Client : MonoBehaviour
     2-3. RankData Load (새 CharactorData)
     2-3. ExpenditionCrew Load (새 CharactorData)
     2-3. LastPlay Load (새 CharactorData)
+    2-3. AnalyticsProfileData Load (새 CharactorData)
     -------------------------------------------------------------------------------------
     3. 플레이어(Charactor) 변경 -> Save, Load
     3-1. Player_DB Save (기존 CharactorData)
     3-1. ExpendtionCrew Save (기존 CharactorData)
     3-1. LastPlay Save (기존 CharactorData)
-    3-2. UserData Load (새 CharactorData 기준으로)
-    3-2. Player_DB Load (새 CharactorData)
-    3-2. GameAnalytics Load (새 CharactorData)
-    3-2. RankData Load (새 CharactorData)
-    3-2. ExpenditionCrew Load (새 CharactorData)
-    3-2. LastPlay Load (새 CharactorData)
+    3-2. UserData Load (변경 CharactorData 기준으로)
+    3-2. Player_DB Load (변경 CharactorData)
+    3-2. GameAnalytics Load (변경 CharactorData)
+    3-2. RankData Load (변경 CharactorData)
+    3-2. ExpenditionCrew Load (변경 CharactorData)
+    3-2. LastPlay Load (변경 CharactorData)
+    3-2. AnalyticsProfileData (변경 CharactorData)
     ---------------------------------------------------------------------------------------
-    4. Charactor Name 등록
-    5. Charactor Profile 등록
-    6. 게임 끝났을 때 Game Data(reactionrate, score, time 등) DB에 저장
+    4. 플레이어(Charactor) 삭제 -> UserData Save(Update) and Load
+    5. Charactor Name 등록
+    6. Charactor Profile 등록
+    7. Charactor Birthday 등록
+    7. 게임 끝났을 때 Game Data(reactionrate, score, time 등) DB에 저장
+    8. 
     ---------------------------------------------------------------------------------------
     7. 앱 종료 -> Player_DB Save 
     7. 앱 종료 -> ExpenditionCrew Save 
@@ -833,6 +929,7 @@ public class Client : MonoBehaviour
     --. 랭킹 UI 접속 시(or 랭킹새로고침) -> rank Load  // 일단 테스트용
     */
 
+    #region 앱 시작시
     // 앱 시작시 UserData Load
     public UserData AppStart_LoadUserDataFromDB()
     {
@@ -855,7 +952,7 @@ public class Client : MonoBehaviour
         return clientPlayerData;
     }
 
-    // 앱 시작시 GameAnalytics Load
+    // 앱 시작시 AnalyticsData Load
     public AnalyticsData AppStart_LoadGameAnalyticsDataFromDB()
     {
         //AnalyticsData return_AnalyticsData = new AnalyticsData();
@@ -899,6 +996,18 @@ public class Client : MonoBehaviour
         return clientLastPlayData;
     }
 
+    // 앱 시작시 AnalyticsProfileData Load
+    public AnalyticsProfileData AppStart_LoadAnalyticsProfileDataFromDB()
+    {
+        string requestData = $"[Load]AnalyticsProfileData|{clientLicenseNumber}|{clientCharactor}|Finish";
+        RequestToServer(requestData);
+
+        return clientAnalyticsProfileData;
+    }
+
+    #endregion
+
+    #region 캐릭터 생성
     // Charactor 생성시 Player_DB Save (기존 CharactorData)
     public void CreateCharactor_SaveCharactorDataToDB(Player_DB playerdb)
     {
@@ -925,7 +1034,16 @@ public class Client : MonoBehaviour
         RequestToServer(reqeustData);
     }
 
-    // Charactor 생성시 Player_DB Load (새 CharatrorData)
+    // Charactor 생성시 UserData Load (새 CharactorData 기준으로)
+    public UserData CreateCharactor_LoadUserDataFromDB()
+    {
+        string requestData = $"[Load]UserData|{clientLicenseNumber}|Finish";
+        RequestToServer(requestData);
+
+        return clientUserData;
+    }
+
+    // Charactor 생성시 Player_DB Load (새 CharactorData)
     public Player_DB CreateCharactor_LoadCharactorDataFromDB()
     {
         string requestData = $"[Load]CharactorData|{clientLicenseNumber}|{clientCharactor}|Finish";
@@ -970,6 +1088,17 @@ public class Client : MonoBehaviour
         return clientLastPlayData;
     }
 
+    // Charactor 생성시 AnalyticsProfileData Load (새 CharactorData)
+    public AnalyticsProfileData CreateCharactor_LoadAnalyticsProfileDataFromDB()
+    {
+        string requestData = $"[Load]AnalyticsProfileData|{clientLicenseNumber}|{clientCharactor}|Finish";
+        RequestToServer(requestData);
+
+        return clientAnalyticsProfileData;
+    }
+    #endregion
+
+    #region 캐릭터 변경
     // Charactor 변경시 Player_DB Save (기존 CharactorData)
     public void ChangeCharactor_SaveCharactorDataToDB(Player_DB playerdb)
     {
@@ -996,7 +1125,16 @@ public class Client : MonoBehaviour
         RequestToServer(reqeustData);
     }
 
-    // Charactor 변경시 Player_DB Load (새 CharatrorData)
+    // Charactor 변경시 UserData Load (변경 CharactorData 기준으로)
+    public UserData ChangeCharactor_LoadUserDataFromDB()
+    {
+        string requestData = $"[Load]UserData|{clientLicenseNumber}|Finish";
+        RequestToServer(requestData);
+
+        return clientUserData;
+    }
+
+    // Charactor 변경시 Player_DB Load (변경 CharatrorData)
     public Player_DB ChangeCharactor_LoadCharactorDataFromDB()
     {
         string requestData = $"[Load]CharactorData|{clientLicenseNumber}|{clientCharactor}|Finish";
@@ -1005,7 +1143,7 @@ public class Client : MonoBehaviour
         return clientPlayerData;
     }
 
-    // Charactor 변경시 GameAnalytics Load (새 CharactorData)
+    // Charactor 변경시 GameAnalytics Load (변경 CharactorData)
     public AnalyticsData ChangeCharactor_LoadGameAnalyticsDataFromDB()
     {
         string requestData = $"[Load]AnalyticsData|{clientLicenseNumber}|{clientCharactor}|Finish";
@@ -1014,7 +1152,7 @@ public class Client : MonoBehaviour
         return clientAnalyticsData;
     }
 
-    // Charactor 변경시 RankData Load (새 CharactorData)
+    // Charactor 변경시 RankData Load (변경 CharactorData)
     public RankData ChangeCharactor_LoadRankDataFromDB()
     {
         string requestData = $"[Load]RankData|{clientLicenseNumber}|{clientCharactor}|Finish";
@@ -1023,7 +1161,7 @@ public class Client : MonoBehaviour
         return clientRankData;
     }
 
-    // Charactor 변경시 ExpenditionCrew Load (새 CharactorData) 
+    // Charactor 변경시 ExpenditionCrew Load (변경 CharactorData) 
     public ExpenditionCrew ChangeCharactor_LoadExpenditionCrewFromDB()
     {
         string requestData = $"[Load]ExpenditionCrew|{clientLicenseNumber}|{clientCharactor}|Finish";
@@ -1032,13 +1170,40 @@ public class Client : MonoBehaviour
         return clientExpenditionCrew;
     }
 
-    // Charactor 변경시 LastPlay Load (새 CharactorData) 
+    // Charactor 변경시 LastPlay Load (변경 CharactorData) 
     public LastPlayData ChangeCharactor_LoadLastPlayFromDB()
     {
         string requestData = $"[Load]LastPlayData|{clientLicenseNumber}|{clientCharactor}|Finish";
         RequestToServer(requestData);
 
         return clientLastPlayData;
+    }
+
+    // Charactor 변경시 AnalyticsProfileData Load
+    public AnalyticsProfileData ChangeCharactor_LoadAnalyticsProfileDataFromDB()
+    {
+        string requestData = $"[Load]AnalyticsProfileData|{clientLicenseNumber}|{clientCharactor}|Finish";
+        RequestToServer(requestData);
+
+        return clientAnalyticsProfileData;
+    }
+    #endregion
+
+    // Charactor Delete
+    public void DeleteCharactor(int deleteCharactor)
+    {
+        string requestData = $"[Delete]Charactor|{clientLicenseNumber}|{deleteCharactor}|Finish";
+
+        RequestToServer(requestData);
+    }
+
+    // Charactor 삭제 후 UserData Load
+    public UserData DeleteCharactor_LoadUserData()
+    {
+        string requestData = $"[Load]UserData|{clientLicenseNumber}|Finish";
+        RequestToServer(requestData);
+
+        return clientUserData;
     }
 
     // Charactor Name 등록
@@ -1068,6 +1233,14 @@ public class Client : MonoBehaviour
         // byte[] image -> Base64 문자열로 변환
         string imageBase64 = Convert.ToBase64String(image);
         string requestData = $"[Save]CharactorProfile|{clientLicenseNumber}|{clientCharactor}|{imageBase64}|Finish";
+
+        RequestToServer(requestData);
+    }
+
+    // Charactor Birthday 등록
+    public void RegisterCharactorBirthday_SaveDataToDB(string birthday)
+    {
+        string requestData = $"[Save]CharactorBirthday|{clientLicenseNumber}|{clientCharactor}|{birthday}|Finish";
 
         RequestToServer(requestData);
     }
@@ -1252,7 +1425,6 @@ public class Client : MonoBehaviour
 
         RequestToServer(requestData);
     }
-
 
     #endregion
 
