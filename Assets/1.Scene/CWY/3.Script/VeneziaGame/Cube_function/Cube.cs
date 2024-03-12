@@ -113,7 +113,7 @@ public class Cube : MonoBehaviour
         }
         JudgeCubeObjType();
         GameOver();
-        //DestoryCube();
+        DestoryCube();
         ShootRaycasts();
     }
 

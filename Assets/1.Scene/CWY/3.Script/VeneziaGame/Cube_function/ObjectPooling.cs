@@ -72,7 +72,7 @@ public class ObjectPooling : MonoBehaviour
         while (cubePool.Count > VeneziaManager.Instance.limitCount)
         {
             int Randnum = Random.Range(0, cubePool.Count);
-            float randomValue = Random.Range(-100, 101);
+            float randomValue = Random.Range(-95, 95);
             Vector3 offset = new Vector3(randomValue, 0, 0); // 좌우 변경을위한 랜덤값
             if (cubePool.Count - VeneziaManager.Instance.limitCount == 1)
             {
@@ -114,7 +114,7 @@ public class ObjectPooling : MonoBehaviour
         while (cubePool.Count > VeneziaManager.Instance.limitCount)
         {
             int Randnum = Random.Range(0, cubePool.Count);
-            float randomValue = Random.Range(-100, 101);
+            float randomValue = Random.Range(-95, 95);
             Vector3 offset = new Vector3(randomValue, 0, 0); // 좌우 변경을위한 랜덤값
             if (cubePool.Count - VeneziaManager.Instance.limitCount == 1)
             {
@@ -172,11 +172,11 @@ public class ObjectPooling : MonoBehaviour
     {
         while (PausePool.Count > 0)
         {
-            float cool = Random.Range(45, 61f);
+            float cool = Random.Range(45, 51f);
             yield return new WaitForSeconds(cool); //난이도에 따라 재생되는 시간을 바꿀것
             //아이템 랜덤 생성
             int Randnum = Random.Range(0, MeteorPool.Count);
-            float randomValue = Random.Range(-80, 90);
+            float randomValue = Random.Range(-90, 90);
             Vector3 offset = new Vector3(randomValue, 0, 0); // 좌우 변경을위한 랜덤값
             PausePool[0].transform.position = Pool_Position.transform.position + offset;
             PausePool[0].SetActive(true);
