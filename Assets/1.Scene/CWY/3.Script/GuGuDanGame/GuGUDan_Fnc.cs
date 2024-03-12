@@ -538,14 +538,14 @@ public class GuGUDan_Fnc : GameSetting
 
     public void Get_Score()
     {
-        if (buttonType == ButtonType.First)
-        {
-            Score.Instance.Get_FirstScore();
-        }
-        else
-        {
-            Score.Instance.Get_SecondScore();
-        }
+        //if (buttonType == ButtonType.First)
+        //{
+        //    Score.Instance.Get_FirstScore();
+        //}
+        //else
+        //{
+        //    Score.Instance.Get_SecondScore();
+        //}
     }
 
     private void Set_QuestCount()

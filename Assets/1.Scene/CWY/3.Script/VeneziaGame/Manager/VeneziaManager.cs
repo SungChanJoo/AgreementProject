@@ -193,7 +193,7 @@ public class VeneziaManager : GameSetting
                 {
                     if (QuestCount > -1)
                     {
-                        Score.Instance.Get_FirstScore();
+                        //Score.Instance.Get_FirstScore();
                         RemainAnswer--;
                         CorrectAnswerCount++;
                         ClickCount++;
