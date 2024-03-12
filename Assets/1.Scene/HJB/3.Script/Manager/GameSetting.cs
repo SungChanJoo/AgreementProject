@@ -121,7 +121,7 @@ public abstract class GameSetting : MonoBehaviour
         catch (System.Exception)
         {
 
-            throw;
+            Debug.Log("DB 연결 부탁.");
         }
         //결과표 텍스트 출력
         ResultPrinter_UI();

@@ -65,13 +65,12 @@ public class Cube : MonoBehaviour
     }
     private void OnEnable()
     {
-        print("켜짐");
+     
         isStart = true;
     }
 
     private void OnDisable()
-    {
-        print("꺼짐");
+    {        
         CurrentSpeed = 0;
         count = 0;
         isStart = false;
@@ -346,8 +345,7 @@ public class Cube : MonoBehaviour
     {
         // 아래쪽 방향 레이캐스트
         int layerMask = ~LayerMask.GetMask("Quest");
-        float collideDistance = 13.5f;
-        print(isTouch);
+        float collideDistance = 13.5f;        
         RaycastHit hitDown;
         if (Physics.Raycast(transform.position, -Vector3.up, out hitDown, Mathf.Infinity, layerMask))
         {
@@ -357,8 +355,7 @@ public class Cube : MonoBehaviour
             // 충돌 지점까지의 거리
             float hitDistance = hitDown.distance;  // 13.5f 보다 거리가작고 , 바닥에 부딪힌적이 없다면...
             if (hitDistance <= collideDistance) 
-            {
-                print(hitDistance);
+            {                
                 isFloor = true;
                 isCeiling = false;
                 isLeftWall = false;
