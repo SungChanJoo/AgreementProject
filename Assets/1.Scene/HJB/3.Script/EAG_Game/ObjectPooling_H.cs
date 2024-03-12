@@ -28,7 +28,18 @@ public class ObjectPooling_H : MonoBehaviour
     private IEnumerator WaitExplosionBubble_co;
     private IEnumerator NextQuestionAni_co;
 
-
+    public static ObjectPooling_H Instance = null;
+    private void Awake()
+    {
+        if (Instance ==null)
+        {
+            Instance = this;            
+        }
+        else
+        {
+            Destroy(gameObject);
+        }
+    }
     private void Update()
     {
         Click_Obj();

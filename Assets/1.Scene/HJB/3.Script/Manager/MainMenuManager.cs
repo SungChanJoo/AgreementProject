@@ -88,7 +88,7 @@ public class MainMenuManager : MonoBehaviour
         if(CrewMovementManager.Instance != null)
             CrewMovementManager.Instance.ViewCrew();
         GameScene();
-    }
+    } 
     public void SelectTime(int time)
     {
         StepManager.Instance.SelectTimeSet(time);
