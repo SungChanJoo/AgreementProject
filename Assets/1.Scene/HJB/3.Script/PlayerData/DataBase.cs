@@ -21,6 +21,7 @@ public class DataBase : MonoBehaviour
     }
     public void CharactorAdd()
     {
+        //이 부분에서 플레이어 추가 로직 만들기
         if (PlayerCharacter.Count >= 30)
         {
             Debug.Log("최대 30개까지 등록가능합니다.");

@@ -24,7 +24,9 @@ public class Cube : MonoBehaviour
     public float StartSpeed; // 공을 움직일 속도  1 
     public float CurrentSpeed; // 공을 움직일 속도  1 
     public float SaveSpeed; // 속도 저장    
-    public float AccelerationSpeed; // 최대 속도 제한    
+    public float AccelerationSpeed; // 가속
+    public float MaxAccelerationSpeed; // 최대속도
+
 
     public float removeTime = 0;
 
@@ -35,7 +37,7 @@ public class Cube : MonoBehaviour
     private bool isLeftWall = false;
     private bool isRightWall = false;
     private bool isCeiling = false;
-
+    private bool isTouch = false;
 
     private bool isDirFloorSelect = false;
     private bool isDirCelingSelect = false;
@@ -47,6 +49,7 @@ public class Cube : MonoBehaviour
     public float moveX;
     public float moveY;
     public int count = 0;
+    public int TouchCount = 0;
 
     private IEnumerator Start_Floor;
     private IEnumerator Start_Ceiling;
@@ -62,7 +65,25 @@ public class Cube : MonoBehaviour
     }
     private void OnEnable()
     {
+        print("켜짐");
         isStart = true;
+    }
+
+    private void OnDisable()
+    {
+        print("꺼짐");
+        CurrentSpeed = 0;
+        count = 0;
+        isStart = false;
+        isFloor = false;
+        isLeftWall = false;
+        isRightWall = false;
+        isCeiling = false;
+        isDirFloorSelect = false;
+        isDirCelingSelect = false;
+        isDirLeftSelect = false;
+        isDirRightSelect = false;
+        isTouch = false;
     }
 
     private void Start()
@@ -73,7 +94,7 @@ public class Cube : MonoBehaviour
 
     private void Update()
     {
-        if (!gameObject.activeSelf)
+/*        if (!gameObject.activeSelf)
         {
             isStart = false;
             isFloor = false;
@@ -84,7 +105,8 @@ public class Cube : MonoBehaviour
             isDirCelingSelect = false;
             isDirLeftSelect = false;
             isDirRightSelect = false;
-        }
+            isTouch = false;
+        }*/
 
         if (isStart && gameObject.activeSelf)
         {
@@ -106,8 +128,8 @@ public class Cube : MonoBehaviour
     private void Cube_StartMove_()
     {
         // 오브젝트를 아래 방향으로 이동할 속도 설정
-        CurrentSpeed = StartSpeed;
-        rb.velocity = new Vector3(StartSpeed*StartDirX, StartSpeed*StartDirY, 0f);
+        CurrentSpeed = VeneziaManager.Instance.StartSpeed;
+        rb.velocity = new Vector3(VeneziaManager.Instance.StartSpeed * StartDirX, VeneziaManager.Instance.StartSpeed * StartDirY, 0f);
     }
 
 
@@ -115,6 +137,8 @@ public class Cube : MonoBehaviour
     //바닥에 닿았을 때 z축은 항상고정
     //x값(좌우) 랜덤으로 설정
     //y값은 항상 위쪽으로 
+
+
     private void Cube_Touch_Floor()
     {
         isLeftWall = false;
@@ -323,6 +347,7 @@ public class Cube : MonoBehaviour
         // 아래쪽 방향 레이캐스트
         int layerMask = ~LayerMask.GetMask("Quest");
         float collideDistance = 13.5f;
+        print(isTouch);
         RaycastHit hitDown;
         if (Physics.Raycast(transform.position, -Vector3.up, out hitDown, Mathf.Infinity, layerMask))
         {
@@ -331,24 +356,35 @@ public class Cube : MonoBehaviour
 
             // 충돌 지점까지의 거리
             float hitDistance = hitDown.distance;  // 13.5f 보다 거리가작고 , 바닥에 부딪힌적이 없다면...
-            if (hitDistance < collideDistance) 
+            if (hitDistance <= collideDistance) 
             {
+                print(hitDistance);
                 isFloor = true;
                 isCeiling = false;
                 isLeftWall = false;
                 isRightWall = false;
+                isStart = false;
 
                 isDirCelingSelect = false;
                 isDirLeftSelect = false;
                 isDirRightSelect = false;
-            } 
-            if (isFloor) //바닥과 닿았기 때문에 Cube_Touch 실행.
+
+                //가속도 관리 변수
+            }
+            if (isFloor)
             {
                 Debug.DrawLine(transform.position, hitDown.point, Color.red);
                 // 좌우 방향을 랜덤으로 선택
                 if (!isDirFloorSelect)
                 {
                     isDirFloorSelect = true;
+                    isTouch = true;
+                    if (isTouch && count <= VeneziaManager.Instance.MaxTouchCount)
+                    {
+                        CurrentSpeed = CurrentSpeed * AccelerationSpeed;
+                        isTouch = false;
+                        count++;
+                    }
                     float randomDir = Random.Range(0, 2) == 0 ? -1f : 1f;
                     moveX = randomDir * CurrentSpeed;
                 }
@@ -364,23 +400,31 @@ public class Cube : MonoBehaviour
         {
             Debug.DrawLine(transform.position, hitUp.point, Color.green);
             float hitDistance = hitUp.distance;
-            if (hitDistance < collideDistance)
+            if (hitDistance <= collideDistance)
             {
                 isFloor = false;
                 isCeiling = true;
                 isLeftWall = false;
                 isRightWall = false;
+                isStart = false;
 
                 isDirLeftSelect = false;
                 isDirFloorSelect = false;
                 isDirRightSelect = false;
             }
-            if (isCeiling) //바닥과 닿았기 때문에 Cube_Touch 실행.
+            if (isCeiling)
             {
                 Debug.DrawLine(transform.position, hitUp.point, Color.red);
                 // 좌우 방향을 랜덤으로 선택
                 if (!isDirCelingSelect)
                 {
+                    isTouch = true;
+                    if (isTouch && count <= VeneziaManager.Instance.MaxTouchCount)
+                    {
+                        CurrentSpeed = CurrentSpeed * AccelerationSpeed;
+                        isTouch = false;
+                        count++;
+                    }
                     isDirCelingSelect = true;
                     float randomDir = Random.Range(0, 2) == 0 ? -1f : 1f;
                     moveX = randomDir * CurrentSpeed;
@@ -397,23 +441,31 @@ public class Cube : MonoBehaviour
         {
             Debug.DrawLine(transform.position, hitLeft.point, Color.green);
             float hitDistance = hitLeft.distance;
-            if (hitDistance < collideDistance)
+            if (hitDistance <= collideDistance)
             {
                 isFloor = false;
                 isCeiling = false;
                 isLeftWall = true;
                 isRightWall = false;
+                isStart = false;
 
                 isDirCelingSelect = false;
                 isDirFloorSelect = false;
                 isDirRightSelect = false;
             }
-            if (isLeftWall) //바닥과 닿았기 때문에 Cube_Touch 실행.
+            if (isLeftWall)
             {
                 Debug.DrawLine(transform.position, hitLeft.point, Color.red);
                 // 좌우 방향을 랜덤으로 선택
-                if (!isDirLeftSelect)
+                if (!isDirLeftSelect && count <= VeneziaManager.Instance.MaxTouchCount)
                 {
+                    isTouch = true;
+                    if (isTouch)
+                    {
+                        CurrentSpeed = CurrentSpeed * AccelerationSpeed;
+                        isTouch = false;
+                        count++;
+                    }
                     isDirLeftSelect = true;
                     float randomDir = Random.Range(0, 2) == 0 ? -1f : 1f;
                     moveY = randomDir * CurrentSpeed;
@@ -430,12 +482,13 @@ public class Cube : MonoBehaviour
         {
             Debug.DrawLine(transform.position, hitRight.point, Color.green);
             float hitDistance = hitRight.distance;
-            if (hitDistance < collideDistance)
+            if (hitDistance <= collideDistance)
             {
                 isFloor = false;
                 isCeiling = false;
                 isLeftWall = false;
                 isRightWall = true;
+                isStart = false;
 
                 isDirLeftSelect = false;
                 isDirCelingSelect = false;
@@ -447,6 +500,13 @@ public class Cube : MonoBehaviour
                 // 좌우 방향을 랜덤으로 선택
                 if (!isDirRightSelect)
                 {
+                    isTouch = true;
+                    if (isTouch && count <= VeneziaManager.Instance.MaxTouchCount)
+                    {
+                        CurrentSpeed = CurrentSpeed * AccelerationSpeed;
+                        isTouch = false;
+                        count++;
+                    }
                     isDirRightSelect = true;
                     float randomDir = Random.Range(0, 2) == 0 ? -1f : 1f;
                     moveY = randomDir * CurrentSpeed;

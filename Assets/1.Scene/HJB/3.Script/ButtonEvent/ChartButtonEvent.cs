@@ -8,9 +8,12 @@ public class ChartButtonEvent : MonoBehaviour
     [Header("개인분석표 버튼")]
     [SerializeField] private GameObject[] chartlevel_btn;
     [SerializeField] private GameObject[] chartgame_btn;
+    [SerializeField] private Image[] venezia_btn;
 
     [SerializeField] private Sprite select_img;
     [SerializeField] private Sprite Non_img;
+
+    [SerializeField] private GameObject venezia_panel;
 
     private Image[] chartlevel_img;
     private Image[] chartGame_img;
@@ -51,6 +54,14 @@ public class ChartButtonEvent : MonoBehaviour
     }
     public void ChangeButtonChart_Gmae(int game)
     {
+        if (game ==3)
+        {
+            venezia_panel.SetActive(true);
+        }
+        else
+        {
+            venezia_panel.SetActive(false);
+        }
         for (int i = 0; i < chartgame_btn.Length; i++)
         {
             if (i == (game- 1))
@@ -60,6 +71,20 @@ public class ChartButtonEvent : MonoBehaviour
             else
             {
                 chartGame_img[i].sprite = Non_img;
+            }
+        }
+    }
+    public void Venezia_Btn(int game)
+    {
+        for (int i = 0; i < venezia_btn.Length; i++)
+        {
+            if (i == (game - 2))
+            {
+                venezia_btn[i].sprite = select_img;
+            }
+            else
+            {
+                venezia_btn[i].sprite = Non_img;
             }
         }
     }

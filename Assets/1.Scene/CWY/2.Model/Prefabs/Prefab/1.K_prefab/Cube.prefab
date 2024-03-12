@@ -113,16 +113,18 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   objectType: 0
-  StartSpeed: 20
+  StartSpeed: 10
   CurrentSpeed: 0
   SaveSpeed: 0
   AccelerationSpeed: 1.05
+  MaxAccelerationSpeed: 0
   removeTime: 0
   isStart: 1
   sprite: {fileID: 21300000, guid: 088f070eb522174439e18b6eebb58e6e, type: 3}
   moveX: 0
   moveY: 0
   count: 0
+  TouchCount: 0
   gizmoColor: {r: 0, g: 0, b: 1, a: 1}
   radius: 15
 --- !u!54 &1079827597520798628
