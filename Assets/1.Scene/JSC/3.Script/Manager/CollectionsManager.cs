@@ -40,6 +40,7 @@ public class CollectionsManager : MonoBehaviour
     [SerializeField] private PlayerMod_Toggle PMToggle;
     public Sprite SelectedImg;
     public Sprite DefaultImg;
+    public Sprite DeniedImg;
 
     [Header("Purchase")]
     [SerializeField] private GameObject _purchaseWindow;
@@ -427,11 +428,10 @@ public class CollectionsManager : MonoBehaviour
             //보유중이 아니고, 가격이 현재 가진 돈보다 비싸면 버튼 색 변경
             if (_money < Convert.ToInt32(_crewStatusText[i].text))
             {
-                //SetBtnColor(_crewStatusBtn[i].GetComponent<Image>(), DeniedPurchaseBtnColor);
+                _crewStatusBtn[i].GetComponent<Image>().sprite = DeniedImg;
             }
             else
             {
-                //SetBtnColor(_crewStatusBtn[i].GetComponent<Image>(), DefaultBtnColor);
                 _crewStatusBtn[i].GetComponent<Image>().sprite = DefaultImg;
             }
         }
