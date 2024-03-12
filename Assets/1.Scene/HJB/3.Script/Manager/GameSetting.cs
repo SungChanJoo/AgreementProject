@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
+using TMPro;
 
 public enum Game_Type
 {
@@ -29,19 +30,26 @@ public abstract class GameSetting : MonoBehaviour
     [HideInInspector] public float remainingTime;
     [HideInInspector] public int starcount;
 
+    [HideInInspector] public bool isStop = true;
+
+    [SerializeField] private TextMeshProUGUI startTimeSet;
 
     [SerializeField] private GameObject nextStep_Btn;
+
+    [SerializeField] private float timeset;
+
+    [SerializeField] GameObject resultCanvas_UI;
 
     public Player_Data result_data;
 
     public Result_Printer result_Printer;
 
-    [SerializeField] GameObject resultCanvas_UI;
+    private IEnumerator UpdateDatabaseFromData_co;
 
-    IEnumerator UpdateDatabaseFromData_co;
+    
 
-    [HideInInspector] public bool isStop = true;    
 
+    
     private void Start()
     {
         UpdateDatabaseFromData_co = UpdateDatabaseFromData();
@@ -58,8 +66,8 @@ public abstract class GameSetting : MonoBehaviour
         TimeSlider.Instance.startTime = timeSet;
         TimeSlider.Instance.duration = timeSet;
         Debug.Log($"game_Type : {game_Type}, level : {level}, step: {step} ");
-        //로직에 의한 시작
-        SplitLevelAndStep();
+        
+        
     }
     private void ResultDataSet()
     {
@@ -93,9 +101,17 @@ public abstract class GameSetting : MonoBehaviour
                 break;
         }        
     }
+    public void GameStart_Btn()
+    {        
+        startGame();
+    }
     protected abstract void Level_1(int step);
     protected abstract void Level_2(int step);
-    protected abstract void Level_3(int step);
+    protected abstract void Level_3(int step);    
+    protected virtual void startGame()
+    {
+        SplitLevelAndStep();
+    }    
 
     public void EndGame()
     {
