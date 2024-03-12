@@ -88,8 +88,9 @@ public abstract class GameSetting : MonoBehaviour
     //현재 Level Step에 따라 나누기
     public virtual void SplitLevelAndStep()
     {
+        
         switch (level)
-        {
+        {            
             case 1:
                 Level_1(step);
                 break;
