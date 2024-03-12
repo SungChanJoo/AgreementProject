@@ -120,8 +120,7 @@ public class VeneziaManager : GameSetting
     }
 
     private void StartSet()
-    {
-        Debug.Log(game_Type);
+    {        
         //1 3 4 B D E 한글 영어 한좌
         if (game_Type == Game_Type.C) //한글
         {
@@ -179,7 +178,7 @@ public class VeneziaManager : GameSetting
     //|| (Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Began)
     private void Click_Obj()
     {
-       // CheckCubeTypes();
+        CheckCubeTypes();
         if (Input.GetMouseButtonDown(0))
         {
             Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
