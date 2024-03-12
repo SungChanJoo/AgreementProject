@@ -2,14 +2,15 @@
 %TAG !u! tag:unity3d.com,2011:
 --- !u!21 &2100000
 Material:
-  serializedVersion: 6
+  serializedVersion: 8
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: VFX_M_DisAdd_Part01
-  m_Shader: {fileID: 4800000, guid: 98c5e26e84e51ef4f8995a3686e40fb6, type: 3}
-  m_ShaderKeywords: 
+  m_Shader: {fileID: 4800000, guid: ecfa8f5732b504ef98fba10aa18d0326, type: 3}
+  m_ValidKeywords: []
+  m_InvalidKeywords: []
   m_LightmapFlags: 2
   m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 0
@@ -43,6 +44,10 @@ Material:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
+    - _MainTex:
+        m_Texture: {fileID: 2800000, guid: 249b5f66597eaea43af0be957ef78ff6, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
     - _Texture:
         m_Texture: {fileID: 2800000, guid: 249b5f66597eaea43af0be957ef78ff6, type: 3}
         m_Scale: {x: 1, y: 1}
@@ -59,11 +64,13 @@ Material:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
+    m_Ints: []
     m_Floats:
     - _AlphaBoldness: 1
     - _AlphaCutoff: 0.5
     - _Brightness: 1
     - _CameraDirPush: -50
+    - _ColorMask: 15
     - _ColorRotation: 0
     - _ColorRotation2: 0
     - _CoreIntensity: 0
@@ -81,12 +88,19 @@ Material:
     - _GradientShapeRotation: 0
     - _InvertGradient: 0
     - _MeshVertexColor: 0
+    - _Stencil: 0
+    - _StencilComp: 8
+    - _StencilOp: 0
+    - _StencilReadMask: 255
+    - _StencilWriteMask: 255
     - _Step: 0
     - _TextureRotation: 0
+    - _UseUIAlphaClip: 0
     - _ValueStep: 0
     - _ValueStepAdd: 0.1
     - __dirty: 0
     m_Colors:
+    - _Color: {r: 1, g: 1, b: 1, a: 1}
     - _CoreColor: {r: 1, g: 1, b: 1, a: 0}
     - _DissolveMaskChannel: {r: 0, g: 1, b: 0, a: 0}
     - _DissolveMaskPanSpeed: {r: 0, g: 0, b: 0, a: 0}
