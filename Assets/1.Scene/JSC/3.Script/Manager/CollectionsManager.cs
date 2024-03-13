@@ -60,7 +60,6 @@ public class CollectionsManager : MonoBehaviour
     [SerializeField] private TMP_Text _crewDescript;
     [SerializeField] private GameObject _detailSelectBtn;
     [SerializeField] private TMP_Text _detailSelectText;
-    [SerializeField] private float _rotateSpeedModifier = 1f;
     private GameObject _ModelSpace;
     private int _seletedDetailModel;
     private bool _isDrag = false;
