@@ -161,7 +161,7 @@ public class CrewMovementManager : MonoBehaviour
                 yield return null;
             }
 
-            yield return new WaitForSeconds(1f);
+            yield return new WaitForSeconds(0.5f);
         }
 
 /*        float SetTime = 0f;
@@ -185,7 +185,7 @@ public class CrewMovementManager : MonoBehaviour
         var fadeCount = 0f;
         while (FadeImg.color.a < 1)
         {
-            fadeCount += 0.01f;
+            fadeCount += 0.02f;
             FadeImg.color = new Color(0,0,0, fadeCount);
             yield return null;
         }
@@ -206,7 +206,7 @@ public class CrewMovementManager : MonoBehaviour
         var fadeCount = 1f;
         while (FadeImg.color.a > 0)
         {
-            fadeCount -= 0.01f;
+            fadeCount -= 0.02f;
             FadeImg.color = new Color(0, 0, 0, fadeCount);
             yield return null;
         }
