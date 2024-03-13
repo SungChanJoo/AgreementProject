@@ -9,11 +9,12 @@ using System.IO;
 using System.Threading.Tasks;
 using LitJson;
 using System.Linq;
+using Unity.Android;
 
 public class Client : MonoBehaviour
 {
     // IP, Port 고정됨
-    [SerializeField] private string server_IP = "127.0.0.1"; // aws EC2 IP : 43.201.77.212
+    [SerializeField] private string server_IP = "52.78.155.12"; // aws EC2 IP : 52.78.155.12
     [SerializeField] private int server_Port = 2421;
 
     bool socketReady;
@@ -123,13 +124,20 @@ public class Client : MonoBehaviour
         }
     }
 
+
     // 서버에 연결할 때 클라이언트의 정보를 불러오기 위한 메서드
     public void ClientLoginSet()
     {
         // 연결되지 않았다면 return
         if (!client.Connected) return;
+        //licenseFolderPath = Application.dataPath + "/License";
 
+        // 나중에 안드로이드 할때 Application.persistentDataPath + "/License";
+#if UNITY_EDITOR
+        licenseFolderPath = Application.persistentDataPath + "/License";
+#endif
         licenseFolderPath = Application.dataPath + "/License";
+
         string licenseFilePath = licenseFolderPath + "/clientlicense.json";
 
         // 경로에 파일이 존재하지 않는다면 라이센스넘버가 없다는것이고, 처음 접속한다는 뜻
@@ -150,9 +158,9 @@ public class Client : MonoBehaviour
         Debug.Log($"[Client] This client's licensenumber(have) : {clientLicenseNumber}");
         Debug.Log($"[Client] This client's charactor(last charactor) : {clientCharactor}");
     }
-    #endregion 
+#endregion
 
-    #region Server-Client Communication
+#region Server-Client Communication
     // 서버 요청 - 매개변수로 string으로 받고, requestName으로 요청사항 구분
     private void RequestToServer(string requestData)
     {
@@ -221,9 +229,9 @@ public class Client : MonoBehaviour
             Debug.Log($"[Client] Error receiving data from server : {e.Message}");
         }
     }
-    #endregion
+#endregion
 
-    #region Handle Data
+#region Handle Data
     // 서버로부터 받은 데이터 처리
     private void HandleReceivedRequestData(List<string> dataList)
     {
@@ -415,6 +423,26 @@ public class Client : MonoBehaviour
         // ... dataList[Last] = "{gameTableName}|value|value|...|value|E|"
 
         Debug.Log("[Client] Handling LoadCharactorData");
+
+        // Server-Client간 데이터 통신이 너무 길어서 dataList의 index 초반부에 E|가 없을 경우 E|를 만날 때 까지의 index를 하나로 합친다.
+        // profile 전송시 생각, UserData도 아마 처리해야할테니, etcMethodHandler에 추가해야할듯
+        int indexCount = 0; // 합칠 index 개수
+        for(int i = 0; i < dataList.Count; i++)
+        {
+            if(!dataList[i].Contains(separatorString)) // E|가 없다면
+            {
+                dataList[0] += dataList[i + 1];
+                indexCount++;
+            }
+            else // E|를 만났다면
+            {
+                for(int j=0; j< indexCount; j++)
+                {
+                    dataList.RemoveAt(j + 1);
+                }
+                break;
+            }
+        }
 
         for (int i = 0; i < dataList.Count; i++)
         {
@@ -944,9 +972,9 @@ public class Client : MonoBehaviour
 
         Debug.Log("[Client] End ChangeCharactorData..");
     }
-    #endregion
+#endregion
 
-    #region 클라이언트-서버요청
+#region 클라이언트-서버요청
 
     /*
     Client가 DB에 있는 파일을 Save Load 하는 경우
@@ -996,11 +1024,11 @@ public class Client : MonoBehaviour
     
     7. 앱 종료 -> 마지막 접속한 Charactor - LitJson파일로 로컬 저장(clientlicense)
 
-    ##. 앱 게임 시작 -> TotalScore(int형) Load (game_type, level, step 받음) -> Save GameData
+##. 앱 게임 시작 -> TotalScore(int형) Load (game_type, level, step 받음) -> Save GameData
     --. 랭킹 UI 접속 시(or 랭킹새로고침) -> rank Load  // 일단 테스트용
     */
 
-    #region 앱 시작시
+#region 앱 시작시
     // 앱 시작시 UserData Load
     public UserData AppStart_LoadUserDataFromDB()
     {
@@ -1076,9 +1104,9 @@ public class Client : MonoBehaviour
         return clientAnalyticsProfileData;
     }
 
-    #endregion
+#endregion
 
-    #region 캐릭터 생성
+#region 캐릭터 생성
     // Charactor 생성시 Player_DB Save (기존 CharactorData)
     public void CreateCharactor_SaveCharactorDataToDB(Player_DB playerdb)
     {
@@ -1167,9 +1195,9 @@ public class Client : MonoBehaviour
 
         return clientAnalyticsProfileData;
     }
-    #endregion
+#endregion
 
-    #region 캐릭터 변경
+#region 캐릭터 변경
     // Charactor 변경시 Player_DB Save (기존 CharactorData)
     public void ChangeCharactor_SaveCharactorDataToDB(Player_DB playerdb)
     {
@@ -1258,7 +1286,7 @@ public class Client : MonoBehaviour
 
         return clientAnalyticsProfileData;
     }
-    #endregion
+#endregion
 
     // Charactor Delete
     public void DeleteCharactor(int deleteCharactor)
@@ -1404,9 +1432,9 @@ public class Client : MonoBehaviour
         SaveLastPlayDataToDB(lastplaydata);
     }
 
-    #endregion
+#endregion
 
-    #region 중복 기능 Method (Save)
+#region 중복 기능 Method (Save)
     // Save Charactor(Player_DB) Data To DB
     private void SaveCharactorDataToDB(Player_DB playerdb)
     {
@@ -1520,9 +1548,9 @@ public class Client : MonoBehaviour
         RequestToServer(requestData);
     }
 
-    #endregion
+#endregion
 
-    #region TestMethods
+#region TestMethods
     public void OnClickSaveGameDataTest()
     {
         Game_Type game_Type = Game_Type.A;
@@ -1702,7 +1730,7 @@ public class Client : MonoBehaviour
 
         RequestToServer(requestData);
     }
-    #endregion
+#endregion
 
     private void CloseSocket()
     {
