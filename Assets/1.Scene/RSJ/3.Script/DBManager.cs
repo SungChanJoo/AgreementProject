@@ -528,6 +528,11 @@ public class DBManager : MonoBehaviour
         MySqlCommand mySqlCommand = new MySqlCommand();
         mySqlCommand.Connection = connection;
 
+        for(int i = 0; i < dataList.Count; i++)
+        {
+            Debug.Log($"[DB] dataList[{i}] : {dataList[i]}");
+        }
+
         // UpdateÇÒ table -> userinfo
         string update_Command = $"UPDATE `{table.list[0]}` SET `{userinfo_Columns[4]}` = '{dataList[3]}' " +
                                 $"WHERE `{userinfo_Columns[0]}` = '{Int32.Parse(dataList[1])}' AND `{userinfo_Columns[1]}` = '{Int32.Parse(dataList[2])}';";
