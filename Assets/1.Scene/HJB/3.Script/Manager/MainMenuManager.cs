@@ -7,7 +7,7 @@ using UnityEngine.SceneManagement;
 public class MainMenuManager : MonoBehaviour
 {    
     [SerializeField] private GameObject MainMenuCanvas;
-    [SerializeField] private GameObject PetSelectCavas;
+    [SerializeField] private GameObject CrewSelectCavas;
     [SerializeField] private GameObject CollectionCavas;
     [SerializeField] private GameObject LevelCavas;
     [SerializeField] private GameObject CameraCavas;
@@ -15,6 +15,7 @@ public class MainMenuManager : MonoBehaviour
     [SerializeField] private GameObject ProfileCanvas;
     [SerializeField] private GameObject StepCanvas;
     [SerializeField] private GameObject ChartCanvas;
+    [SerializeField] private GameObject RankingCanvas;
 
     [SerializeField] private List<GameObject> StepOfLevel;
 
@@ -114,8 +115,9 @@ public class MainMenuManager : MonoBehaviour
     }
     public void MetaWorldPetSelect_UI()
     {
-        PetSelectCavas.SetActive(!PetSelectCavas.activeSelf);        
+        CrewSelectCavas.SetActive(!CrewSelectCavas.activeSelf);        
     }
+
     
     //환경설정 창 On
     public void Setting_UI()
@@ -131,5 +133,10 @@ public class MainMenuManager : MonoBehaviour
         StepCanvas.SetActive(!StepCanvas.activeSelf);
         if (CrewMovementManager.Instance != null)
             CrewMovementManager.Instance.ExitStep();
+    }
+
+    public void Ranking_UI()
+    {
+        RankingCanvas.SetActive(!RankingCanvas.activeSelf);
     }
 }
