@@ -409,12 +409,19 @@ public class Client : MonoBehaviour
     // 플레이어 데이터 처리
     private void HandleLoadCharactorData(List<string> dataList)
     {
-        // dataList[0] = "[Load]CharactorData|user_info|value|value..|value|E|";
+        // dataList[0] = "[Load]CharactorData|user_info|Profile|Birthday|TotalAnswers|...|value|E|";
         // dataList[1] = "rank|value|value|...|value|E|{gameTableName}|value|value|...|value|E|";
         // dataList[2] = "{gameTableName}|value|value|...|value|E|{gameTableName}|value|value|...|value|E|";
         // ... dataList[Last] = "{gameTableName}|value|value|...|value|E|"
 
         Debug.Log("[Client] Handling LoadCharactorData");
+
+        // profile이 너무 길어서 E|가 없을 경우 index 0,1을 하나의 index로 합친다.
+        if (!dataList[0].Contains(separatorString))
+        {
+            dataList[0] += dataList[1];
+            dataList.RemoveAt(1);
+        }
 
         for (int i = 0; i < dataList.Count; i++)
         {
