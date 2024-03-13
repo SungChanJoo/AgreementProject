@@ -44,6 +44,7 @@ public class AnalyticsColumnValue
 // 클라이언트에서 사용 - 개인 Profile
 public class AnalyticsProfileData
 {
+    // 게임명, ReactionRate, AnswerRate
     public Tuple<string, float, int>[] Data = new Tuple<string, float, int>[3];
     void dsdf()
     {

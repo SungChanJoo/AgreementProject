@@ -58,13 +58,13 @@ public class Server : MonoBehaviour
         ReceiveDataFromClients();
 
 
-        if (testBool)
-        {
-            Debug.Log("[Server] TestCreatDBTest");
-            testBool = false;
-            Debug.Log($"[Server] TestCreatDBTest, testBool value : {testBool}");
-            Invoke("CreateDBTest", 5f);
-        }
+        //if (testBool)
+        //{   
+        //    Debug.Log("[Server] TestCreatDBTest");
+        //    testBool = false;
+        //    Debug.Log($"[Server] TestCreatDBTest, testBool value : {testBool}");
+        //    Invoke("CreateDBTest", 5f);
+        //}
 
 
     }
@@ -373,7 +373,7 @@ public class Server : MonoBehaviour
                 tempAllocate.ForEach(data => replyRequestData_List.Add(data));
                 break;
             case "[Load]RankData":
-                tempAllocate = DBManager.instance.RankOrderByUserData(clientLicenseNumber, clientCharactor);
+                tempAllocate = DBManager.instance.LoadRankData(clientLicenseNumber, clientCharactor);
                 tempAllocate.ForEach(data => replyRequestData_List.Add(data));
                 break;
             case "[Load]ExpenditionCrew":
@@ -395,8 +395,14 @@ public class Server : MonoBehaviour
             case "[Delete]Charactor":
                 DBManager.instance.DeleteCharactor(clientLicenseNumber, clientCharactor);
                 break;
+            case "[Reset]CharactorProfile":
+                DBManager.instance.ResetCharactorProfile(clientLicenseNumber, clientCharactor);
+                break;
             case "[Test]CreateDB":
                 DBManager.instance.CreateDateDB();
+                break;
+            case "[Test]UpdateWeeklyRankDB":
+                DBManager.instance.UpdateWeeklyRankDB();
                 break;
             default:
                 Debug.Log($"[Server] Handling error that request from client, request name : {requestName}");

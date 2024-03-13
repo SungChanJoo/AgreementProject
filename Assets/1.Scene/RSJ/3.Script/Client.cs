@@ -13,7 +13,7 @@ using System.Linq;
 public class Client : MonoBehaviour
 {
     // IP, Port 고정됨
-    [SerializeField] private string server_IP = "43.201.77.212"; // aws EC2 IP : 43.201.77.212
+    [SerializeField] private string server_IP = "127.0.0.1"; // aws EC2 IP : 43.201.77.212
     [SerializeField] private int server_Port = 2421;
 
     bool socketReady;
@@ -334,6 +334,9 @@ public class Client : MonoBehaviour
                 // DB에 있는 data만 삭제하면 되므로 따로 클라이언트가 처리할 필요 없음
                 Debug.Log($"[Client] RequestName : {requestName}, End handling data");
                 break;
+            case "[Reset]CharactorProfile":
+                Debug.Log($"[Client] RequestName : {requestName}, End handling data");
+                break;
             default:
                 Debug.Log("[Client] HandleRequestData Method Something Happend");
                 break;
@@ -612,85 +615,153 @@ public class Client : MonoBehaviour
     // 랭크 데이터 처리
     private void HandleLoadRankData(List<string> dataList)
     {
-        // return_string = $"{i}|{timeList[i].userProfile}|{timeList[i].userName}|{timeList[i].totalTime}|{separatorString}";
-        // dataList[0] = "[Load]RankData|place|profile|name|time or score|E|";
-        // dataList[1] = "place|profile|name|time or score|E|"; // parts.Count == 1
-        // or dataList[1] = "place|profile|name|time or score|E|place|profile|name|time or score|E|"; // parts.Count == 2
-
         Debug.Log("[Client] HandleLoadRankData..");
+
+        // 클라이언트에서 사용할 List 형식
+        // dataList[0] = "[Load]RankData|profile|name|score|E|";
+        // dataList[1] = "profile|name|totalScore|
+        // dataList[2] = profile|name|totalScore|E|
+        // ...
+        // dataList[6] = profile|name|totalScore|scorePlace|highestScorePlace|E|
+        // dataList[7] = profile|name|totalTime|E|
+        // ...
+        // dataList[last] = profile|name|totalTime|timePlace|highestTimePlace|E|
+
+        List<string> filterList = new List<string>();
+        for(int i = 0; i < dataList.Count; i++)
+        {
+            List<string> tempList = dataList[i].Split(separatorString, StringSplitOptions.RemoveEmptyEntries).ToList();
+            foreach(string str in tempList)
+            {
+                filterList.Add(str);
+            }
+        }
+
+        // RequestName 제거
+        filterList[0] = filterList[0].Substring("[Load]RankData|".Length);
 
         // clientRankData InitSetting
         clientRankData = new RankData();
         clientRankData.rankdata_score = new RankData_value[6];
         clientRankData.rankdata_time = new RankData_value[6];
 
-        // separatorString ( "E|" )을 기준으로 Split 한 List
-        List<string> filterDataList = new List<string>();
+        /*
+         public class RankData_value
+{
+    public byte[] userProfile;
+    public string userName;
+    public int totalScore;
+    public float totalTime;
+    // 개인(index 5)용 순위
+    public int scorePlace;
+    public int timePlace;
+    public int highestScorePlace;
+    public int highestTimePlace;
+}
+         */
 
-        for(int i =0; i < dataList.Count; i++)
+        // clientRankData에 data 할당
+        for (int i = 0; i < filterList.Count; i++)
         {
-            // requestName 제거
-            if (i == 0) dataList[0] = dataList[0].Substring("[Load]RankData|".Length);
+            List<string> part = filterList[i].Split('|', StringSplitOptions.RemoveEmptyEntries).ToList();
 
-            List<string> parts = new List<string>();
-            parts = dataList[i].Split(separatorString, StringSplitOptions.RemoveEmptyEntries).ToList();
-            parts.ForEach(data => filterDataList.Add(data)); // 인덱스(string) 옮김
-        }
-        Debug.Log("[Client] Check HandleLoadRankData..");
-        for(int i = 0; i < filterDataList.Count; i++)
-        {
-            Debug.Log($"{filterDataList[i]}");
-        }
-
-        for (int i = 0; i < filterDataList.Count; i++)
-        {
-            List<string> parts = filterDataList[i].Split('|', StringSplitOptions.RemoveEmptyEntries).ToList();
-
-            if(i < 6) // score
+            if(i < 5) // score 1~5 등
             {
-                for (int j = 0; j < parts.Count; j++)
-                {
-                    if (j == 0) clientRankData.rankdata_score[i].scorePlace = Int32.Parse(parts[j]);
-                    else if (j == 1) clientRankData.rankdata_score[i].userProfile = Convert.FromBase64String(parts[j]);
-                    else if (j == 2) clientRankData.rankdata_score[i].userName = parts[j];
-                    else if (j == 3) clientRankData.rankdata_score[i].totalScore = Int32.Parse(parts[j]);
-                }
-
-                // 자기 자신의 userlicensenumber와 usercharactor를 저장해둬야 개인의 데이터를 가져다 쓸수있다.
-                if(i == 5)
-                {
-                    clientRankData.rankdata_score[i].userlicensenumber = Int32.Parse(clientLicenseNumber);
-                    clientRankData.rankdata_score[i].usercharactor = Int32.Parse(clientCharactor);
-                }
-                else
-                {
-                    clientRankData.rankdata_score[i].userlicensenumber = 0;
-                    clientRankData.rankdata_score[i].usercharactor = 0;
-                }
+                clientRankData.rankdata_score[i].userProfile = Convert.FromBase64String(part[0]);
+                clientRankData.rankdata_score[i].userName = part[1];
+                clientRankData.rankdata_score[i].totalScore = Int32.Parse(part[2]);
             }
-            else // time
+            else if(i == 5) // 클라이언트 score
             {
-                for (int j = 0; j < parts.Count; j++)
-                {
-                    if (j == 0) clientRankData.rankdata_time[i].timePlace = Int32.Parse(parts[j]);
-                    else if (j == 1) clientRankData.rankdata_time[i].userProfile = Convert.FromBase64String(parts[j]);
-                    else if (j == 2) clientRankData.rankdata_time[i].userName = parts[j];
-                    else if (j == 3) clientRankData.rankdata_time[i].totalTime = float.Parse(parts[j]);
-                }
-
-                // 자기 자신의 userlicensenumber와 usercharactor를 저장해둬야 개인의 데이터를 가져다 쓸수있다.
-                if (i == 11)
-                {
-                    clientRankData.rankdata_score[i].userlicensenumber = Int32.Parse(clientLicenseNumber);
-                    clientRankData.rankdata_score[i].usercharactor = Int32.Parse(clientCharactor);
-                }
-                else
-                {
-                    clientRankData.rankdata_score[i].userlicensenumber = 0;
-                    clientRankData.rankdata_score[i].usercharactor = 0;
-                }
+                clientRankData.rankdata_score[i].userProfile = Convert.FromBase64String(part[0]);
+                clientRankData.rankdata_score[i].userName = part[1];
+                clientRankData.rankdata_score[i].totalScore = Int32.Parse(part[2]);
+                clientRankData.rankdata_score[i].scorePlace = Int32.Parse(part[3]);
+                clientRankData.rankdata_score[i].highestScorePlace = Int32.Parse(part[4]);
+            }
+            else if(i < 11) // time 1~5등
+            {
+                clientRankData.rankdata_time[i - 6].userProfile = Convert.FromBase64String(part[0]);
+                clientRankData.rankdata_time[i - 6].userName = part[1];
+                clientRankData.rankdata_time[i - 6].totalTime = float.Parse(part[2]);
+            }
+            else // 클라이언트 time
+            {
+                clientRankData.rankdata_time[i - 6].userProfile = Convert.FromBase64String(part[0]);
+                clientRankData.rankdata_time[i - 6].userName = part[1];
+                clientRankData.rankdata_time[i - 6].totalTime = float.Parse(part[2]);
+                clientRankData.rankdata_time[i - 6].timePlace = Int32.Parse(part[3]);
+                clientRankData.rankdata_time[i - 6].highestTimePlace = Int32.Parse(part[4]);
             }
         }
+
+        //// separatorString ( "E|" )을 기준으로 Split 한 List
+        //List<string> filterDataList = new List<string>();
+
+        //for(int i =0; i < dataList.Count; i++)
+        //{
+        //    // requestName 제거
+        //    if (i == 0) dataList[0] = dataList[0].Substring("[Load]RankData|".Length);
+
+        //    List<string> parts = new List<string>();
+        //    parts = dataList[i].Split(separatorString, StringSplitOptions.RemoveEmptyEntries).ToList();
+        //    parts.ForEach(data => filterDataList.Add(data)); // 인덱스(string) 옮김
+        //}
+        //Debug.Log("[Client] Check HandleLoadRankData..");
+        //for(int i = 0; i < filterDataList.Count; i++)
+        //{
+        //    Debug.Log($"{filterDataList[i]}");
+        //}
+
+        //for (int i = 0; i < filterDataList.Count; i++)
+        //{
+        //    List<string> parts = filterDataList[i].Split('|', StringSplitOptions.RemoveEmptyEntries).ToList();
+
+        //    if(i < 6) // score
+        //    {
+        //        for (int j = 0; j < parts.Count; j++)
+        //        {
+        //            if (j == 0) clientRankData.rankdata_score[i].scorePlace = Int32.Parse(parts[j]);
+        //            else if (j == 1) clientRankData.rankdata_score[i].userProfile = Convert.FromBase64String(parts[j]);
+        //            else if (j == 2) clientRankData.rankdata_score[i].userName = parts[j];
+        //            else if (j == 3) clientRankData.rankdata_score[i].totalScore = Int32.Parse(parts[j]);
+        //        }
+
+        //        // 자기 자신의 userlicensenumber와 usercharactor를 저장해둬야 개인의 데이터를 가져다 쓸수있다.
+        //        if(i == 5)
+        //        {
+        //            clientRankData.rankdata_score[i].userlicensenumber = Int32.Parse(clientLicenseNumber);
+        //            clientRankData.rankdata_score[i].usercharactor = Int32.Parse(clientCharactor);
+        //        }
+        //        else
+        //        {
+        //            clientRankData.rankdata_score[i].userlicensenumber = 0;
+        //            clientRankData.rankdata_score[i].usercharactor = 0;
+        //        }
+        //    }
+        //    else // time
+        //    {
+        //        for (int j = 0; j < parts.Count; j++)
+        //        {
+        //            if (j == 0) clientRankData.rankdata_time[i].timePlace = Int32.Parse(parts[j]);
+        //            else if (j == 1) clientRankData.rankdata_time[i].userProfile = Convert.FromBase64String(parts[j]);
+        //            else if (j == 2) clientRankData.rankdata_time[i].userName = parts[j];
+        //            else if (j == 3) clientRankData.rankdata_time[i].totalTime = float.Parse(parts[j]);
+        //        }
+
+        //        // 자기 자신의 userlicensenumber와 usercharactor를 저장해둬야 개인의 데이터를 가져다 쓸수있다.
+        //        if (i == 11)
+        //        {
+        //            clientRankData.rankdata_score[i].userlicensenumber = Int32.Parse(clientLicenseNumber);
+        //            clientRankData.rankdata_score[i].usercharactor = Int32.Parse(clientCharactor);
+        //        }
+        //        else
+        //        {
+        //            clientRankData.rankdata_score[i].userlicensenumber = 0;
+        //            clientRankData.rankdata_score[i].usercharactor = 0;
+        //        }
+        //    }
+        //}
 
         Debug.Log("[Client] End HandleLoadRankData..");
     }
@@ -881,7 +952,7 @@ public class Client : MonoBehaviour
     Client가 DB에 있는 파일을 Save Load 하는 경우
     1. 앱 시작 -> UserData Load (User Charactors) // Only DB
     1. 앱 시작 -> Player_DB Load (Charactor Info, GameData) // DB <-> Client
-    1. 앱 시작 -> GameAnalytics Load (개인 분석표) // Only DB
+    1. 앱 시작 -> AnalyticsData Load (개인 분석표) // Only DB
     1. 앱 시작 -> RankData Load (랭킹) // Only DB
     1. 앱 시작 -> ExpenditionCrew Load (탐험대원) // DB <-> Client
     1. 앱 시작 -> LastPlay Load (마지막으로 한 게임) // DB <-> Client
@@ -916,12 +987,12 @@ public class Client : MonoBehaviour
     5. Charactor Name 등록
     6. Charactor Profile 등록
     7. Charactor Birthday 등록
-    7. 게임 끝났을 때 Game Data(reactionrate, score, time 등) DB에 저장
-    8. 
+    8. 게임 끝났을 때 Game Data(reactionrate, score, time 등) DB에 저장
+    9. Reset Charactor Profile -> PlayerDB, AnalyticsProfileData Load
     ---------------------------------------------------------------------------------------
-    7. 앱 종료 -> Player_DB Save 
-    7. 앱 종료 -> ExpenditionCrew Save 
-    7. 앱 종료 -> LastPlay Save
+    10. 앱 종료 -> Player_DB Save 
+    10. 앱 종료 -> ExpenditionCrew Save 
+    10. 앱 종료 -> LastPlay Save
     
     7. 앱 종료 -> 마지막 접속한 Charactor - LitJson파일로 로컬 저장(clientlicense)
 
@@ -953,7 +1024,7 @@ public class Client : MonoBehaviour
     }
 
     // 앱 시작시 AnalyticsData Load
-    public AnalyticsData AppStart_LoadGameAnalyticsDataFromDB()
+    public AnalyticsData AppStart_LoadAnalyticsDataFromDB()
     {
         //AnalyticsData return_AnalyticsData = new AnalyticsData();
 
@@ -1053,7 +1124,7 @@ public class Client : MonoBehaviour
     }
 
     // Charactor 생성시 GameAnalytics Load (새 CharactorData)
-    public AnalyticsData CreateCharactor_LoadGameAnalyticsDataFromDB()
+    public AnalyticsData CreateCharactor_LoadAnalyticsDataFromDB()
     {
         string requestData = $"[Load]AnalyticsData|{clientLicenseNumber}|{clientCharactor}|Finish";
         RequestToServer(requestData);
@@ -1144,7 +1215,7 @@ public class Client : MonoBehaviour
     }
 
     // Charactor 변경시 GameAnalytics Load (변경 CharactorData)
-    public AnalyticsData ChangeCharactor_LoadGameAnalyticsDataFromDB()
+    public AnalyticsData ChangeCharactor_LoadAnalyticsDataFromDB()
     {
         string requestData = $"[Load]AnalyticsData|{clientLicenseNumber}|{clientCharactor}|Finish";
         RequestToServer(requestData);
@@ -1294,6 +1365,14 @@ public class Client : MonoBehaviour
         RequestToServer(requestData);
     }
 
+    // 캐릭터 프로필 일부 데이터 초기화
+    public void ResetCharactorProfile()
+    {
+        string requestData = $"[Reset]CharactorProfile|{clientLicenseNumber}|{clientCharactor}|Finish";
+
+        RequestToServer(requestData);
+    }
+
     // 랭킹 UI 접속 시 Rank Load
     public RankData Ranking_LoadRankDataFromDB()
     {
@@ -1338,16 +1417,31 @@ public class Client : MonoBehaviour
         string base64 = "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";
         string imagebase64 = Convert.ToBase64String(playerdb.image);
 
+        /*
+         list.Add("user_info");
+        list.Add("rank");
+        list.Add("crew");
+        list.Add("lastplaygame");
+
+        // AnalyticsProfile table
+        list.Add("analyltics_level1_profile");
+        list.Add("analyltics_level2_profile");
+        list.Add("analyltics_level3_profile");
+         */
+
         // table.list[0] == user_info
         requestData += $"{table.list[0]}|{playerdb.playerName}|{imagebase64}|{playerdb.BirthDay}|{playerdb.TotalAnswers}|{playerdb.TotalTime}|{separatorString}";
         //requestData += $"{table.list[0]}|{separatorString}";
         // table.list[1] == rank
         //requestData += $"{table.list[1]}|{}";
-        // table.list[2] == achievement
+        // table.list[2] == crew
         //requestData += $"{}";
-        // table.list[3] == pet
+        // table.list[3] == lastplaygame
         //requestData += $"{}";
-        // table.list[4~n] == gametable
+        // table.list[4] == analyltics_level1_profile
+        // table.list[5] == analyltics_level2_profile
+        // table.list[6] == analyltics_level3_profile
+        // table.list[7~n] == gametable
         // gametable's column : reactionrate/answercount/answerrate/playtime/totalscore/starpoint
         List<float> reactionRate_List = new List<float>();
         List<int> answersCount_List = new List<int>();
@@ -1373,9 +1467,9 @@ public class Client : MonoBehaviour
         }
 
         // gameTable(i=4부터)
-        for (int i = 4; i < table.list.Count; i++)
+        for (int i = 7; i < table.list.Count; i++)
         {
-            requestData += $"{table.list[i]}|{reactionRate_List[i - 4]}|{answersCount_List[i - 4]}|{answers_List[i - 4]}|{playTime_List[i - 4]}|{totalScore_List[i - 4]}|{starCount_List[i - 4]}|{separatorString}";
+            requestData += $"{table.list[i]}|{reactionRate_List[i - 7]}|{answersCount_List[i - 7]}|{answers_List[i - 7]}|{playTime_List[i - 7]}|{totalScore_List[i - 7]}|{starCount_List[i - 7]}|{separatorString}";
         }
         requestData += "Finish";
         Debug.Log($"[Client] before request to server savedata {requestData}");
