@@ -24,6 +24,12 @@ public class Server : MonoBehaviour
     // 클라이언트에게 라이센스번호를 부여하기위한 변수
     private int clientLicenseNumber;
 
+    // 서버-클라이언트 string으로 data 주고받을때 구분하기 위한 문자열
+    private const string separatorString = "E|";
+
+    // 기타 데이터 처리용 Handler
+    private ETCMethodHandler etcMethodHandler = new ETCMethodHandler();
+
     // Rank용 Timer 변수, 5분마다 실시간 갱신(DB데이터 불러와서) 그 후 클라이언트한테 쏴줘야함(UDP) todo
     private float rankTime = 300f;
 
@@ -52,13 +58,13 @@ public class Server : MonoBehaviour
         ReceiveDataFromClients();
 
 
-        if (testBool)
-        {
-            Debug.Log("[Server] TestCreatDBTest");
-            testBool = false;
-            Debug.Log($"[Server] TestCreatDBTest, testBool value : {testBool}");
-            Invoke("CreateDBTest", 5f);
-        }
+        //if (testBool)
+        //{   
+        //    Debug.Log("[Server] TestCreatDBTest");
+        //    testBool = false;
+        //    Debug.Log($"[Server] TestCreatDBTest, testBool value : {testBool}");
+        //    Invoke("CreateDBTest", 5f);
+        //}
 
 
     }
@@ -187,15 +193,46 @@ public class Server : MonoBehaviour
                     break;
                 }
 
-                // 클라이언트로부터 요청메세지(이름)을 받음
-                //byte[] buffer = new byte[1024]; // 일반적으로 받는 버퍼사이즈 1024byte
-                byte[] buffer = new byte[327680];
-                int bytesRead = await stream.ReadAsync(buffer, 0, buffer.Length); // 메세지 받을때까지 대기
-                string receivedRequestData = Encoding.UTF8.GetString(buffer, 0, bytesRead); // 데이터 변환
-                List<string> dataList = receivedRequestData.Split('|', StringSplitOptions.RemoveEmptyEntries).ToList(); // 받은 data 분할해서 list에 담음
+                List<string> dataList = new List<string>();
+
+                while (true)
+                {
+                    // 클라이언트로부터 요청메세지(이름)을 받음
+                    //byte[] buffer = new byte[1024]; // 일반적으로 받는 버퍼사이즈 1024byte
+                    byte[] buffer = new byte[327680];
+                    int bytesRead = await stream.ReadAsync(buffer, 0, buffer.Length); // 메세지 받을때까지 대기
+                    string receivedRequestData = Encoding.UTF8.GetString(buffer, 0, bytesRead); // 데이터 변환
+
+
+                    if (receivedRequestData.Contains(separatorString)) // 임시로 E| 사용해서 구분, 캐릭터 모든 정보 db에 저장할때
+                    {
+                        Debug.Log("[Server] recieved data from client");
+                        Debug.Log($"[Server] recievedRequestData : {receivedRequestData}");
+                        List<string> tempAllocate = new List<string>();
+                        tempAllocate = receivedRequestData.Split(separatorString, StringSplitOptions.RemoveEmptyEntries).ToList(); // 받은 data 분할해서 list에 담음
+                        if (tempAllocate.Count > 0)
+                        {
+                            Debug.Log("[Server] tempAllocate have at least one index ");
+                            tempAllocate.ForEach(data => dataList.Add(data));
+                                    
+                        }
+                    }
+                    else
+                    {
+                        dataList = receivedRequestData.Split('|', StringSplitOptions.RemoveEmptyEntries).ToList(); // 받은 data 분할해서 list에 담음
+                    }
+
+                    // 클라이언트로부터 데이터 전송이 끝나면(Finish) break;
+                    if (receivedRequestData.Contains("Finish"))
+                    {
+                        etcMethodHandler.RemoveFinish(dataList);
+                        Debug.Log("[Server] Received data contains Finish from client");
+                        break;
+                    }
+                }
 
                 // 클라이언트에게 온 요청을 처리해서 클라이언트에게 회신
-                HandleRequestData(stream, dataList);
+                if (dataList.Count > 0) HandleRequestData(stream, dataList);
             }
         }
         catch (Exception e)
@@ -215,18 +252,36 @@ public class Server : MonoBehaviour
         int clientLicenseNumber = 0;
         int clientCharactor = 0;
 
-        // 예외처리, index 1,2가 없으면 넘어감 
-        if (dataList.ElementAtOrDefault(1) != null && dataList.ElementAtOrDefault(2) != null) 
+        // 일반적으로 클라이언트에서 보내진 데이터를 처리하는 메서드로 들어올 때, '|'를 제거해서 들어오는데
+        // 일부 클라이언트에서 E|를 붙여서 보내는 경우에는 '|'가 붙여져서 들어온다
+        if (dataList[0].Contains('|'))
+        {
+            Debug.Log($"[Server] dataList[0] have '|' so check dataList[0], {dataList[0]}");
+            requestName = dataList[0].Split('|', StringSplitOptions.RemoveEmptyEntries)[0]; // 임시로 사용, playerdata save
+            Debug.Log($"[Server] Check requestName, dataList[0].Split('|', StringSplitOptions.RemoveEmptyEntries)[0] : {dataList[0].Split('|', StringSplitOptions.RemoveEmptyEntries)[0]}");
+        }
+        else if(dataList.ElementAtOrDefault(1) != null && dataList.ElementAtOrDefault(2) != null) // 예외처리, index 1,2가 없으면 넘어감 
         {
             clientLicenseNumber = Int32.Parse(dataList[1]);
             clientCharactor = Int32.Parse(dataList[2]);
         }
+        else if (dataList.ElementAtOrDefault(1) != null) // UserData는 LicenseNumber만 가지고 판단하므로, dataList가 index를 1까지만 가지고 있을 경우 따로 예외처리해야함
+        {
+            clientLicenseNumber = Int32.Parse(dataList[1]);
+        }
+
+        //// 예외처리, index 1,2가 없으면 넘어감 
+        //if (dataList.ElementAtOrDefault(1) != null && dataList.ElementAtOrDefault(2) != null) 
+        //{
+        //    clientLicenseNumber = Int32.Parse(dataList[1]);
+        //    clientCharactor = Int32.Parse(dataList[2]);
+        //}
 
         // Reply -> Client에게 보낼 List<string>, [0]은 requestName
         List<string> replyRequestData_List = new List<string>();
         replyRequestData_List.Add($"{requestName}|");
 
-        // TempAllocate -> DB에서 받아오는 List<string> 임시로 담기
+        // TempAllocate -> DB에서 반환하는 List<string> 임시로 담기
         List<string> tempAllocate = new List<string>();
 
         switch (requestName)
@@ -238,18 +293,19 @@ public class Server : MonoBehaviour
                 // 새 라이센스 발급 (유저(플레이어), 로컬에 저장되는 한 개의 라이센스)
                 Debug.Log($"[Server] Creating... User_LicenseNumber");
                 string clientdata = DBManager.instance.CreateLicenseNumber(); 
+                clientLicenseNumber = Int32.Parse(clientdata.Split('|')[0]);
 
                 // 새 캐릭터 정보 생성 (유저 한명당 가지는 첫 캐릭터)
                 Debug.Log($"[Server] Creating... new Charactor Data");
-                clientLicenseNumber = Int32.Parse(clientdata.Split('|')[0]);
                 DBManager.instance.CreateNewCharactorData(clientLicenseNumber, 1); 
 
                 Debug.Log($"[Server] Finish Create LicenseNumber and new CharactorData");
-                replyRequestData_List.Add($"{clientdata}|");
+                replyRequestData_List.Add($"{clientdata}");
                 break;
             case "[Create]Charactor":
-                // to do fix
-                DBManager.instance.CreateNewCharactorData(clientLicenseNumber, clientCharactor);
+                string newClientCharactor = DBManager.instance.CreateNewCharactorData(clientLicenseNumber, clientCharactor);
+                Debug.Log($"[Server] Finish Create new CharactorData");
+                replyRequestData_List.Add($"{newClientCharactor}|");
                 break;
             case "[Save]CharactorName":
                 DBManager.instance.SaveCharactorName(dataList);
@@ -259,8 +315,32 @@ public class Server : MonoBehaviour
                 Debug.Log($"[Server] Check Profile Data, dataList[3], Base64 : {dataList[3]}");
                 DBManager.instance.SaveCharactorProfile(dataList);
                 break;
+            case "[Save]CharactorBirthday":
+                DBManager.instance.SaveCharactorBirthday(dataList);
+                break;
             case "[Save]CharactorData":
+                Debug.Log($"[Server] Check come in charactordata, dataList[0] : {dataList[0]}");
+                for(int i = 0; i < dataList.Count; i++)
+                {
+                    Debug.Log($"[Server] Check charactor dataList{i}, : {dataList[i]}");
+                }
                 DBManager.instance.SaveCharactorData(dataList);
+                break;
+            case "[Save]ExpenditionCrew":
+                Debug.Log($"[Server] Check come in expenditioncrew, dataList[0] : {dataList[0]}");
+                for (int i = 0; i < dataList.Count; i++)
+                {
+                    Debug.Log($"[Server] Check expenditioncrew dataList{i}, : {dataList[i]}");
+                }
+                DBManager.instance.SaveCrewData(dataList);
+                break;
+            case "[Save]LastPlayData":
+                Debug.Log($"[Server] Check come in lastplaydata, dataList[0] : {dataList[0]}");
+                for (int i = 0; i < dataList.Count; i++)
+                {
+                    Debug.Log($"[Server] Check lastplaydata dataList{i}, : {dataList[i]}");
+                }
+                DBManager.instance.SaveLastPlayData(dataList);
                 break;
             case "[Save]GameResult":
                 break;
@@ -279,14 +359,50 @@ public class Server : MonoBehaviour
             case "[Save]calculation":
                 DBManager.instance.SaveGameResultData(dataList);
                 break;
+            case "[Load]UserData":
+                tempAllocate = DBManager.instance.LoadUserData(clientLicenseNumber);
+                tempAllocate.ForEach(data => replyRequestData_List.Add(data));
+                break;
             case "[Load]CharactorData":
                 // dataList[1] = user_LicenseNumber, dataList[2] = user_Charactor
                 tempAllocate = DBManager.instance.LoadCharactorData(clientLicenseNumber, clientCharactor);
                 tempAllocate.ForEach(data => replyRequestData_List.Add(data)); // TempList의 각 요소(data = string value) ReplyList에 추가
                 break;
-            case "[Load]RankData":
-                tempAllocate = DBManager.instance.RankOrderByUserData(clientLicenseNumber, clientCharactor);
+            case "[Load]AnalyticsData":
+                tempAllocate = DBManager.instance.LoadAnalyticsData(clientLicenseNumber, clientCharactor);
                 tempAllocate.ForEach(data => replyRequestData_List.Add(data));
+                break;
+            case "[Load]RankData":
+                tempAllocate = DBManager.instance.LoadRankData(clientLicenseNumber, clientCharactor);
+                tempAllocate.ForEach(data => replyRequestData_List.Add(data));
+                break;
+            case "[Load]ExpenditionCrew":
+                tempAllocate = DBManager.instance.LoadExpenditionCrew(clientLicenseNumber, clientCharactor);
+                tempAllocate.ForEach(data => replyRequestData_List.Add(data));
+                break;
+            case "[Load]LastPlayData":
+                tempAllocate = DBManager.instance.LoadLastPlayData(clientLicenseNumber, clientCharactor);
+                tempAllocate.ForEach(data => replyRequestData_List.Add(data));
+                break;
+            case "[Load]AnalyticsProfileData":
+                tempAllocate = DBManager.instance.LoadAnalyticsProfileData(clientLicenseNumber, clientCharactor);
+                tempAllocate.ForEach(data => replyRequestData_List.Add(data));
+                break;
+            case "[Change]Charactor":
+                tempAllocate = DBManager.instance.ChangeCharactor(clientLicenseNumber, clientCharactor);
+                tempAllocate.ForEach(data => replyRequestData_List.Add(data));
+                break;
+            case "[Delete]Charactor":
+                DBManager.instance.DeleteCharactor(clientLicenseNumber, clientCharactor);
+                break;
+            case "[Reset]CharactorProfile":
+                DBManager.instance.ResetCharactorProfile(clientLicenseNumber, clientCharactor);
+                break;
+            case "[Test]CreateDB":
+                DBManager.instance.CreateDateDB();
+                break;
+            case "[Test]UpdateWeeklyRankDB":
+                DBManager.instance.UpdateWeeklyRankDB();
                 break;
             default:
                 Debug.Log($"[Server] Handling error that request from client, request name : {requestName}");
@@ -305,7 +421,7 @@ public class Server : MonoBehaviour
         Debug.Log("[Server] Finish reply request data to client");
     }
 
-    // 하루가 지났을 때 PresentDB에 있는 gamedata들 새 DB(ex) 24-02-21)에 저장
+    // 하루가 지났을 때 PresentDB에 있는 gamedata들 새 DB(ex) 24.02.21)에 저장
     private void DayTimer()
     {
         // 현재 시간
