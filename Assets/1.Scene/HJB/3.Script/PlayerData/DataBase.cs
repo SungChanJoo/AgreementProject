@@ -7,6 +7,7 @@ public class DataBase : MonoBehaviour
     public static DataBase Instance = null;
     public Player_DB playerInfo;
     public List<Player_DB> PlayerCharacter = new List<Player_DB>();
+    
     private void Awake()
     {
         if (Instance == null)
@@ -36,8 +37,8 @@ public class DataBase : MonoBehaviour
         {
             //플레이어 정보 불러오기
             playerInfo = Client.instance.AppStart_LoadAllDataFromDB();
+            
             CharactorAdd();
-
         }
         catch (System.Exception)
         {

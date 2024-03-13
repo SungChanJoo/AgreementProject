@@ -4,7 +4,6 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using TMPro;
-
 using System.IO;
 
 
@@ -18,7 +17,8 @@ public class TilteManager : MonoBehaviour
     private bool firstCheck = false;
     private void Awake()
     {
-        licenseFolderPath = Application.dataPath + "/License";
+        //licenseFolderPath = Application.dataPath + "/License";
+        licenseFolderPath = Application.persistentDataPath + "/License";
         string licenseFilePath = licenseFolderPath + "/clientlicense.json";
         if (!File.Exists(licenseFilePath))
         {
@@ -27,7 +27,12 @@ public class TilteManager : MonoBehaviour
         else
         {
             firstCheck = false;
-        }
+        }        
+    }
+    private void Start()
+    {
+        //타이틀에서 메인메뉴로 Scene 이동 시 데이터 로드해야함 -> DB 비동기
+        PlayerLoadData_Btn();
     }
     public void PlayerLoadData_Btn()
     {
@@ -38,6 +43,7 @@ public class TilteManager : MonoBehaviour
         if (firstCheck)
         {
             RegistrationCanvas.SetActive(!RegistrationCanvas.activeSelf);
+            Debug.Log("파일이 없어서 등록창을 띄줄게요");
         }
         else
         {

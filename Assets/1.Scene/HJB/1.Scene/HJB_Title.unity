@@ -358,7 +358,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9f29fac38ef4dd5438c4b09831cf93c8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  server_IP: 15.164.98.107
+  server_IP: 52.78.155.12
   server_Port: 2421
   licenseFolderPath: 
   CharactorData_FromServer: []
@@ -2311,18 +2311,6 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1992850682}
-        m_TargetAssemblyTypeName: TilteManager, Assembly-CSharp
-        m_MethodName: PlayerLoadData_Btn
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 1
-        m_CallState: 2
       - m_Target: {fileID: 1992850682}
         m_TargetAssemblyTypeName: TilteManager, Assembly-CSharp
         m_MethodName: Registration_UI

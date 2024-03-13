@@ -9,7 +9,7 @@ using System.IO;
 using System.Threading.Tasks;
 using LitJson;
 using System.Linq;
-using Unity.Android;
+//using Unity.Android;
 
 public class Client : MonoBehaviour
 {
@@ -133,20 +133,20 @@ public class Client : MonoBehaviour
         //licenseFolderPath = Application.dataPath + "/License";
 
         // 나중에 안드로이드 할때 Application.persistentDataPath + "/License";
-#if UNITY_EDITOR
+
+        //licenseFolderPath = Application.dataPath + "/License";
+
         licenseFolderPath = Application.persistentDataPath + "/License";
-#endif
-        licenseFolderPath = Application.dataPath + "/License";
 
         string licenseFilePath = licenseFolderPath + "/clientlicense.json";
-
+        Debug.Log($"제발요 파일경로를 알려주세요{licenseFilePath}");
         // 경로에 파일이 존재하지 않는다면 라이센스넘버가 없다는것이고, 처음 접속한다는 뜻
         if (!File.Exists(licenseFilePath))
         {
             // 서버에서 라이센스 넘버를 받아와야함, 그러기 위해 서버에 요청 todo
             Debug.Log($"[Client] This client is entering game for the first time..");
             string requestName = "[Create]LicenseNumber|Finish";
-            RequestToServer(requestName);
+            RequestToServer(requestName);            
             return; // 처음 접속이라면 폴더 및 파일 저장하고 return
         }
 

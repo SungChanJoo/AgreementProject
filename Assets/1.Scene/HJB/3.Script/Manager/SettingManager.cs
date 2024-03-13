@@ -18,9 +18,9 @@ public class SettingManager : MonoBehaviour
 	public static SettingManager Instance = null;
     
     public GameObject setting_Canvas;
-    [SerializeField] Canvas setting;
+    [SerializeField] private Canvas setting;
     [SerializeField] private GameObject InGameBtn_panel;
-    [SerializeField] private GameObject ReQuestion_panel;        
+    [SerializeField] private GameObject ReQuestion_panel;
     
     [Header("Checkmark ON/OFF 위부터 순서대로")]
     [SerializeField] private GameObject[] on_img;
@@ -40,7 +40,11 @@ public class SettingManager : MonoBehaviour
     public bool IsMetaWorld = false;
     [SerializeField] private GameObject Restart_Btn;
 
-    
+    private Color set_color = new Color(0.30f,0.59f,0.96f);
+    private Color handle_color = new Color(0.03f, 0.43f, 0.95f);
+
+
+
     private void Awake()
     {        
         if (Instance == null)
@@ -51,9 +55,10 @@ public class SettingManager : MonoBehaviour
         else
         {
             Destroy(gameObject);
-        }        
+        }
+        
     }    
-
+    
     private IEnumerator Start()
     {        
         yield return StartCoroutine(AppSetPermission_Co());
@@ -206,17 +211,21 @@ public class SettingManager : MonoBehaviour
                     }
                     else
                     {
-                        MasterSlider_color[i].color = new Color(1, 1, 1);
+                        MasterSlider_color[0].color = set_color;
+                        MasterSlider_color[1].color = handle_color;
+                        i = 2;
                     }
                     break;
                 case 1:
                     if (!check)
                     {
-                        BgmSlider_color[i].color = Color.gray;
+                        BgmSlider_color[i].color = Color.gray;                        
                     }
                     else
                     {
-                        BgmSlider_color[i].color = new Color(1, 1, 1);
+                        BgmSlider_color[0].color = set_color;
+                        BgmSlider_color[1].color = handle_color;
+                        i = 2;
                     }
                     break;
                 case 2:
@@ -226,7 +235,9 @@ public class SettingManager : MonoBehaviour
                     }
                     else
                     {
-                        SfxSlider_color[i].color = new Color(1, 1, 1);
+                        SfxSlider_color[0].color = set_color;
+                        SfxSlider_color[1].color = handle_color;
+                        i = 2;
                     }
                     break;
             }            

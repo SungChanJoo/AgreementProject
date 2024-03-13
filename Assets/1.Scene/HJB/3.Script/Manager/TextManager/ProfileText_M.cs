@@ -14,6 +14,7 @@ public class ProfileText_M : MonoBehaviour
     [Header("팝업창 텍스트 지우기")]
     [SerializeField] private TMP_InputField ChangeName_Input;
     [SerializeField] private TMP_InputField ChangeBirthday_Input;
+    [SerializeField] private TMP_InputField Registration_Input;
 
     [SerializeField] private GameObject Characters;
     [SerializeField] private GameObject ErrorText;
@@ -73,6 +74,7 @@ public class ProfileText_M : MonoBehaviour
         //추가적으로 플레이어 변경 창에서 이름도 바뀌도록 로직 넣을 것
         characterName.text = DataBase.Instance.PlayerCharacter[0].playerName;
         Birthday.text = DataBase.Instance.PlayerCharacter[0].BirthDay;
+           
         totalAnswer.text = DataBase.Instance.PlayerCharacter[0].TotalAnswers.ToString();
         //시간 계산 후 출력
         CalculationPlayTime();        
@@ -109,9 +111,10 @@ public class ProfileText_M : MonoBehaviour
         try
         {
             //데이터 바꾸기
-            DataBase.Instance.PlayerCharacter[0].BirthDay = ChangeBirthday_Input.text;            
+            DataBase.Instance.PlayerCharacter[0].BirthDay = ChangeBirthday_Input.text;
             //DB에 Load하기
-            
+            Client.instance.RegisterCharactorBirthday_SaveDataToDB(ChangeBirthday_Input.text);
+
         }
         catch (System.Exception)
         {
@@ -132,10 +135,14 @@ public class ProfileText_M : MonoBehaviour
             TextClear(ChangeBirthday_Input);
         }
     }
-
     public void TextClear(TMP_InputField tmp)
     {
         tmp.text = string.Empty;
+    }
+
+    public void Registration_InputField()
+    {
+        
     }
 
 }

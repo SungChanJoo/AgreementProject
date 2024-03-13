@@ -17,8 +17,18 @@ public class LoadImage : MonoBehaviour
     [SerializeField] private Image select_img;
     private GameObject[] image_obj; 
     private Texture2D[] texture2Ds;
-    private bool loading = false;    
+    private bool loading = false;
 
+    private void Start()
+    {
+        byte[] fileData = DataBase.Instance.PlayerCharacter[0].image;
+        Texture2D texture = new Texture2D(2, 2);
+        texture.LoadImage(fileData);
+        Rect rect = new Rect(0, 0, texture.width, texture.height);
+        Texture2D texture2Dload = texture;
+
+        select_img.sprite = Sprite.Create(texture2Dload, rect, new Vector2(0.5f, 0.5f));
+    }
     public void ImageFileLoad()
     {
         if (!loading)
@@ -77,6 +87,18 @@ public class LoadImage : MonoBehaviour
     }    
     public void Selectprofile_Change()
     {
+        try
+        {
+            Texture2D texture_save = profile_Img.sprite.texture;
+            byte[] saveImage = texture_save.EncodeToPNG();
+            Client.instance.RegisterCharactorProfile_SaveDataToDB(saveImage);
+            
+        }
+        catch (Exception)
+        {
+            Debug.Log("사진이 안됩니다. 하하하");
+            
+        }
         select_img.sprite = profile_Img.sprite;
         profileText_.PlayerSprite = profile_Img.sprite;
     }

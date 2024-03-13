@@ -988,7 +988,8 @@ public class DBManager : MonoBehaviour
                                 Debug.Log("[DB] LoadCharactorData - user_info table");
                                 string user_Name = reader.GetString("User_Name");
                                 // DB에서 MediumBlob 타입 데이터(Base64 형식으로 저장됨) string으로 가져오기
-                                string user_Profile = reader.GetString("User_Profile");
+                                //string user_Profile = reader.GetString("User_Profile");
+                                string user_Profile = "0";
                                 string user_Birthday = reader.GetString("User_Birthday");
                                 string user_TotalAnswers = reader.GetInt32("User_TotalAnswers").ToString();
                                 string user_TotalTime = reader.GetFloat("User_TotalTime").ToString();
