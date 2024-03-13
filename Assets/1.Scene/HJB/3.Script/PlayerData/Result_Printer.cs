@@ -34,8 +34,7 @@ public class Result_Printer : MonoBehaviour
 
         //총 점수 계산
         totalScore.text = data.TotalScore.ToString();
-
-        Debug.Log(game_Type);
+        
         //게임 종류에 따른 Text출력
         switch (game_Type)
         {

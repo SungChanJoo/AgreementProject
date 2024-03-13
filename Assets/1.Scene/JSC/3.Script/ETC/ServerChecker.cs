@@ -34,7 +34,8 @@ public class Item
 public class ServerChecker : MonoBehaviour
 {
     public Type type = Type.Client;
-    public string InitServerIP = "54.180.92.129";
+    //public string InitServerIP = "54.180.92.129";
+    public string InitServerIP = "127.0.0.1";
     private NetworkManager _manager;
     private KcpTransport _kcp;
 

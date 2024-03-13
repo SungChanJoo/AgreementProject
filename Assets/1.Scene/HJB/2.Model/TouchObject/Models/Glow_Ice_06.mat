@@ -21,21 +21,20 @@ Material:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: Glow_Ice_06
-  m_Shader: {fileID: 4800000, guid: 0406db5a14f94604a8c57ccfbc9f3b46, type: 3}
-  m_ValidKeywords:
-  - _EMISSION
-  - _FADING_ON
-  - _SOFTPARTICLES_ON
-  - _SURFACE_TYPE_TRANSPARENT
+  m_Shader: {fileID: 4800000, guid: ecfa8f5732b504ef98fba10aa18d0326, type: 3}
+  m_ValidKeywords: []
   m_InvalidKeywords:
   - _ALPHABLEND_ON
+  - _EMISSION
+  - _FADING_ON
   - _FLIPBOOKBLENDING_OFF
+  - _SOFTPARTICLES_ON
+  - _SURFACE_TYPE_TRANSPARENT
   m_LightmapFlags: 0
   m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 0
-  m_CustomRenderQueue: 3000
-  stringTagMap:
-    RenderType: Transparent
+  m_CustomRenderQueue: -1
+  stringTagMap: {}
   disabledShaderPasses:
   - GRABPASS
   - DepthOnly
@@ -92,6 +91,7 @@ Material:
     - _CameraFadingEnabled: 0
     - _CameraFarFadeDistance: 2
     - _CameraNearFadeDistance: 1
+    - _ColorMask: 15
     - _ColorMode: 0
     - _Cull: 2
     - _Cutoff: 0.5
@@ -120,8 +120,14 @@ Material:
     - _SoftParticlesNearFadeDistance: 0
     - _SpecularHighlights: 1
     - _SrcBlend: 5
+    - _Stencil: 0
+    - _StencilComp: 8
+    - _StencilOp: 0
+    - _StencilReadMask: 255
+    - _StencilWriteMask: 255
     - _Surface: 1
     - _UVSec: 0
+    - _UseUIAlphaClip: 0
     - _ZWrite: 0
     m_Colors:
     - _BaseColor: {r: 1.747929, g: 1.747929, b: 1.747929, a: 1}

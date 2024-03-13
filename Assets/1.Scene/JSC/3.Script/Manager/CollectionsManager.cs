@@ -40,6 +40,7 @@ public class CollectionsManager : MonoBehaviour
     [SerializeField] private PlayerMod_Toggle PMToggle;
     public Sprite SelectedImg;
     public Sprite DefaultImg;
+    public Sprite DeniedImg;
 
     [Header("Purchase")]
     [SerializeField] private GameObject _purchaseWindow;
@@ -59,7 +60,6 @@ public class CollectionsManager : MonoBehaviour
     [SerializeField] private TMP_Text _crewDescript;
     [SerializeField] private GameObject _detailSelectBtn;
     [SerializeField] private TMP_Text _detailSelectText;
-    [SerializeField] private float _rotateSpeedModifier = 1f;
     private GameObject _ModelSpace;
     private int _seletedDetailModel;
     private bool _isDrag = false;
@@ -147,6 +147,7 @@ public class CollectionsManager : MonoBehaviour
             if (_crewInfo[crewNumber] != null)
             {
                 _crewModel[crewNumber].SetActive(true);
+                _crewModel[crewNumber].transform.rotation = Quaternion.Euler(0f, 157f, 0f);
                 _crewName.text = $"대원이름 : {_crewInfo[crewNumber].CrewName}";
                 _crewDescript.text = $"대원설명 : {_crewInfo[crewNumber].CrewDescript}";
                 _seletedDetailModel = crewNumber;
@@ -251,12 +252,14 @@ public class CollectionsManager : MonoBehaviour
         int selectedCrew = 0;
         List<bool> ownedCrew = new List<bool>();
         ownedCrew.Add(true);
-        ownedCrew.Add(false);
-        ownedCrew.Add(false);
-        ownedCrew.Add(false);
-        ownedCrew.Add(false);
-        ownedCrew.Add(false);
-        ownedCrew.Add(false);
+        ownedCrew.Add(true);
+        ownedCrew.Add(true);
+        ownedCrew.Add(true);
+        ownedCrew.Add(true);
+        for(int i = 0; i < 32; i++)
+        {
+            ownedCrew.Add(false);
+        }
         Collections = new ExpenditionCrew(selectedCrew, ownedCrew);
 
         //텍스트, 버튼 초기화
@@ -424,11 +427,10 @@ public class CollectionsManager : MonoBehaviour
             //보유중이 아니고, 가격이 현재 가진 돈보다 비싸면 버튼 색 변경
             if (_money < Convert.ToInt32(_crewStatusText[i].text))
             {
-                //SetBtnColor(_crewStatusBtn[i].GetComponent<Image>(), DeniedPurchaseBtnColor);
+                _crewStatusBtn[i].GetComponent<Image>().sprite = DeniedImg;
             }
             else
             {
-                //SetBtnColor(_crewStatusBtn[i].GetComponent<Image>(), DefaultBtnColor);
                 _crewStatusBtn[i].GetComponent<Image>().sprite = DefaultImg;
             }
         }

@@ -12,12 +12,20 @@ public class ProfileText_M : MonoBehaviour
     [SerializeField] private TextMeshProUGUI playTime;
     [SerializeField] private TextMeshProUGUI totalAnswer;
     [Header("팝업창 텍스트 지우기")]
-    [SerializeField] private TextMeshProUGUI ChangeName_Input;
-    [SerializeField] private TextMeshProUGUI ChangeBirthday_Input;
+    [SerializeField] private TMP_InputField ChangeName_Input;
+    [SerializeField] private TMP_InputField ChangeBirthday_Input;
 
     [SerializeField] private GameObject Characters;
+    [SerializeField] private GameObject ErrorText;
 
+    private ProfileManager profileManager;
 
+    public string PlayerName;
+    public Sprite PlayerSprite;
+    private void Awake()
+    {
+        profileManager = GetComponent<ProfileManager>();
+    }
     private void Start()
     {
         try
@@ -86,30 +94,46 @@ public class ProfileText_M : MonoBehaviour
             characterName.text = ChangeName_Input.text;
             Debug.Log("네트워크 연결 또는 DB에 접속이 불가합니다.");            
         }
+        PlayerName = characterName.text;
         TextClear(ChangeName_Input);
     }
 
     public void BirthDayChange()
     {
+        if (ChangeBirthday_Input.text == string.Empty)
+        {
+            ErrorText.SetActive(true);
+            return;
+        }
+        string text = ChangeBirthday_Input.text.PadLeft(8,'0').Insert(6,".").Insert(4,".");
         try
         {
             //데이터 바꾸기
-            DataBase.Instance.PlayerCharacter[0].BirthDay = ChangeBirthday_Input.text;
-            //바꾼 생일 출력
-            Birthday.text = ChangeBirthday_Input.text;
+            DataBase.Instance.PlayerCharacter[0].BirthDay = ChangeBirthday_Input.text;            
             //DB에 Load하기
             
         }
         catch (System.Exception)
         {
-            Birthday.text = ChangeBirthday_Input.text;
             Debug.Log("네트워크 연결 또는 DB에 접속이 불가합니다.");
         }
+        Birthday.text = text;
+        profileManager.PlayerBirthDay_UI();
         TextClear(ChangeBirthday_Input);
         
     }
+    
+    public void BirthDayChangeErrorText_EndEdit()
+    {
+        string text = ChangeBirthday_Input.text;
+        if (text.Length!=8)
+        {
+            ErrorText.SetActive(true);
+            TextClear(ChangeBirthday_Input);
+        }
+    }
 
-    public void TextClear(TextMeshProUGUI tmp)
+    public void TextClear(TMP_InputField tmp)
     {
         tmp.text = string.Empty;
     }

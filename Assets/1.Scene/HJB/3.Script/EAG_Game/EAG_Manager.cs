@@ -23,9 +23,19 @@ public class EAG_Manager : GameSetting
     public int result;
     public char _Operator;
 
+
+    public float RotationPerSecond = 1;    
     public void Show_Result(float result)
     {
         resultText.text = result.ToString();
+    }
+    protected override void startGame()
+    {
+        StartGamePooling();
+    }
+    private void StartGamePooling()
+    {
+        ObjectPooling_H.Instance.ObjectPooling();
     }
 
     public int AnswerCalculator(Operator selectedOperator)

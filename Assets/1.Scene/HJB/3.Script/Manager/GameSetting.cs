@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
+using TMPro;
 
 public enum Game_Type
 {
@@ -29,19 +30,26 @@ public abstract class GameSetting : MonoBehaviour
     [HideInInspector] public float remainingTime;
     [HideInInspector] public int starcount;
 
+    [HideInInspector] public bool isStop = true;
+
+    [SerializeField] private TextMeshProUGUI startTimeSet;
 
     [SerializeField] private GameObject nextStep_Btn;
+
+    [SerializeField] private float timeset;
+
+    [SerializeField] GameObject resultCanvas_UI;
 
     public Player_Data result_data;
 
     public Result_Printer result_Printer;
 
-    [SerializeField] GameObject resultCanvas_UI;
+    private IEnumerator UpdateDatabaseFromData_co;
 
-    IEnumerator UpdateDatabaseFromData_co;
+    
 
-    [HideInInspector] public bool isStop = true;    
 
+    
     private void Start()
     {
         UpdateDatabaseFromData_co = UpdateDatabaseFromData();
@@ -51,14 +59,15 @@ public abstract class GameSetting : MonoBehaviour
     private void startSet()
     {
         //선택한 레벨, 스텝, 시간 값 초기 설정
-        game_Type = (Game_Type)SceneManager.GetActiveScene().buildIndex - 2;
+        game_Type = StepManager.Instance.game_Type;
         step = StepManager.Instance.CurrentStep;
         level = StepManager.Instance.CurrentLevel;        
         timeSet = StepManager.Instance.CurrentTime;        
         TimeSlider.Instance.startTime = timeSet;
         TimeSlider.Instance.duration = timeSet;
-        //로직에 의한 시작
-        SplitLevelAndStep();
+        Debug.Log($"game_Type : {game_Type}, level : {level}, step: {step} ");
+        
+        
     }
     private void ResultDataSet()
     {
@@ -79,8 +88,9 @@ public abstract class GameSetting : MonoBehaviour
     //현재 Level Step에 따라 나누기
     public virtual void SplitLevelAndStep()
     {
+        
         switch (level)
-        {
+        {            
             case 1:
                 Level_1(step);
                 break;
@@ -92,9 +102,17 @@ public abstract class GameSetting : MonoBehaviour
                 break;
         }        
     }
+    public void GameStart_Btn()
+    {        
+        startGame();
+    }
     protected abstract void Level_1(int step);
     protected abstract void Level_2(int step);
-    protected abstract void Level_3(int step);
+    protected abstract void Level_3(int step);    
+    protected virtual void startGame()
+    {
+        SplitLevelAndStep();
+    }    
 
     public void EndGame()
     {
@@ -120,7 +138,7 @@ public abstract class GameSetting : MonoBehaviour
         catch (System.Exception)
         {
 
-            throw;
+            Debug.Log("DB 연결 부탁.");
         }
         //결과표 텍스트 출력
         ResultPrinter_UI();

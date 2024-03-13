@@ -543,7 +543,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9f29fac38ef4dd5438c4b09831cf93c8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  clientLog: {fileID: 1519323227}
+  server_IP: 
+  server_Port: 0
+  licenseFolderPath: 
+  CharactorData_FromServer: []
 --- !u!1 &1300132698
 GameObject:
   m_ObjectHideFlags: 0

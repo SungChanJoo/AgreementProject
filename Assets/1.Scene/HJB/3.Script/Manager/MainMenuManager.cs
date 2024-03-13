@@ -7,7 +7,7 @@ using UnityEngine.SceneManagement;
 public class MainMenuManager : MonoBehaviour
 {    
     [SerializeField] private GameObject MainMenuCanvas;
-    [SerializeField] private GameObject PetSelectCavas;
+    [SerializeField] private GameObject CrewSelectCavas;
     [SerializeField] private GameObject CollectionCavas;
     [SerializeField] private GameObject LevelCavas;
     [SerializeField] private GameObject CameraCavas;
@@ -15,6 +15,9 @@ public class MainMenuManager : MonoBehaviour
     [SerializeField] private GameObject ProfileCanvas;
     [SerializeField] private GameObject StepCanvas;
     [SerializeField] private GameObject ChartCanvas;
+    [SerializeField] private GameObject RankingCanvas;
+
+    [SerializeField] private List<GameObject> StepOfLevel;
 
     public Game_Type game_Type;
     
@@ -24,11 +27,22 @@ public class MainMenuManager : MonoBehaviour
     }
     public void GameScene()
     {
-        SceneManager.LoadScene((int)game_Type+2);
+        /*        if ((int)game_Type >= 2)
+                {
+                    SceneManager.LoadScene(4);
+                }
+                else
+                {
+                    SceneManager.LoadScene((int)game_Type+2);
+                }*/
+        if(CrewMovementManager.Instance != null)
+            CrewMovementManager.Instance.SelectStep();
     }
     public void GameType_Btn(int Type)
     {
         game_Type = (Game_Type)Type;
+        StepManager.Instance.game_Type = game_Type;
+
     }
     //Application 종료 버튼
     public void Exit_Btn()
@@ -51,7 +65,20 @@ public class MainMenuManager : MonoBehaviour
             Step_UI();
             Level_UI();
         }
-        StepManager.Instance.SelectLevel(level);        
+        StepManager.Instance.SelectLevel(level);
+        if (CrewMovementManager.Instance != null)
+            CrewMovementManager.Instance.ViewCrew();
+        for (int i = 0; i < StepOfLevel.Count; i++)
+        {
+            if (level - 1 == i)
+            {
+                StepOfLevel[i].SetActive(true);
+            }
+            else
+            {
+                StepOfLevel[i].SetActive(false);
+            }
+        }
     }
     
     
@@ -59,8 +86,10 @@ public class MainMenuManager : MonoBehaviour
     public void SelectStep(int step)
     {
         StepManager.Instance.SelectStep(step);
+        if(CrewMovementManager.Instance != null)
+            CrewMovementManager.Instance.ViewCrew();
         GameScene();
-    }
+    } 
     public void SelectTime(int time)
     {
         StepManager.Instance.SelectTimeSet(time);
@@ -86,8 +115,9 @@ public class MainMenuManager : MonoBehaviour
     }
     public void MetaWorldPetSelect_UI()
     {
-        PetSelectCavas.SetActive(!PetSelectCavas.activeSelf);        
+        CrewSelectCavas.SetActive(!CrewSelectCavas.activeSelf);        
     }
+
     
     //환경설정 창 On
     public void Setting_UI()
@@ -101,5 +131,12 @@ public class MainMenuManager : MonoBehaviour
     public void Step_UI()
     {
         StepCanvas.SetActive(!StepCanvas.activeSelf);
+        if (CrewMovementManager.Instance != null)
+            CrewMovementManager.Instance.ExitStep();
+    }
+
+    public void Ranking_UI()
+    {
+        RankingCanvas.SetActive(!RankingCanvas.activeSelf);
     }
 }

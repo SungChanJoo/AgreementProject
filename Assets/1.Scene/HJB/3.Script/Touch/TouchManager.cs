@@ -30,7 +30,7 @@ public class TouchManager : MonoBehaviour
         particles = new ParticleSystem[effect_obj.Length];
         for (int i = 0; i < effect_obj.Length; i++)
         {
-            particles[i] = effect_obj[i].GetComponent<ParticleSystem>();
+            particles[i] = effect_obj[i].transform.GetChild(0).GetComponent<ParticleSystem>();
         }
     }
     private void Update()
@@ -52,7 +52,7 @@ public class TouchManager : MonoBehaviour
 
             
             Vector2 localPoint;
-            RectTransformUtility.ScreenPointToLocalPointInRectangle(uiCanvas.GetComponent<RectTransform>(), touch.position, Camera.main, out localPoint);
+            //RectTransformUtility.ScreenPointToLocalPointInRectangle(uiCanvas.GetComponent<RectTransform>(), touch.position, Camera.main, out localPoint);
 
             if (touch.phase == TouchPhase.Began)
             {
@@ -61,7 +61,7 @@ public class TouchManager : MonoBehaviour
             }            
             if (i < particles.Length)
             {
-                effect_obj[i].transform.localPosition = localPoint;
+                effect_obj[i].transform.position = touch.position;
                 if (touch.phase == TouchPhase.Moved)
                 {                    
                     if (!particles[i].isPlaying)

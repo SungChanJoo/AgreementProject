@@ -5777,6 +5777,8 @@ MonoBehaviour:
   - {fileID: 4495798997063913891}
   filter_Canvas: {fileID: 4495798996474530925}
   nonfilter_Canvas: {fileID: 4495798997508486112}
+  playerMod: 1
+  playing: 0
 --- !u!1 &4495798996985853082
 GameObject:
   m_ObjectHideFlags: 0

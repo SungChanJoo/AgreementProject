@@ -7,8 +7,15 @@ public class Dot_Data : MonoBehaviour
 {
     [SerializeField] private TextMeshProUGUI dot_data;
 
-    public void Print_DotData(float data)
+    public void Print_DotData(float data,bool first)
     {
-        dot_data.text = data.ToString("F2");
+        if (first)
+        {
+            dot_data.text = data.ToString("F0");
+        }
+        else
+        {
+            dot_data.text = data.ToString("F1");
+        }
     }
 }

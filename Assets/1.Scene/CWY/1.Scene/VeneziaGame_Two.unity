@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.29936928, g: 0.25352806, b: 0.21969268, a: 1}
+  m_IndirectSpecularColor: {r: 0, g: 0, b: 0, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -216,7 +216,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 483a14515a821e44f9d0963c61168dfc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  score_text: {fileID: 83625538}
+  playMode: 0
+  score_text: {fileID: 0}
+  Firstscore_text: {fileID: 0}
+  Secondscore_text: {fileID: 0}
 --- !u!1 &89910486
 GameObject:
   m_ObjectHideFlags: 0
@@ -2281,10 +2284,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 016f8acf90b099a40807819b1ecf004b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  CubePrefab: {fileID: 1650483185627050717, guid: f716e0d6343b652409d1935b63d8c279, type: 3}
+  Prefab_K: []
+  Prefab_E: []
+  Prefab_H: []
   Pool_Position: {fileID: 788314112}
+  CubeParentObject: {fileID: 0}
+  ItemParentObject: {fileID: 0}
+  MeteorPrefab: {fileID: 0}
+  PausePrefab: {fileID: 0}
   CubeCount: 5
+  ItemCount: 0
   cubePool: []
+  MeteorPool: []
+  PausePool: []
 --- !u!1 &794590860
 GameObject:
   m_ObjectHideFlags: 0
@@ -2688,10 +2700,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 016f8acf90b099a40807819b1ecf004b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  CubePrefab: {fileID: 1650483185627050717, guid: f716e0d6343b652409d1935b63d8c279, type: 3}
+  Prefab_K: []
+  Prefab_E: []
+  Prefab_H: []
   Pool_Position: {fileID: 976682620}
+  CubeParentObject: {fileID: 0}
+  ItemParentObject: {fileID: 0}
+  MeteorPrefab: {fileID: 0}
+  PausePrefab: {fileID: 0}
   CubeCount: 5
+  ItemCount: 0
   cubePool: []
+  MeteorPool: []
+  PausePool: []
 --- !u!4 &976682620
 Transform:
   m_ObjectHideFlags: 0
@@ -4191,6 +4212,50 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9b64c016ff3426749bc236d945704efa, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  game_Type: 0
+  level: 0
+  step: 0
+  timeSet: 0
+  reactionRate: 0
+  answersCount: 0
+  answers: 0
+  playTime: 0
+  totalQuestions: 0
+  totalScore: 0
+  remainingTime: 0
+  starcount: 0
+  nextStep_Btn: {fileID: 0}
+  result_data:
+    Game_type: 0
+    Level: 0
+    Step: 0
+    TimeSet: 0
+    ReactionRate: 0
+    AnswersCount: 0
+    Answers: 0
+    PlayTime: 0
+    RemainingTime: 0
+    TotalQuestions: 0
+    TotalScore: 0
+  result_Printer: {fileID: 0}
+  resultCanvas_UI: {fileID: 0}
+  isStop: 1
+  gameover: {fileID: 0}
+  CubeParent: {fileID: 0}
+  isGameover: 0
+  Quest_Img: {fileID: 0}
+  Quest_text: {fileID: 0}
+  sprites_K: []
+  sprites_E: []
+  sprites_H: []
+  QuestCount: 0
+  QuestRange: 0
+  RemainAnswer: 0
+  CorrectAnswerCount: 0
+  ClickCount: 0
+  LifeTime: 0
+  PoolingCool: 0
+  DestroyTime: 0
 --- !u!1 &1569695037
 GameObject:
   m_ObjectHideFlags: 0
@@ -5233,9 +5298,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 97ae06ec4a1744846bf6ddc75ad2b771, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  objectType: 0
   StartSpeed: 20
-  MaxSpeed: 0
-  MaxDistance: 0
+  CurrentSpeed: 0
+  SaveSpeed: 0
+  AccelerationSpeed: 0
+  removeTime: 0
+  isStart: 0
+  sprite: {fileID: 0}
+  moveX: 0
+  moveY: 0
+  count: 0
+  gizmoColor: {r: 0, g: 0, b: 1, a: 1}
+  radius: 15
 --- !u!135 &1936346747
 SphereCollider:
   m_ObjectHideFlags: 0
@@ -5468,7 +5543,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2bb5cf6dadf54af499fb05a8bd93553c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  gameType: 0
   slider: {fileID: 1391337205}
   sliderVar_Image: {fileID: 773295635}
   ChangeTime: 0.99
   changeDuration: 10
+  time: 0
+  PlayTime: 0
+  isStop: 0
+  isGameOver: 0
+  startTime: 0
+  duration: 0
+  Decreasetime: 0
+  TimeStop: 1

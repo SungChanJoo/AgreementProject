@@ -103,7 +103,10 @@ public class GuGUDan_Fnc : GameSetting
         QuestMark_onOff(CaseNum);
         Click();
     }
-
+    protected override void startGame()
+    {
+        base.startGame();
+    }
 
     //랜덤숫자 생성 메서드
     public int Random_Num()
@@ -535,14 +538,14 @@ public class GuGUDan_Fnc : GameSetting
 
     public void Get_Score()
     {
-        if (buttonType == ButtonType.First)
-        {
-            Score.Instance.Get_FirstScore();
-        }
-        else
-        {
-            Score.Instance.Get_SecondScore();
-        }
+        //if (buttonType == ButtonType.First)
+        //{
+        //    Score.Instance.Get_FirstScore();
+        //}
+        //else
+        //{
+        //    Score.Instance.Get_SecondScore();
+        //}
     }
 
     private void Set_QuestCount()
