@@ -13,7 +13,7 @@ using System.Linq;
 public class Client : MonoBehaviour
 {
     // IP, Port 고정됨
-    [SerializeField] private string server_IP = "127.0.0.1"; // aws EC2 IP : 43.201.77.212
+    [SerializeField] private string server_IP = "15.164.98.107"; // aws EC2 IP : 15.164.98.107
     [SerializeField] private int server_Port = 2421;
 
     bool socketReady;
@@ -807,7 +807,7 @@ public class Client : MonoBehaviour
         bool haveThatCrew;
         for(int i = 1; i < filterDataList.Count; i ++) // index 1부터 crew 보유여부
         {
-            if (dataList[i] == "0") haveThatCrew = false;
+            if (filterDataList[i] == "0") haveThatCrew = false;
             else haveThatCrew = true;
 
             OwnedCrew.Add(haveThatCrew);
