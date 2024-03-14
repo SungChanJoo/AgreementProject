@@ -31,6 +31,12 @@ public class ETCMethodHandler
             fixLastIndexInList += $"{endCheck[i]}|";
         }
 
+        // dataList와 endCheck가 Finish만 가지고 있다면 예외처리 해줘야함
+        if(fixLastIndexInList == null)
+        {
+            return;
+        }
+
         dataList.Add(fixLastIndexInList);
     }
 
