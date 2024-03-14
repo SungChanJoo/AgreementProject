@@ -122,7 +122,7 @@ public class ClientTest : MonoBehaviour
         }
         catch
         {
-
+            Debug.Log($"[RankData] try-catch error");
         }
         
 
