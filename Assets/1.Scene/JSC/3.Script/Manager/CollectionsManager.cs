@@ -21,7 +21,7 @@ public class Crew
 class CrewButton
 {
     public const string _selectedCrew = "출동!";
-    public const string _ownedCrew = "출동 대기";
+    public const string _ownedCrew = "대기";
 }
 
 //펫을 고르고 메타별에 입장을 관리하는 매니져
