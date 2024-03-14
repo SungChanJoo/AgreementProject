@@ -96,6 +96,8 @@ public class LoadImage : MonoBehaviour
         {
             Texture2D texture_save = profile_Img.sprite.texture;
             byte[] saveImage = texture_save.EncodeToPNG();
+            string test = Convert.ToBase64String(saveImage);
+            Debug.Log(test);
             DataBase.Instance.PlayerCharacter[0].image = saveImage;
             Client.instance.RegisterCharactorProfile_SaveDataToDB(saveImage);
         }

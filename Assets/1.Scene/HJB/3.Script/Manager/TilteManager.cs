@@ -13,6 +13,7 @@ public class TilteManager : MonoBehaviour
     [SerializeField] private GameObject RegistrationCanvas;    
     [SerializeField] private TextMeshProUGUI inputError_text;
     [SerializeField] private TMP_InputField name_text;
+    [SerializeField] private TextMeshProUGUI testText;
     private string licenseFolderPath = string.Empty;
     private bool firstCheck = false;
     private void Awake()
@@ -21,6 +22,8 @@ public class TilteManager : MonoBehaviour
             licenseFolderPath = Application.persistentDataPath + "/License";
         else
             licenseFolderPath = Application.dataPath + "/License";
+
+        testText.text = licenseFolderPath;
         string licenseFilePath = licenseFolderPath + "/clientlicense.json";
         if (!File.Exists(licenseFilePath))
         {
