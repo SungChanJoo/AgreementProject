@@ -10,7 +10,8 @@ public class DataBase : MonoBehaviour
     public int CharacterIndex {
         get
         {
-            return CharacterIndex;
+            //CharacterIndex = ClientLiscense에서 숫자 불러와야함
+            return 0;
         }
         set
         {
@@ -62,6 +63,7 @@ public class DataBase : MonoBehaviour
         }
         catch (System.Exception)
         {
+            playerInfo = null;
             Debug.Log("DB에서 플레이어 데이터를 불러오지 못했습니다.");
         }
     }

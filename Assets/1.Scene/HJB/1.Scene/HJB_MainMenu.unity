@@ -7660,6 +7660,8 @@ MonoBehaviour:
   - {fileID: 659615899}
   SeletedCrewIndex: 0
   FadeObj: {fileID: 957273950}
+  star: {fileID: 21300000, guid: d1f5a55f7092b1144aa63d38139d41b8, type: 3}
+  starGray: {fileID: 21300000, guid: 200140ec023d07b499bd3290ab6ac1e3, type: 3}
 --- !u!1 &423935811
 GameObject:
   m_ObjectHideFlags: 0

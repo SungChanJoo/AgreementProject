@@ -18,6 +18,9 @@ public class MainMenuManager : MonoBehaviour
     [SerializeField] private GameObject RankingCanvas;
 
     [SerializeField] private List<GameObject> StepOfLevel;
+    [SerializeField] private List<GameObject> Level1StarPoint_Panel;
+    [SerializeField] private List<GameObject> Level2StarPoint_Panel;
+    [SerializeField] private List<GameObject> Level3StarPoint_Panel;
 
     public Game_Type game_Type;
     
@@ -67,7 +70,18 @@ public class MainMenuManager : MonoBehaviour
         }
         StepManager.Instance.SelectLevel(level);
         if (CrewMovementManager.Instance != null)
+        {
+            //탐험대원 보기
             CrewMovementManager.Instance.ViewCrew();
+            var stepList = new List<GameObject>();
+            for (int i =0; i< StepOfLevel[level-1].transform.childCount; i++)
+            {
+                //스텝의 별개수 UI 오브젝트
+                var step = StepOfLevel[level-1].transform.GetChild(i).Find("StarPoint_Panel").gameObject;
+                stepList.Add(step);
+            }
+            CrewMovementManager.Instance.StepByStarPoint(stepList);
+        }
         for (int i = 0; i < StepOfLevel.Count; i++)
         {
             if (level - 1 == i)

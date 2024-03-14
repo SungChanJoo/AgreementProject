@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
+using System;
 
 public class CrewMovementManager : MonoBehaviour
 {
@@ -23,6 +24,10 @@ public class CrewMovementManager : MonoBehaviour
     int finalPos;
     public GameObject FadeObj;
     private Image FadeImg;
+    [SerializeField] private Sprite star;
+    [SerializeField] private Sprite starGray;
+
+
     private void Awake()
     {
         if (Instance == null)
@@ -60,6 +65,63 @@ public class CrewMovementManager : MonoBehaviour
         }
 
     }
+    //별 개수에 따라 스텝 머터리얼 변경
+    //별 0개는 하얀색, 별 1개 이상은 노란색
+    private void LoadStarColor(List<Transform> level)
+    {
+
+
+        var stepInfo = DataBase.Instance.PlayerCharacter[DataBase.Instance.CharacterIndex];
+        if (stepInfo == null)
+        {
+            Debug.Log("playerInfo == null");
+            return;
+        }
+        //별 오브젝트 불러오기
+        for (int i =0; i < level.Count; i++)
+        {
+            var step = level[i];
+
+            if (stepInfo.Data[(SelectedGame, SelectedLevel, i+1)].StarCount >0)
+            {
+                //별 있으면 노란색
+                step.GetChild(0).gameObject.GetComponent<Renderer>().material.color = new Color(255f, 189f, 0f);
+            }
+            else
+            {
+                step.GetChild(0).gameObject.GetComponent<Renderer>().material.color = new Color(255f, 255f, 255f);
+            }
+        }
+    }
+
+    public void StepByStarPoint(List<GameObject> starPointPanel)
+    {
+        int starCount;
+        var stepInfo = DataBase.Instance.PlayerCharacter[DataBase.Instance.CharacterIndex];
+        if (stepInfo == null)
+        {
+            Debug.Log("playerInfo == null");
+            return;
+        }
+        //starPointPanel == 레벨 별 스텝
+        for (int i = 0; i < starPointPanel.Count; i++)
+        {
+            var step = starPointPanel[i];
+            starCount = stepInfo.Data[(SelectedGame, SelectedLevel, i + 1)].StarCount;
+            //스텝별 스타 이미지 변경
+            for (int j = 0; j < 3; j++)
+            {
+                var starImg = step.transform.GetChild(j).gameObject.GetComponent<Image>();
+                //  Debug.Log("starImg : " + step.transform.GetChild(j).gameObject.GetComponent<Image>().sprite.name);   
+                //DB에서 별 개수에 따라 배정
+                if(j < starCount)
+                    starImg.sprite = star;
+                else
+                    starImg.sprite = starGray;
+            }
+        }
+
+    }
 
     //레벨 선택시 현재 대원보이기
     public void ViewCrew()
@@ -69,7 +131,6 @@ public class CrewMovementManager : MonoBehaviour
         if (!SeleteableCrew[SeletedCrewIndex].activeSelf)
         {
             SeleteableCrew[SeletedCrewIndex].SetActive(true);
-
         }
 
         SelectedGame = StepManager.Instance.game_Type;
@@ -95,7 +156,10 @@ public class CrewMovementManager : MonoBehaviour
             _ => null,
         };
 
-        if(CrewPos != null)
+        //별 개수에 따른 스텝 머터리얼 색 변경
+        LoadStarColor(CrewPos);
+
+        if (CrewPos != null)
         {
             //초기 탐험대원 위치
             finalPos = FinalPlayStepTable[(SelectedGame, SelectedLevel)]; // 선택된 게임의 선택된 레벨의 스텝
@@ -122,6 +186,19 @@ public class CrewMovementManager : MonoBehaviour
     {
         //todo 0308 DB에서 별 개수 받아서 이동 가능한지 조건 설정해줘
         SelectedStep = StepManager.Instance.CurrentStep;
+        //다음 스텝으로 넘어가기 위해서는 이전 스텝의 별이 1개 이상 있어함
+        if(SelectedStep >1) // 스텝 1은 플레이 할 수 있음
+        {
+            var stepInfo = DataBase.Instance.PlayerCharacter[DataBase.Instance.CharacterIndex].
+               Data[(SelectedGame, SelectedLevel, SelectedStep - 1)].
+               StarCount;
+            if(stepInfo < 1)
+            {
+                Debug.Log("이전 스텝에서 별을 획득해주세요");
+                return;
+            }
+        }
+
         Debug.Log($"CrewMovementManager : {SelectedGame},{SelectedLevel},{SelectedStep}");
         StartCoroutine(MoveCrew_co());
         FadeObj.SetActive(true);
