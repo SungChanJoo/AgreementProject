@@ -22,9 +22,12 @@ public class EAG_Manager : GameSetting
     public int secondNum;
     public int result;
     public char _Operator;
+    
 
+    public float RotationPerSecond = 1;
 
-    public float RotationPerSecond = 1;    
+    [SerializeField] private AudioClip[] audioClip;
+
     public void Show_Result(float result)
     {
         resultText.text = result.ToString();
@@ -70,6 +73,17 @@ public class EAG_Manager : GameSetting
         secondNum = Random.Range(1, 99);
     }
 
+    public override void TouchSoundCheck(bool answerCheck)
+    {
+        if (answerCheck)
+        {
+            source.PlayOneShot(audioClip[0]);
+        }
+        else
+        {
+            source.PlayOneShot(audioClip[1]);
+        }
+    }
     public override void SplitLevelAndStep()
     {
         base.SplitLevelAndStep();

@@ -13,7 +13,7 @@ public enum Game_Type
     D,
     E,
 }
-public abstract class GameSetting : MonoBehaviour
+public abstract class GameSetting : MonoBehaviour,ITouchEffect
 {
     [HideInInspector] public Game_Type game_Type;
 
@@ -46,14 +46,18 @@ public abstract class GameSetting : MonoBehaviour
 
     private IEnumerator UpdateDatabaseFromData_co;
 
-    
+    [HideInInspector]public AudioSource source;
 
 
-    
+    private void Awake()
+    {
+        source = GetComponent<AudioSource>();
+    }
+
     private void Start()
     {
         UpdateDatabaseFromData_co = UpdateDatabaseFromData();
-        startSet();        
+        startSet();
     }
 
     private void startSet()
@@ -65,8 +69,7 @@ public abstract class GameSetting : MonoBehaviour
         timeSet = StepManager.Instance.CurrentTime;        
         TimeSlider.Instance.startTime = timeSet;
         TimeSlider.Instance.duration = timeSet;
-        Debug.Log($"game_Type : {game_Type}, level : {level}, step: {step} ");
-        
+        Debug.Log($"game_Type : {game_Type}, level : {level}, step: {step} ");        
         
     }
     private void ResultDataSet()
@@ -232,7 +235,9 @@ public abstract class GameSetting : MonoBehaviour
     {
         SceneManager.LoadScene("HJB_MainMenu");
     }
-    
-        
 
+    public virtual void TouchSoundCheck(bool answerCheck)
+    {
+
+    }
 }

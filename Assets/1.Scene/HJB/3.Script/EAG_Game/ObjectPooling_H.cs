@@ -24,6 +24,7 @@ public class ObjectPooling_H : MonoBehaviour
     private float waitTime =0;
     private bool timeOut = false;
     private bool touchEnable = false;
+    private bool isCorrect = false;
 
     private IEnumerator WaitExplosionBubble_co;
     private IEnumerator NextQuestionAni_co;
@@ -112,6 +113,8 @@ public class ObjectPooling_H : MonoBehaviour
                 StartCoroutine(WaitExplosionBubble_co);
                 bool_Pool.Remove(movingCube.gameObject);
                 Answer_Check(movingCube);
+                aopManager.TouchSoundCheck(isCorrect);
+                
             }
         }
     }
@@ -191,6 +194,7 @@ public class ObjectPooling_H : MonoBehaviour
     {        
         if (movingCube.result.Equals(answer))
         {
+            isCorrect = true;
             answer_count++;
             waitTime = 0;
             //정답오브젝트의 반응속도를 담기
@@ -199,6 +203,7 @@ public class ObjectPooling_H : MonoBehaviour
         }
         else
         {
+            isCorrect = false;
             //시간 감소                        
             TimeSlider.Instance.DecreaseTime_Item(5);
         }        
@@ -326,5 +331,7 @@ public class ObjectPooling_H : MonoBehaviour
         }
         touchEnable = true;
     }
+
+    
 }
 

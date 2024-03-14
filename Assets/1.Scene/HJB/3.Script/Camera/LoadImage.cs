@@ -15,20 +15,25 @@ public class LoadImage : MonoBehaviour
     [SerializeField] private GameObject image_prefeb;
     [SerializeField] private Image profile_Img;
     [SerializeField] private Image select_img;
+    public Sprite SelectImageSprite
+    {
+        get { return select_img.sprite; }
+        set
+        {
+            select_img.sprite = value;
+            // 이미지가 변경될 때마다 수행할 작업을 여기에 추가할 수 있습니다.
+            profileText_.PlayerSprite = value;            
+            Debug.Log("이미지가 변경되었습니다.");
+        }
+    }
+
+
+
     private GameObject[] image_obj; 
     private Texture2D[] texture2Ds;
     private bool loading = false;
 
-    private void Start()
-    {
-        byte[] fileData = DataBase.Instance.PlayerCharacter[0].image;
-        Texture2D texture = new Texture2D(2, 2);
-        texture.LoadImage(fileData);
-        Rect rect = new Rect(0, 0, texture.width, texture.height);
-        Texture2D texture2Dload = texture;
-
-        select_img.sprite = Sprite.Create(texture2Dload, rect, new Vector2(0.5f, 0.5f));
-    }
+    
     public void ImageFileLoad()
     {
         if (!loading)
@@ -91,17 +96,25 @@ public class LoadImage : MonoBehaviour
         {
             Texture2D texture_save = profile_Img.sprite.texture;
             byte[] saveImage = texture_save.EncodeToPNG();
+            DataBase.Instance.PlayerCharacter[0].image = saveImage;
             Client.instance.RegisterCharactorProfile_SaveDataToDB(saveImage);
-            
         }
         catch (Exception)
         {
-            Debug.Log("사진이 안됩니다. 하하하");
-            
+            Debug.Log("사진이 안됩니다. 하하하");            
         }
-        select_img.sprite = profile_Img.sprite;
-        profileText_.PlayerSprite = profile_Img.sprite;
+
+        SelectImageSprite = profile_Img.sprite;         
     }
 
-    
+    public void ProfileImage_Set()
+    {
+        byte[] fileData = DataBase.Instance.PlayerCharacter[0].image;
+        Texture2D texture = new Texture2D(2, 2);
+        texture.LoadImage(fileData);
+        Rect rect = new Rect(0, 0, texture.width, texture.height);
+        Texture2D texture2Dload = texture;
+
+        SelectImageSprite = Sprite.Create(texture2Dload, rect, new Vector2(0.5f, 0.5f));
+    }
 }
