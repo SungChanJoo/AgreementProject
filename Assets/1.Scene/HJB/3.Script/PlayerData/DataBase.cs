@@ -7,7 +7,27 @@ public class DataBase : MonoBehaviour
     public static DataBase Instance = null;
     public Player_DB playerInfo;
     public List<Player_DB> PlayerCharacter = new List<Player_DB>();
-    
+    public int CharacterIndex {
+        get
+        {
+            return CharacterIndex;
+        }
+        set
+        {
+            CharacterIndex = value;
+            //추가 버튼 누를 시
+            if(PlayerCharacter.Count < CharacterIndex+1)
+            {
+
+            }
+
+            //1. ClientLiscense 변경
+            //2. ClientLoginSet() clientLisence 변경 반영
+            //3. PlayerDataLoad() 변경된 클라이언트의 캐릭터 넘버로 플레이어 데이터 DB에서 불러오기
+
+            PlayerDataLoad();
+        }
+    }
     private void Awake()
     {
         if (Instance == null)

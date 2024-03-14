@@ -37,4 +37,8 @@ public class ProfileManager : MonoBehaviour
     {
         PlayerImage_panel.SetActive(!PlayerImage_panel.activeSelf);
     }
+    public void PlayerChange_btn(int num)
+    {
+        DataBase.Instance.CharacterIndex = num;  
+    }
 }
