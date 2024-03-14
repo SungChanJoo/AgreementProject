@@ -10,8 +10,12 @@ public class ProfileManager : MonoBehaviour
     [SerializeField] private GameObject PlayerBirthDay_panel;
     [SerializeField] private GameObject RecordDelete_panel;
     [SerializeField] private GameObject PlayerImage_panel;
+    [SerializeField] private LoadImage profileLoad ;
 
-    
+    private void OnEnable()
+    {
+        profileLoad.ProfileImage_Set();
+    }
     public void PlayerChange_UI()
     {
         PlayerChange_panel.SetActive(!PlayerChange_panel.activeSelf);        
@@ -37,4 +41,9 @@ public class ProfileManager : MonoBehaviour
     {
         PlayerImage_panel.SetActive(!PlayerImage_panel.activeSelf);
     }
+    public void PlayerChange_btn(int num)
+    {
+        DataBase.Instance.CharacterIndex = num;  
+    }
+
 }
