@@ -721,6 +721,8 @@ MonoBehaviour:
   acceleration: 10
   decceleration: 1
   velPower: 1
+  SetFowardRotateTime: 5
+  _setRotateTimebet: 0
   EmtiCanvas: {fileID: 3858226362016809873}
   EmtiArray:
   - {fileID: 6113850032258990842}
@@ -1134,6 +1136,10 @@ PrefabInstance:
     - target: {fileID: 2318704359664854840, guid: 0f38d7001a152ca458b8cb0fc5519cc2, type: 3}
       propertyPath: m_Name
       value: Loading UI Canvas
+      objectReference: {fileID: 0}
+    - target: {fileID: 2318704359664854840, guid: 0f38d7001a152ca458b8cb0fc5519cc2, type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3958404731199324013, guid: 0f38d7001a152ca458b8cb0fc5519cc2, type: 3}
       propertyPath: m_Pivot.x
