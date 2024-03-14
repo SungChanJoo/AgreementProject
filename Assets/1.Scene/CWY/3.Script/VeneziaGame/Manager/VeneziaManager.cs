@@ -16,6 +16,11 @@ public class QuestData
     }
 }
 
+public enum VeneGameMode
+{
+    Sole, Couple
+}
+
 public class VeneziaManager : GameSetting
 {
     public static VeneziaManager Instance = null;
@@ -25,12 +30,19 @@ public class VeneziaManager : GameSetting
     [SerializeField] private GameObject gameover; // 테스트용 게임오버 이미지
     [SerializeField] private GameObject CubeParent;
 
+    public VeneGameMode veneGameMode;
+
+
     public bool isGameover = false;
 
     //아이템과의 상호작용도 여기에 구현
     //문제 출제를 매니저에서 관리 , 출제 문제의 이미지와 이름을 기준으로 정답의 유무를 판단 할 수 있어야함.
+    [Header("PlayerOne")]
     [SerializeField] public Image Quest_Img;
     [SerializeField] private TextMeshProUGUI Quest_text;
+    [Header("PlayerTwo")]
+    [SerializeField] public Image Quest2_Img;
+    [SerializeField] private TextMeshProUGUI Quest2_text;
     //한글 및 영어 문제에 사용 할 이미지 sprite 한글과 영어, 한자 
     [SerializeField] public Sprite[] sprites_K; 
     [SerializeField] public Sprite[] sprites_E; 
@@ -92,7 +104,8 @@ public class VeneziaManager : GameSetting
     public int DestroyTime;
 
     private int randomIndex = 0;
-    private int SaverandomIndex = 999;
+    private int randomIndexSecond = 0;
+    private int[] SaverandomIndex = new int[] { 999, 999 };
     //반응속도 측정 시간
     float trueReactionTime;
     float totalReactionTime;
@@ -100,12 +113,11 @@ public class VeneziaManager : GameSetting
     //최종 반응속도 저장 변수
     float ReactionTime;
 
-    //한국어 관련 문제 데이터 저장
+    //문제 데이터 저장
     public Dictionary<string, QuestData> Quest = new Dictionary<string, QuestData>();
-    //영어 관련 문제 데이터 저장
-    public Dictionary<string, QuestData> QuestEnglish = new Dictionary<string, QuestData>();
-    //한자 관련 문제 
-    public Dictionary<string, QuestData> QuestHanja = new Dictionary<string, QuestData>();
+
+    private bool isFirstPlayerTouch = false;
+    private bool isStart = false;
     private void Awake()
     {
         if (Instance == null)
@@ -120,33 +132,36 @@ public class VeneziaManager : GameSetting
     }
 
     private void StartSet()
-    {        
-        //1 3 4 B D E 한글 영어 한좌
-        if (game_Type == Game_Type.C) //한글
+    {
+        //1 3 4 B D E 한글 영어 한좌veneGameMode == VeneGameMode.Sole
+        if (true)
         {
-            for (int i = 0; i < sprites_K.Length; i++)
+            if (game_Type == Game_Type.C) //한글
             {
-                string key = KorWord[i];
-                QuestData data = new QuestData(sprites_K[i], KorWord[i]);
-                Quest.Add(key, data);
+                for (int i = 0; i < sprites_K.Length; i++)
+                {
+                    string key = KorWord[i];
+                    QuestData data = new QuestData(sprites_K[i], KorWord[i]);
+                    Quest.Add(key, data);
+                }
             }
-        }
-        else if (game_Type == Game_Type.D) //영어 
-        {
-            for (int i = 0; i < sprites_E.Length; i++)
+            else if (game_Type == Game_Type.D) //영어 
             {
-                string key = EnglishWord[i];
-                QuestData data = new QuestData(sprites_E[i], EnglishWord[i]);
-                Quest.Add(key, data);
+                for (int i = 0; i < sprites_E.Length; i++)
+                {
+                    string key = EnglishWord[i];
+                    QuestData data = new QuestData(sprites_E[i], EnglishWord[i]);
+                    Quest.Add(key, data);
+                }
             }
-        }
-        else
-        {
-            for (int i = 0; i < sprites_H.Length; i++)
+            else
             {
-                string key = HanJa[i];
-                QuestData data = new QuestData(sprites_H[i], HanJa[i]);
-                Quest.Add(key, data);
+                for (int i = 0; i < sprites_H.Length; i++)
+                {
+                    string key = HanJa[i];
+                    QuestData data = new QuestData(sprites_H[i], HanJa[i]);
+                    Quest.Add(key, data);
+                }
             }
         }
 
@@ -158,8 +173,20 @@ public class VeneziaManager : GameSetting
         trueReactionTime = 0;
         CorrectAnswerCount = 0;
         ClickCount = 0;
-        ObjectPooling.Instance.CreateQuestPrefab(index, QuestIndex + index);
-        limitCount = ObjectPooling.Instance.cubePool.Count - QuestRange;
+        
+        //퀘스트 오브젝트 생성
+        if(veneGameMode == VeneGameMode.Sole)
+        {
+            ObjectPooling.Instance.CreateQuestPrefab(index, QuestIndex + index);
+            limitCount = ObjectPooling.Instance.cubePool.Count - QuestRange;
+        }
+        else
+        {
+            limitCount = (game_Type == Game_Type.E) ? 65 : 100;
+            int indexSet = (game_Type == Game_Type.E) ? 70 : 105;
+            ObjectPooling.Instance.CreateQuestPrefab(0, indexSet);
+        }
+        
         DisplayRandomQuest();
         //시간 시작 
         StartTime();
@@ -191,9 +218,9 @@ public class VeneziaManager : GameSetting
                 Cube Questprefab = hit.collider.gameObject.GetComponent<Cube>();
                 if (Questprefab != null && Questprefab.objectType == ObjectType.CorrectAnswer) // 큐브를 눌렀을때 Quest 인지 알아야함
                 {
+                    isFirstPlayerTouch = (Questprefab.playerNum == PlayerNum.One) ? true : false;
                     if (QuestCount > -1)
                     {
-                        //Score.Instance.Get_FirstScore();
                         RemainAnswer--;
                         CorrectAnswerCount++;
                         ClickCount++;
@@ -366,41 +393,84 @@ public class VeneziaManager : GameSetting
 
     public void NextQuest()
     {
-        QuestData randomQuest = GetRandomQuest();
+        QuestData[] randomQuest = GetRandomQuest();
         if (randomQuest == null) return;  //퀘스트가 전부 출제 되었을 때 다음문제 실행 방지
-        Quest_Img.sprite = randomQuest.sprite;
-        Quest_text.text = randomQuest.description;
+        if(veneGameMode == VeneGameMode.Sole)
+        {
+            Quest_Img.sprite = randomQuest[0].sprite;
+            Quest_text.text = randomQuest[0].description;
+            Quest2_Img = null;
+            Quest2_text = null;
+        }
+        else
+        {
+            if (!isStart)
+            {
+                isStart = true;
+                Quest_Img.sprite = randomQuest[0].sprite;
+                Quest_text.text = randomQuest[0].description;
+                Quest2_Img.sprite = randomQuest[1].sprite;
+                Quest2_text.text = randomQuest[1].description;
+            }
+            else
+            {
+                //첫번 쨰 플레이어가 터치 했을 경우, 첫 번쨰 플레이어의 문제만 바꾸고
+                //두번째 플레이어가 터치했을 경우 두번째 플레이어의 문제만 바꿀것.
+                if (isFirstPlayerTouch)
+                {
+                    Quest_Img.sprite = randomQuest[0].sprite;
+                    Quest_text.text = randomQuest[0].description;
+                }
+                else
+                {
+                    Quest2_Img.sprite = randomQuest[1].sprite;
+                    Quest2_text.text = randomQuest[1].description;
+                }
+            }
+
+        }
+        
+
+
     }
 
-    private QuestData GetRandomQuest()
+    private QuestData[] GetRandomQuest()
     {
         if (QuestCount == 0) return null; //null 값 처리 (문제가 없을 때 사용)
-        //QuestKorean.Count
         QuestData[] questArray = new QuestData[Quest.Count];
         Quest.Values.CopyTo(questArray, 0);
         QuestCount--;
-        QuestData selectedQuest;
+        QuestData[] selectedQuest = new QuestData[2];
         //연속 출제를 방지
-        randomIndex = Random.Range(index, QuestIndex + index); //첫 출제시 랜덤 인댁스 정하기 
-        while (randomIndex == SaverandomIndex)
+        if(veneGameMode == VeneGameMode.Sole)
         {
-            randomIndex = Random.Range(index, 10 + index);  // Todo : prototype이 아닌 cbt 제작 과정에서는 0 < 부분을 스텝에 맞는 인덱스를 가져 올 수 있도록 설정 변경 할 것.
-        }
-        // 퀘스트가 1개남은상태에서 들어오면 QuestCount에의해 -- 되어 0개가된다. 01234<
-        selectedQuest = questArray[randomIndex]; // 
-        SaverandomIndex = randomIndex;
-        // 문제가 2개이상 있는 경우에는 , 가장 뒤에있는 문제를 제외한 문제중 하나를 출제
-        // 단, 문제가 1개가 남았을 때는 그녀석을 출제 
-        foreach (var kvp in Quest)
-        {
-            if (kvp.Value == selectedQuest)
+            randomIndex = Random.Range(index, QuestIndex + index); //첫 출제시 랜덤 인댁스 정하기 
+            while (randomIndex == SaverandomIndex[0])
             {
-                Quest.Remove(kvp.Key);
-                Quest.Add(kvp.Key, kvp.Value);
-                break;
-                //선택된 문제를 출제하고 다시 저장을 1번만 실행
+                randomIndex = Random.Range(index, 10 + index);
             }
+            SaverandomIndex[0] = randomIndex;
+            selectedQuest[0] = questArray[randomIndex];
         }
+        else
+        {
+            //2인 모드일 때는 2가지의 정보가 필요
+            randomIndex = Random.Range(0, ObjectPooling.Instance.cubePool.Count); 
+            randomIndexSecond = Random.Range(0, ObjectPooling.Instance.cubePoolTwo.Count);
+            while (randomIndex == SaverandomIndex[0])
+            {
+                randomIndex = Random.Range(0, ObjectPooling.Instance.cubePool.Count);
+            }
+            while (randomIndexSecond == SaverandomIndex[1])
+            {
+                randomIndexSecond = Random.Range(0, ObjectPooling.Instance.cubePoolTwo.Count);
+            }
+            SaverandomIndex[0] = randomIndex;
+            SaverandomIndex[1] = randomIndexSecond;
+
+            selectedQuest[0] = questArray[randomIndex];
+            selectedQuest[1] = questArray[randomIndexSecond];
+        }        
         return selectedQuest;
     }
     private void Set_QuestCount()
@@ -427,6 +497,11 @@ public class VeneziaManager : GameSetting
                 break;
             default:
                 break;
+        }
+
+        if(veneGameMode == VeneGameMode.Couple)
+        {
+            QuestCount = 9999; //2인모드에서는 퀘스트 갯수 제한x
         }
     }
     #endregion

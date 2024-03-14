@@ -8,17 +8,17 @@ public enum ObjectType
     CorrectAnswer,
 }
 
-/*public enum Quset_exam
+public enum PlayerNum
 {
-    Before,
-    Current,
-    After,
-}*/
+    One,
+    Two
+}
 
 
 public class Cube : MonoBehaviour
 {
     public ObjectType objectType;
+    public PlayerNum playerNum;
     //  public  Quset_exam quset_Exam;
 
     public float StartSpeed; // 공을 움직일 속도  1 
