@@ -563,39 +563,38 @@ public class Client : MonoBehaviour
 
         #region dataList Format / filterList Format
         // 들어오는 형태
-        // dataList[0] = "[Load]AnalyticsData|E|day1|venezia_kor_level1_analytics|ReactionRate|AnswerRate|E|...??"
+        // dataList[0] = "[Load]AnalyticsData|day1|venezia_kor_level1_analytics|ReactionRate|AnswerRate|E|...??"
         // dataList[1] = "day1|venezia_kor_level1_analytics|ReactionRate|AnswerRate|E|??"
         // ... dataList[Last] = "CharactorNumber|Name|Profile|E|
 
         // Filterd List or Array가 밑에처럼 구분되어야함
-        // dataList[0] = "[Load]AnalyticsData|E|"
-        // dataList[1] = "day1|venezia_kor_level1_analytics|ReactionRate|AnswerRate|E|"
-        // dataList[2] = "day1|venezia_kor_level2_analytics|ReactionRate|AnswerRate|E|"
-        // dataList[3] = "day1|venezia_kor_level3_analytics|ReactionRate|AnswerRate|E|"
-        // dataList[4] = "day1|venezia_eng_level1_analytics|ReactionRate|AnswerRate|E|"
-        // dataList[5] = "day1|venezia_eng_level2_analytics|ReactionRate|AnswerRate|E|"
-        // dataList[6] = "day1|venezia_eng_level3_analytics|ReactionRate|AnswerRate|E|"
-        // dataList[7] = "day1|venezia_chn_analytics|ReactionRate|AnswerRate|E|"
-        // dataList[8] = "day1|calculation_level1_anlaytics|ReactionRate|AnswerRate|E|"
-        // dataList[9] = "day1|calculation_level2_anlaytics|ReactionRate|AnswerRate|E|"
-        // dataList[10] = "day1|calculation_level3_anlaytics|ReactionRate|AnswerRate|E|"
-        // dataList[11] = "day1|gugudan_level1_analytics|ReactionRate|AnswerRate|E|"
-        // dataList[12] = "day1|gugudan_level2_analytics|ReactionRate|AnswerRate|E|"
-        // dataList[13] = "day1|gugudan_level3_analytics|ReactionRate|AnswerRate|E|"
-        // ...
-        // dataList[79] = "day7|venezia_kor_level1_analytics|ReactionRate|AnswerRate|E|"
-        // dataList[80] = "day7|venezia_kor_level2_analytics|ReactionRate|AnswerRate|E|"
-        // dataList[81] = "day7|venezia_kor_level3_analytics|ReactionRate|AnswerRate|E|"
-        // dataList[82] = "day7|venezia_eng_level1_analytics|ReactionRate|AnswerRate|E|"
-        // dataList[83] = "day7|venezia_eng_level2_analytics|ReactionRate|AnswerRate|E|"
-        // dataList[84] = "day7|venezia_eng_level3_analytics|ReactionRate|AnswerRate|E|"
-        // dataList[85] = "day7|venezia_chn_analytics|ReactionRate|AnswerRate|E|"
-        // dataList[86] = "day7|calculation_level1_anlaytics|ReactionRate|AnswerRate|E|"
-        // dataList[87] = "day7|calculation_level2_anlaytics|ReactionRate|AnswerRate|E|"
-        // dataList[88] = "day7|calculation_level3_anlaytics|ReactionRate|AnswerRate|E|"
-        // dataList[89] = "day7|gugudan_level1_analytics|ReactionRate|AnswerRate|E|"
-        // dataList[90] = "day7|gugudan_level2_analytics|ReactionRate|AnswerRate|E|"
-        // dataList[91] = "day7|gugudan_level3_analytics|ReactionRate|AnswerRate|E|"
+        // filterList[0] = "[Load]AnalyticsData|"day1|venezia_kor_level1_analytics|ReactionRate|AnswerRate|E|"
+        // filterList[1] = "day1|venezia_kor_level2_analytics|ReactionRate|AnswerRate|E|"
+        // filterList[2] = "day1|venezia_kor_level3_analytics|ReactionRate|AnswerRate|E|"
+        // filterList[3] = "day1|venezia_eng_level1_analytics|ReactionRate|AnswerRate|E|"
+        // filterList[4] = "day1|venezia_eng_level2_analytics|ReactionRate|AnswerRate|E|"
+        // filterList[5] = "day1|venezia_eng_level3_analytics|ReactionRate|AnswerRate|E|"
+        // filterList[6] = "day1|venezia_chn_analytics|ReactionRate|AnswerRate|E|"
+        // filterList[7] = "day1|calculation_level1_anlaytics|ReactionRate|AnswerRate|E|"
+        // filterList[8] = "day1|calculation_level2_anlaytics|ReactionRate|AnswerRate|E|"
+        // filterList[9] = "day1|calculation_level3_anlaytics|ReactionRate|AnswerRate|E|"
+        // filterList[10] = "day1|gugudan_level1_analytics|ReactionRate|AnswerRate|E|"
+        // filterList[11] = "day1|gugudan_level2_analytics|ReactionRate|AnswerRate|E|"
+        // filterList[12] = "day1|gugudan_level3_analytics|ReactionRate|AnswerRate|E|"
+        // 
+        // filterList[78] = "day7|venezia_kor_level1_analytics|ReactionRate|AnswerRate|E|"
+        // filterList[79] = "day7|venezia_kor_level2_analytics|ReactionRate|AnswerRate|E|"
+        // filterList[80] = "day7|venezia_kor_level3_analytics|ReactionRate|AnswerRate|E|"
+        // filterList[81] = "day7|venezia_eng_level1_analytics|ReactionRate|AnswerRate|E|"
+        // filterList[82] = "day7|venezia_eng_level2_analytics|ReactionRate|AnswerRate|E|"
+        // filterList[83] = "day7|venezia_eng_level3_analytics|ReactionRate|AnswerRate|E|"
+        // filterList[84] = "day7|venezia_chn_analytics|ReactionRate|AnswerRate|E|"
+        // filterList[85] = "day7|calculation_level1_anlaytics|ReactionRate|AnswerRate|E|"
+        // filterList[86] = "day7|calculation_level2_anlaytics|ReactionRate|AnswerRate|E|"
+        // filterList[87] = "day7|calculation_level3_anlaytics|ReactionRate|AnswerRate|E|"
+        // filterList[88] = "day7|gugudan_level1_analytics|ReactionRate|AnswerRate|E|"
+        // filterList[89] = "day7|gugudan_level2_analytics|ReactionRate|AnswerRate|E|"
+        // filterList[90] = "day7|gugudan_level3_analytics|ReactionRate|AnswerRate|E|"
         #endregion
 
         // 서버로부터 받아온 dataList를 하나의 string에 담아서 처리
@@ -606,7 +605,7 @@ public class Client : MonoBehaviour
 
         // E|로 분할 및 RequestName 제거
         filterList = oneData.Split(separatorString, StringSplitOptions.RemoveEmptyEntries).ToList();
-        filterList.RemoveAt(0);
+        filterList[0] = filterList[0].Substring("[Load]AnalyticsData|".Length);
 
         for (int i = 0; i < filterList.Count; i++)
         {
@@ -631,7 +630,7 @@ public class Client : MonoBehaviour
             {
                 for(int k = 0; k < levels; k++)
                 {
-                    Debug.Log($"[Client] Check clientAnalyticsData.Data.Value(reactionRate) : {clientAnalyticsData.Data[(i + 1, (Game_Type)j, k + 1)].reactionRate}");
+                    Debug.Log($"[Client] Check clientAnalyticsData.Data.Value(reactionRate), i,j,k : {i}, {j}, {k} : {clientAnalyticsData.Data[(i + 1, (Game_Type)j, k + 1)].reactionRate}");
                 }
             }
         }
