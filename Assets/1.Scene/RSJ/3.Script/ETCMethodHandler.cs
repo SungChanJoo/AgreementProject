@@ -57,7 +57,7 @@ public class ETCMethodHandler
         // dataList[11] = "day1|gugudan_level2_analytics|ReactionRate|AnswerRate|E|"
         // dataList[12] = "day1|gugudan_level3_analytics|ReactionRate|AnswerRate|E|"
 
-        for (int i = 1; i < filterDataList.Count; i++) // 0Àº requestName
+        for (int i = 0; i < filterDataList.Count; i++) // 0Àº requestName
         {
             List<string> tempList = filterDataList[i].Split('|', StringSplitOptions.RemoveEmptyEntries).ToList();
 
