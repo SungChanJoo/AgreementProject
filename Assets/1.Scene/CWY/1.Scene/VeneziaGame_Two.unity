@@ -2577,6 +2577,7 @@ MonoBehaviour:
   PausePrefab: {fileID: 7255894919554607050, guid: 75b3928eb8a2b994081d038c0d9042b6, type: 3}
   sprite: {fileID: 0}
   QuestImg: {fileID: 240970841}
+  QuestTwoImg: {fileID: 1375934404}
   CubeCount: 1
   ItemCount: 5
   cubePool: []
@@ -3064,7 +3065,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 962878335}
-  - component: {fileID: 962878336}
   m_Layer: 0
   m_Name: PlayerTwoPooling
   m_TagString: Untagged
@@ -3089,34 +3089,6 @@ Transform:
   m_Father: {fileID: 299114681}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &962878336
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 962878334}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 016f8acf90b099a40807819b1ecf004b, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  Cube: {fileID: 1079827597520798626, guid: 42324beeb234f8b4b876e05c9fb72576, type: 3}
-  Pool_Position: {fileID: 962878335}
-  Pool_PositionTwo: {fileID: 962878335}
-  CubeParentObject: {fileID: 1366681388}
-  CubeParentObjectTwo: {fileID: 1366681388}
-  ItemParentObject: {fileID: 12111037}
-  MeteorPrefab: {fileID: 371837130864099498, guid: 341d2eb32cfd00e45a350a399d1fbadf, type: 3}
-  PausePrefab: {fileID: 7255894919554607050, guid: 75b3928eb8a2b994081d038c0d9042b6, type: 3}
-  sprite: {fileID: 0}
-  QuestImg: {fileID: 240970841}
-  CubeCount: 1
-  ItemCount: 5
-  cubePool: []
-  cubePoolTwo: []
-  MeteorPool: []
-  PausePool: []
 --- !u!1001 &979645159
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -4682,6 +4654,7 @@ MonoBehaviour:
     TotalQuestions: 0
     TotalScore: 0
   result_Printer: {fileID: 756554489}
+  source: {fileID: 0}
   gameover: {fileID: 1249587734}
   CubeParent: {fileID: 577192752}
   veneGameMode: 1
