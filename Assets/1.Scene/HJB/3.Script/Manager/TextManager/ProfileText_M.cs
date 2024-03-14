@@ -22,6 +22,16 @@ public class ProfileText_M : MonoBehaviour
     private ProfileManager profileManager;
 
     public string PlayerName;
+    public string CharacterName
+    {
+        get { return characterName.text; }
+        set
+        {
+            characterName.text = value;
+            PlayerName = characterName.text;
+        }
+    }
+
     public Sprite PlayerSprite;
     private void Awake()
     {
@@ -72,7 +82,7 @@ public class ProfileText_M : MonoBehaviour
     private void StartLoadCharactorData()
     {
         //추가적으로 플레이어 변경 창에서 이름도 바뀌도록 로직 넣을 것
-        characterName.text = DataBase.Instance.PlayerCharacter[0].playerName;
+        CharacterName = DataBase.Instance.PlayerCharacter[0].playerName;
         Birthday.text = DataBase.Instance.PlayerCharacter[0].BirthDay;
            
         totalAnswer.text = DataBase.Instance.PlayerCharacter[0].TotalAnswers.ToString();
@@ -86,17 +96,16 @@ public class ProfileText_M : MonoBehaviour
             //데이터 바꾸기
             DataBase.Instance.PlayerCharacter[0].playerName = ChangeName_Input.text;
             //바꾼 이름 출력
-            characterName.text = ChangeName_Input.text;
+            CharacterName = ChangeName_Input.text;
             //DB에 Load하기
             CharacterChangeNameLoad();
             Client.instance.RegisterCharactorName_SaveDataToDB(ChangeName_Input.text);            
         }
         catch (System.Exception)
         {
-            characterName.text = ChangeName_Input.text;
+            CharacterName = ChangeName_Input.text;
             Debug.Log("네트워크 연결 또는 DB에 접속이 불가합니다.");            
-        }
-        PlayerName = characterName.text;
+        }        
         TextClear(ChangeName_Input);
     }
 

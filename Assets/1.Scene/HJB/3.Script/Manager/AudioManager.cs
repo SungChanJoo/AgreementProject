@@ -20,6 +20,8 @@ public class AudioManager : MonoBehaviour
     private float bgmValue;
     private float sfxValue;
 
+    private Game_Type game_Type;
+
     private void Awake()
     {
         if (Instance == null)
@@ -109,7 +111,5 @@ public class AudioManager : MonoBehaviour
     public void SFX_VolumeSet()
     {
         audioMixer.SetFloat("SFX", Mathf.Log10(sfx_slider.value) * 20f);
-    }
-
-
+    }    
 }
