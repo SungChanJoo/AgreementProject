@@ -375,50 +375,66 @@ public class Client : MonoBehaviour
         File.WriteAllText(licenseFolderPath + "/clientlicense.json", jsonString);
     }
 
+    // 공용Json파일에 LicenseNumber 등록 / 비동기로 호출된 것이 끝났을때 동기적으로 호출시키기 위해
+    public void PublicSaveClientDataToJsonFile(int charactorNumber)
+    {
+        // JsonData 생성
+        JsonData client_Json = new JsonData();
+        client_Json["LicenseNumber"] = clientLicenseNumber;
+        client_Json["Charactor"] = charactorNumber;
+
+        // Json 데이터를 문자열로 변환하여 파일에 저장
+        string jsonString = JsonMapper.ToJson(client_Json);
+        File.WriteAllText(licenseFolderPath + "/clientlicense.json", jsonString);
+    }
+
     // 유저 데이터 처리
     private void HanlelLoadUserData(List<string> dataList)
     {
-        Debug.Log("[Client] HandleLoadUserData..");
+        Debug.Log("[Client] Handle LoadUserData..");
 
+        #region dataList Format / filterList Format
         // 들어오는 형태
         // dataList[0] = "[Load]UserData|createdCharactorCount|E|CharactorNumber|Name|Profile|E|"
         // dataList[1] = "CharactorNumber|Name|Profile|E|CharactorNumber|Name|Profile|E|"
         // ... dataList[Last] = "CharactorNumber|Name|Profile|E|
+
+        // 하나의 string
+        // string = "[Load]UserData|createdCharactorCount|E|CharactorNumber|Name|Profile|E|CharactorNumber|Name|Profile|E|CharactorNumber|Name|Profile|E| ... CharactorNumber|Name|Profile|E|";
+
         // 원하는 형태(filter)
-        // filterList[0] = [Load]UserData|createdCharactorCount|
+        // filterList[0] = createdCharactorCount|
         // filterList[1] = CharactorNumber|Name|Profile|"
         // filterList[2] = CharactorNumber|Name|Profile|"
         // ... dataList[Last] = CharactorNumber|Name|Profile|
         // '|' Split후 각 데이터를 UserData_Value 생성자에 대입해서 사용
+        #endregion
 
+        // 하나의 string
+        string oneData = etcMethodHandler.CreateOneDataToFilter(dataList);
+
+        // Filtering dataList
+        List<string> filterList = new List<string>();
+
+        // E|로 분할 및 RequestName 제거
+        filterList = oneData.Split(separatorString, StringSplitOptions.RemoveEmptyEntries).ToList();
+        filterList[0] = filterList[0].Substring("[Load]UserData|".Length);
 
         // clientUserData Initiate
         clientUserData = new UserData();
         clientUserData.user = new List<UserData_Value>();
 
-        // Filtering dataList
-        List<string> filterList = new List<string>();
-
-        for(int i = 0; i < dataList.Count; i++)
-        {
-            // E| 제거 후 filterList에 추가
-            List<string> tempAllocate = dataList[i].Split($"{separatorString}", StringSplitOptions.RemoveEmptyEntries).ToList();
-            foreach(string str in tempAllocate)
-            {
-                filterList.Add(str);
-            }
-        }
-
         // clientUserData에 data 할당
-        for(int i = 0; i < filterList.Count; i++)
+        for (int i = 0; i < filterList.Count; i++)
         {
-            if (i == 0) clientUserData.createdCharactorCount = Int32.Parse(filterList[i].Split('|', StringSplitOptions.RemoveEmptyEntries)[1]);
+            List<string> tempList = filterList[i].Split('|', StringSplitOptions.RemoveEmptyEntries).ToList();
+
+            if(i == 0) clientUserData.createdCharactorCount = Int32.Parse(tempList[0]);
             else
             {
-                List<string> part = filterList[i].Split('|', StringSplitOptions.RemoveEmptyEntries).ToList();
-                int _charactorNumber = Int32.Parse(part[0]);
-                string _name = part[1];
-                byte[] _profile = Convert.FromBase64String(part[2]);
+                int _charactorNumber = Int32.Parse(tempList[0]);
+                string _name = tempList[1];
+                byte[] _profile = Convert.FromBase64String(tempList[2]);
                 UserData_Value userdata_value = new UserData_Value(_charactorNumber, _name, _profile);
                 clientUserData.user.Add(userdata_value);
             }
@@ -428,6 +444,9 @@ public class Client : MonoBehaviour
     // 플레이어 데이터 처리
     private void HandleLoadCharactorData(List<string> dataList)
     {
+        Debug.Log("[Client] Handle LoadCharactorData");
+
+        #region dataList Format / filterList Format
         // dataList[0] = "[Load]CharactorData|user_info|value|value..|value|E|";
         // dataList[1] = "rank|value|value|...|value|E|{gameTableName}|value|value|...|value|E|";
         // dataList[2] = "{gameTableName}|value|value|...|value|E|{gameTableName}|value|value|...|value|E|";
@@ -448,29 +467,28 @@ public class Client : MonoBehaviour
         // filterList[61] = gugudan_level1_step1|ReactionRate|AnswerCount|AnswerRate|Playtime|TotalScore|StarPoint|
         // ...
         // filterList[last=79] = gugudan_level3_step6|ReactionRate|AnswerCount|AnswerRate|Playtime|TotalScore|StarPoint|
+        #endregion
 
-        Debug.Log("[Client] Handling LoadCharactorData");
-
-        // clientPlayerData InitSetting
-        clientPlayerData = new Player_DB();
-
-        // dataList의 index가 어떻게 받아올지 모르니 하나의 string에 다 담아서 E|로 분리한다.
-        string oneData = null;
+        // 하나의 string
+        string oneData = etcMethodHandler.CreateOneDataToFilter(dataList);
 
         for (int i = 0; i < dataList.Count; i++)
         {
             Debug.Log($"[Client] dataList[{i}] : {dataList[i]}");
-            oneData += dataList[i];
         }
 
         Debug.Log(oneData);
 
         List<string> filterList = new List<string>();
 
+        // E|로 분할 및 RequestName 제거
         filterList = oneData.Split(separatorString, StringSplitOptions.RemoveEmptyEntries).ToList();
         filterList[0] = filterList[0].Substring("[Load]CharactorData|".Length);
 
-        for(int i = 0; i < filterList.Count; i++)
+        // clientPlayerData InitSetting
+        clientPlayerData = new Player_DB();
+
+        for (int i = 0; i < filterList.Count; i++)
         {
             List<string> tempList = filterList[i].Split('|', StringSplitOptions.RemoveEmptyEntries).ToList();
 
@@ -536,157 +554,18 @@ public class Client : MonoBehaviour
         }
 
         Debug.Log("[Client] End HandleLoadCharactorData..");
-
-        //// Server-Client간 데이터 통신이 너무 길어서 dataList의 index 초반부에 E|가 없을 경우 E|를 만날 때 까지의 index를 하나로 합친다.
-        //// profile 전송시 생각, UserData도 아마 처리해야할테니, etcMethodHandler에 추가해야할듯
-        //int indexCount = 0; // 합칠 index 개수
-        //for(int i = 0; i < dataList.Count; i++)
-        //{
-        //    if(!dataList[i].Contains(separatorString)) // E|가 없다면
-        //    {
-        //        dataList[0] += dataList[i + 1];
-        //        indexCount++;
-        //    }
-        //    else // E|를 만났다면
-        //    {
-        //        for(int j=0; j< indexCount; j++)
-        //        {
-        //            dataList.RemoveAt(j + 1);
-        //        }
-        //        break;
-        //    }
-        //}
-
-
-
-
-
-
-        //for (int i = 0; i < dataList.Count; i++)
-        //{
-        //    // requestName 제거
-        //    if (i == 0) dataList[0] = dataList[0].Substring("[Load]CharactorData".Length);
-
-        //    // "E|" 제거 -> DB table별로 List에 나눠서 담음
-        //    List<string> parts = new List<string>();
-        //    parts = dataList[i].Split(separatorString, StringSplitOptions.RemoveEmptyEntries).ToList(); 
-
-        //    // List[index]에 string
-        //    foreach (string part in parts) // part : rank|value|value|...|value|
-        //    {
-        //        //part.Split('|', StringSplitOptions.RemoveEmptyEntries);
-        //        CharactorData_FromServer.Add(part);
-        //    }
-
-        //}
-
-        //FilterCharactorData();
-    }
-
-    // 최종적으로 사용할 수 있는 Player_DB(clientPlayerData)
-    // 서버로부터 받고 1차적으로 정리한 data중 table name을 가지고 최종적으로 data 정리 
-    private void FilterCharactorData()
-    {
-        Debug.Log("[Client] Filtering... player data");
-        for (int i = 0; i < CharactorData_FromServer.Count; i++)
-        {
-            for (int j = 0; j < table.list.Count; j++)
-            {
-                if (CharactorData_FromServer[i].Contains(table.list[j]))
-                {
-                    List<string> values = CharactorData_FromServer[i].Split('|', StringSplitOptions.RemoveEmptyEntries).ToList(); // User테이블기준으로 User|User_Name|User_Profile|User_Coin이 있을것임
-                    values.RemoveAt(0); // 0번째 인덱스는 테이블명이므로 values에 필요하지 않다.
-                    CharactorData_Dic.Add(table.list[j], values);
-                }
-            }
-        }
-
-        Debug.Log("[Client] Store CharactorData to clientPlayerData variable");
-        // clientPlayerData InitSetting
-        clientPlayerData = new Player_DB();
-        
-        // user_info columns -> "User_LicenseNumber", "User_Charactor", "User_Name", "User_Profile", "User_Birthday", "User_TotalAnswers", "User_TotalTime", "User_Coin"
-        
-        // CharactorData_Dic에 담긴 값
-        // CharactorData_Dic["user_info"] -> [0]:name / [1]:profile / [2]:birthday / [3]:totalanswers / [4]:totaltime / [5]:coin
-        clientPlayerData.playerName = CharactorData_Dic["user_info"][0];
-        clientPlayerData.image = null; // Convert.FromBase64String(CharactorData_Dic["user_info"][1]);
-        clientPlayerData.Day = "";
-        clientPlayerData.BirthDay = CharactorData_Dic["user_info"][2];
-        clientPlayerData.TotalAnswers = int.Parse(CharactorData_Dic["user_info"][3]);
-        clientPlayerData.TotalTime = float.Parse(CharactorData_Dic["user_info"][4]);
-
-        string[] game_Names = { "venezia_kor", "venezia_eng", "venezia_chn", "calculation", "gugudan" };
-        int[] levels = { 1, 2, 3 };
-        int[] steps = { 1, 2, 3, 4, 5, 6 };
-
-        for (int i = 0; i < game_Names.Length; i++)
-        {
-            for (int j = 0; j < levels.Length; j++)
-            {
-                for (int k = 0; k < steps.Length; k++)
-                {
-                    Game_Type game_type;
-                    switch (i)
-                    {
-                        case 0:
-                            game_type = Game_Type.A;
-                            break;
-                        case 1:
-                            game_type = Game_Type.B;
-                            break;
-                        case 2:
-                            game_type = Game_Type.C;
-                            break;
-                        case 3:
-                            game_type = Game_Type.D;
-                            break;
-                        case 4:
-                            game_type = Game_Type.E;
-                            break;
-                        default:
-                            game_type = Game_Type.A;
-                            Debug.Log("[Client] AppStart_LoadAllDataFromDB() Game_Type default Problem");
-                            break;
-                    }
-
-                    string levelpart = $"level{levels[j]}";
-                    if (game_Names[i] == "venezia_chn")
-                    {
-                        j = 2; // venezia_chn 게임은 level이 1개뿐이므로 한번만 돌아야함.
-                        levelpart = "level";
-                    }
-
-                    string game_TableName = $"{game_Names[i]}_{levelpart}_step{steps[k]}";
-
-                    float reactionRate = float.Parse(CharactorData_Dic[$"{game_TableName}"][0]);
-                    int answersCount = Int32.Parse(CharactorData_Dic[$"{game_TableName}"][1]);
-                    int answers = Int32.Parse(CharactorData_Dic[$"{game_TableName}"][2]);
-                    float playTime = float.Parse(CharactorData_Dic[$"{game_TableName}"][3]);
-                    int totalScore = Int32.Parse(CharactorData_Dic[$"{game_TableName}"][4]);
-                    int starCount = Int32.Parse(CharactorData_Dic[$"{game_TableName}"][5]);
-
-                    Data_value datavalue = new Data_value(reactionRate, answersCount, answers, playTime, totalScore, starCount);
-
-                    clientPlayerData.Data.Add((game_type, j, k), datavalue);
-                }
-            }
-        }
-        Debug.Log("[Client] End HandleLoadCharactorData and Filter..");
     }
 
     // 분석 데이터 처리
     private void HandleLoadAnalyticsData(List<string> dataList)
     {
-        Debug.Log("[Client] HandleLoadAnlayticsData..");
+        Debug.Log("[Client] Handle LoadAnlayticsData..");
 
-        // clientAnalyticsData InitSetting
-        clientAnalyticsData = new AnalyticsData();
-
-        for(int i = 0; i < dataList.Count; i++)
-        {
-            Debug.Log($"[Client] AnalyticsDataList[{i}] : {dataList[i]}");
-        }
+        #region dataList Format / filterList Format
+        // 들어오는 형태
+        // dataList[0] = "[Load]AnalyticsData|E|day1|venezia_kor_level1_analytics|ReactionRate|AnswerRate|E|...??"
+        // dataList[1] = "day1|venezia_kor_level1_analytics|ReactionRate|AnswerRate|E|??"
+        // ... dataList[Last] = "CharactorNumber|Name|Profile|E|
 
         // Filterd List or Array가 밑에처럼 구분되어야함
         // dataList[0] = "[Load]AnalyticsData|E|"
@@ -717,26 +596,29 @@ public class Client : MonoBehaviour
         // dataList[89] = "day7|gugudan_level1_analytics|ReactionRate|AnswerRate|E|"
         // dataList[90] = "day7|gugudan_level2_analytics|ReactionRate|AnswerRate|E|"
         // dataList[91] = "day7|gugudan_level3_analytics|ReactionRate|AnswerRate|E|"
+        #endregion
 
-        // Filtering dataList 
-        List<string> filterDataList = new List<string>();
-        foreach(string str in dataList)
+        // 서버로부터 받아온 dataList를 하나의 string에 담아서 처리
+        string oneData = etcMethodHandler.CreateOneDataToFilter(dataList);
+
+        // Filtering dataList
+        List<string> filterList = new List<string>();
+
+        // E|로 분할 및 RequestName 제거
+        filterList = oneData.Split(separatorString, StringSplitOptions.RemoveEmptyEntries).ToList();
+        filterList.RemoveAt(0);
+
+        for (int i = 0; i < filterList.Count; i++)
         {
-            List<string> tempList = str.Split(separatorString, StringSplitOptions.RemoveEmptyEntries).ToList();
-            tempList.ForEach(data => filterDataList.Add(data));
+            Debug.Log($"[Client] AnalyticsData filterList[{i}] : {filterList[i]}");
         }
-        //dataList.ForEach(data => filterDataList.Add(data.Split(separatorString, StringSplitOptions.RemoveEmptyEntries)[0]));
+
+        // clientAnalyticsData InitSetting
+        clientAnalyticsData = new AnalyticsData();
 
         // clientAnalyticsData의 멤버변수인 Data에 Value 추가
-        etcMethodHandler.AddClientAnalyticsDataValue(filterDataList, clientAnalyticsData);
+        etcMethodHandler.AddClientAnalyticsDataValue(filterList, clientAnalyticsData);
 
-        //string day = "24.03.04";
-        //float reactionRate = 34.5f;
-        //int answerRate = 33;
-        //AnalyticsData_Value analyticsData_value = new AnalyticsData_Value(day, reactionRate, answerRate);
-
-        // AnalyticsData_Value의 Key 개수 : 보여줘야 하는 일수 7일(없으면 null or 0) * GameType 5개 * level 3개 = 105개 (- venezia_chn=14) 91개?
-        // clientAnalyticsData.Data.Add((1, Game_Type.A, 1), analyticsData_value);
         Debug.Log($"[Client] Check clientAnalyticsData.Data.Count : {clientAnalyticsData.Data.Count}");
 
         int days = 7;
@@ -761,50 +643,38 @@ public class Client : MonoBehaviour
     // 랭크 데이터 처리
     private void HandleLoadRankData(List<string> dataList)
     {
-        Debug.Log("[Client] HandleLoadRankData..");
+        Debug.Log("[Client] Handle LoadRankData..");
 
-        // 클라이언트에서 사용할 List 형식
-        // dataList[0] = "[Load]RankData|profile|name|score|E|";
-        // dataList[1] = "profile|name|totalScore|
-        // dataList[2] = profile|name|totalScore|E|
-        // ...
-        // dataList[6] = profile|name|totalScore|scorePlace|highestScorePlace|E|
-        // dataList[7] = profile|name|totalTime|E|
-        // ...
-        // dataList[last] = profile|name|totalTime|timePlace|highestTimePlace|E|
+        #region dataList Format / filterList Format
+        // 들어오는 형식 == dataList
+        // dataList[0] = "[Load]RankData|profile|name|score|E|profile|name|totalScore|E|";
+        // dataList[1] = profile|name|totalScore|E|profile|name|totalScore|E|"profile|name|totalScore|E| ??
 
+        // 원하는 형태 == filterList
+        // filterList[0] = "[Load]RankData|profile|name|score|E|";
+        // filterList[1] = "profile|name|totalScore|E|
+        // filterList[2] = profile|name|totalScore|E|
+        // ...
+        // filterList[6] = profile|name|totalScore|scorePlace|highestScorePlace|E|
+        // filterList[7] = profile|name|totalTime|E|
+        // ...
+        // filterList[last] = profile|name|totalTime|timePlace|highestTimePlace|E|
+        #endregion
+
+        // 하나의 string
+        string oneData = etcMethodHandler.CreateOneDataToFilter(dataList);
+
+        // Filtering dataList
         List<string> filterList = new List<string>();
-        for(int i = 0; i < dataList.Count; i++)
-        {
-            List<string> tempList = dataList[i].Split(separatorString, StringSplitOptions.RemoveEmptyEntries).ToList();
-            foreach(string str in tempList)
-            {
-                filterList.Add(str);
-            }
-        }
 
-        // RequestName 제거
+        // E| 분할 및 RequestName 제거
+        filterList = oneData.Split(separatorString, StringSplitOptions.RemoveEmptyEntries).ToList();
         filterList[0] = filterList[0].Substring("[Load]RankData|".Length);
 
         // clientRankData InitSetting
         clientRankData = new RankData();
         clientRankData.rankdata_score = new RankData_value[6];
         clientRankData.rankdata_time = new RankData_value[6];
-
-        /*
-         public class RankData_value
-{
-    public byte[] userProfile;
-    public string userName;
-    public int totalScore;
-    public float totalTime;
-    // 개인(index 5)용 순위
-    public int scorePlace;
-    public int timePlace;
-    public int highestScorePlace;
-    public int highestTimePlace;
-}
-         */
 
         // clientRankData에 data 할당
         for (int i = 0; i < filterList.Count; i++)
@@ -841,74 +711,6 @@ public class Client : MonoBehaviour
             }
         }
 
-        //// separatorString ( "E|" )을 기준으로 Split 한 List
-        //List<string> filterDataList = new List<string>();
-
-        //for(int i =0; i < dataList.Count; i++)
-        //{
-        //    // requestName 제거
-        //    if (i == 0) dataList[0] = dataList[0].Substring("[Load]RankData|".Length);
-
-        //    List<string> parts = new List<string>();
-        //    parts = dataList[i].Split(separatorString, StringSplitOptions.RemoveEmptyEntries).ToList();
-        //    parts.ForEach(data => filterDataList.Add(data)); // 인덱스(string) 옮김
-        //}
-        //Debug.Log("[Client] Check HandleLoadRankData..");
-        //for(int i = 0; i < filterDataList.Count; i++)
-        //{
-        //    Debug.Log($"{filterDataList[i]}");
-        //}
-
-        //for (int i = 0; i < filterDataList.Count; i++)
-        //{
-        //    List<string> parts = filterDataList[i].Split('|', StringSplitOptions.RemoveEmptyEntries).ToList();
-
-        //    if(i < 6) // score
-        //    {
-        //        for (int j = 0; j < parts.Count; j++)
-        //        {
-        //            if (j == 0) clientRankData.rankdata_score[i].scorePlace = Int32.Parse(parts[j]);
-        //            else if (j == 1) clientRankData.rankdata_score[i].userProfile = Convert.FromBase64String(parts[j]);
-        //            else if (j == 2) clientRankData.rankdata_score[i].userName = parts[j];
-        //            else if (j == 3) clientRankData.rankdata_score[i].totalScore = Int32.Parse(parts[j]);
-        //        }
-
-        //        // 자기 자신의 userlicensenumber와 usercharactor를 저장해둬야 개인의 데이터를 가져다 쓸수있다.
-        //        if(i == 5)
-        //        {
-        //            clientRankData.rankdata_score[i].userlicensenumber = Int32.Parse(clientLicenseNumber);
-        //            clientRankData.rankdata_score[i].usercharactor = Int32.Parse(clientCharactor);
-        //        }
-        //        else
-        //        {
-        //            clientRankData.rankdata_score[i].userlicensenumber = 0;
-        //            clientRankData.rankdata_score[i].usercharactor = 0;
-        //        }
-        //    }
-        //    else // time
-        //    {
-        //        for (int j = 0; j < parts.Count; j++)
-        //        {
-        //            if (j == 0) clientRankData.rankdata_time[i].timePlace = Int32.Parse(parts[j]);
-        //            else if (j == 1) clientRankData.rankdata_time[i].userProfile = Convert.FromBase64String(parts[j]);
-        //            else if (j == 2) clientRankData.rankdata_time[i].userName = parts[j];
-        //            else if (j == 3) clientRankData.rankdata_time[i].totalTime = float.Parse(parts[j]);
-        //        }
-
-        //        // 자기 자신의 userlicensenumber와 usercharactor를 저장해둬야 개인의 데이터를 가져다 쓸수있다.
-        //        if (i == 11)
-        //        {
-        //            clientRankData.rankdata_score[i].userlicensenumber = Int32.Parse(clientLicenseNumber);
-        //            clientRankData.rankdata_score[i].usercharactor = Int32.Parse(clientCharactor);
-        //        }
-        //        else
-        //        {
-        //            clientRankData.rankdata_score[i].userlicensenumber = 0;
-        //            clientRankData.rankdata_score[i].usercharactor = 0;
-        //        }
-        //    }
-        //}
-
         Debug.Log("[Client] End HandleLoadRankData..");
     }
 
@@ -917,43 +719,40 @@ public class Client : MonoBehaviour
     {
         Debug.Log("[Client] HandleLoadExpenditionCrew..");
 
-        for (int i = 0; i < dataList.Count; i++)
-        {
-            Debug.Log($"[Client] ExpenditionCrewList[{i}] : {dataList[i]}");
-        }
-
+        #region dataList Format / filterList Format
         // dataList[0] = "[Load]ExpenditionCrew|LastSelectCrew|crew1|crew2|...|crew(n)|"
 
-        // '|'를 기준으로 Split한 List
         // 사용하고자 하는 List 형태
-        // filterDataList[0] = [Load]ExpenditionCrew
-        // filterDataList[1] = LastSelectCrew
-        // filterDataList[2] = crew1
-        // ...
-        // filterDataList[n] = crew(n)
-        List<string> filterDataList = new List<string>();
+        // filterList[0] = [Load]ExpenditionCrew|LastSelectCrew|crew1|crew2|...|crew(n)|
+        #endregion
 
-        // 데이터를 받아올 때 dataList가 여러 index로 나눠질 수 있기 때문에 한번 더 Filtering
-        foreach (string str1 in dataList)
+        // 하나의 string
+        string oneData = etcMethodHandler.CreateOneDataToFilter(dataList);
+
+        // filterList
+        List<string> filterList = new List<string>();
+
+        // E| 분할 및 RequestName 제거
+        filterList = oneData.Split(separatorString, StringSplitOptions.RemoveEmptyEntries).ToList();
+        filterList[0] = filterList[0].Substring("[Load]ExpenditionCrew|".Length);
+
+        for (int i = 0; i < filterList.Count; i++)
         {
-            List<string> tempList = str1.Split('|', StringSplitOptions.RemoveEmptyEntries).ToList();
-            foreach(string str2 in tempList)
-            {
-                filterDataList.Add(str2);
-            }
+            Debug.Log($"[Client] ExpenditionCrew filterList[{i}] : {filterList[i]}");
         }
 
-        // requestName 제거
-        filterDataList.RemoveAt(0);
-
+        // ExpenditionCrew's member variable
         int SelectedCrew; //선택한 대원
         List<bool> OwnedCrew = new List<bool>(); //보유한 대원 리스트
 
-        SelectedCrew = Int32.Parse(filterDataList[0]);
+        List<string> tempList = filterList[0].Split('|', StringSplitOptions.RemoveEmptyEntries).ToList();
+
+        SelectedCrew = Int32.Parse(tempList[0]);
+
         bool haveThatCrew;
-        for(int i = 1; i < filterDataList.Count; i ++) // index 1부터 crew 보유여부
+        for (int i = 1; i < tempList.Count; i++)
         {
-            if (dataList[i] == "0") haveThatCrew = false;
+            if (tempList[i] == "0") haveThatCrew = false;
             else haveThatCrew = true;
 
             OwnedCrew.Add(haveThatCrew);
@@ -970,49 +769,51 @@ public class Client : MonoBehaviour
     {
         Debug.Log("[Client] Come in HandleLoadLastPlayData..");
 
-        for (int i = 0; i < dataList.Count; i++)
+        #region dataList Format / filterList Format
+        // dataList[0] = [Load]LastPlayData|(game1_level1)의 value|(game1_level2)의 value| ... |(game5_level3)의 value|
+        // dataList[1] = ... |(game5_level3)의 value| ??
+
+        // filterList 형태
+        // filterList[0] = [Load]LastPlayData|(game1_level1)의 value|(game1_level2)의 value| ... |(game5_level3)의 value|
+
+        // tempList
+        // tempList[0] = (game1_level1)의 value
+        // tempList[1] = (game1_level2)의 value
+        // ...
+        // tempList[n] = (game5_level3)의 value
+        #endregion
+
+        // 하나의 string
+        string oneData = etcMethodHandler.CreateOneDataToFilter(dataList);
+
+        // filterList
+        List<string> filterList = new List<string>();
+
+        // E| 분할 및 RequestName 제거
+        filterList = oneData.Split(separatorString, StringSplitOptions.RemoveEmptyEntries).ToList();
+        filterList[0] = filterList[0].Substring("[Load]LastPlayData|".Length);
+
+        List<string> tempList = filterList[0].Split('|', StringSplitOptions.RemoveEmptyEntries).ToList();
+
+        for (int i = 0; i < tempList.Count; i++)
         {
-            Debug.Log($"[Client] LastPlayDataList[{i}] : {dataList[i]}");
+            Debug.Log($"[Client] LastPlayData tempList[{i}] : {tempList[i]}");
         }
 
         // clientLastPlayData Initiate
         clientLastPlayData = new LastPlayData();
 
-        // dataList[0] = [Load]LastPlayData|(game1_level1)의 value|(game1_level2)의 value| ... |(game5_level3)의 value|
-
-        // '|'를 기준으로 Split한 List
-        // 사용하고자 하는 List 형태
-        // filterDataList[0] = [Load]LastPlayData
-        // filterDataList[1] = (game1_level1)의 value
-        // filterDataList[2] = (game1_level2)의 value
-        // ...
-        // filterDataList[n] = (game5_level3)의 value
-        List<string> filterDataList = new List<string>();
-
-        // 데이터를 받아올 때 dataList가 여러 index로 나눠질 수 있기 때문에 한번 더 Filtering
-        foreach (string str1 in dataList)
-        {
-            List<string> tempList = str1.Split('|', StringSplitOptions.RemoveEmptyEntries).ToList(); 
-            foreach (string str2 in tempList)
-            {
-                filterDataList.Add(str2);
-            }
-        }
-
-        // requestName 제거
-        filterDataList.RemoveAt(0);
-
         // clientLastPlayData Setting
-        for(int i = 0; i < filterDataList.Count; i++)
+        for(int i = 0; i < tempList.Count; i++)
         {
-            if (i < 3) clientLastPlayData.Step.Add((Game_Type.A, i + 1), Int32.Parse(filterDataList[i])); // venezia_kor
-            else if (i < 6) clientLastPlayData.Step.Add((Game_Type.B, (i + 1) - 3), Int32.Parse(filterDataList[i])); // venezia_eng
-            else if (i == 6) clientLastPlayData.Step.Add((Game_Type.C, (i + 1) - 6), Int32.Parse(filterDataList[i])); // venezia_chn
-            else if (i < 10) clientLastPlayData.Step.Add((Game_Type.D, (i + 1) - 7), Int32.Parse(filterDataList[i])); // calculation
-            else clientLastPlayData.Step.Add((Game_Type.E, (i + 1) - 10), Int32.Parse(filterDataList[i])); // gugudan;
+            if (i < 3) clientLastPlayData.Step.Add((Game_Type.A, i + 1), Int32.Parse(tempList[i])); // venezia_kor
+            else if (i < 6) clientLastPlayData.Step.Add((Game_Type.B, (i + 1) - 3), Int32.Parse(tempList[i])); // venezia_eng
+            else if (i == 6) clientLastPlayData.Step.Add((Game_Type.C, (i + 1) - 6), Int32.Parse(tempList[i])); // venezia_chn
+            else if (i < 10) clientLastPlayData.Step.Add((Game_Type.D, (i + 1) - 7), Int32.Parse(tempList[i])); // calculation
+            else clientLastPlayData.Step.Add((Game_Type.E, (i + 1) - 10), Int32.Parse(tempList[i])); // gugudan;
         }
 
-        Debug.Log("[Client] End HandleLoadLastPlayData...");
+        Debug.Log("[Client] End Handle LoadLastPlayData...");
     }
 
     // 프로필용 분석데이터 처리
@@ -1020,48 +821,48 @@ public class Client : MonoBehaviour
     {
         Debug.Log("[Client] Come in HandleLoadAnalyticsProfileData..");
 
-        for (int i = 0; i < dataList.Count; i++)
+        // 들어오는 dataList
+        // dataList[0] = [Load]AnalyticsProfileData|Level1_게임명|Level1_평균반응속도|Level1_평균정답률|
+        //                + Level2_게임명|Leve2_평균반응속도|Level2_평균정답률|Level3_게임명|Leve3_평균반응속도|Level3_평균정답률|
+
+        // filterList 형태
+        // filterList[0] = [Load]AnalyticsProfileData|Level1_게임명|Level1_평균반응속도|Level1_평균정답률|Level2_게임명|Leve2_평균반응속도|Level2_평균정답률|Level3_게임명|Leve3_평균반응속도|Level3_평균정답률|
+
+        // tempList 형태
+        // tempList[0] = Level1_게임명
+        // tempList[1] = Level1_평균반응속도
+        // tempList[2] = Level1_평균정답률
+        // ...
+        // tempList[n] = Level3_평균정답률
+
+        // 하나의 string
+        string oneData = etcMethodHandler.CreateOneDataToFilter(dataList);
+
+        // filterList
+        List<string> filterList = new List<string>();
+
+        // E| 분할 및 RequestName 제거
+        filterList = oneData.Split(separatorString, StringSplitOptions.RemoveEmptyEntries).ToList();
+        filterList[0] = filterList[0].Substring("[Load]ExpenditionCrew|".Length);
+
+        List<string> tempList = filterList[0].Split('|', StringSplitOptions.RemoveEmptyEntries).ToList();
+
+        for (int i = 0; i < tempList.Count; i++)
         {
-            Debug.Log($"[Client] dataList[{i}] : {dataList[i]}");
+            Debug.Log($"[Client] AnalyticsProfileData tempList[{i}] : {tempList[i]}");
         }
 
         // clientAnalyticsProfileData Initiate
         clientAnalyticsProfileData = new AnalyticsProfileData();
 
-        // 들어오는 dataList
-        // dataList[0] = [Load]AnalyticsProfileData|Level1_게임명|Level1_평균반응속도|Level1_평균정답률|
-        //                + Level2_게임명|Leve2_평균반응속도|Level2_평균정답률|Level3_게임명|Leve3_평균반응속도|Level3_평균정답률|
-
-        // '|'를 기준으로 Split한 List
-        // 사용하고자 하는 List 형태
-        // filterDataList[0] = [Load]AnalyticsProfileData
-        // filterDataList[1] = Level1_게임명
-        // filterDataList[2] = Level1_평균반응속도
-        // ...
-        // filterDataList[n] = Level3_평균정답률
-        List<string> filterDataList = new List<string>();
-
-        // 데이터를 받아올 때 dataList가 여러 index로 나눠질 수 있기 때문에 한번 더 Filtering
-        foreach (string str1 in dataList)
-        {
-            List<string> tempList = str1.Split('|', StringSplitOptions.RemoveEmptyEntries).ToList();
-            foreach (string str2 in tempList)
-            {
-                filterDataList.Add(str2);
-            }
-        }
-
-        // requestName 제거
-        filterDataList.RemoveAt(0);
-
         // clientAnalyticsProfileData Setting
-        for (int i = 0; i < filterDataList.Count; i++)
+        for (int i = 0; i < tempList.Count; i++)
         {
-            if(i % 3 == 0)
+            if (i % 3 == 0)
             {
-                string mostPlayedGame = filterDataList[i];
-                float reactionRate = float.Parse(filterDataList[i + 1]);
-                int answerRate = Int32.Parse(filterDataList[i + 2]);
+                string mostPlayedGame = tempList[i];
+                float reactionRate = float.Parse(tempList[i + 1]);
+                int answerRate = Int32.Parse(tempList[i + 2]);
                 clientAnalyticsProfileData.Data[i / 3] = new Tuple<string, float, int>(mostPlayedGame, reactionRate, answerRate);
             }
         }

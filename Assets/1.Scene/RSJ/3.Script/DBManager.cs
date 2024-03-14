@@ -186,38 +186,9 @@ public class DBManager : MonoBehaviour
         }
         reader.Close(); // DataReader가 열려있는 동안 추가적인 명령 실행 불가
 
-        //// user_info 변수
-        //string table_Name = "user_info";
-        //string[] columns = { "User_LicenseNumber", "User_Charactor", "User_Name", "User_Profile", "User_Birthday", "User_TotalAnswers", "User_TotalTime", "User_Coin" };
         int clientLicenseNumber = clientLicenseNumber_Base + count;
         int defaultClientCharactor = 1;
-        //int user_Charactor = 1;
-        //string user_Name = "Guest";
-        //byte[] user_Profile = { 0x00};
-        //string user_Birthday = "96.02.01";
-        //int user_TotalAnswers = 0;
-        //float user_TotalTime = 0f;
-        //int user_Coin = 0;
-        //
-        //// Binary Parameter
-        ////MySqlParameter binaryParameter = new MySqlParameter
-        //
-        //// 생성하는 쿼리문
-        //string createAccount_Command = $"INSERT INTO {table_Name} ({columns[0]}, {columns[1]}, {columns[2]}, {columns[3]}, {columns[4]}, {columns[5]}, {columns[6]}, {columns[7]}) " +
-        //                                $"VALUES (@clientLicenseNumber, @user_Charactor, @user_Name, @user_Profile, @user_Birthday, @user_TotalAnswers, @user_TotalTime, @user_Coin)"; // `(따옴표), '(백틱) 구분하기
-        //MySqlCommand insert_SqlCmd = new MySqlCommand(createAccount_Command, connection);
-        //insert_SqlCmd.Parameters.Add("@clientLicenseNumber", MySqlDbType.Int32).Value = clientLicenseNumber;
-        //insert_SqlCmd.Parameters.Add("@user_Charactor", MySqlDbType.Int32).Value = user_Charactor;
-        //insert_SqlCmd.Parameters.Add("@user_Name", MySqlDbType.VarChar).Value = user_Name;
-        //insert_SqlCmd.Parameters.Add("@user_Profile", MySqlDbType.MediumBlob).Value = user_Profile;
-        //insert_SqlCmd.Parameters.Add("@user_Birthday", MySqlDbType.MediumBlob).Value = user_Birthday;
-        //insert_SqlCmd.Parameters.Add("@user_TotalAnswers", MySqlDbType.MediumBlob).Value = user_TotalAnswers;
-        //insert_SqlCmd.Parameters.Add("@user_TotalTime", MySqlDbType.MediumBlob).Value = user_TotalTime;
-        //insert_SqlCmd.Parameters.Add("@user_Coin", MySqlDbType.Int32).Value = user_Coin;
-        //
-        //insert_SqlCmd.ExecuteNonQuery(); // command.ExecuteNonQuery()은 DB에서 변경 작업을 수행하는 SQL 명령문을 실행하고, 영향을 받은 행의 수를 반환하는 메서드
-        //
-        //string returnData = $"{clientLicenseNumber}|{user_Charactor}";
+        
         string returnData = $"{clientLicenseNumber}|{defaultClientCharactor}|";
 
         return returnData;
@@ -986,7 +957,7 @@ public class DBManager : MonoBehaviour
                     // client license와 db에 있는 license가 같고 client charactor와 db에 있는 charactor가 같다면 데이터를 불러온다
                     if ((clientlicensenumber == dbLicenseNumber) && (clientcharactor == dbcharactor))
                     {
-                        Debug.Log($"[DB] tableName : {selectTable.list[i]}, dbLicenseNumber : {dbLicenseNumber}, dbcharactor : {dbcharactor}");
+                        //Debug.Log($"[DB] tableName : {selectTable.list[i]}, dbLicenseNumber : {dbLicenseNumber}, dbcharactor : {dbcharactor}");
                         switch (selectTable.list[i])
                         {
                             case "user_info":
@@ -1041,7 +1012,7 @@ public class DBManager : MonoBehaviour
                                 return_TableData.Add(return_TempData);
                                 break;
                             default:
-                                Debug.Log("[DB] LoadCharactorData - game table");
+                                //Debug.Log("[DB] LoadCharactorData - game table");
                                 string game_ReactionRate = reader.GetFloat("ReactionRate").ToString();
                                 string game_AnswerCount = reader.GetInt32("AnswerCount").ToString();
                                 string game_AnswerRate = reader.GetInt32("AnswerRate").ToString();
@@ -1378,196 +1349,6 @@ public class DBManager : MonoBehaviour
 
         Debug.Log("[DB] Complete LoadRankData Method!!");
 
-        /*
-        //// rank table's row count
-        //string rowCount_Command = $"SELECT COUNT(*) FROM `rank`";
-        //MySqlCommand rowCount_SqlCmd = new MySqlCommand(rowCount_Command, connection);
-        //// Int 캐스팅
-        //object result = rowCount_SqlCmd.ExecuteScalar(); // ExcuteScalar() 메서드는 쿼리를 실행하고 결과 집합의 첫 번째 행의 첫 번째 열의 값을 반환
-        //Debug.Log($"[DB] Check result: {result}");
-        //result = (result == DBNull.Value) ? null : result;
-        //int rowCountInTable = Convert.ToInt32(result); 
-        //Debug.Log($"[DB] Check rowCount, rowCountInTable : {rowCountInTable}");
-        //
-        //// Score 기준
-        //string selectScore_Command = $"SELECT * FROM `rank`";
-        //MySqlCommand selectScore_SqlCmd = new MySqlCommand(selectScore_Command, connection);
-        //MySqlDataReader reader = selectScore_SqlCmd.ExecuteReader();
-        //Debug.Log("[DB] Check selectScore");
-        //
-        //List<List<string>> rankdata = new List<List<string>>(); 
-        //
-        //// table에 있는 data들 rankdata에 담기
-        //while(reader.Read())
-        //{
-        //    for(int i = 0; i < rowCountInTable; i++)
-        //    {
-        //        List<string> valuesInColumn = new List<string>();
-        //        
-        //        for (int j = 0; j < rank_Columns.Length; j++)
-        //        {
-        //            Debug.Log($"[DB] Check Type Conversion, j : {j}");
-        //            if (j == 2) // byte[]
-        //            {
-        //                // column에 있는 MediumBlob Type value -> byte[] type으로 받아오기
-        //                byte[] profileData = reader[$"{rank_Columns[j]}"] as byte[];
-        //                // Image Data를 Base64 문자열로 변환
-        //                string profileDataBase64 = Convert.ToBase64String(profileData);
-        //                // client에 보낼 문자열에 Base64 문자열 추가 (나중에 client에서 decoding해야함)
-        //                valuesInColumn.Add(profileDataBase64);
-        //                Debug.Log($"[DB] Check Type Conversion, Where: byte[] profileData, {profileData}, j : {j}");
-        //                Debug.Log($"[DB] Check Type Conversion, Where: string profileDataBase64, {profileDataBase64}, j : {j}");
-        //                Debug.Log($"[DB] Check Type Conversion, Where: string Encoding.UTF8.Getstring(profileData), {System.Text.Encoding.UTF8.GetString(profileData)}, j : {j}");
-        //            }
-        //            else if(j == 3) // Varchar
-        //            {
-        //                valuesInColumn.Add(reader.GetString(rank_Columns[j]));
-        //                Debug.Log($"[DB] Check Type Conversion, Where: Varchar[], j : {j}");
-        //            }
-        //            else if(j == 4) // Float
-        //            {
-        //                valuesInColumn.Add(reader.GetFloat(rank_Columns[j]).ToString());
-        //                Debug.Log($"[DB] Check Type Conversion, Where: Float[], j : {j}");
-        //                Debug.Log($"[DB] Check float type? : {reader.GetFloat(rank_Columns[j]).GetType()}");
-        //                Debug.Log($"[DB] Check float value : {reader.GetFloat(rank_Columns[j])}");
-        //            }
-        //            else // int
-        //            {
-        //                valuesInColumn.Add(reader.GetInt32(rank_Columns[j]).ToString());
-        //                Debug.Log($"[DB] Check Type Conversion, Where: Int[], j : {j}");
-        //            }
-        //        }
-        //        rankdata.Add(valuesInColumn);
-        //    }
-        //}
-        //reader.Close();
-        //
-        //// 직접적인 순위비교
-        //// Score - rankdata[i][5]
-        //List<RankData_value> scoreList = new List<RankData_value>();
-        //
-        //for(int i= 0; i < rankdata.Count; i++)
-        //{
-        //    RankData_value score = new RankData_value();
-        //
-        //    score.scorePlace = 0;
-        //    score.userlicensenumber = Int32.Parse(rankdata[i][0]);
-        //    score.usercharactor = Int32.Parse(rankdata[i][1]);
-        //    score.userProfile = System.Text.Encoding.UTF8.GetBytes(rankdata[i][2]);
-        //    score.userName = rankdata[i][3];
-        //    score.totalScore = Int32.Parse(rankdata[i][5]);
-        //
-        //    scoreList.Add(score);
-        //}
-        //
-        //// totalScore로 내림차순 정렬
-        //scoreList.Sort((a, b) => b.totalScore.CompareTo(a.totalScore));
-        //
-        //// 정렬된 List가지고 1~5등 유저의 순위,점수 저장
-        //for(int i = 0; i < scoreList.Count; i++)
-        //{
-        //    //보낼 데이터(value) place/Profile/Name/total
-        //    string return_string;
-        //
-        //    if(i >= 0 && i < 5)
-        //    {
-        //        return_string = $"{i}|{scoreList[i].userProfile}|{scoreList[i].userName}|{scoreList[i].totalScore}|{separatorString}";
-        //    }
-        //    else
-        //    {
-        //        continue;
-        //    }
-        //
-        //    return_List.Add(return_string);
-        //}
-        //
-        //// 예외처리, rank data에 5명의 기록이 없으면 return_List에 index[5]까지 빈내용으로 저장
-        //if(scoreList.Count < 5)
-        //{
-        //    int user_Count = scoreList.Count;
-        //
-        //    while(user_Count < 5)
-        //    {
-        //        //보낼 데이터(value) place/Profile/Name/total
-        //        return_List.Add($"{user_Count}|0|None|0|{separatorString}");
-        //        user_Count++;
-        //    }
-        //}
-        //
-        //// return_List index[5]에 개인 순위,점수 저장
-        //for (int i = 0; i < scoreList.Count; i++)
-        //{
-        //    if (scoreList[i].userlicensenumber == licensenumber && scoreList[i].usercharactor == charactor)
-        //    {
-        //        string return_string;
-        //        return_string = $"{i}|{scoreList[i].userProfile}|{scoreList[i].userName}|{scoreList[i].totalScore}|{separatorString}";
-        //        return_List.Add(return_string);
-        //    }
-        //}
-        //
-        //// Time 기준
-        //List<RankData_value> timeList = new List<RankData_value>();
-        //
-        //for (int i = 0; i < rankdata.Count; i++)
-        //{
-        //    RankData_value time = new RankData_value();
-        //
-        //    time.timePlace = 0;
-        //    time.userlicensenumber = Int32.Parse(rankdata[i][0]);
-        //    time.usercharactor = Int32.Parse(rankdata[i][1]);
-        //    time.userProfile = System.Text.Encoding.UTF8.GetBytes(rankdata[i][2]);
-        //    time.userName = rankdata[i][3];
-        //    time.totalTime = float.Parse(rankdata[i][4]);
-        //
-        //    timeList.Add(time);
-        //}
-        //
-        //// totalTime으로 내림차순 정렬
-        //timeList.Sort((a, b) => b.totalTime.CompareTo(a.totalTime));
-        //
-        //// 정렬된 List가지고 1~5등 유저의 순위, 시간 저장
-        //for (int i = 0; i < timeList.Count; i++)
-        //{
-        //    //보낼 데이터(value) place/Profile/Name/total
-        //    string return_string;
-        //
-        //    if (i >= 0 && i < 5)
-        //    {
-        //        return_string = $"{i}|{timeList[i].userProfile}|{timeList[i].userName}|{timeList[i].totalTime}|{separatorString}";
-        //    }
-        //    else
-        //    {
-        //        continue;
-        //    }
-        //
-        //    return_List.Add(return_string);
-        //}
-        //
-        //// 예외처리, rank data에 5명의 기록이 없으면 return_List에 index[5]까지 빈내용으로 저장
-        //if (timeList.Count < 5)
-        //{
-        //    int user_Count = timeList.Count;
-        //
-        //    while (user_Count < 5)
-        //    {
-        //        //보낼 데이터(value) place/Profile/Name/total
-        //        return_List.Add($"{user_Count}|0|None|0|{separatorString}");
-        //        user_Count++;
-        //    }
-        //}
-        //
-        //// return_List index[11]에 개인 순위,점수 저장
-        //for (int i = 0; i < timeList.Count; i++)
-        //{
-        //    if (timeList[i].userlicensenumber == licensenumber && timeList[i].usercharactor == charactor)
-        //    {
-        //        string return_string;
-        //        return_string = $"{i}|{timeList[i].userProfile}|{timeList[i].userName}|{timeList[i].totalTime}|{separatorString}";
-        //        return_List.Add(return_string);
-        //    }
-        //}
-        */
-
         return return_List;
     }
 
@@ -1899,11 +1680,6 @@ public class DBManager : MonoBehaviour
         for (int i = 0; i < deleteTable.Length; i++)
         {
             gameTable.list.Remove(deleteTable[i]);
-        }
-
-        for(int i = 0; i < gameTable.list.Count; i++)
-        {
-            Debug.Log($"[DB] Check gameTable's index i:{i}, gameTable.list[i]:{gameTable.list[i]}");
         }
 
         // todo 그럴일은 없겠지만 나중에 DBName이 중복되는 DateDB가 이미 있다면 바로 return;
