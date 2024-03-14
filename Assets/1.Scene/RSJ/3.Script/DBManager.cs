@@ -958,7 +958,12 @@ public class DBManager : MonoBehaviour
 
         // table.list에서 analyltics_level(1,2,3)_profile 빼야함
         TableName selectTable = new TableName();
-        string[] deleteTable = { "analyltics_level1_profile", "analyltics_level2_profile", "analyltics_level3_profile" };
+        string[] deleteTable = { "rank", "crew", "lastplaygame", "analyltics_level1_profile", "analyltics_level2_profile", "analyltics_level3_profile" };
+        /*
+         list.Add("rank");
+        list.Add("crew");
+        list.Add("lastplaygame");
+         */
 
         for (int i = 0; i < deleteTable.Length; i++)
         {
@@ -988,8 +993,8 @@ public class DBManager : MonoBehaviour
                                 Debug.Log("[DB] LoadCharactorData - user_info table");
                                 string user_Name = reader.GetString("User_Name");
                                 // DB에서 MediumBlob 타입 데이터(Base64 형식으로 저장됨) string으로 가져오기
-                                //string user_Profile = reader.GetString("User_Profile");
-                                string user_Profile = "0";
+                                string user_Profile = reader.GetString("User_Profile");
+                                //string user_Profile = "0";
                                 string user_Birthday = reader.GetString("User_Birthday");
                                 string user_TotalAnswers = reader.GetInt32("User_TotalAnswers").ToString();
                                 string user_TotalTime = reader.GetFloat("User_TotalTime").ToString();

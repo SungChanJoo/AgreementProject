@@ -204,6 +204,11 @@ public class Client : MonoBehaviour
                 receivedRequestData_List.Add(receivedRequestData);
                 Debug.Log($"[Client] Receiving... request data from server : {receivedRequestData}");
 
+                // todo 서버로부터 전송된 데이터를 제대로 받았는지 확인하는게 필요하다
+                // 못받으면 재요청
+                // 네트워크 패킷손실 확인하는 방법
+                // requestName으로 요청한 데이터를 받을 때 , E| separtorString 개수를 파악해서 제대로 개수가 맞는지 확인후 Handling하고 개수가 맞지 않으면 재전송하는 식으로?
+
                 // 서버로부터 데이터 전송이 끝나면(Finish) break;
                 List<string> endCheck = receivedRequestData.Split('|').ToList();
                 if (endCheck.Contains("Finish"))
@@ -428,47 +433,154 @@ public class Client : MonoBehaviour
         // dataList[2] = "{gameTableName}|value|value|...|value|E|{gameTableName}|value|value|...|value|E|";
         // ... dataList[Last] = "{gameTableName}|value|value|...|value|E|"
 
+        // dataList를 필터링 했을 때 가질 형태
+        // filterList[0] = user_info|name|profile|birthday|totalanswer|totaltime|coin|E|
+        // filterList[1] = venezia_kor_level1_step1|ReactionRate|AnswerCount|AnswerRate|Playtime|TotalScore|StarPoint|
+        // filterList[2] = venezia_kor_level1_step2|ReactionRate|AnswerCount|AnswerRate|Playtime|TotalScore|StarPoint|
+        // filterList[3] = venezia_kor_level1_step3|ReactionRate|AnswerCount|AnswerRate|Playtime|TotalScore|StarPoint|
+        // ...
+        // filterList[19] = venezia_eng_level1_step1|ReactionRate|AnswerCount|AnswerRate|Playtime|TotalScore|StarPoint|
+        // ...
+        // filterList[37] = venezia_chn_level_step1|ReactionRate|AnswerCount|AnswerRate|Playtime|TotalScore|StarPoint|
+        // ...
+        // filterList[43] = calculation_level1_step1|ReactionRate|AnswerCount|AnswerRate|Playtime|TotalScore|StarPoint|
+        // ...
+        // filterList[61] = gugudan_level1_step1|ReactionRate|AnswerCount|AnswerRate|Playtime|TotalScore|StarPoint|
+        // ...
+        // filterList[last=79] = gugudan_level3_step6|ReactionRate|AnswerCount|AnswerRate|Playtime|TotalScore|StarPoint|
+
         Debug.Log("[Client] Handling LoadCharactorData");
 
-        // Server-Client간 데이터 통신이 너무 길어서 dataList의 index 초반부에 E|가 없을 경우 E|를 만날 때 까지의 index를 하나로 합친다.
-        // profile 전송시 생각, UserData도 아마 처리해야할테니, etcMethodHandler에 추가해야할듯
-        int indexCount = 0; // 합칠 index 개수
-        for(int i = 0; i < dataList.Count; i++)
-        {
-            if(!dataList[i].Contains(separatorString)) // E|가 없다면
-            {
-                dataList[0] += dataList[i + 1];
-                indexCount++;
-            }
-            else // E|를 만났다면
-            {
-                for(int j=0; j< indexCount; j++)
-                {
-                    dataList.RemoveAt(j + 1);
-                }
-                break;
-            }
-        }
+        // clientPlayerData InitSetting
+        clientPlayerData = new Player_DB();
+
+        // dataList의 index가 어떻게 받아올지 모르니 하나의 string에 다 담아서 E|로 분리한다.
+        string oneData = null;
 
         for (int i = 0; i < dataList.Count; i++)
         {
-            // requestName 제거
-            if (i == 0) dataList[0] = dataList[0].Substring("[Load]CharactorData".Length);
-
-            // "E|" 제거 -> DB table별로 List에 나눠서 담음
-            List<string> parts = new List<string>();
-            parts = dataList[i].Split(separatorString, StringSplitOptions.RemoveEmptyEntries).ToList(); 
-
-            // List[index]에 string
-            foreach (string part in parts) // part : rank|value|value|...|value|
-            {
-                //part.Split('|', StringSplitOptions.RemoveEmptyEntries);
-                CharactorData_FromServer.Add(part);
-            }
-
+            Debug.Log($"[Client] dataList[{i}] : {dataList[i]}");
+            oneData += dataList[i];
         }
 
-        FilterCharactorData();
+        Debug.Log(oneData);
+
+        List<string> filterList = new List<string>();
+
+        filterList = oneData.Split(separatorString, StringSplitOptions.RemoveEmptyEntries).ToList();
+        filterList[0] = filterList[0].Substring("[Load]CharactorData|".Length);
+
+        for(int i = 0; i < filterList.Count; i++)
+        {
+            List<string> tempList = filterList[i].Split('|', StringSplitOptions.RemoveEmptyEntries).ToList();
+
+            if (i == 0) // user_info table에서 가져온 data
+            {
+                clientPlayerData.playerName = tempList[1];
+                clientPlayerData.image = Convert.FromBase64String(tempList[2]); // Convert.FromBase64String(CharactorData_Dic["user_info"][1]);
+                clientPlayerData.Day = "";
+                clientPlayerData.BirthDay = tempList[3];
+                clientPlayerData.TotalAnswers = int.Parse(tempList[4]);
+                clientPlayerData.TotalTime = float.Parse(tempList[5]);
+                //clientPlayerData.Coin = int.Parser(tempList[6]);
+            }
+            else // game table에서 가져온 data
+            {
+                float reactionRate = float.Parse(tempList[1]);
+                int answersCount = Int32.Parse(tempList[2]);
+                int answers = Int32.Parse(tempList[3]);
+                float playTime = float.Parse(tempList[4]);
+                int totalScore = Int32.Parse(tempList[5]);
+                int starPoint = Int32.Parse(tempList[6]);
+
+                Data_value datavalue = new Data_value(reactionRate, answersCount, answers, playTime, totalScore, starPoint);
+
+                // i == 1 부터 80까지 80회 반복됨 i == 1, 19, 37, 43, 61
+                if (i <= 18) // i가 1~18까지 venezia_kor_level1_step1
+                {
+                    int level = ((i - 1) / 6) + 1;
+                    int step = ((i - 1) % 6) + 1;
+
+                    clientPlayerData.Data.Add((Game_Type.A, level, step), datavalue);
+                }
+                else if(i <=36) // i가 19~36까지 venezia_eng_level1_step1
+                {
+                    int level = ((i - 1) / 6) - 2;
+                    int step = ((i - 1) % 6) + 1;
+
+                    clientPlayerData.Data.Add((Game_Type.B, level, step), datavalue);
+                }
+                else if(i <= 42) // i가 37~42까지 venezia_chn_level_step1
+                {
+                    int level = 1;
+                    int step = ((i - 1) % 6) + 1;
+
+                    clientPlayerData.Data.Add((Game_Type.C, level, step), datavalue);
+                }
+                else if(i <= 60) // i가 43~60까지 calculation_level1_step1
+                {
+                    int level = ((i - 1) / 6) - 6;
+                    int step = ((i - 1) % 6) + 1;
+
+                    clientPlayerData.Data.Add((Game_Type.D, level, step), datavalue);
+                }
+                else // i가 61부터 gugudan_level1_step1
+                {
+                    int level = ((i - 1) / 6) - 9;
+                    int step = ((i - 1) % 6) + 1;
+
+                    clientPlayerData.Data.Add((Game_Type.E, level, step), datavalue);
+                }
+                
+            }
+        }
+
+        Debug.Log("[Client] End HandleLoadCharactorData..");
+
+        //// Server-Client간 데이터 통신이 너무 길어서 dataList의 index 초반부에 E|가 없을 경우 E|를 만날 때 까지의 index를 하나로 합친다.
+        //// profile 전송시 생각, UserData도 아마 처리해야할테니, etcMethodHandler에 추가해야할듯
+        //int indexCount = 0; // 합칠 index 개수
+        //for(int i = 0; i < dataList.Count; i++)
+        //{
+        //    if(!dataList[i].Contains(separatorString)) // E|가 없다면
+        //    {
+        //        dataList[0] += dataList[i + 1];
+        //        indexCount++;
+        //    }
+        //    else // E|를 만났다면
+        //    {
+        //        for(int j=0; j< indexCount; j++)
+        //        {
+        //            dataList.RemoveAt(j + 1);
+        //        }
+        //        break;
+        //    }
+        //}
+
+
+
+
+
+
+        //for (int i = 0; i < dataList.Count; i++)
+        //{
+        //    // requestName 제거
+        //    if (i == 0) dataList[0] = dataList[0].Substring("[Load]CharactorData".Length);
+
+        //    // "E|" 제거 -> DB table별로 List에 나눠서 담음
+        //    List<string> parts = new List<string>();
+        //    parts = dataList[i].Split(separatorString, StringSplitOptions.RemoveEmptyEntries).ToList(); 
+
+        //    // List[index]에 string
+        //    foreach (string part in parts) // part : rank|value|value|...|value|
+        //    {
+        //        //part.Split('|', StringSplitOptions.RemoveEmptyEntries);
+        //        CharactorData_FromServer.Add(part);
+        //    }
+
+        //}
+
+        //FilterCharactorData();
     }
 
     // 최종적으로 사용할 수 있는 Player_DB(clientPlayerData)
@@ -498,7 +610,7 @@ public class Client : MonoBehaviour
         // CharactorData_Dic에 담긴 값
         // CharactorData_Dic["user_info"] -> [0]:name / [1]:profile / [2]:birthday / [3]:totalanswers / [4]:totaltime / [5]:coin
         clientPlayerData.playerName = CharactorData_Dic["user_info"][0];
-        clientPlayerData.image = Convert.FromBase64String(CharactorData_Dic["user_info"][1]);
+        clientPlayerData.image = null; // Convert.FromBase64String(CharactorData_Dic["user_info"][1]);
         clientPlayerData.Day = "";
         clientPlayerData.BirthDay = CharactorData_Dic["user_info"][2];
         clientPlayerData.TotalAnswers = int.Parse(CharactorData_Dic["user_info"][3]);
