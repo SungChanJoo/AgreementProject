@@ -630,6 +630,7 @@ public class Client : MonoBehaviour
             {
                 for(int k = 0; k < levels; k++)
                 {
+                    if (j == 2) k = 0;
                     Debug.Log($"[Client] Check clientAnalyticsData.Data.Value(reactionRate), i,j,k : {i},{j}, {k} : {clientAnalyticsData.Data[(i + 1, (Game_Type)j, k + 1)].reactionRate}");
                 }
             }
@@ -682,12 +683,14 @@ public class Client : MonoBehaviour
 
             if(i < 5) // score 1~5 등
             {
+                clientRankData.rankdata_score[i] = new RankData_value();
                 clientRankData.rankdata_score[i].userProfile = Convert.FromBase64String(part[0]);
                 clientRankData.rankdata_score[i].userName = part[1];
                 clientRankData.rankdata_score[i].totalScore = Int32.Parse(part[2]);
             }
             else if(i == 5) // 클라이언트 score
             {
+                clientRankData.rankdata_score[i] = new RankData_value();
                 clientRankData.rankdata_score[i].userProfile = Convert.FromBase64String(part[0]);
                 clientRankData.rankdata_score[i].userName = part[1];
                 clientRankData.rankdata_score[i].totalScore = Int32.Parse(part[2]);
@@ -696,18 +699,21 @@ public class Client : MonoBehaviour
             }
             else if(i < 11) // time 1~5등
             {
+                clientRankData.rankdata_time[i - 6] = new RankData_value();
                 clientRankData.rankdata_time[i - 6].userProfile = Convert.FromBase64String(part[0]);
                 clientRankData.rankdata_time[i - 6].userName = part[1];
                 clientRankData.rankdata_time[i - 6].totalTime = float.Parse(part[2]);
             }
             else // 클라이언트 time
             {
+                clientRankData.rankdata_time[i - 6] = new RankData_value();
                 clientRankData.rankdata_time[i - 6].userProfile = Convert.FromBase64String(part[0]);
                 clientRankData.rankdata_time[i - 6].userName = part[1];
                 clientRankData.rankdata_time[i - 6].totalTime = float.Parse(part[2]);
                 clientRankData.rankdata_time[i - 6].timePlace = Int32.Parse(part[3]);
                 clientRankData.rankdata_time[i - 6].highestTimePlace = Int32.Parse(part[4]);
             }
+
         }
 
         Debug.Log("[Client] End HandleLoadRankData..");
@@ -1304,7 +1310,7 @@ public class Client : MonoBehaviour
         Data_value datavalue = resultdata.Data[(game_type, level, step)];
 
         requestName = $"[Save]{gameName}";
-        values = $"{level}|{step}|{clientLicenseNumber}|{clientCharactor}|{datavalue.ReactionRate}|{datavalue.AnswersCount}|{datavalue.Answers}|{datavalue.PlayTime}|{datavalue.TotalScore}|";
+        values = $"{level}|{step}|{clientLicenseNumber}|{clientCharactor}|{datavalue.ReactionRate}|{datavalue.AnswersCount}|{datavalue.Answers}|{datavalue.PlayTime}|{datavalue.TotalScore}|{datavalue.StarCount}|";
 
         requestData = $"{requestName}|{values}Finish";
 

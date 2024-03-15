@@ -527,33 +527,33 @@ public class DBManager : MonoBehaviour
     }
 
     // DB에 캐릭터 데이터(Charactor info, GameData) 저장 (캐릭터 변경 또는 게임 종료시)
-    public void SaveCharactorData(List<string> dataList)
+    public void SaveCharactorData(List<string> filterList)
     {
         Debug.Log("[DB] Come in save charactor data");
-        // dataList[0] : $"{requestName}|{clientLicenseNumber}|{clientCharactor}|"
-        // dataList[1] : $"{table.list[0]}|{playerdb.playerName}|{Convert.ToBase64String(playerdb.image)}|{playerdb.BirthDay}|{playerdb.TotalAnswers}|{playerdb.TotalTime}|";
-        // dataList[2~n-1] : $"{table.list[i]}|{reactionRate_List[i - 4]}|{answersCount_List[i - 4]}|{answers_List[i - 4]}|{playTime_List[i - 4]}|{totalScore_List[i - 4]}|{starCount_List[i - 4]}|}";
-        // dataList[n] : $"Finish"
+        // filterList[0] : $"{requestName}|{clientLicenseNumber}|{clientCharactor}|"
+        // filterList[1] : $"{table.list[0]}|{playerdb.playerName}|{Convert.ToBase64String(playerdb.image)}|{playerdb.BirthDay}|{playerdb.TotalAnswers}|{playerdb.TotalTime}|";
+        // filterList[2~n-1] : $"{table.list[i]}|{reactionRate_List[i - 4]}|{answersCount_List[i - 4]}|{answers_List[i - 4]}|{playTime_List[i - 4]}|{totalScore_List[i - 4]}|{starCount_List[i - 4]}|}";
+        // filterList[n] : $"Finish"
 
-        for(int i = 0; i<dataList.Count; i++)
+        for(int i = 0; i<filterList.Count; i++)
         {
-            Debug.Log($"[DB] charactor dataList{i} : {dataList[i]}");
+            Debug.Log($"[DB] charactor filterList{i} : {filterList[i]}");
         }
         
         string update_Command;
         MySqlCommand update_SqlCmd = new MySqlCommand();
         update_SqlCmd.Connection = connection;
-        Debug.Log($"[DB] Check dataList[0].Split('|', StringSplitOptions.RemoveEmptyEntries)[1] : {Int32.Parse(dataList[0].Split('|', StringSplitOptions.RemoveEmptyEntries)[1])}");
-        Debug.Log($"[DB] Check dataList[0].Split('|', StringSplitOptions.RemoveEmptyEntries)[2] : {Int32.Parse(dataList[0].Split('|', StringSplitOptions.RemoveEmptyEntries)[2])}");
-        int clientLicenseNumber = Int32.Parse(dataList[0].Split('|', StringSplitOptions.RemoveEmptyEntries)[1]);
-        int clientCharactor = Int32.Parse(dataList[0].Split('|', StringSplitOptions.RemoveEmptyEntries)[2]);
+        Debug.Log($"[DB] Check filterList[0].Split('|', StringSplitOptions.RemoveEmptyEntries)[1] : {Int32.Parse(filterList[0].Split('|', StringSplitOptions.RemoveEmptyEntries)[1])}");
+        Debug.Log($"[DB] Check filterList[0].Split('|', StringSplitOptions.RemoveEmptyEntries)[2] : {Int32.Parse(filterList[0].Split('|', StringSplitOptions.RemoveEmptyEntries)[2])}");
+        int clientLicenseNumber = Int32.Parse(filterList[0].Split('|', StringSplitOptions.RemoveEmptyEntries)[1]);
+        int clientCharactor = Int32.Parse(filterList[0].Split('|', StringSplitOptions.RemoveEmptyEntries)[2]);
 
         //userinfo_Columns = new string[] { "User_LicenseNumber", "User_Charactor", "User_Name", "User_Profile", "User_Birthday", "User_TotalAnswers", "User_TotalTime", "User_Coin" };
         //game_Columns = new string[] { "User_LicenseNumber", "User_Charactor", "ReactionRate", "AnswerCount", "AnswerRate", "Playtime", "TotalScore", "StarPoint" };
 
-        for(int i = 1; i < dataList.Count; i++)
+        for(int i = 1; i < filterList.Count; i++)
         {
-            List<string> tempAllocate = dataList[i].Split('|', StringSplitOptions.RemoveEmptyEntries).ToList();
+            List<string> tempAllocate = filterList[i].Split('|', StringSplitOptions.RemoveEmptyEntries).ToList();
             if (tempAllocate.Contains("Finish")) break;
 
             if (i == 1) // userinfo table
@@ -625,13 +625,17 @@ public class DBManager : MonoBehaviour
     }
 
     // DB에 마지막으로 플레이한 스텝 저장
-    public void SaveLastPlayData(List<string> dataList)
+    public void SaveLastPlayData(List<string> filterList)
     {
         Debug.Log("[DB] Come in save lastplay data");
 
-        //requestData = [Save]LastPlayData|license|charactor| (game1_level1)의 value | (game1_level2)의 value | ... | (game5_level3)의 value |Finish
-        //dataList[0] = [Save]LastPlayData
-        //dataList[1] = license
+        // requestData = [Save]LastPlayData|license|charactor| (game1_level1)의 value | (game1_level2)의 value | ... | (game5_level3)의 value |Finish
+        // filterList[0] = [Save]LastPlayData|license|charactor| (game1_level1)의 value | (game1_level2)의 value | ... | (game5_level3)의 value |Finish
+        // dataList[0] = [Save]LastPlayData
+        // dataList[1] = license
+
+        List<string> dataList = filterList[0].Split('|', StringSplitOptions.RemoveEmptyEntries).ToList();
+
         MySqlCommand mySqlCommand = new MySqlCommand();
         mySqlCommand.Connection = connection;
 
@@ -650,39 +654,54 @@ public class DBManager : MonoBehaviour
     }
 
     // DB에 게임결과 저장
-    public void SaveGameResultData(List<string> dataList)
+    public void SaveGameResultData(List<string> filterList)
     {
         // DB gametable column순 : User_Licensenumber/User_Charactor/ReactionRate/AnswerCount/AnswerRate/Playtime/TotalScore/StarPoint
-        // dataList는 [0]을 제외하고 value(int)만 있음. index순으로 RequestName[0]/level[1]/step[2]/User_Licensenumber[3]/User_Charactor[4]/ReactionRate[5]/.../TotalScore[9]
+        // requestName = $"[Save]{gameName}";
+        // values = $"{level}|{step}|{clientLicenseNumber}|{clientCharactor}|{datavalue.ReactionRate}|{datavalue.AnswersCount}|{datavalue.Answers}|{datavalue.PlayTime}|{datavalue.TotalScore}|";
+        // requestData = $"{requestName}|{values}Finish";
+        // filterList[0] => "RequestName|level|step|User_Licensenumber|User_Charactor|ReactionRate|...|TotalScore
+        // dataList[0] = [Save]venezia_kor
+        // dataList[1] = level
+        // dataList[2] = step
+        // dataList[3] = User_LicenseNumber
+        // dataList[4] = User_Charactor
+        // dataList[5] = ReactionRate
+        // dataList[6] = AnswerCount
+        // dataList[7] = AnswerRate
+        // dataList[8] = PlayTime
+        // dataList[9] = TotalScore
+        // dataList[10] = StarPoint
+
         Debug.Log("[DB] Come in SaveGameResultData method");
 
-        for(int i = 0; i < dataList.Count; i++)
+        List<string> dataList = filterList[0].Split('|', StringSplitOptions.RemoveEmptyEntries).ToList();
+
+        for (int i = 0; i < dataList.Count; i++)
         {
             Debug.Log($"[DB] Check dataList[{i}] : {dataList[i]}");
         }
 
-
-        Debug.Log($"[DB] SaveGameResultData, gameName : {dataList[0]}"); // [Save]gameName
-        string gameName = dataList[0].Substring("[Save]".Length); // [Save] 제거
-        Debug.Log($"[DB] gameName : {gameName}");
-
-        string table_Name = $"{gameName}_level{dataList[1]}_step{dataList[2]}";
-        if(gameName == "venezia_chn") table_Name = $"{gameName}_level_step{dataList[2]}";
-
+        // [Save] 제거
+        string gameName = dataList[0].Substring("[Save]".Length);
+        int level = Int32.Parse(dataList[1]);
+        int step = Int32.Parse(dataList[2]);
+        
         // licenseNumber, charactor
         int licenseNumber = Int32.Parse(dataList[3]);
         int charactor = Int32.Parse(dataList[4]);
-        int level = Int32.Parse(dataList[1]);
-        float reactionRate = float.Parse(dataList[5]);
-        int answerRate = Int32.Parse(dataList[7]);
 
+        // game datas
+        float reactionRate = float.Parse(dataList[5]); // 보여줄 분석 데이터(개인분석표, 프로필), 갱신
+        int answerCount = Int32.Parse(dataList[6]); // 갱신
+        int answerRate = Int32.Parse(dataList[7]); // 보여줄 분석 데이터(개인분석표, 프로필), 갱신
+        float playTime = float.Parse(dataList[8]); // 보여줄 데이터(분석용 프로필, 랭킹), 갱신
+        int totalScore = Int32.Parse(dataList[9]); // 보여줄 데이터(분석용 프로필, 랭킹), 조건부 갱신
+        int starPoint = Int32.Parse(dataList[10]); // 조건부 갱신
 
-        // gametable에 저장된 totalscore 가져와서 비교 (한 게임의 최고점수)
-        int gameresult_Score = Int32.Parse(dataList[9]);
-        int db_Score = 0;
-
-        // Score로 StarPoint(0,1,2,3) 할당
-        int starPoint = 0;
+        // table 이름
+        string table_Name = $"{gameName}_level{level}_step{step}";
+        if(gameName == "venezia_chn") table_Name = $"{gameName}_level_step{dataList[2]}";
 
         // AnalyticsProfile table에 사용하기 위한 변수
         Game_Type gameType;
@@ -692,78 +711,123 @@ public class DBManager : MonoBehaviour
         else if (gameName == "calculation") gameType = Game_Type.D;
         else gameType = Game_Type.E;
 
-        // DB 조회
-        Debug.Log($"[DB] SelectGameTable ....");
-        string selectGameTable_Command = $"SELECT `{game_Columns[0]}`, `{game_Columns[1]}`, `{game_Columns[6]}` FROM `{table_Name}`";
-        Debug.Log($"[DB] selectGameTable_Command : {selectGameTable_Command}");
-        MySqlCommand select_SqlCmd = new MySqlCommand(selectGameTable_Command, connection);
-        MySqlDataReader reader = select_SqlCmd.ExecuteReader();
-        Debug.Log($"[DB] reader is alright?");
+        MySqlCommand mySqlCommand = new MySqlCommand();
+        mySqlCommand.Connection = connection;
+
+        // DB gametable column순 : User_Licensenumber/User_Charactor/ReactionRate/AnswerCount/AnswerRate/Playtime/TotalScore/StarPoint
+        string selectScoreStarQuery = $"SELECT `{game_Columns[6]}`, `{game_Columns[7]}` FROM `{table_Name} " +
+                                      $"WHERE `{game_Columns[0]}` = '{licenseNumber}' AND `{game_Columns[1]}` = '{charactor}';";
+        mySqlCommand.CommandText = selectScoreStarQuery;
+        MySqlDataReader reader = mySqlCommand.ExecuteReader();
+
+        // DB에 있는 최고점수(TotalScore)와 별포인트(starPoint) 갱신할 때 db에 있는 value보다 커야 갱신
+        int dbTotalScore = 0;
+        int dbStarPoint = 0;
 
         while(reader.Read())
         {
-            Debug.Log($"[DB] reader has come While()?");
-            try
-            {
-                // DB에 있는 licensenumber와 charactor가 저장하려는 데이터의 licensenumber와 charactor가 같다면 (해당 행에 있는 값 가져옴)
-                if (reader.GetInt32(0) == Int32.Parse(dataList[3]) && reader.GetInt32(1) == Int32.Parse(dataList[4]))
-                {
-                    db_Score = reader.GetInt32(game_Columns[6]);
-                    Debug.Log($"[DB] db_Score = {db_Score}");
-                }
-            }
-            catch(Exception e)
-            {
-                Debug.Log($"[DB] reader error : {e.Message}");
-            }
+            dbTotalScore = reader.GetInt32(0);
+            dbStarPoint = reader.GetInt32(1);
         }
         reader.Close();
 
-        // 새 게임점수와 db 게임점수 비교
-        Debug.Log($"[DB] gameresult_Score, DB_Score : {gameresult_Score}, {db_Score}");
-        if (gameresult_Score >= db_Score) // 저장
-        {
-            // gameresult_Score로 StarPoint 할당함
-            if (gameresult_Score >= 25000) starPoint = 3;
-            else if (gameresult_Score >= 12500) starPoint = 2;
-            else if (gameresult_Score >= 6500) starPoint = 1;
+        string updateScoreStartQuery;
 
-            // rank table에 TotalTime과 TotalScore에 점수 누적 
-            UpdateRankTable(licenseNumber, charactor, float.Parse(dataList[8]), gameresult_Score);
-            // analytics_level(1,2,3)_Profile table Update
-            UpdateAnalyticsProfileTable(licenseNumber, charactor, gameType, level, reactionRate, answerRate);
-        }
-        else // 저장 X
+        // Score
+        if(totalScore > dbTotalScore)
         {
-            // 저장할 필요가 없으므로 rank table에만 TotalTime과 TotalScore에 점수 누적 후 return
-            UpdateRankTable(licenseNumber, charactor, float.Parse(dataList[8]), gameresult_Score);
-            UpdateAnalyticsProfileTable(licenseNumber, charactor, gameType, level, reactionRate, answerRate);
-            return;
+            updateScoreStartQuery = $"UPDATE `{table_Name}` SET `{game_Columns[6]}` = '{totalScore}' " +
+                                    $"WHERE `{game_Columns[0]}` = '{licenseNumber}' AND `{game_Columns[1]}` = '{charactor}';";
+            mySqlCommand.CommandText = updateScoreStartQuery;
+            mySqlCommand.ExecuteNonQuery();
         }
 
-        Debug.Log($"[DB] starPoint : {starPoint}");
-        // starpoint value값 list에 추가
-        dataList.Add(starPoint.ToString());
-        Debug.Log($"[DB] dataList's Count : {dataList.Count}");
-        Debug.Log($"[DB] dataList[9]'s value : {dataList[9]}");
-        Debug.Log($"[DB] dataList[10]'s value : {dataList[10]}");
-
-        for (int i = 2; i < game_Columns.Length; i++) // game_Columns = [0]~[7]
+        // StarPoint
+        if (starPoint > dbStarPoint)
         {
-            string updateGameData_Command = "";
-            if (i == 2 || i == 5) // float
+            updateScoreStartQuery = $"UPDATE `{table_Name}` SET `{game_Columns[7]}` = '{totalScore}' " +
+                                    $"WHERE `{game_Columns[0]}` = '{licenseNumber}' AND `{game_Columns[1]}` = '{charactor}';";
+            mySqlCommand.CommandText = updateScoreStartQuery;
+            mySqlCommand.ExecuteNonQuery();
+        }
+
+        MySqlParameter valueParameter = mySqlCommand.Parameters.Add("@value", MySqlDbType.Float);
+
+        // Game Datas Update
+        for (int i = 2; i < game_Columns.Length-2; i++) // game_Columns = [0]~[5]
+        {
+            string updateGameDataQuery = $"UPDATE `{table_Name}` SET `{game_Columns[i]}` = @value ";
+
+            if (i == 2) // reactionRate, float
             {
-                updateGameData_Command = $"UPDATE `{table_Name}` SET `{game_Columns[i]}` = '{float.Parse(dataList[i + 3])}' WHERE `{game_Columns[0]}` = '{Int32.Parse(dataList[3])}' AND `{game_Columns[1]}` = '{Int32.Parse(dataList[4])}'";
+                valueParameter.MySqlDbType = MySqlDbType.Float;
+                valueParameter.Value = reactionRate;
             }
-            else
+            else if (i == 3) // answerCount, int
             {
-                updateGameData_Command = $"UPDATE `{table_Name}` SET `{game_Columns[i]}` = '{Int32.Parse(dataList[i + 3])}' WHERE `{game_Columns[0]}` = '{Int32.Parse(dataList[3])}' AND `{game_Columns[1]}` = '{Int32.Parse(dataList[4])}'";
+                valueParameter.MySqlDbType = MySqlDbType.Int32;
+                valueParameter.Value = answerCount;
             }
-            MySqlCommand update_SqlCmd = new MySqlCommand(updateGameData_Command, connection);
-            update_SqlCmd.ExecuteNonQuery();
+            else if (i == 4) // answerRate, int
+            {
+                valueParameter.MySqlDbType = MySqlDbType.Int32;
+                valueParameter.Value = answerRate;
+            }
+            else // playTime, float
+            {
+                valueParameter.MySqlDbType = MySqlDbType.Float;
+                valueParameter.Value = playTime;
+            }
+            updateGameDataQuery += $"WHERE `{game_Columns[0]}` = '{licenseNumber}' AND `{game_Columns[1]}` = '{charactor}'";
+            mySqlCommand.CommandText = updateGameDataQuery;
+            mySqlCommand.ExecuteNonQuery();
         }
 
-        Debug.Log($"[DB] Finish SaveGameResultData To DB");
+        // user_info table에 AnswerCount, TotalTime 누적
+        UpdateUserInfoTableForScoreTime(licenseNumber, charactor, answerCount, totalScore);
+        // rank table에 TotalTime과 TotalScore에 점수 누적 
+        UpdateRankTable(licenseNumber, charactor, playTime, totalScore);
+        // analytics_level(1,2,3)_Profile table Update
+        UpdateAnalyticsProfileTable(licenseNumber, charactor, gameType, level, reactionRate, answerRate);
+
+        Debug.Log($"[DB] Complete SaveGameResultData To DB");
+    }
+
+    // 게임이 끝날때마다 user_info table에 TotalScore, TotalTime 누적
+    private void UpdateUserInfoTableForScoreTime(int licensenumber, int charactor, int answercount, float totaltime)
+    {
+        Debug.Log($"[DB] Come in UpdateUserInfoTableForScoreTime Method..");
+
+        MySqlCommand mySqlCommand = new MySqlCommand();
+        mySqlCommand.Connection = connection;
+
+        // userinfo_Columns = "User_LicenseNumber", "User_Charactor", "User_Name", "User_Profile", "User_Birthday", "User_TotalAnswers", "User_TotalTime", "User_Coin"
+        string selectQuery = $"SELECT `{userinfo_Columns[5]}`, `{userinfo_Columns[6]}` FROM `{table.list[0]} " +
+                             $"WHERE `{userinfo_Columns[0]}` = '{licensenumber}' AND `{userinfo_Columns[5]}` = '{charactor}';";
+        mySqlCommand.CommandText = selectQuery;
+        MySqlDataReader reader = mySqlCommand.ExecuteReader();
+
+        // DB user_info table에 있는 answerCount, TotalTime
+        int dbAnswerCount = 0;
+        float dbTotalTime = 0;
+
+        while(reader.Read())
+        {
+            dbAnswerCount = reader.GetInt32(0);
+            dbTotalTime = reader.GetFloat(1);
+        }
+        reader.Close();
+
+        dbAnswerCount += answercount;
+        dbTotalTime += totaltime;
+
+        // DB user_info table Update
+        string updateQuery = $"UPDATE `{table.list[0]}` SET `{userinfo_Columns[5]}` = '{dbAnswerCount}', `{userinfo_Columns[6]}` = '{dbTotalTime}' " +
+                             $"WHERE `{userinfo_Columns[0]}` = '{licensenumber}' AND `{userinfo_Columns[1]}` = '{charactor}';";
+        mySqlCommand.CommandText = updateQuery;
+        mySqlCommand.ExecuteNonQuery();
+
+        Debug.Log($"[DB] Complete UpdateUserInfoTableForScoreTime Method..");
     }
 
     // 게임이 끝날때마다 rank table에 시간, 점수 누적
@@ -869,7 +933,8 @@ public class DBManager : MonoBehaviour
         float updateReacitonRate = dbReactionRate + reactionrate;
         int updateAnswerRate = dbAnswerRate + answerrate;
 
-        //string update_Command = $"UPDATE `{table.list[0]}` SET `{userinfo_Columns[1]}` = `{userinfo_Columns[1]}` - 1 " +
+        //string update_Command = $"
+        //`{table.list[0]}` SET `{userinfo_Columns[1]}` = `{userinfo_Columns[1]}` - 1 " +
         //$"WHERE `{userinfo_Columns[0]}` = '{clientlicensenumber}' AND `{userinfo_Columns[1]}` > '{deletecharactornumber}';";
 
         string update_Command = $"UPDATE `{tableName}` SET `{tableColumns[0]}`= '{updatePlayCount}', `{tableColumns[1]}` = '{updateReacitonRate}', " +
