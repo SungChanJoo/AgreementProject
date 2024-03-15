@@ -9,7 +9,7 @@ public class CrewMovementManager : MonoBehaviour
 {
     public static CrewMovementManager Instance = null;
 
-    Dictionary<(Game_Type, int), int> FinalPlayStepTable; //(게임 타입, 레벨)에 따른 스텝정보 
+    LastPlayData LastPlayStepTable; //(게임 타입, 레벨)에 따른 스텝정보 
 
     public Game_Type SelectedGame;
     public int SelectedLevel;
@@ -26,6 +26,7 @@ public class CrewMovementManager : MonoBehaviour
     private Image FadeImg;
     [SerializeField] private Sprite star;
     [SerializeField] private Sprite starGray;
+    Player_DB stepInfo;
 
 
     private void Awake()
@@ -37,21 +38,11 @@ public class CrewMovementManager : MonoBehaviour
         }
         else
             Destroy(gameObject);
-        //FinalPlayStepTable.Add((Game_Type.A, 1), 1); // Game_Type.A, 1레벨에서 마지막으로 플레이한 스텝이 1스텝
-        //FinalPlayStepTable[(Game_Type.A, 1)] = 2;// 스텝 2로 변경
-        //todo 0308 DB연동해서 최종 플레이한 스텝 초기화해줘
-        FinalPlayStepTable = new Dictionary<(Game_Type, int), int>();
 
-        for (int i = 0; i<= (int)Game_Type.E; i++)//게임 타입 5개
-        {
-            for(int j = 1; j <=3; j++)// 레벨 3개
-            {
-                FinalPlayStepTable.Add(((Game_Type)i, j), 1); //(Game_Type)i, j레벨에서 마지막으로 플레이한 스텝
-            }
-        }
+        InitLastPlayStep();
+        InitPlayerDBData();
 
-
-        for(int i = 0; i < SeleteableCrew.Count; i++)
+        for (int i = 0; i < SeleteableCrew.Count; i++)
         {
             if (SeleteableCrew[i].activeSelf)
                 SeleteableCrew[i].SetActive(false);
@@ -65,18 +56,61 @@ public class CrewMovementManager : MonoBehaviour
         }
 
     }
+    #region DB Data Init
+    private void InitLastPlayStep()
+    {
+        //FinalPlayStepTable.Add((Game_Type.A, 1), 1); // Game_Type.A, 1레벨에서 마지막으로 플레이한 스텝이 1스텝
+        //FinalPlayStepTable[(Game_Type.A, 1)] = 2;// 스텝 2로 변경
+        //DB연동해서 최종 플레이한 스텝 초기화
+        if (DataBase.Instance.LastPlayStepData != null && DataBase.Instance != null)
+        {
+            LastPlayStepTable = DataBase.Instance.LastPlayStepData;
+        }
+        else
+        {
+            LastPlayStepTable = new LastPlayData();
+
+            for (int i = 0; i <= (int)Game_Type.E; i++)//게임 타입 5개
+            {
+                for (int j = 1; j <= 3; j++)// 레벨 3개
+                {
+                    LastPlayStepTable.Step.Add(((Game_Type)i, j), 1); //(Game_Type)i, j레벨에서 마지막으로 플레이한 스텝
+                }
+            }
+        }
+
+    }
+    private void InitPlayerDBData()
+    {
+        //스텝 별개수 초기화
+        if (DataBase.Instance.PlayerCharacter[DataBase.Instance.CharacterIndex] != null)
+        {
+            stepInfo = DataBase.Instance.PlayerCharacter[DataBase.Instance.CharacterIndex];
+
+        }
+        //DB연동안되어있으면
+        else
+        {
+            stepInfo = new Player_DB();
+            for (int i = 0; i <= (int)Game_Type.E; i++)//게임 타입 5개
+            {
+                for (int j = 1; j <= 3; j++)// 레벨 3개
+                {
+                    for (int k = 0; k < 6; k++)
+                    {
+                        //(Game_Type)i, j레벨, k스텝의 별개수 초기화
+                        var data = new Data_value(0,0,0,0,0,1);
+                        stepInfo.Data.Add(((Game_Type)i, j, k), data);
+                    }
+                }
+            }
+        }
+    } 
+    #endregion
     //별 개수에 따라 스텝 머터리얼 변경
     //별 0개는 하얀색, 별 1개 이상은 노란색
     private void LoadStarColor(List<Transform> level)
     {
-
-
-        var stepInfo = DataBase.Instance.PlayerCharacter[DataBase.Instance.CharacterIndex];
-        if (stepInfo == null)
-        {
-            Debug.Log("playerInfo == null");
-            return;
-        }
         //별 오브젝트 불러오기
         for (int i =0; i < level.Count; i++)
         {
@@ -97,12 +131,6 @@ public class CrewMovementManager : MonoBehaviour
     public void StepByStarPoint(List<GameObject> starPointPanel)
     {
         int starCount;
-        var stepInfo = DataBase.Instance.PlayerCharacter[DataBase.Instance.CharacterIndex];
-        if (stepInfo == null)
-        {
-            Debug.Log("playerInfo == null");
-            return;
-        }
         //starPointPanel == 레벨 별 스텝
         for (int i = 0; i < starPointPanel.Count; i++)
         {
@@ -162,7 +190,7 @@ public class CrewMovementManager : MonoBehaviour
         if (CrewPos != null)
         {
             //초기 탐험대원 위치
-            finalPos = FinalPlayStepTable[(SelectedGame, SelectedLevel)]; // 선택된 게임의 선택된 레벨의 스텝
+            finalPos = LastPlayStepTable.Step[(SelectedGame, SelectedLevel)]; // 선택된 게임의 선택된 레벨의 스텝
             SeleteableCrew[SeletedCrewIndex].transform.position = CrewPos[finalPos - 1].position;
         }
             SeleteableCrew[SeletedCrewIndex].transform.LookAt(Camera.main.transform.position);
@@ -189,10 +217,7 @@ public class CrewMovementManager : MonoBehaviour
         //다음 스텝으로 넘어가기 위해서는 이전 스텝의 별이 1개 이상 있어함
         if(SelectedStep >1) // 스텝 1은 플레이 할 수 있음
         {
-            var stepInfo = DataBase.Instance.PlayerCharacter[DataBase.Instance.CharacterIndex].
-               Data[(SelectedGame, SelectedLevel, SelectedStep - 1)].
-               StarCount;
-            if(stepInfo < 1)
+            if(stepInfo.Data[(SelectedGame, SelectedLevel, SelectedStep - 1)].StarCount < 1)
             {
                 Debug.Log("이전 스텝에서 별을 획득해주세요");
                 return;
@@ -253,7 +278,7 @@ public class CrewMovementManager : MonoBehaviour
         Debug.Log("CrewPos[SelectedStep].position" + CrewPos[SelectedStep-1].position);
         SeleteableCrew[SeletedCrewIndex].transform.LookAt(Camera.main.transform.position);
         //마지막으로 플레이한 스텝
-        FinalPlayStepTable[(SelectedGame, SelectedLevel)] = SelectedStep;
+        LastPlayStepTable.Step[(SelectedGame, SelectedLevel)] = SelectedStep;
         StartCoroutine(FadeOutImg());
     }
     //화면 전환 효과
