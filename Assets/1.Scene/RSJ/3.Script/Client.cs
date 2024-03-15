@@ -671,7 +671,10 @@ public class Client : MonoBehaviour
         // E| 분할 및 RequestName 제거
         filterList = oneData.Split(separatorString, StringSplitOptions.RemoveEmptyEntries).ToList();
         filterList[0] = filterList[0].Substring("[Load]RankData|".Length);
-
+        for(int i = 0; i < filterList.Count; i++)
+        {
+            Debug.Log("======================HandleLoadRankData" + filterList[i]);
+        }
         // clientRankData InitSetting
         clientRankData = new RankData();
         clientRankData.rankdata_score = new RankData_value[6];
@@ -684,12 +687,14 @@ public class Client : MonoBehaviour
 
             if(i < 5) // score 1~5 등
             {
+                clientRankData.rankdata_score[i] = new RankData_value();
                 clientRankData.rankdata_score[i].userProfile = Convert.FromBase64String(part[0]);
                 clientRankData.rankdata_score[i].userName = part[1];
                 clientRankData.rankdata_score[i].totalScore = Int32.Parse(part[2]);
             }
             else if(i == 5) // 클라이언트 score
             {
+                clientRankData.rankdata_score[i] = new RankData_value();
                 clientRankData.rankdata_score[i].userProfile = Convert.FromBase64String(part[0]);
                 clientRankData.rankdata_score[i].userName = part[1];
                 clientRankData.rankdata_score[i].totalScore = Int32.Parse(part[2]);
@@ -698,12 +703,14 @@ public class Client : MonoBehaviour
             }
             else if(i < 11) // time 1~5등
             {
+                clientRankData.rankdata_time[i - 6] = new RankData_value();
                 clientRankData.rankdata_time[i - 6].userProfile = Convert.FromBase64String(part[0]);
                 clientRankData.rankdata_time[i - 6].userName = part[1];
                 clientRankData.rankdata_time[i - 6].totalTime = float.Parse(part[2]);
             }
             else // 클라이언트 time
             {
+                clientRankData.rankdata_time[i - 6] = new RankData_value();
                 clientRankData.rankdata_time[i - 6].userProfile = Convert.FromBase64String(part[0]);
                 clientRankData.rankdata_time[i - 6].userName = part[1];
                 clientRankData.rankdata_time[i - 6].totalTime = float.Parse(part[2]);

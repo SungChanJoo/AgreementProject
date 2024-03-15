@@ -45,6 +45,7 @@ public class RankingManager : MonoBehaviour
     [SerializeField] private TMP_Text Weekly;
     [SerializeField] private TMP_Text Name;
     [SerializeField] private GameObject[] PersnalRank;
+    [SerializeField] private Image MyImg;
     private void Awake()
     {
         timeRankData = new PlayerTimeRankingData[5];
@@ -82,12 +83,14 @@ public class RankingManager : MonoBehaviour
         {
             for (int i = 0; i < timeRankData.Length; i++)
             {
+                timeRankData[i].img.sprite = ProfileImage_Set(rankInfo.rankdata_time[^(i + 2)].userProfile);
                 timeRankData[i].nameText.text = rankInfo.rankdata_time[^(i + 2)].userName;
                 timeRankData[i].totalTimeText.text = $"{rankInfo.rankdata_time[^(i + 2)].totalTime}";
             }
 
             for (int i = 0; i < scoreRankData.Length; i++)
             {
+                scoreRankData[i].img.sprite = ProfileImage_Set(rankInfo.rankdata_time[^(i + 2)].userProfile);
                 scoreRankData[i].nameText.text =          rankInfo.rankdata_score[^(i + 2)].userName;
                 scoreRankData[i].totalScoreText.text = $"{rankInfo.rankdata_score[^(i + 2)].totalScore}";
             }
@@ -115,23 +118,19 @@ public class RankingManager : MonoBehaviour
         if (rankInfo != null)
         {
             Weekly.text = $"기간 : {"1998.3.31~ 3.31"}";
+            MyImg.sprite = ProfileImage_Set(myData.userProfile);
             Name.text = $"이름 : {myData.userName}";
-
             var timeRank = PersnalRank[0].transform.Find("TimeRank").GetChild(0).GetComponent<TMP_Text>();
             var totalTime = PersnalRank[0].transform.Find("TotalTime").GetChild(0).GetComponent<TMP_Text>();
-            var num = 10;
-
             timeRank.text = $"순위 : {myData.scorePlace}\n" +
                             $"최고순위 : {myData.highestTimePlace}";
+
             var hour = myData.totalTime / 60;
             var minute = myData.totalTime % 60;
             totalTime.text = $"누적시간\n {hour}시간 {minute}분";
 
-
             var scoreRank = PersnalRank[1].transform.Find("ScoreRank").GetChild(0).GetComponent<TMP_Text>();
             var totalScore = PersnalRank[1].transform.Find("TotalScore").GetChild(0).GetComponent<TMP_Text>();
-            var num1 = 20;
-
             scoreRank.text = $"순위 : {myData.timePlace}\n" +
                             $"최고순위 : {myData.highestScorePlace}";
             totalScore.text = $"누적점수\n {myData.totalScore}";
@@ -171,5 +170,15 @@ public class RankingManager : MonoBehaviour
         {
             ScoreRankUI[i].SetActive(!enable);
         }
+    }
+    public Sprite ProfileImage_Set(byte[] img)
+    {
+        byte[] fileData = img;
+        Texture2D texture = new Texture2D(2, 2);
+        texture.LoadImage(fileData);
+        Rect rect = new Rect(0, 0, texture.width, texture.height);
+        Texture2D texture2Dload = texture;
+
+        return Sprite.Create(texture2Dload, rect, new Vector2(0.5f, 0.5f));
     }
 }
