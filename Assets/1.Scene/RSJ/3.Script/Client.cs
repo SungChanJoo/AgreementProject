@@ -630,7 +630,7 @@ public class Client : MonoBehaviour
             {
                 for(int k = 0; k < levels; k++)
                 {
-                    Debug.Log($"[Client] Check clientAnalyticsData.Data.Value(reactionRate), i,j,k : {i}, {j}, {k} : {clientAnalyticsData.Data[(i + 1, (Game_Type)j, k + 1)].reactionRate}");
+                    Debug.Log($"[Client] Check clientAnalyticsData.Data.Value(reactionRate), i,j,k : {i},{j}, {k} : {clientAnalyticsData.Data[(i + 1, (Game_Type)j, k + 1)].reactionRate}");
                 }
             }
         }

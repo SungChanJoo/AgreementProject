@@ -206,7 +206,7 @@ public class Server : MonoBehaviour
                     List<string> endCheck = receivedRequestData.Split('|').ToList();
                     if (endCheck.Contains("Finish"))
                     {
-                        Debug.Log($"[Server] Received Finish Data from Client : {receivedRequestData}");
+                        //Debug.Log($"[Server] Received Finish Data from Client : {receivedRequestData}");
                         // receivedRequestData에 Finish가 있는 경우 Finish를 제거
                         etcMethodHandler.RemoveFinish(receivedRequestData_List, endCheck);
 
@@ -247,7 +247,7 @@ public class Server : MonoBehaviour
 
         for(int i = 0; i <filterList.Count; i ++)
         {
-            Debug.Log($"[Server] Received Data From Client to filterList[{i}] : {filterList[i]}");
+            //Debug.Log($"[Server] Received Data From Client to filterList[{i}] : {filterList[i]}");
         }
 
         //string requestName = $"[Save]CharactorData";
