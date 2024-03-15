@@ -25,7 +25,6 @@ public class DrawLineRenderer : MonoBehaviour
         for (int i = 0; i < StepPos.Count; i++)
         {
             var position = StepPos[i].transform.position + new Vector3(0, 0, Depth);
-            Debug.Log(StepPos[i].transform.position +" , " +position);
             lr.SetPosition(i, position);
         }
     }
