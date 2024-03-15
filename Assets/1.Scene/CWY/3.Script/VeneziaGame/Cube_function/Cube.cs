@@ -93,20 +93,6 @@ public class Cube : MonoBehaviour
 
     private void Update()
     {
-/*        if (!gameObject.activeSelf)
-        {
-            isStart = false;
-            isFloor = false;
-            isLeftWall = false;
-            isRightWall = false;
-            isCeiling = false;
-            isDirFloorSelect = false;
-            isDirCelingSelect = false;
-            isDirLeftSelect = false;
-            isDirRightSelect = false;
-            isTouch = false;
-        }*/
-
         if (isStart && gameObject.activeSelf)
         {
             Cube_StartMove_();
@@ -302,7 +288,7 @@ public class Cube : MonoBehaviour
     #endregion
     private void JudgeCubeObjType()
     {
-        if (VeneziaManager.Instance.Quest_Img.sprite == sprite)
+        if (VeneziaManager.Instance.Quest_Img.sprite == sprite || VeneziaManager.Instance.Quest2_Img.sprite == sprite)
         {
             objectType = ObjectType.CorrectAnswer;
         }

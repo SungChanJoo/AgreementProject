@@ -40,7 +40,11 @@ public class ObjectPooling : MonoBehaviour
 
     private Vector3 offset;
     private Vector3 offsetTwo;
-   
+
+
+    public int FirstPool = 0;
+    public int SecondPool = 0;
+
     private void Awake()
     {
         #region Singleton 
@@ -76,7 +80,7 @@ public class ObjectPooling : MonoBehaviour
     public IEnumerator Cube_Co(int cool)
     {
         if (cubePool.Count <= VeneziaManager.Instance.limitCount) yield break;
-        while (cubePool.Count > VeneziaManager.Instance.limitCount)
+        while (cubePool.Count > VeneziaManager.Instance.limitCount && cubePoolTwo.Count > VeneziaManager.Instance.limitCount)
         {
             int Randnum = Random.Range(0, cubePool.Count);
             int RandnumTwo = Random.Range(0, cubePoolTwo.Count);
@@ -130,7 +134,7 @@ public class ObjectPooling : MonoBehaviour
             if(VeneziaManager.Instance.veneGameMode == VeneGameMode.Couple)
             {
                 //First Player pool
-                if (cubePool.Count - VeneziaManager.Instance.limitCount == 1)
+                if(cubePool.Count - VeneziaManager.Instance.limitCount == 1)
                 {
                     bool foundSameSprite = false;
                     foreach (var cube in cubePool)
@@ -200,40 +204,122 @@ public class ObjectPooling : MonoBehaviour
     public IEnumerator ReStartCube_Co(int cool)
     {
         yield return new WaitForSeconds(cool);
-        while (cubePool.Count > VeneziaManager.Instance.limitCount)
+        while (cubePool.Count > VeneziaManager.Instance.limitCount && cubePoolTwo.Count > VeneziaManager.Instance.limitCount)
         {
             int Randnum = Random.Range(0, cubePool.Count);
-            float randomValue = Random.Range(-95, 95);
-            Vector3 offset = new Vector3(randomValue, 0, 0); // 좌우 변경을위한 랜덤값
-            if (cubePool.Count - VeneziaManager.Instance.limitCount == 1)
+            int RandnumTwo = Random.Range(0, cubePoolTwo.Count);
+            //솔로모드
+            if (VeneziaManager.Instance.veneGameMode == VeneGameMode.Sole)
             {
-                bool foundSameSprite = false;
-                foreach (var cube in cubePool)
-                {
-                    Cube cubeScript = cube.GetComponent<Cube>();
+                float randomValue = Random.Range(-95, 95);
+                offset = new Vector3(randomValue, 0, 0); // 좌우 변경을위한 랜덤값
+            }
+            else
+            {
+                //2인모드
+                float random = Random.Range(5, 10);
+                offset = new Vector3(random, 0, 0); // 좌우 변경을위한 랜덤값
+            }
 
-                    if (cubeScript.sprite == QuestImg.sprite)
+            //솔로모드
+            if (VeneziaManager.Instance.veneGameMode == VeneGameMode.Sole)
+            {
+                if (cubePool.Count - VeneziaManager.Instance.limitCount == 1)
+                {
+                    bool foundSameSprite = false;
+                    foreach (var cube in cubePool)
                     {
-                        cube.SetActive(true);
-                        cube.transform.position = Pool_Position.transform.position + offset;
-                        cubePool.Remove(cube);
-                        foundSameSprite = true;
-                        break;
+                        Cube cubeScript = cube.GetComponent<Cube>();
+
+                        if (cubeScript.sprite == QuestImg.sprite)
+                        {
+                            cube.SetActive(true);
+                            cube.transform.position = Pool_Position.transform.position + offset;
+                            cubePool.Remove(cube);
+                            foundSameSprite = true;
+                            break;
+                        }
+                    }
+                    if (!foundSameSprite)
+                    {
+                        cubePool[Randnum].transform.position = Pool_Position.transform.position + offset;
+                        cubePool[Randnum].SetActive(true);
+                        cubePool.Remove(cubePool[Randnum]);
                     }
                 }
-                if (!foundSameSprite)
+                else
                 {
                     cubePool[Randnum].transform.position = Pool_Position.transform.position + offset;
                     cubePool[Randnum].SetActive(true);
                     cubePool.Remove(cubePool[Randnum]);
                 }
             }
-            else
+            //커플모드
+            if (VeneziaManager.Instance.veneGameMode == VeneGameMode.Couple)
             {
-                cubePool[Randnum].transform.position = Pool_Position.transform.position + offset;
-                cubePool[Randnum].SetActive(true);
-                cubePool.Remove(cubePool[Randnum]);
+                //First Player pool
+                if (cubePool.Count - VeneziaManager.Instance.limitCount == 1)
+                {
+                    bool foundSameSprite = false;
+                    foreach (var cube in cubePool)
+                    {
+                        Cube cubeScript = cube.GetComponent<Cube>();
+
+                        if (cubeScript.sprite == QuestImg.sprite)
+                        {
+                            cube.SetActive(true);
+                            cube.transform.position = Pool_Position.transform.position + offset;
+                            cubePool.Remove(cube);
+                            foundSameSprite = true;
+                            break;
+                        }
+                    }
+                    if (!foundSameSprite)
+                    {
+                        cubePool[Randnum].transform.position = Pool_Position.transform.position + offset;
+                        cubePool[Randnum].SetActive(true);
+                        cubePool.Remove(cubePool[Randnum]);
+                    }
+                }
+                else
+                {
+                    cubePool[Randnum].transform.position = Pool_Position.transform.position + offset;
+                    cubePool[Randnum].SetActive(true);
+                    cubePool.Remove(cubePool[Randnum]);
+                }
+
+                //Second Player pool
+                if (cubePoolTwo.Count - VeneziaManager.Instance.limitCount == 1)
+                {
+                    bool foundSameSprite = false;
+                    foreach (var cube in cubePoolTwo)
+                    {
+                        Cube cubeScript = cube.GetComponent<Cube>();
+                        if (cubeScript.sprite == QuestTwoImg.sprite)
+                        {
+                            cube.SetActive(true);
+                            cube.transform.position = Pool_PositionTwo.transform.position + offset;
+                            cubePoolTwo.Remove(cube);
+                            foundSameSprite = true;
+                            break;
+                        }
+                    }
+                    if (!foundSameSprite)
+                    {
+                        cubePoolTwo[RandnumTwo].transform.position = Pool_PositionTwo.transform.position + offset;
+                        cubePoolTwo[RandnumTwo].SetActive(true);
+                        cubePoolTwo.Remove(cubePoolTwo[RandnumTwo]);
+                    }
+                }
+                else
+                {
+                    cubePoolTwo[RandnumTwo].transform.position = Pool_PositionTwo.transform.position + offset;
+                    cubePoolTwo[RandnumTwo].SetActive(true);
+                    cubePoolTwo.Remove(cubePoolTwo[RandnumTwo]);
+                }
+
             }
+
 
             yield return new WaitForSeconds(cool); //난이도에 따라 재생되는 시간을 바꿀것
         }

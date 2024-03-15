@@ -116,7 +116,7 @@ public class VeneziaManager : GameSetting
     //문제 데이터 저장
     public Dictionary<string, QuestData> Quest = new Dictionary<string, QuestData>();
 
-    private bool isFirstPlayerTouch = false;
+    public bool isFirstPlayerTouch = false;
     private bool isStart = false;
     private void Awake()
     {
@@ -206,6 +206,7 @@ public class VeneziaManager : GameSetting
     private void Click_Obj()
     {
         CheckCubeTypes();
+        print(isFirstPlayerTouch);
         if (Input.GetMouseButtonDown(0))
         {
             Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
@@ -216,9 +217,9 @@ public class VeneziaManager : GameSetting
                 //print(hit.collider.gameObject.name);
                 //큐브 오브젝트 판단
                 Cube Questprefab = hit.collider.gameObject.GetComponent<Cube>();
+                isFirstPlayerTouch = (Questprefab.playerNum == PlayerNum.One) ? true : false;
                 if (Questprefab != null && Questprefab.objectType == ObjectType.CorrectAnswer) // 큐브를 눌렀을때 Quest 인지 알아야함
                 {
-                    isFirstPlayerTouch = (Questprefab.playerNum == PlayerNum.One) ? true : false;
                     if (QuestCount > -1)
                     {
                         RemainAnswer--;
@@ -418,11 +419,13 @@ public class VeneziaManager : GameSetting
                 //두번째 플레이어가 터치했을 경우 두번째 플레이어의 문제만 바꿀것.
                 if (isFirstPlayerTouch)
                 {
+                    //첫번째 플레이어
                     Quest_Img.sprite = randomQuest[0].sprite;
                     Quest_text.text = randomQuest[0].description;
                 }
                 else
                 {
+                    //두번째플레이어
                     Quest2_Img.sprite = randomQuest[1].sprite;
                     Quest2_text.text = randomQuest[1].description;
                 }
@@ -533,18 +536,38 @@ public class VeneziaManager : GameSetting
 
     public void ResetCube()
     {
-        bool isFirst = true;
-        if (ObjectPooling.Instance.cubePool.Count > limitCount && isFirst)
+        if(veneGameMode == VeneGameMode.Sole)
         {
-            isFirst = false;
-            StopCoroutine(ObjectPooling.Instance.CubePooling);
-            ObjectPooling.Instance.ReStartCubePooling_co();
+            bool isFirst = true;
+            if (ObjectPooling.Instance.cubePool.Count > limitCount && isFirst)
+            {
+                isFirst = false;
+                StopCoroutine(ObjectPooling.Instance.CubePooling);
+                ObjectPooling.Instance.ReStartCubePooling_co();
+            }
+            else if (ObjectPooling.Instance.cubePool.Count > limitCount && !isFirst)
+            {
+                StopCoroutine(ObjectPooling.Instance.CubeRestartPooling);
+                ObjectPooling.Instance.ReStartCubePooling_co();
+            }
         }
-        else if(ObjectPooling.Instance.cubePool.Count > limitCount && !isFirst)
+        else
         {
-            StopCoroutine(ObjectPooling.Instance.CubeRestartPooling);
-            ObjectPooling.Instance.ReStartCubePooling_co();
+            bool isFirst = true;
+            //첫번째 플레이어
+            if (((ObjectPooling.Instance.cubePool.Count > limitCount) || (ObjectPooling.Instance.cubePoolTwo.Count > limitCount)) && isFirst) 
+            {
+                isFirst = false;
+                StopCoroutine(ObjectPooling.Instance.CubePooling);
+                ObjectPooling.Instance.ReStartCubePooling_co();
+            }
+            else if (((ObjectPooling.Instance.cubePool.Count > limitCount) || (ObjectPooling.Instance.cubePoolTwo.Count > limitCount)) && !isFirst)
+            {
+                StopCoroutine(ObjectPooling.Instance.CubeRestartPooling);
+                ObjectPooling.Instance.ReStartCubePooling_co();
+            }
         }
+
     }
 
 
