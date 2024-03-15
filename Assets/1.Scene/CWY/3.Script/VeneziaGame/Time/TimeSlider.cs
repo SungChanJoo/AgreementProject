@@ -42,7 +42,6 @@ public interface ITimeSlider
     IEnumerator timeSlider_co;
     private void Awake()
     {
-        
         if (Instance == null)
         {
             Instance = this;

@@ -283,9 +283,12 @@ public class ObjectPooling : MonoBehaviour
                 }
                 else
                 {
-                    cubePool[Randnum].transform.position = Pool_Position.transform.position + offset;
-                    cubePool[Randnum].SetActive(true);
-                    cubePool.Remove(cubePool[Randnum]);
+                    if (VeneziaManager.Instance.isFirstPlayerTouch)
+                    {
+                        cubePool[Randnum].transform.position = Pool_Position.transform.position + offset;
+                        cubePool[Randnum].SetActive(true);
+                        cubePool.Remove(cubePool[Randnum]);
+                    }
                 }
 
                 //Second Player pool
@@ -313,9 +316,12 @@ public class ObjectPooling : MonoBehaviour
                 }
                 else
                 {
-                    cubePoolTwo[RandnumTwo].transform.position = Pool_PositionTwo.transform.position + offset;
-                    cubePoolTwo[RandnumTwo].SetActive(true);
-                    cubePoolTwo.Remove(cubePoolTwo[RandnumTwo]);
+                    if (!VeneziaManager.Instance.isFirstPlayerTouch)
+                    {
+                        cubePoolTwo[RandnumTwo].transform.position = Pool_PositionTwo.transform.position + offset;
+                        cubePoolTwo[RandnumTwo].SetActive(true);
+                        cubePoolTwo.Remove(cubePoolTwo[RandnumTwo]);
+                    }
                 }
 
             }
