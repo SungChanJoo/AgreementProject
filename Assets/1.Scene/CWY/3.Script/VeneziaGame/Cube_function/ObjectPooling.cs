@@ -80,7 +80,7 @@ public class ObjectPooling : MonoBehaviour
     public IEnumerator Cube_Co(int cool)
     {
         if (cubePool.Count <= VeneziaManager.Instance.limitCount) yield break;
-        while (cubePool.Count > VeneziaManager.Instance.limitCount && cubePoolTwo.Count > VeneziaManager.Instance.limitCount)
+        while (cubePool.Count > VeneziaManager.Instance.limitCount || cubePoolTwo.Count > VeneziaManager.Instance.limitCount)
         {
             int Randnum = Random.Range(0, cubePool.Count);
             int RandnumTwo = Random.Range(0, cubePoolTwo.Count);
@@ -204,7 +204,7 @@ public class ObjectPooling : MonoBehaviour
     public IEnumerator ReStartCube_Co(int cool)
     {
         yield return new WaitForSeconds(cool);
-        while (cubePool.Count > VeneziaManager.Instance.limitCount && cubePoolTwo.Count > VeneziaManager.Instance.limitCount)
+        while (cubePool.Count > VeneziaManager.Instance.limitCount || cubePoolTwo.Count > VeneziaManager.Instance.limitCount)
         {
             int Randnum = Random.Range(0, cubePool.Count);
             int RandnumTwo = Random.Range(0, cubePoolTwo.Count);

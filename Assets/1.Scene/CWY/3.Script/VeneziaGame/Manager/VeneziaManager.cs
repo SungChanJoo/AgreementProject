@@ -234,18 +234,33 @@ public class VeneziaManager : GameSetting
                     {
                         GameOver();
                     }
-
-                    ObjectPooling.Instance.cubePool.Add(hit.collider.gameObject);
-                    hit.collider.gameObject.SetActive(false);
+                    if (isFirstPlayerTouch)
+                    {
+                        ObjectPooling.Instance.cubePool.Add(hit.collider.gameObject);
+                        hit.collider.gameObject.SetActive(false);
+                    }
+                    else
+                    {
+                        ObjectPooling.Instance.cubePoolTwo.Add(hit.collider.gameObject);
+                        hit.collider.gameObject.SetActive(false);
+                    }
                 }
                 else if (Questprefab != null && Questprefab.objectType != ObjectType.CorrectAnswer)
                 {
                     //print("오답클릭!");
                     ClickCount++;
-                    ObjectPooling.Instance.cubePool.Add(hit.collider.gameObject);
-                    hit.collider.gameObject.SetActive(false);
+                    if (isFirstPlayerTouch)
+                    {
+                        ObjectPooling.Instance.cubePool.Add(hit.collider.gameObject);
+                        hit.collider.gameObject.SetActive(false);
+                    }
+                    else
+                    {
+                        ObjectPooling.Instance.cubePoolTwo.Add(hit.collider.gameObject);
+                        hit.collider.gameObject.SetActive(false);
+                    }
                     totalReactionTime = 0;
-                    TimeSlider.Instance.DecreaseTime_Item(5);
+                    TimeSlider.Instance.DecreaseTime_Item(5); //Todo : 클릭한 오답쪽을 기준으로 타임슬러이더 줄일 수 있도록 변경
                 }
                 else
                 {
@@ -567,7 +582,7 @@ public class VeneziaManager : GameSetting
                 ObjectPooling.Instance.ReStartCubePooling_co();
             }
         }
-
+ 
     }
 
 
