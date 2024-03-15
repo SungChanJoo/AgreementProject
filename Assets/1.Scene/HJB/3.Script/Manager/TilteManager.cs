@@ -13,12 +13,17 @@ public class TilteManager : MonoBehaviour
     [SerializeField] private GameObject RegistrationCanvas;    
     [SerializeField] private TextMeshProUGUI inputError_text;
     [SerializeField] private TMP_InputField name_text;
+    [SerializeField] private TextMeshProUGUI testText;
     private string licenseFolderPath = string.Empty;
     private bool firstCheck = false;
     private void Awake()
     {
-        //licenseFolderPath = Application.dataPath + "/License";
-        licenseFolderPath = Application.persistentDataPath + "/License";
+        if(Application.platform == RuntimePlatform.Android)
+            licenseFolderPath = Application.persistentDataPath + "/License";
+        else
+            licenseFolderPath = Application.dataPath + "/License";
+
+        testText.text = licenseFolderPath;
         string licenseFilePath = licenseFolderPath + "/clientlicense.json";
         if (!File.Exists(licenseFilePath))
         {
@@ -33,6 +38,7 @@ public class TilteManager : MonoBehaviour
     {
         //타이틀에서 메인메뉴로 Scene 이동 시 데이터 로드해야함 -> DB 비동기
         PlayerLoadData_Btn();
+
     }
     public void PlayerLoadData_Btn()
     {

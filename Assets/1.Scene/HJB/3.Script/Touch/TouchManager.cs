@@ -1,16 +1,26 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
+public interface ITouchEffect
+{
+    //UI Particle의 색상 및 특징 받기    
+    public void TouchSoundCheck(bool answerCheck);
 
+}
 public class TouchManager : MonoBehaviour
 {
     public static TouchManager Instance = null;
     [SerializeField] private GameObject[] effect_obj;
     [SerializeField] private GameObject beganEffect_obj;
+    [SerializeField] private GameObject beganEffect_vene;
+    [SerializeField] private GameObject beganEffect_gugu;
     public Canvas uiCanvas; // UI 캔버스
     //public Camera uiCamera; // UI 전용 카메라  
-
     ParticleSystem[] particles;
+
+    [SerializeField] private AudioClip audioClip;
+    private AudioSource source;
 
     private void Awake()
     {
@@ -24,6 +34,7 @@ public class TouchManager : MonoBehaviour
             Destroy(gameObject);
             return;
         }
+        source = GetComponent<AudioSource>();
     }
     private void Start()
     {
@@ -50,14 +61,19 @@ public class TouchManager : MonoBehaviour
         {
             Touch touch = Input.GetTouch(i);
 
-            
-            Vector2 localPoint;
             //RectTransformUtility.ScreenPointToLocalPointInRectangle(uiCanvas.GetComponent<RectTransform>(), touch.position, Camera.main, out localPoint);
-
+            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+            RaycastHit hit;
             if (touch.phase == TouchPhase.Began)
             {
-                GameObject beganTouch = Instantiate(beganEffect_obj, uiCanvas.transform);
+                GameObject beganTouch = TouchCheck(SceneManager.GetActiveScene().buildIndex);
                 beganTouch.transform.position = touch.position;
+                //hit.collider.tag == "Untagged"
+                if (!Physics.Raycast(ray, out hit)&&(hit.collider == null))
+                {
+                    
+                    source.PlayOneShot(audioClip);                    
+                }                
             }            
             if (i < particles.Length)
             {
@@ -76,5 +92,22 @@ public class TouchManager : MonoBehaviour
             }
         }
     }   
+
+    private GameObject TouchCheck(int scene_index)
+    {
+        switch (scene_index)
+        {
+            case 0:
+            case 1:
+            case 2:
+                return Instantiate(beganEffect_obj, uiCanvas.transform);
+            case 3:
+                return Instantiate(beganEffect_gugu, uiCanvas.transform);
+            case 4:
+                return Instantiate(beganEffect_vene, uiCanvas.transform);            
+            default:
+                return Instantiate(beganEffect_obj, uiCanvas.transform); ;
+        }        
+    }
 }
 

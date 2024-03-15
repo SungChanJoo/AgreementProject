@@ -21,7 +21,7 @@ public class Crew
 class CrewButton
 {
     public const string _selectedCrew = "출동!";
-    public const string _ownedCrew = "출동 대기";
+    public const string _ownedCrew = "대기";
 }
 
 //펫을 고르고 메타별에 입장을 관리하는 매니져
@@ -92,9 +92,12 @@ public class CollectionsManager : MonoBehaviour
 
     public void OnViewPurchase(int crewNumber)
     {
+        Debug.Log("OnViewPurchase");
         if (crewNumber > -1)
         {
             var crewCost = Convert.ToInt32(_crewStatusText[crewNumber].text);
+            Debug.Log("crewCost : " + crewCost);
+            Debug.Log("_money : " + _money);
             if (_money >= crewCost)
             {
                 //영입창 켜질때
@@ -248,19 +251,30 @@ public class CollectionsManager : MonoBehaviour
     //DB에서 탐험대원 콜렉션 불러오기
     public void SetCollections()
     {
-        //todo 0219 DB에 데이터 받아서 선택된 대원과 보유한 대원 리스트 받아와줘
-        int selectedCrew = 0;
-        List<bool> ownedCrew = new List<bool>();
-        ownedCrew.Add(true);
-        ownedCrew.Add(true);
-        ownedCrew.Add(true);
-        ownedCrew.Add(true);
-        ownedCrew.Add(true);
-        for(int i = 0; i < 32; i++)
+        //DB에 데이터 받아서 선택된 대원과 보유한 대원 리스트 받기
+        if(DataBase.Instance.playerInfo.Collections != null)
         {
-            ownedCrew.Add(false);
+            Collections = DataBase.Instance.playerInfo.Collections;
         }
-        Collections = new ExpenditionCrew(selectedCrew, ownedCrew);
+        //데이터를 불러오지 못하면 초기화
+        else
+        {
+            int selectedCrew = 0;
+            List<bool> ownedCrew = new List<bool>();
+            for (int i = 0; i < 32; i++)
+            {
+                if(i<5)
+                {
+                    ownedCrew.Add(true);
+                }
+                else
+                {
+                    ownedCrew.Add(false);
+                }
+            }
+            Collections = new ExpenditionCrew(selectedCrew, ownedCrew);
+        }
+
 
         //텍스트, 버튼 초기화
         _crewStatusBtn = new List<GameObject>();
@@ -306,7 +320,7 @@ public class CollectionsManager : MonoBehaviour
             //SetBtnColor(buttonImg, SelectedBtnColor);
             buttonImg.sprite = SelectedImg;
         }
-        //보유한 대원은 "출동 대기" 텍스트
+        //보유한 대원은 "출동" 텍스트
         else if (Collections.OwnedCrew[i])
         {
             if (btn == null && text == null) 
