@@ -12,7 +12,10 @@ public class Player_DB
     
     public Dictionary<(Game_Type, int, int), Data_value> Data = 
         new Dictionary<(Game_Type, int, int), Data_value>();
-    
+
+    public RankData RankingInfo;
+    public ExpenditionCrew Collections;
+    public LastPlayData LastPlayStepData;
 }
 [System.Serializable]
 public class Data_value

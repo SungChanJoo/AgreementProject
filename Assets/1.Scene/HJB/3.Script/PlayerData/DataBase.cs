@@ -8,9 +8,7 @@ public class DataBase : MonoBehaviour
     public Player_DB playerInfo;
     public List<Player_DB> PlayerCharacter = new List<Player_DB>();
 
-    public RankData RankingInfo;
-    public ExpenditionCrew Collections;
-    public LastPlayData LastPlayStepData;
+
     public int CharacterIndex {
         get
         {
@@ -63,19 +61,16 @@ public class DataBase : MonoBehaviour
             //플레이어 정보 불러오기
             playerInfo = Client.instance.AppStart_LoadAllDataFromDB();
             //랭킹데이터 불러오기
-            RankingInfo = Client.instance.AppStart_LoadRankDataFromDB();
+            playerInfo.RankingInfo = Client.instance.AppStart_LoadRankDataFromDB();
             //탐험대원 도감데이터 불러오기
-            Collections = Client.instance.AppStart_LoadExpenditionCrewFromDB();
+            playerInfo.Collections = Client.instance.AppStart_LoadExpenditionCrewFromDB();
             //마지막 플레이한 스텝 데이터 불러오기
-            LastPlayStepData = Client.instance.AppStart_LoadLastPlayFromDB();
+            playerInfo.LastPlayStepData = Client.instance.AppStart_LoadLastPlayFromDB();
             CharactorAdd();
         }
         catch (System.Exception)
         {
             playerInfo = null;
-            RankingInfo = null;
-            Collections = null;
-            LastPlayStepData = null;
             Debug.Log("DB에서 플레이어 데이터를 불러오지 못했습니다.");
         }
     }

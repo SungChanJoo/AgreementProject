@@ -252,9 +252,9 @@ public class CollectionsManager : MonoBehaviour
     public void SetCollections()
     {
         //DB에 데이터 받아서 선택된 대원과 보유한 대원 리스트 받기
-        if(DataBase.Instance.Collections != null)
+        if(DataBase.Instance.playerInfo.Collections != null)
         {
-            Collections = DataBase.Instance.Collections;
+            Collections = DataBase.Instance.playerInfo.Collections;
         }
         //데이터를 불러오지 못하면 초기화
         else

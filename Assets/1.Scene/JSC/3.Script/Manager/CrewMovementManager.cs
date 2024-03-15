@@ -62,9 +62,9 @@ public class CrewMovementManager : MonoBehaviour
         //FinalPlayStepTable.Add((Game_Type.A, 1), 1); // Game_Type.A, 1레벨에서 마지막으로 플레이한 스텝이 1스텝
         //FinalPlayStepTable[(Game_Type.A, 1)] = 2;// 스텝 2로 변경
         //DB연동해서 최종 플레이한 스텝 초기화
-        if (DataBase.Instance.LastPlayStepData != null && DataBase.Instance != null)
+        if (DataBase.Instance.playerInfo.LastPlayStepData != null && DataBase.Instance != null)
         {
-            LastPlayStepTable = DataBase.Instance.LastPlayStepData;
+            LastPlayStepTable = DataBase.Instance.playerInfo.LastPlayStepData;
         }
         else
         {
