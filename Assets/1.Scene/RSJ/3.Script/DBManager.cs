@@ -434,11 +434,19 @@ public class DBManager : MonoBehaviour
 
     #region Data Save
     // DB에 캐릭터 이름 저장
-    public void SaveCharactorName(List<string> dataList)
+    public void SaveCharactorName(List<string> filterList)
     {
         // user_info table과 rank table에 업데이트
         // dataList -> [0]requestName / [1]license / [2]charactor / [3]name
         Debug.Log("[DB] Come in SaveCharactorName method");
+
+        //        [Server] Received Data From Client to filterList[0] : [Save]CharactorName | 10001 | 1 | name
+        //      [DB] Come in SaveCharactorName method
+        //      [Server] Error in ReceiveRequestFromClient Method : Index was out of range. Must be non - negative and less than the size of the collection.
+        //Parameter name: index
+
+        // '|' 분할
+        List<string> dataList = filterList[0].Split('|', StringSplitOptions.RemoveEmptyEntries).ToList();
 
         // 지역변수
         string update_Command;
@@ -460,13 +468,15 @@ public class DBManager : MonoBehaviour
     }
 
     // DB에 캐릭터 프로필(이미지) 저장
-    public void SaveCharactorProfile(List<string> dataList)
+    public void SaveCharactorProfile(List<string> filterList)
     {
         // user_info table과 rank table에 업데이트
         // dataList -> [0]requestName / [1]license / [2]charactor / [3]profile(Base64)
         // Profile Base64 형식으로 DB에 저장
         Debug.Log("[DB] Come in SaveCharactorProfile method");
 
+        // '|' 분할
+        List<string> dataList = filterList[0].Split('|', StringSplitOptions.RemoveEmptyEntries).ToList();
 
         // 지역변수
         string update_Command;
@@ -475,7 +485,7 @@ public class DBManager : MonoBehaviour
         // user_info == table.list[0]
         update_Command = $"UPDATE `{table.list[0]}` SET `{userinfo_Columns[3]}` = '{dataList[3]}' " +
                          $"WHERE `{userinfo_Columns[0]}` = '{Int32.Parse(dataList[1])}' AND `{userinfo_Columns[1]}` = '{Int32.Parse(dataList[2])}';";
-        Debug.Log(update_Command);
+        //Debug.Log(update_Command);
         update_sqlCmd = new MySqlCommand(update_Command, connection);
         update_sqlCmd.ExecuteNonQuery();
 
@@ -489,12 +499,15 @@ public class DBManager : MonoBehaviour
     }
 
     // DB에 캐릭터 생년월일 저장
-    public void SaveCharactorBirthday(List<string> dataList)
+    public void SaveCharactorBirthday(List<string> filterList)
     {
         Debug.Log("[DB] Come in SaveCharactorBirthday method");
-        
+
         // userinfo table에 저장
         // dataList-> [0]requestName / [1]license / [2]charactor / [3]birthday
+
+        // '|' 분할
+        List<string> dataList = filterList[0].Split('|', StringSplitOptions.RemoveEmptyEntries).ToList();
 
         MySqlCommand mySqlCommand = new MySqlCommand();
         mySqlCommand.Connection = connection;
@@ -583,13 +596,17 @@ public class DBManager : MonoBehaviour
     }
 
     // DB에 탐험대원 데이터 저장
-    public void SaveCrewData(List<string> dataList)
+    public void SaveCrewData(List<string> filterList)
     {
         Debug.Log("[DB] Come in save crew data");
 
-        //requestData = [Save]ExpenditionCrew|license|charactor|LastSelectCrew|Crew1|Crew2|... |Crew(n)|Finish
+        //filterList = [Save]ExpenditionCrew|license|charactor|LastSelectCrew|Crew1|Crew2|... |Crew(n)|
         //dataList[0] = [Save]ExpenditionCrew
         //dataList[1] = license
+
+        List<string> dataList = filterList[0].Split('|', StringSplitOptions.RemoveEmptyEntries).ToList();
+
+
         MySqlCommand mySqlCommand = new MySqlCommand();
         mySqlCommand.Connection = connection;
 
