@@ -28,7 +28,16 @@ public class ProfileText_M : MonoBehaviour
         set
         {
             characterName.text = value;
+            //개인분석표 출력
             PlayerName = characterName.text;
+        }
+    }
+    public string PlayTime_text
+    {
+        get { return playTime.text; }
+        set
+        {
+            playTime.text = value;            
         }
     }
 
@@ -36,6 +45,11 @@ public class ProfileText_M : MonoBehaviour
     private void Awake()
     {
         profileManager = GetComponent<ProfileManager>();
+    }
+    private void OnEnable()
+    {
+        playTime.text = DataBase.Instance.PlayerCharacter[0].TotalTime.ToString();
+        totalAnswer.text = DataBase.Instance.PlayerCharacter[0].TotalAnswers.ToString();
     }
     private void Start()
     {
@@ -47,6 +61,11 @@ public class ProfileText_M : MonoBehaviour
         {
             Debug.Log("받아온 데이터가 없습니다.");
         }
+    }
+
+    private void PlayerDataLoad_Time_Answer()
+    {
+        
     }
     
     //플레이어 변경 Panel을 클릭 시 호출

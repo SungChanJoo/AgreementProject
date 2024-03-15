@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using TMPro;
+using System;
 
 public enum Game_Type
 {
@@ -56,7 +57,7 @@ public abstract class GameSetting : MonoBehaviour,ITouchEffect
 
     private void Start()
     {
-        UpdateDatabaseFromData_co = UpdateDatabaseFromData();
+        //UpdateDatabaseFromData_co = UpdateDatabaseFromData();
         startSet();
     }
 
@@ -120,9 +121,8 @@ public abstract class GameSetting : MonoBehaviour,ITouchEffect
     public void EndGame()
     {
         //시간 정지
-        TimeSlider.Instance.TimeSliderControll();
-        //결과창 UI 활성화
-        ResultCanvas_UI();
+        TimeSlider.Instance.TimeSliderControll();       
+
         //현재 마지막 Step이면 버튼 비활성화
         if (step == 6)
         {
@@ -134,19 +134,24 @@ public abstract class GameSetting : MonoBehaviour,ITouchEffect
 
         //Result_Data에 게임결과 할당
         ScoreCalculation();
-        try
-        {
-            StartCoroutine(UpdateDatabaseFromData_co);
-        }
-        catch (System.Exception)
-        {
-
-            Debug.Log("DB 연결 부탁.");
-        }
+        
+        
+        //결과창 UI 활성화
+        ResultCanvas_UI();
         //결과표 텍스트 출력
         ResultPrinter_UI();
+
+        UpdateDatabaseFromData();
+        //try
+        //{
+        //}
+        //catch (Exception)
+        //{
+
+        //    Debug.Log("DB 연결 부탁.");
+        //}
     }
-    
+
     public void ResultCanvas_UI()
     {
         resultCanvas_UI.SetActive(!resultCanvas_UI.activeSelf);
@@ -186,10 +191,10 @@ public abstract class GameSetting : MonoBehaviour,ITouchEffect
 
     }
 
-    private IEnumerator UpdateDatabaseFromData()
+    private void UpdateDatabaseFromData()
     {
         //string day = System.DateTime.Now.ToString("dd-MM-yy");
-        Player_DB db = DataBase.Instance.playerInfo;
+        Player_DB db = DataBase.Instance.PlayerCharacter[0];
         Data_value data_Value = new Data_value(reactionRate, answersCount, answers, playTime, totalScore,starcount);        
         
         //만약 totalScore가 DB에 있는 점수보다 크다면 다시 할당
@@ -197,13 +202,12 @@ public abstract class GameSetting : MonoBehaviour,ITouchEffect
         {
             db.Data[(game_Type, level, step)] = data_Value;
             Client.instance.AppGame_SaveResultDataToDB(db, game_Type,level,step);
+            Debug.Log("정상적으로 DB에 저장");
         }
         else
         {
             Debug.Log("최종점수가 DB에 있는 점수보다 낮아서 저장안함 ");
-        }
-        
-        yield return null;
+        }        
     }
     public void Setting_UI()
     {        

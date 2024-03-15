@@ -71,6 +71,7 @@ public class ObjectPooling_H : MonoBehaviour
         if (aopManager.isStop || (timeOut && TimeSlider.Instance.TimeStop)||
             SettingManager.Instance.IsActive)
         {
+            Debug.Log("ÁßÁö");
             return;
         }
         if (TimeSlider.Instance.slider.value<=0)
