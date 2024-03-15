@@ -633,19 +633,26 @@ public class DBManager : MonoBehaviour
         // filterList[0] = [Save]LastPlayData|license|charactor| (game1_level1)의 value | (game1_level2)의 value | ... | (game5_level3)의 value |Finish
         // dataList[0] = [Save]LastPlayData
         // dataList[1] = license
+        // dataList[2] = charactor
+        // ...
+        // dataList[9] = venezia_chn_level (step : 4) 
+        // ...
+        // dataList[15] = gugudan_lev
+
+        todo
 
         List<string> dataList = filterList[0].Split('|', StringSplitOptions.RemoveEmptyEntries).ToList();
 
         MySqlCommand mySqlCommand = new MySqlCommand();
         mySqlCommand.Connection = connection;
 
-        string update_Command = $"UPDATE `{table.list[3]}` SET ";
+        string update_Command = $"UPDATE `{table.list[3]}` SET";
         for(int i = 2; i < lastplaygame_Columns.Length; i++) // license, charactor 제외
         {
-            update_Command += $"`{lastplaygame_Columns[i]}` = '{Int32.Parse(dataList[i+1])}', ";
+            update_Command += $" `{lastplaygame_Columns[i]}` = {Int32.Parse(dataList[i+1])},";
         }
         update_Command = update_Command.TrimEnd(',');
-        update_Command += $"WHERE `{lastplaygame_Columns[0]}` = '{Int32.Parse(dataList[1])}' AND `{lastplaygame_Columns[1]}` = '{Int32.Parse(dataList[2])}';";
+        update_Command += $"WHERE `{lastplaygame_Columns[0]}` = '{Int32.Parse(dataList[1])}' AND `{lastplaygame_Columns[1]}` = '{Int32.Parse(dataList[2])}'";
 
         mySqlCommand.CommandText = update_Command;
         mySqlCommand.ExecuteNonQuery();
@@ -701,7 +708,7 @@ public class DBManager : MonoBehaviour
 
         // table 이름
         string table_Name = $"{gameName}_level{level}_step{step}";
-        if(gameName == "venezia_chn") table_Name = $"{gameName}_level_step{dataList[2]}";
+        if(gameName == "venezia_chn") table_Name = $"{gameName}_level_step{step}";
 
         // AnalyticsProfile table에 사용하기 위한 변수
         Game_Type gameType;
@@ -715,7 +722,7 @@ public class DBManager : MonoBehaviour
         mySqlCommand.Connection = connection;
 
         // DB gametable column순 : User_Licensenumber/User_Charactor/ReactionRate/AnswerCount/AnswerRate/Playtime/TotalScore/StarPoint
-        string selectScoreStarQuery = $"SELECT `{game_Columns[6]}`, `{game_Columns[7]}` FROM `{table_Name} " +
+        string selectScoreStarQuery = $"SELECT `{game_Columns[6]}`, `{game_Columns[7]}` FROM `{table_Name}` " +
                                       $"WHERE `{game_Columns[0]}` = '{licenseNumber}' AND `{game_Columns[1]}` = '{charactor}';";
         mySqlCommand.CommandText = selectScoreStarQuery;
         MySqlDataReader reader = mySqlCommand.ExecuteReader();
@@ -802,8 +809,8 @@ public class DBManager : MonoBehaviour
         mySqlCommand.Connection = connection;
 
         // userinfo_Columns = "User_LicenseNumber", "User_Charactor", "User_Name", "User_Profile", "User_Birthday", "User_TotalAnswers", "User_TotalTime", "User_Coin"
-        string selectQuery = $"SELECT `{userinfo_Columns[5]}`, `{userinfo_Columns[6]}` FROM `{table.list[0]} " +
-                             $"WHERE `{userinfo_Columns[0]}` = '{licensenumber}' AND `{userinfo_Columns[5]}` = '{charactor}';";
+        string selectQuery = $"SELECT `{userinfo_Columns[5]}`, `{userinfo_Columns[6]}` FROM `{table.list[0]}` " +
+                             $"WHERE `{userinfo_Columns[0]}` = '{licensenumber}' AND `{userinfo_Columns[1]}` = '{charactor}';";
         mySqlCommand.CommandText = selectQuery;
         MySqlDataReader reader = mySqlCommand.ExecuteReader();
 
@@ -1011,7 +1018,7 @@ public class DBManager : MonoBehaviour
 
         // table.list에서 analyltics_level(1,2,3)_profile 빼야함
         TableName selectTable = new TableName();
-        string[] deleteTable = { "rank", "crew", "lastplaygame", "analyltics_level1_profile", "analyltics_level2_profile", "analyltics_level3_profile" };
+        string[] deleteTable = { "rank", "crew", "lastplaygame", "analytics_level1_profile", "analytics_level2_profile", "analytics_level3_profile" };
         /*
          list.Add("rank");
         list.Add("crew");
@@ -1204,6 +1211,8 @@ public class DBManager : MonoBehaviour
                 mySqlCommand.CommandText = useDB_Command;
                 mySqlCommand.ExecuteNonQuery();
 
+                Debug.Log($"[DB] Load AnalyticsData, DBName_Array[{i}] : {DBName_Array[i]}");
+
                 // DB내에 있는 라이센스와 캐릭터를 만족하는 테이블 컬럼 조회
                 for (int j = 0; j < tableName_Array.Length; j++)
                 {
@@ -1262,6 +1271,7 @@ public class DBManager : MonoBehaviour
             for (int j = 0; j < tempList_Array.Length; j++)
             {
                 return_List.Add(tempList_Array[j][i]);
+                Debug.Log($"[DB] Load AnalyticsData, tempList_Array[j][i] : {tempList_Array[j][i]}");
             }
         }
 

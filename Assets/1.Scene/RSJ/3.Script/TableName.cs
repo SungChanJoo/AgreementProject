@@ -15,9 +15,9 @@ public class TableName
         list.Add("lastplaygame");
 
         // AnalyticsProfile table
-        list.Add("analyltics_level1_profile");
-        list.Add("analyltics_level2_profile");
-        list.Add("analyltics_level3_profile");
+        list.Add("analytics_level1_profile");
+        list.Add("analytics_level2_profile");
+        list.Add("analytics_level3_profile");
 
         // Game table
         string game_TableName;

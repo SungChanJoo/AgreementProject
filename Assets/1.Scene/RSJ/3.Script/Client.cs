@@ -853,7 +853,7 @@ public class Client : MonoBehaviour
 
         // E| 분할 및 RequestName 제거
         filterList = oneData.Split(separatorString, StringSplitOptions.RemoveEmptyEntries).ToList();
-        filterList[0] = filterList[0].Substring("[Load]ExpenditionCrew|".Length);
+        filterList[0] = filterList[0].Substring("[Load]AnalyticsProfileData|".Length);
 
         List<string> tempList = filterList[0].Split('|', StringSplitOptions.RemoveEmptyEntries).ToList();
 
@@ -1659,6 +1659,28 @@ public class Client : MonoBehaviour
 
         RequestToServer(requestData);
     }
+
+    public void OnClickSaveLastPlayGameTest()
+    {
+        /*
+         // requestData = [Save]LastPlayData|license|charactor| (game1_level1)의 value | (game1_level2)의 value | ... | (game5_level3)의 value |Finish
+        // filterList[0] = [Save]LastPlayData|license|charactor| (game1_level1)의 value | (game1_level2)의 value | ... | (game5_level3)의 value |Finish
+        // dataList[0] = [Save]LastPlayData
+        // dataList[1] = license
+        // dataList[2] = charactor
+        // ...
+        // dataList[9] = venezia_chn_level (step : 4) 
+        // ...
+        // dataList[15] = gugudan_level3
+         */
+
+        string requestData = $"[Save]LastPlayData|{clientLicenseNumber}|{clientCharactor}|";
+
+        requestData += $"1|2|3|4|5|6|1|2|3|4|5|6|1|Finish";
+
+        RequestToServer(requestData);
+    }
+
 #endregion
 
     private void CloseSocket()

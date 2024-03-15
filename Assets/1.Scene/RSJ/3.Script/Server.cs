@@ -422,7 +422,7 @@ public class Server : MonoBehaviour
         {
             byte[] data = Encoding.UTF8.GetBytes(replyRequestData_List[i]); // string -> byte[] 데이터 형식 변환
             stream.Write(data, 0, data.Length);
-            Debug.Log("[Server] Replying... request data to client");
+            //Debug.Log("[Server] Replying... request data to client");
         }
 
         byte[] finishData = Encoding.UTF8.GetBytes("Finish");
