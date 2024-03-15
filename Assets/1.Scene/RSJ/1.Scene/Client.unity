@@ -4446,8 +4446,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1823038813}
-        m_TargetAssemblyTypeName: Client, Assembly-CSharp
+      - m_Target: {fileID: 125333371}
+        m_TargetAssemblyTypeName: ClientTest, Assembly-CSharp
         m_MethodName: OnClickSaveProfileTest
         m_Mode: 1
         m_Arguments:

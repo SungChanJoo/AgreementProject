@@ -144,17 +144,19 @@ public class Client : MonoBehaviour
             licenseFolderPath = Application.dataPath + "/License";
         }
 
-            string licenseFilePath = licenseFolderPath + "/clientlicense.json";
-            Debug.Log($"제발요 파일경로를 알려주세요{licenseFilePath}");
-            // 경로에 파일이 존재하지 않는다면 라이센스넘버가 없다는것이고, 처음 접속한다는 뜻
-            if (!File.Exists(licenseFilePath))
-            {
-                // 서버에서 라이센스 넘버를 받아와야함, 그러기 위해 서버에 요청 todo
-                Debug.Log($"[Client] This client is entering game for the first time..");
-                string requestName = "[Create]LicenseNumber|Finish";
-                RequestToServer(requestName);
-                return; // 처음 접속이라면 폴더 및 파일 저장하고 return
-            }
+        string licenseFilePath = licenseFolderPath + "/clientlicense.json";
+        Debug.Log($"제발요 파일경로를 알려주세요{licenseFilePath}");
+        // 경로에 파일이 존재하지 않는다면 라이센스넘버가 없다는것이고, 처음 접속한다는 뜻
+        if (!File.Exists(licenseFilePath))
+        {
+
+            Directory.CreateDirectory(licenseFolderPath);
+            // 서버에서 라이센스 넘버를 받아와야함, 그러기 위해 서버에 요청 todo
+            Debug.Log($"[Client] This client is entering game for the first time..");
+            string requestName = "[Create]LicenseNumber|Finish";
+            RequestToServer(requestName);
+            return; // 처음 접속이라면 폴더 및 파일 저장하고 return
+        }
 
             // 해당 경로에 있는 파일을 읽어 클라이언트 라이센스 넘버를 불러옴
             string jsonStringFromFile = File.ReadAllText(licenseFilePath);
@@ -563,39 +565,38 @@ public class Client : MonoBehaviour
 
         #region dataList Format / filterList Format
         // 들어오는 형태
-        // dataList[0] = "[Load]AnalyticsData|E|day1|venezia_kor_level1_analytics|ReactionRate|AnswerRate|E|...??"
+        // dataList[0] = "[Load]AnalyticsData|day1|venezia_kor_level1_analytics|ReactionRate|AnswerRate|E|...??"
         // dataList[1] = "day1|venezia_kor_level1_analytics|ReactionRate|AnswerRate|E|??"
         // ... dataList[Last] = "CharactorNumber|Name|Profile|E|
 
         // Filterd List or Array가 밑에처럼 구분되어야함
-        // dataList[0] = "[Load]AnalyticsData|E|"
-        // dataList[1] = "day1|venezia_kor_level1_analytics|ReactionRate|AnswerRate|E|"
-        // dataList[2] = "day1|venezia_kor_level2_analytics|ReactionRate|AnswerRate|E|"
-        // dataList[3] = "day1|venezia_kor_level3_analytics|ReactionRate|AnswerRate|E|"
-        // dataList[4] = "day1|venezia_eng_level1_analytics|ReactionRate|AnswerRate|E|"
-        // dataList[5] = "day1|venezia_eng_level2_analytics|ReactionRate|AnswerRate|E|"
-        // dataList[6] = "day1|venezia_eng_level3_analytics|ReactionRate|AnswerRate|E|"
-        // dataList[7] = "day1|venezia_chn_analytics|ReactionRate|AnswerRate|E|"
-        // dataList[8] = "day1|calculation_level1_anlaytics|ReactionRate|AnswerRate|E|"
-        // dataList[9] = "day1|calculation_level2_anlaytics|ReactionRate|AnswerRate|E|"
-        // dataList[10] = "day1|calculation_level3_anlaytics|ReactionRate|AnswerRate|E|"
-        // dataList[11] = "day1|gugudan_level1_analytics|ReactionRate|AnswerRate|E|"
-        // dataList[12] = "day1|gugudan_level2_analytics|ReactionRate|AnswerRate|E|"
-        // dataList[13] = "day1|gugudan_level3_analytics|ReactionRate|AnswerRate|E|"
-        // ...
-        // dataList[79] = "day7|venezia_kor_level1_analytics|ReactionRate|AnswerRate|E|"
-        // dataList[80] = "day7|venezia_kor_level2_analytics|ReactionRate|AnswerRate|E|"
-        // dataList[81] = "day7|venezia_kor_level3_analytics|ReactionRate|AnswerRate|E|"
-        // dataList[82] = "day7|venezia_eng_level1_analytics|ReactionRate|AnswerRate|E|"
-        // dataList[83] = "day7|venezia_eng_level2_analytics|ReactionRate|AnswerRate|E|"
-        // dataList[84] = "day7|venezia_eng_level3_analytics|ReactionRate|AnswerRate|E|"
-        // dataList[85] = "day7|venezia_chn_analytics|ReactionRate|AnswerRate|E|"
-        // dataList[86] = "day7|calculation_level1_anlaytics|ReactionRate|AnswerRate|E|"
-        // dataList[87] = "day7|calculation_level2_anlaytics|ReactionRate|AnswerRate|E|"
-        // dataList[88] = "day7|calculation_level3_anlaytics|ReactionRate|AnswerRate|E|"
-        // dataList[89] = "day7|gugudan_level1_analytics|ReactionRate|AnswerRate|E|"
-        // dataList[90] = "day7|gugudan_level2_analytics|ReactionRate|AnswerRate|E|"
-        // dataList[91] = "day7|gugudan_level3_analytics|ReactionRate|AnswerRate|E|"
+        // filterList[0] = "[Load]AnalyticsData|"day1|venezia_kor_level1_analytics|ReactionRate|AnswerRate|E|"
+        // filterList[1] = "day1|venezia_kor_level2_analytics|ReactionRate|AnswerRate|E|"
+        // filterList[2] = "day1|venezia_kor_level3_analytics|ReactionRate|AnswerRate|E|"
+        // filterList[3] = "day1|venezia_eng_level1_analytics|ReactionRate|AnswerRate|E|"
+        // filterList[4] = "day1|venezia_eng_level2_analytics|ReactionRate|AnswerRate|E|"
+        // filterList[5] = "day1|venezia_eng_level3_analytics|ReactionRate|AnswerRate|E|"
+        // filterList[6] = "day1|venezia_chn_analytics|ReactionRate|AnswerRate|E|"
+        // filterList[7] = "day1|calculation_level1_anlaytics|ReactionRate|AnswerRate|E|"
+        // filterList[8] = "day1|calculation_level2_anlaytics|ReactionRate|AnswerRate|E|"
+        // filterList[9] = "day1|calculation_level3_anlaytics|ReactionRate|AnswerRate|E|"
+        // filterList[10] = "day1|gugudan_level1_analytics|ReactionRate|AnswerRate|E|"
+        // filterList[11] = "day1|gugudan_level2_analytics|ReactionRate|AnswerRate|E|"
+        // filterList[12] = "day1|gugudan_level3_analytics|ReactionRate|AnswerRate|E|"
+        // 
+        // filterList[78] = "day7|venezia_kor_level1_analytics|ReactionRate|AnswerRate|E|"
+        // filterList[79] = "day7|venezia_kor_level2_analytics|ReactionRate|AnswerRate|E|"
+        // filterList[80] = "day7|venezia_kor_level3_analytics|ReactionRate|AnswerRate|E|"
+        // filterList[81] = "day7|venezia_eng_level1_analytics|ReactionRate|AnswerRate|E|"
+        // filterList[82] = "day7|venezia_eng_level2_analytics|ReactionRate|AnswerRate|E|"
+        // filterList[83] = "day7|venezia_eng_level3_analytics|ReactionRate|AnswerRate|E|"
+        // filterList[84] = "day7|venezia_chn_analytics|ReactionRate|AnswerRate|E|"
+        // filterList[85] = "day7|calculation_level1_anlaytics|ReactionRate|AnswerRate|E|"
+        // filterList[86] = "day7|calculation_level2_anlaytics|ReactionRate|AnswerRate|E|"
+        // filterList[87] = "day7|calculation_level3_anlaytics|ReactionRate|AnswerRate|E|"
+        // filterList[88] = "day7|gugudan_level1_analytics|ReactionRate|AnswerRate|E|"
+        // filterList[89] = "day7|gugudan_level2_analytics|ReactionRate|AnswerRate|E|"
+        // filterList[90] = "day7|gugudan_level3_analytics|ReactionRate|AnswerRate|E|"
         #endregion
 
         // 서버로부터 받아온 dataList를 하나의 string에 담아서 처리
@@ -606,7 +607,7 @@ public class Client : MonoBehaviour
 
         // E|로 분할 및 RequestName 제거
         filterList = oneData.Split(separatorString, StringSplitOptions.RemoveEmptyEntries).ToList();
-        filterList.RemoveAt(0);
+        filterList[0] = filterList[0].Substring("[Load]AnalyticsData|".Length);
 
         for (int i = 0; i < filterList.Count; i++)
         {
@@ -631,7 +632,7 @@ public class Client : MonoBehaviour
             {
                 for(int k = 0; k < levels; k++)
                 {
-                    Debug.Log($"[Client] Check clientAnalyticsData.Data.Value(reactionRate) : {clientAnalyticsData.Data[(i + 1, (Game_Type)j, k + 1)].reactionRate}");
+                    Debug.Log($"[Client] Check clientAnalyticsData.Data.Value(reactionRate), i,j,k : {i},{j}, {k} : {clientAnalyticsData.Data[(i + 1, (Game_Type)j, k + 1)].reactionRate}");
                 }
             }
         }
@@ -670,7 +671,10 @@ public class Client : MonoBehaviour
         // E| 분할 및 RequestName 제거
         filterList = oneData.Split(separatorString, StringSplitOptions.RemoveEmptyEntries).ToList();
         filterList[0] = filterList[0].Substring("[Load]RankData|".Length);
-
+        for(int i = 0; i < filterList.Count; i++)
+        {
+            Debug.Log("======================HandleLoadRankData" + filterList[i]);
+        }
         // clientRankData InitSetting
         clientRankData = new RankData();
         clientRankData.rankdata_score = new RankData_value[6];
@@ -683,12 +687,14 @@ public class Client : MonoBehaviour
 
             if(i < 5) // score 1~5 등
             {
+                clientRankData.rankdata_score[i] = new RankData_value();
                 clientRankData.rankdata_score[i].userProfile = Convert.FromBase64String(part[0]);
                 clientRankData.rankdata_score[i].userName = part[1];
                 clientRankData.rankdata_score[i].totalScore = Int32.Parse(part[2]);
             }
             else if(i == 5) // 클라이언트 score
             {
+                clientRankData.rankdata_score[i] = new RankData_value();
                 clientRankData.rankdata_score[i].userProfile = Convert.FromBase64String(part[0]);
                 clientRankData.rankdata_score[i].userName = part[1];
                 clientRankData.rankdata_score[i].totalScore = Int32.Parse(part[2]);
@@ -697,12 +703,14 @@ public class Client : MonoBehaviour
             }
             else if(i < 11) // time 1~5등
             {
+                clientRankData.rankdata_time[i - 6] = new RankData_value();
                 clientRankData.rankdata_time[i - 6].userProfile = Convert.FromBase64String(part[0]);
                 clientRankData.rankdata_time[i - 6].userName = part[1];
                 clientRankData.rankdata_time[i - 6].totalTime = float.Parse(part[2]);
             }
             else // 클라이언트 time
             {
+                clientRankData.rankdata_time[i - 6] = new RankData_value();
                 clientRankData.rankdata_time[i - 6].userProfile = Convert.FromBase64String(part[0]);
                 clientRankData.rankdata_time[i - 6].userName = part[1];
                 clientRankData.rankdata_time[i - 6].totalTime = float.Parse(part[2]);

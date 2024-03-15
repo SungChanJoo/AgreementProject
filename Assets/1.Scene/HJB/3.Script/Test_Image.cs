@@ -8,6 +8,7 @@ public class Test_Image : MonoBehaviour
 {
 
     public string base64image;
+    public string asd;
 
     [SerializeField] private Image load_img;
 
@@ -42,10 +43,10 @@ public class Test_Image : MonoBehaviour
     {
         
         
-        Player_DB db = Client.instance.AppStart_LoadAllDataFromDB();
-        byte[] image = db.image;
+        //Player_DB db = Client.instance.AppStart_LoadAllDataFromDB();
+        //byte[] image = db.image;
             
-        //byte[] image = Convert.FromBase64String(base64image);
+        byte[] image = Convert.FromBase64String(asd);
         
 
         Texture2D tex = new Texture2D(1, 1);
@@ -54,7 +55,7 @@ public class Test_Image : MonoBehaviour
         Sprite LoadSprite = Sprite.Create(tex, new Rect(0, 0, tex.width, tex.height), Vector2.zero);
         load_img.sprite = LoadSprite;
         
-        Debug.Log(db.Data[(Game_Type.A, 1, 2)].Answers);
+        //Debug.Log(b.Data[(Game_Type.A, 1, 2)].Answers);
         
     }
 }

@@ -57,7 +57,6 @@ public class Server : MonoBehaviour
         CheckClientsState();
         ReceiveDataFromClients();
 
-
         //if (testBool)
         //{   
         //    Debug.Log("[Server] TestCreatDBTest");
@@ -65,8 +64,6 @@ public class Server : MonoBehaviour
         //    Debug.Log($"[Server] TestCreatDBTest, testBool value : {testBool}");
         //    Invoke("CreateDBTest", 5f);
         //}
-
-
     }
 
     // 서버 생성
@@ -193,7 +190,7 @@ public class Server : MonoBehaviour
                     break;
                 }
 
-                List<string> dataList = new List<string>();
+                List<string> receivedRequestData_List = new List<string>();
 
                 while (true)
                 {
@@ -203,36 +200,29 @@ public class Server : MonoBehaviour
                     int bytesRead = await stream.ReadAsync(buffer, 0, buffer.Length); // 메세지 받을때까지 대기
                     string receivedRequestData = Encoding.UTF8.GetString(buffer, 0, bytesRead); // 데이터 변환
 
-
-                    if (receivedRequestData.Contains(separatorString)) // 임시로 E| 사용해서 구분, 캐릭터 모든 정보 db에 저장할때
-                    {
-                        Debug.Log("[Server] recieved data from client");
-                        Debug.Log($"[Server] recievedRequestData : {receivedRequestData}");
-                        List<string> tempAllocate = new List<string>();
-                        tempAllocate = receivedRequestData.Split(separatorString, StringSplitOptions.RemoveEmptyEntries).ToList(); // 받은 data 분할해서 list에 담음
-                        if (tempAllocate.Count > 0)
-                        {
-                            Debug.Log("[Server] tempAllocate have at least one index ");
-                            tempAllocate.ForEach(data => dataList.Add(data));
-                                    
-                        }
-                    }
-                    else
-                    {
-                        dataList = receivedRequestData.Split('|', StringSplitOptions.RemoveEmptyEntries).ToList(); // 받은 data 분할해서 list에 담음
-                    }
+                    receivedRequestData_List.Add(receivedRequestData);
 
                     // 클라이언트로부터 데이터 전송이 끝나면(Finish) break;
-                    if (receivedRequestData.Contains("Finish"))
+                    List<string> endCheck = receivedRequestData.Split('|').ToList();
+                    if (endCheck.Contains("Finish"))
                     {
-                        etcMethodHandler.RemoveFinish(dataList);
-                        Debug.Log("[Server] Received data contains Finish from client");
+                        //Debug.Log($"[Server] Received Finish Data from Client : {receivedRequestData}");
+                        // receivedRequestData에 Finish가 있는 경우 Finish를 제거
+                        etcMethodHandler.RemoveFinish(receivedRequestData_List, endCheck);
+
+                        Debug.Log($"[Server] Finish Receive Data From Client");
                         break;
                     }
+                    //if (receivedRequestData.Contains("Finish"))
+                    //{
+                    //    etcMethodHandler.RemoveFinish(dataList);
+                    //    Debug.Log("[Server] Received data contains Finish from client");
+                    //    break;
+                    //}
                 }
 
                 // 클라이언트에게 온 요청을 처리해서 클라이언트에게 회신
-                if (dataList.Count > 0) HandleRequestData(stream, dataList);
+                if (receivedRequestData_List.Count > 0) HandleRequestData(stream, receivedRequestData_List);
             }
         }
         catch (Exception e)
@@ -245,36 +235,72 @@ public class Server : MonoBehaviour
     // 클라이언트로부터 받은 요청을 제목에 맞게 분류해서 처리함
     private void HandleRequestData(NetworkStream stream, List<string> dataList)
     {
-        Debug.Log($"[Server] Recieved request name from client : {dataList[0]}");
+        Debug.Log($"[Server] Received request name from client : {dataList[0]}");
 
-        // dataList -> 0 : requestName, 1~ : values
-        string requestName = dataList[0];
+        // 클라이언트로부터 온 데이터 하나의 string으로 통합
+        string oneData = etcMethodHandler.CreateOneDataToFilter(dataList);
+
+        // E| 분할
+        List<string> filterList = oneData.Split(separatorString, StringSplitOptions.RemoveEmptyEntries).ToList();
+
+        Debug.Log($"[Sever] HandleRequestData filterList.Count : {filterList.Count}");
+
+        for(int i = 0; i <filterList.Count; i ++)
+        {
+            //Debug.Log($"[Server] Received Data From Client to filterList[{i}] : {filterList[i]}");
+        }
+
+        //string requestName = $"[Save]CharactorData";
+        //requestData = $"{requestName}|{clientLicenseNumber}|{clientCharactor}|{separatorString}";
+
+        // filterList[0] '|' 분할 -> requestName, clientLicenseNumber, clientCharactor을 얻기 위해서
+        List<string> baseDataList = filterList[0].Split('|', StringSplitOptions.RemoveEmptyEntries).ToList();
+
+        string requestName = baseDataList[0];
         int clientLicenseNumber = 0;
         int clientCharactor = 0;
 
-        // 일반적으로 클라이언트에서 보내진 데이터를 처리하는 메서드로 들어올 때, '|'를 제거해서 들어오는데
-        // 일부 클라이언트에서 E|를 붙여서 보내는 경우에는 '|'가 붙여져서 들어온다
-        if (dataList[0].Contains('|'))
+        if(baseDataList.ElementAtOrDefault(1) != null && baseDataList.ElementAtOrDefault(2) != null) // 일반적으로 clientLicenseNumber와 clientCharactor는 같이 들어옴
         {
-            Debug.Log($"[Server] dataList[0] have '|' so check dataList[0], {dataList[0]}");
-            requestName = dataList[0].Split('|', StringSplitOptions.RemoveEmptyEntries)[0]; // 임시로 사용, playerdata save
-            Debug.Log($"[Server] Check requestName, dataList[0].Split('|', StringSplitOptions.RemoveEmptyEntries)[0] : {dataList[0].Split('|', StringSplitOptions.RemoveEmptyEntries)[0]}");
+            clientLicenseNumber = Int32.Parse(baseDataList[1]);
+            clientCharactor = Int32.Parse(baseDataList[2]);
         }
-        else if(dataList.ElementAtOrDefault(1) != null && dataList.ElementAtOrDefault(2) != null) // 예외처리, index 1,2가 없으면 넘어감 
+        else if(baseDataList.ElementAtOrDefault(1) != null) // UserData
         {
-            clientLicenseNumber = Int32.Parse(dataList[1]);
-            clientCharactor = Int32.Parse(dataList[2]);
-        }
-        else if (dataList.ElementAtOrDefault(1) != null) // UserData는 LicenseNumber만 가지고 판단하므로, dataList가 index를 1까지만 가지고 있을 경우 따로 예외처리해야함
-        {
-            clientLicenseNumber = Int32.Parse(dataList[1]);
+            clientLicenseNumber = Int32.Parse(baseDataList[1]);
         }
 
-        //// 예외처리, index 1,2가 없으면 넘어감 
-        //if (dataList.ElementAtOrDefault(1) != null && dataList.ElementAtOrDefault(2) != null) 
+        //if (requestName == "[Create]LicenseNumber") // clientLicenseNumber를 DB로부터 받음
+        //{
+        //    
+        //}
+        //else if(requestName == "[Load]UserData") // clientCharactor를 DB로부터 받음
+        //{
+        //    clientLicenseNumber = Int32.Parse(baseDataList[1]);
+        //}
+        //else
+        //{
+        //    clientLicenseNumber = Int32.Parse(baseDataList[1]);
+        //    clientCharactor = Int32.Parse(baseDataList[2]);
+        //}
+        
+
+        //// 일반적으로 클라이언트에서 보내진 데이터를 처리하는 메서드로 들어올 때, '|'를 제거해서 들어오는데
+        //// 일부 클라이언트에서 E|를 붙여서 보내는 경우에는 '|'가 붙여져서 들어온다
+        //if (dataList[0].Contains('|'))
+        //{
+        //    Debug.Log($"[Server] dataList[0] have '|' so check dataList[0], {dataList[0]}");
+        //    requestName = dataList[0].Split('|', StringSplitOptions.RemoveEmptyEntries)[0]; // 임시로 사용, playerdata save
+        //    Debug.Log($"[Server] Check requestName, dataList[0].Split('|', StringSplitOptions.RemoveEmptyEntries)[0] : {dataList[0].Split('|', StringSplitOptions.RemoveEmptyEntries)[0]}");
+        //}
+        //else if(dataList.ElementAtOrDefault(1) != null && dataList.ElementAtOrDefault(2) != null) // 예외처리, index 1,2가 없으면 넘어감 
         //{
         //    clientLicenseNumber = Int32.Parse(dataList[1]);
         //    clientCharactor = Int32.Parse(dataList[2]);
+        //}
+        //else if (dataList.ElementAtOrDefault(1) != null) // UserData는 LicenseNumber만 가지고 판단하므로, dataList가 index를 1까지만 가지고 있을 경우 따로 예외처리해야함
+        //{
+        //    clientLicenseNumber = Int32.Parse(dataList[1]);
         //}
 
         // Reply -> Client에게 보낼 List<string>, [0]은 requestName
@@ -308,56 +334,39 @@ public class Server : MonoBehaviour
                 replyRequestData_List.Add($"{newClientCharactor}|");
                 break;
             case "[Save]CharactorName":
-                DBManager.instance.SaveCharactorName(dataList);
+                DBManager.instance.SaveCharactorName(filterList);
                 break;
             case "[Save]CharactorProfile":
-                // dataList[1] = user_LicenseNumber, dataList[2] = user_Charactor, dataList[3] = profile
-                Debug.Log($"[Server] Check Profile Data, dataList[3], Base64 : {dataList[3]}");
-                DBManager.instance.SaveCharactorProfile(dataList);
+                DBManager.instance.SaveCharactorProfile(filterList);
                 break;
             case "[Save]CharactorBirthday":
-                DBManager.instance.SaveCharactorBirthday(dataList);
+                DBManager.instance.SaveCharactorBirthday(filterList);
                 break;
             case "[Save]CharactorData":
-                Debug.Log($"[Server] Check come in charactordata, dataList[0] : {dataList[0]}");
-                for(int i = 0; i < dataList.Count; i++)
-                {
-                    Debug.Log($"[Server] Check charactor dataList{i}, : {dataList[i]}");
-                }
-                DBManager.instance.SaveCharactorData(dataList);
+                DBManager.instance.SaveCharactorData(filterList);
                 break;
             case "[Save]ExpenditionCrew":
-                Debug.Log($"[Server] Check come in expenditioncrew, dataList[0] : {dataList[0]}");
-                for (int i = 0; i < dataList.Count; i++)
-                {
-                    Debug.Log($"[Server] Check expenditioncrew dataList{i}, : {dataList[i]}");
-                }
-                DBManager.instance.SaveCrewData(dataList);
+                DBManager.instance.SaveCrewData(filterList);
                 break;
             case "[Save]LastPlayData":
-                Debug.Log($"[Server] Check come in lastplaydata, dataList[0] : {dataList[0]}");
-                for (int i = 0; i < dataList.Count; i++)
-                {
-                    Debug.Log($"[Server] Check lastplaydata dataList{i}, : {dataList[i]}");
-                }
-                DBManager.instance.SaveLastPlayData(dataList);
+                DBManager.instance.SaveLastPlayData(filterList);
                 break;
             case "[Save]GameResult":
                 break;
             case "[Save]venezia_kor":
-                DBManager.instance.SaveGameResultData(dataList);
+                DBManager.instance.SaveGameResultData(filterList);
                 break;
             case "[Save]venezia_eng":
-                DBManager.instance.SaveGameResultData(dataList);
+                DBManager.instance.SaveGameResultData(filterList);
                 break;
             case "[Save]venezia_chn":
-                DBManager.instance.SaveGameResultData(dataList);
+                DBManager.instance.SaveGameResultData(filterList);
                 break;
             case "[Save]gugudan":
-                DBManager.instance.SaveGameResultData(dataList);
+                DBManager.instance.SaveGameResultData(filterList);
                 break;
             case "[Save]calculation":
-                DBManager.instance.SaveGameResultData(dataList);
+                DBManager.instance.SaveGameResultData(filterList);
                 break;
             case "[Load]UserData":
                 tempAllocate = DBManager.instance.LoadUserData(clientLicenseNumber);

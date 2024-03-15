@@ -7,10 +7,13 @@ public class DataBase : MonoBehaviour
     public static DataBase Instance = null;
     public Player_DB playerInfo;
     public List<Player_DB> PlayerCharacter = new List<Player_DB>();
+
+
     public int CharacterIndex {
         get
         {
-            return CharacterIndex;
+            //CharacterIndex = ClientLiscense에서 숫자 불러와야함
+            return 0;
         }
         set
         {
@@ -57,11 +60,17 @@ public class DataBase : MonoBehaviour
         {
             //플레이어 정보 불러오기
             playerInfo = Client.instance.AppStart_LoadAllDataFromDB();
-            
+            //랭킹데이터 불러오기
+            playerInfo.RankingInfo = Client.instance.AppStart_LoadRankDataFromDB();
+            //탐험대원 도감데이터 불러오기
+            playerInfo.Collections = Client.instance.AppStart_LoadExpenditionCrewFromDB();
+            //마지막 플레이한 스텝 데이터 불러오기
+            playerInfo.LastPlayStepData = Client.instance.AppStart_LoadLastPlayFromDB();
             CharactorAdd();
         }
         catch (System.Exception)
         {
+            playerInfo = null;
             Debug.Log("DB에서 플레이어 데이터를 불러오지 못했습니다.");
         }
     }
