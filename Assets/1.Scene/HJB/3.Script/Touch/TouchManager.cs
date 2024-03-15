@@ -102,7 +102,7 @@ public class TouchManager : MonoBehaviour
             case 2:
                 return Instantiate(beganEffect_obj, uiCanvas.transform);
             case 3:
-                return Instantiate(beganEffect_gugu, uiCanvas.transform);
+                return Instantiate(beganEffect_obj, uiCanvas.transform);
             case 4:
                 return Instantiate(beganEffect_vene, uiCanvas.transform);            
             default:

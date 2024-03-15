@@ -966,6 +966,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 287009998}
+  - component: {fileID: 287009999}
   - component: {fileID: 287009997}
   m_Layer: 0
   m_Name: GuGUManager
@@ -1016,6 +1017,7 @@ MonoBehaviour:
     TotalQuestions: 0
     TotalScore: 0
   result_Printer: {fileID: 1713558299}
+  source: {fileID: 287009999}
   buttonType: 0
   First_num: {fileID: 522410091}
   Second_num: {fileID: 956137005}
@@ -1041,6 +1043,10 @@ MonoBehaviour:
   - {fileID: 79806963}
   anim: {fileID: 0}
   canvas: {fileID: 1215284665}
+  audioClip:
+  - {fileID: 8300000, guid: 460de961a2f240f4f9222fdb6ed8dfad, type: 3}
+  - {fileID: 8300000, guid: 42d9768310bd0f0428330bf4aaa4bbb2, type: 3}
+  - {fileID: 8300000, guid: 7462ebda2e3d9cc4baba9d29cfc1aa45, type: 3}
   Level: 1
   Step: 1
 --- !u!4 &287009998
@@ -1058,6 +1064,102 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!82 &287009999
+AudioSource:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 287009996}
+  m_Enabled: 1
+  serializedVersion: 4
+  OutputAudioMixerGroup: {fileID: 2884977332760280518, guid: 957ef1d2a9674b54da5612387a80c2b5, type: 2}
+  m_audioClip: {fileID: 0}
+  m_PlayOnAwake: 1
+  m_Volume: 1
+  m_Pitch: 1
+  Loop: 0
+  Mute: 0
+  Spatialize: 0
+  SpatializePostEffects: 0
+  Priority: 128
+  DopplerLevel: 1
+  MinDistance: 1
+  MaxDistance: 500
+  Pan2D: 0
+  rolloffMode: 0
+  BypassEffects: 0
+  BypassListenerEffects: 0
+  BypassReverbZones: 0
+  rolloffCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 1
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  panLevelCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  spreadCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  reverbZoneMixCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
 --- !u!1 &313539151
 GameObject:
   m_ObjectHideFlags: 0
@@ -3120,6 +3222,18 @@ MonoBehaviour:
       - m_Target: {fileID: 287009997}
         m_TargetAssemblyTypeName: GuGUDan_Fnc, Assembly-CSharp
         m_MethodName: Clear_btn
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 287009997}
+        m_TargetAssemblyTypeName: GuGUDan_Fnc, Assembly-CSharp
+        m_MethodName: ClearBtn_SFX_Solo
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
