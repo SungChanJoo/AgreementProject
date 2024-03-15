@@ -632,6 +632,7 @@ public class Client : MonoBehaviour
             {
                 for(int k = 0; k < levels; k++)
                 {
+                    if (j == 2) k = 0;
                     Debug.Log($"[Client] Check clientAnalyticsData.Data.Value(reactionRate), i,j,k : {i},{j}, {k} : {clientAnalyticsData.Data[(i + 1, (Game_Type)j, k + 1)].reactionRate}");
                 }
             }
@@ -717,6 +718,7 @@ public class Client : MonoBehaviour
                 clientRankData.rankdata_time[i - 6].timePlace = Int32.Parse(part[3]);
                 clientRankData.rankdata_time[i - 6].highestTimePlace = Int32.Parse(part[4]);
             }
+
         }
 
         Debug.Log("[Client] End HandleLoadRankData..");
@@ -1313,7 +1315,7 @@ public class Client : MonoBehaviour
         Data_value datavalue = resultdata.Data[(game_type, level, step)];
 
         requestName = $"[Save]{gameName}";
-        values = $"{level}|{step}|{clientLicenseNumber}|{clientCharactor}|{datavalue.ReactionRate}|{datavalue.AnswersCount}|{datavalue.Answers}|{datavalue.PlayTime}|{datavalue.TotalScore}|";
+        values = $"{level}|{step}|{clientLicenseNumber}|{clientCharactor}|{datavalue.ReactionRate}|{datavalue.AnswersCount}|{datavalue.Answers}|{datavalue.PlayTime}|{datavalue.TotalScore}|{datavalue.StarCount}|";
 
         requestData = $"{requestName}|{values}Finish";
 

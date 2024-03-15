@@ -15,7 +15,14 @@ public class ClientTest : MonoBehaviour
 
     public void OnClickClientRequestLoadDataToDB()
     {
-        TestLoadUserData();
+        try
+        {
+            TestLoadUserData();
+        }
+        catch(Exception e)
+        {
+            Debug.Log($"[ClientTest] Something wrong, error : {e.Message}");
+        }
     }
 
     #region TestLoad
@@ -35,14 +42,14 @@ public class ClientTest : MonoBehaviour
 
     private void TestLoadAnalyticsData()
     {
-        testAnalyticsData = Client.instance.AppStart_LoadAnalyticsDataFromDB();
+        //testAnalyticsData = Client.instance.AppStart_LoadAnalyticsDataFromDB();
         Debug.Log($"[ClientTest] use Client.instance.AppStart_LoadAnalyticsDataFromDB(), Current time : {System.DateTime.Now}");
         TestLoadRankData();
     }
 
     private void TestLoadRankData()
     {
-        testRankData = Client.instance.AppStart_LoadRankDataFromDB();
+        //testRankData = Client.instance.AppStart_LoadRankDataFromDB();
         Debug.Log($"[ClientTest] use Client.instance.AppStart_LoadRankDataFromDB(), Current time : {System.DateTime.Now}");
         TestLoadExpenditionCrew();
     }
