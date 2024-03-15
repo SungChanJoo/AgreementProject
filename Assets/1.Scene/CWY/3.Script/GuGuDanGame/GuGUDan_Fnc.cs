@@ -36,6 +36,7 @@ public class GuGUDan_Fnc : GameSetting
     [SerializeField] private Animator anim;
     [SerializeField] Canvas canvas;
 
+    [SerializeField] private AudioClip[] audioClip;
     #region 변수 & 상태 관리
     public int Level;
     public int Step;
@@ -305,6 +306,7 @@ public class GuGUDan_Fnc : GameSetting
                 isAnswerCorrect = true;
                 AnswerCount++;
                 //누적시간 변수에 저장.
+                source.PlayOneShot(audioClip[0]);
             }
             else //오답일경우
             {
@@ -315,6 +317,7 @@ public class GuGUDan_Fnc : GameSetting
                 isAnswerCheck = true;
                 isAnswerCorrect = false;
                 TimeSlider.Instance.DecreaseTime_Item(5);
+                source.PlayOneShot(audioClip[1]);
             }
         }
         else if (CaseNum == 1) // y쪽을 역산
@@ -326,6 +329,7 @@ public class GuGUDan_Fnc : GameSetting
                 isAnswerCheck = true;
                 isAnswerCorrect = true;
                 AnswerCount++;
+                source.PlayOneShot(audioClip[0]);
                 //누적시간 변수에 저장.
             }
             else //오답일경우
@@ -337,6 +341,7 @@ public class GuGUDan_Fnc : GameSetting
                 isAnswerCorrect = false;
                 AnswerCount++;
                 TimeSlider.Instance.DecreaseTime_Item(5);
+                source.PlayOneShot(audioClip[1]);
             }
         }
         else if (CaseNum == 2)
@@ -348,6 +353,7 @@ public class GuGUDan_Fnc : GameSetting
                 AnswerCount++;
                 isAnswerCheck = true;
                 isAnswerCorrect = true;
+                source.PlayOneShot(audioClip[0]);
                 //누적시간 변수에 저장.
             }
             else //오답일경우
@@ -359,6 +365,7 @@ public class GuGUDan_Fnc : GameSetting
                 isAnswerCheck = true;
                 isAnswerCorrect = false;
                 TimeSlider.Instance.DecreaseTime_Item(5);
+                source.PlayOneShot(audioClip[1]);
             }
         }
 
@@ -502,6 +509,7 @@ public class GuGUDan_Fnc : GameSetting
         isThird_Click = false;
         Click_Count = 0;
         isInputValue = false;
+        
     }
 
 
@@ -603,7 +611,14 @@ public class GuGUDan_Fnc : GameSetting
             }
         }
     }
-
+    public void ClearBtn_SFX_Solo()
+    {
+        source.PlayOneShot(audioClip[2]);
+    }
+    public void ClearBtn_SFX_Two()
+    {
+        source.PlayOneShot(audioClip[2]);
+    }
 
 }
 
