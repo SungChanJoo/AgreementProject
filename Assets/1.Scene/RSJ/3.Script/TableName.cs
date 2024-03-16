@@ -55,23 +55,23 @@ public class AnalyticsTableName
         {
             if (i < 3) // venezia_kor
             {
-                list.Add($"venezia_kor_level{i + 1}_anlaytics");
+                list.Add($"venezia_kor_level{i + 1}_analytics");
             }
             else if (i < 6) // venezia_eng
             {
-                list.Add($"venezia_eng_level{i - 2}_anlaytics");
+                list.Add($"venezia_eng_level{i - 2}_analytics");
             }
             else if (i == 6) // venezia_chn
             {
-                list.Add($"venezia_chn_anlaytics");
+                list.Add($"venezia_chn_analytics");
             }
             else if (i < 10) // calculation
             {
-                list.Add($"calculation_level{i - 6}_anlaytics");
+                list.Add($"calculation_level{i - 6}_analytics");
             }
             else // gugudan
             {
-                list.Add($"gugudan_level{i - 9}_anlaytics");
+                list.Add($"gugudan_level{i - 9}_analytics");
             }
         }
     }

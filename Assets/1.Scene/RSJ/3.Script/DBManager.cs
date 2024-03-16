@@ -329,7 +329,7 @@ public class DBManager : MonoBehaviour
         }
         Debug.Log("[DB] Lastplaygame table complete!");
 
-        // anlaytics_level1_profile table
+        // analytics_level1_profile table
         // 캐릭터 프로필 화면에서 보여주기위한 테이블
         insertCharactorData_Command = $"INSERT INTO `{table.list[4]}` (`{analyticsProfile1_Columns[0]}`, `{analyticsProfile1_Columns[1]}`) VALUES ({clientlicensenumber}, {clientcharactor});";
         mySqlCommand.CommandText = insertCharactorData_Command;
@@ -343,9 +343,9 @@ public class DBManager : MonoBehaviour
             mySqlCommand.CommandText = updateCharactorData_Command;
             mySqlCommand.ExecuteNonQuery();
         }
-        Debug.Log("[DB] Anlaytics_level1_profile table complete!");
+        Debug.Log("[DB] Analytics_level1_profile table complete!");
 
-        // anlaytics_level(2,3)_profile table
+        // analytics_level(2,3)_profile table
         for (int i = 0; i < 2; i++)
         {
             insertCharactorData_Command = $"INSERT INTO `{table.list[5+i]}` (`{analyticsProfile2_Columns[0]}`, `{analyticsProfile2_Columns[1]}`) VALUES ({clientlicensenumber}, {clientcharactor});";
@@ -361,7 +361,7 @@ public class DBManager : MonoBehaviour
                 mySqlCommand.ExecuteNonQuery();
             }
         }
-        Debug.Log("[DB] Anlaytics_level2,3_profile table complete!");
+        Debug.Log("[DB] Analytics_level2,3_profile table complete!");
 
         // game table
         string game_TableName;
@@ -606,17 +606,16 @@ public class DBManager : MonoBehaviour
 
         List<string> dataList = filterList[0].Split('|', StringSplitOptions.RemoveEmptyEntries).ToList();
 
-
         MySqlCommand mySqlCommand = new MySqlCommand();
         mySqlCommand.Connection = connection;
 
-        string update_Command = $"UPDATE `{table.list[2]}` SET ";
+        string update_Command = $"UPDATE `{table.list[2]}` SET";
         for(int i = 2; i < crew_Columns.Length; i++) // license, charactor 제외
         {
-            update_Command += $"`{crew_Columns[i]}` = '{Int32.Parse(dataList[i + 1])}', ";
+            update_Command += $" `{crew_Columns[i]}` = '{Int32.Parse(dataList[i + 1])}',";
         }
         update_Command = update_Command.TrimEnd(',');
-        update_Command += $"WHERE `{crew_Columns[0]}` = '{Int32.Parse(dataList[1])}' AND `{crew_Columns[1]}` = '{Int32.Parse(dataList[2])}';";
+        update_Command += $" WHERE `{crew_Columns[0]}` = '{Int32.Parse(dataList[1])}' AND `{crew_Columns[1]}` = '{Int32.Parse(dataList[2])}'";
 
         mySqlCommand.CommandText = update_Command;
         mySqlCommand.ExecuteNonQuery();
@@ -639,8 +638,6 @@ public class DBManager : MonoBehaviour
         // ...
         // dataList[15] = gugudan_lev
 
-        todo
-
         List<string> dataList = filterList[0].Split('|', StringSplitOptions.RemoveEmptyEntries).ToList();
 
         MySqlCommand mySqlCommand = new MySqlCommand();
@@ -649,10 +646,12 @@ public class DBManager : MonoBehaviour
         string update_Command = $"UPDATE `{table.list[3]}` SET";
         for(int i = 2; i < lastplaygame_Columns.Length; i++) // license, charactor 제외
         {
-            update_Command += $" `{lastplaygame_Columns[i]}` = {Int32.Parse(dataList[i+1])},";
+            update_Command += $" `{lastplaygame_Columns[i]}` = '{Int32.Parse(dataList[i+1])}',";
         }
         update_Command = update_Command.TrimEnd(',');
-        update_Command += $"WHERE `{lastplaygame_Columns[0]}` = '{Int32.Parse(dataList[1])}' AND `{lastplaygame_Columns[1]}` = '{Int32.Parse(dataList[2])}'";
+        update_Command += $" WHERE `{lastplaygame_Columns[0]}` = '{Int32.Parse(dataList[1])}' AND `{lastplaygame_Columns[1]}` = '{Int32.Parse(dataList[2])}'";
+
+        Debug.Log($"[DB] LastPlayGame Save, update_Command Query : {update_Command}");
 
         mySqlCommand.CommandText = update_Command;
         mySqlCommand.ExecuteNonQuery();
@@ -1134,9 +1133,9 @@ public class DBManager : MonoBehaviour
         // dataList[5] = "day1|venezia_eng_level2_analytics|ReactionRate|AnswerRate|E|"
         // dataList[6] = "day1|venezia_eng_level3_analytics|ReactionRate|AnswerRate|E|"
         // dataList[7] = "day1|venezia_chn_analytics|ReactionRate|AnswerRate|E|"
-        // dataList[8] = "day1|calculation_level1_anlaytics|ReactionRate|AnswerRate|E|"
-        // dataList[9] = "day1|calculation_level2_anlaytics|ReactionRate|AnswerRate|E|"
-        // dataList[10] = "day1|calculation_level3_anlaytics|ReactionRate|AnswerRate|E|"
+        // dataList[8] = "day1|calculation_level1_analytics|ReactionRate|AnswerRate|E|"
+        // dataList[9] = "day1|calculation_level2_analytics|ReactionRate|AnswerRate|E|"
+        // dataList[10] = "day1|calculation_level3_analytics|ReactionRate|AnswerRate|E|"
         // dataList[11] = "day1|gugudan_level1_analytics|ReactionRate|AnswerRate|E|"
         // dataList[12] = "day1|gugudan_level2_analytics|ReactionRate|AnswerRate|E|"
         // dataList[13] = "day1|gugudan_level3_analytics|ReactionRate|AnswerRate|E|"
@@ -1159,11 +1158,12 @@ public class DBManager : MonoBehaviour
 
         // 조회할 DB Array
         string[] DBName_Array = new string[30];
-        DateTime currentDate = DateTime.Now.AddDays(-1); // 오늘 전날
+        DateTime currentDate = DateTime.Now; // 오늘
         for(int i =0; i < DBName_Array.Length; i++)
         {
-            currentDate = currentDate.AddDays(-1);
+            currentDate = currentDate.AddDays(-1); // 전날
             DBName_Array[i] = $"{currentDate.Year.ToString().Substring(2,2)}.{currentDate.Month:00}.{currentDate.Day:00}";
+            Debug.Log($"[DB] AnalyticsData, DBName_Array[{i}] : {DBName_Array[i]} ");
         }
 
         // 조회할 테이블 수만큼 String Type을 받는 List를 생성, 각 배열은 테이블을 의미하고, 해당 테이블의 value가 유의미 한지 아닌지 판단해서 Add로 추가할지 안할지 선택
@@ -1175,23 +1175,23 @@ public class DBManager : MonoBehaviour
         {
             if(i < 3) // venezia_kor
             {
-                tableName_Array[i] = $"venezia_kor_level{i+1}_anlaytics";
+                tableName_Array[i] = $"venezia_kor_level{i+1}_analytics";
             }   
             else if(i < 6) // venezia_eng
             {
-                tableName_Array[i] = $"venezia_eng_level{i-2}_anlaytics";
+                tableName_Array[i] = $"venezia_eng_level{i-2}_analytics";
             }
             else if(i == 6) // venezia_chn
             {
-                tableName_Array[i] = $"venezia_chn_anlaytics";
+                tableName_Array[i] = $"venezia_chn_analytics";
             }
             else if(i < 10) // calculation
             {
-                tableName_Array[i] = $"calculation_level{i-6}_anlaytics";
+                tableName_Array[i] = $"calculation_level{i-6}_analytics";
             }
             else // gugudan
             {
-                tableName_Array[i] = $"gugudan_level{i-9}_anlaytics";
+                tableName_Array[i] = $"gugudan_level{i-9}_analytics";
             }
 
             // tempList_Array 객체 생성
@@ -1205,18 +1205,14 @@ public class DBManager : MonoBehaviour
         MySqlDataReader reader;
         for (int i = 0; i < DBName_Array.Length; i++)
         {
+            Debug.Log($"[DB] Load AnalyticsData, DBName_Array[{i}] : {DBName_Array[i]}");
             try
             {
-                string useDB_Command = $"USE {DBName_Array[i]};";
-                mySqlCommand.CommandText = useDB_Command;
-                mySqlCommand.ExecuteNonQuery();
-
-                Debug.Log($"[DB] Load AnalyticsData, DBName_Array[{i}] : {DBName_Array[i]}");
-
                 // DB내에 있는 라이센스와 캐릭터를 만족하는 테이블 컬럼 조회
                 for (int j = 0; j < tableName_Array.Length; j++)
                 {
-                    string selectTable_Command = $"SELECT * FROM `{tableName_Array[j]}` WHERE `{columnName_Array[0]}` = {licensenumber} AND `{columnName_Array[1]}` = {charactor};";
+                    string selectTable_Command = $"SELECT `{columnName_Array[2]}`, `{columnName_Array[3]}` FROM `{DBName_Array[i]}`.`{tableName_Array[j]}` " +
+                                                 $"WHERE `{columnName_Array[0]}` = {licensenumber} AND `{columnName_Array[1]}` = {charactor};";
                     mySqlCommand.CommandText = selectTable_Command;
                     reader = mySqlCommand.ExecuteReader();
                     float reactionRate = 0;
@@ -1224,8 +1220,8 @@ public class DBManager : MonoBehaviour
 
                     while (reader.Read())
                     {
-                        reactionRate = reader.GetFloat(columnName_Array[2]);
-                        answerRate = reader.GetInt32(columnName_Array[3]);
+                        reactionRate = reader.GetFloat(0);
+                        answerRate = reader.GetInt32(1);
                     }
                     reader.Close();
 
@@ -1271,7 +1267,7 @@ public class DBManager : MonoBehaviour
             for (int j = 0; j < tempList_Array.Length; j++)
             {
                 return_List.Add(tempList_Array[j][i]);
-                Debug.Log($"[DB] Load AnalyticsData, tempList_Array[j][i] : {tempList_Array[j][i]}");
+                Debug.Log($"[DB] Load AnalyticsData, tempList_Array[{j}][{i}] : {tempList_Array[j][i]}");
             }
         }
 
@@ -1768,7 +1764,7 @@ public class DBManager : MonoBehaviour
         Debug.Log($"DBName : {DBName}");
         // 게임 테이블 명, TableName은 생성되면 알아서 테이블들이 담김. 게임을 제외한 나머지 테이블 제거
         TableName gameTable = new TableName();
-        string[] deleteTable = { "user_info", "rank", "crew", "lastplaygame", "analyltics_level1_profile", "analyltics_level2_profile", "analyltics_level3_profile" };
+        string[] deleteTable = { "user_info", "rank", "crew", "lastplaygame", "analytics_level1_profile", "analytics_level2_profile", "analytics_level3_profile" };
         for (int i = 0; i < deleteTable.Length; i++)
         {
             gameTable.list.Remove(deleteTable[i]);
@@ -1814,7 +1810,7 @@ public class DBManager : MonoBehaviour
             MySqlCommand createTable_SqlCmd = new MySqlCommand(createTable_Command, connection);
             createTable_SqlCmd.ExecuteNonQuery();
         }
-        Debug.Log("[DB] Complete Create DateDB table");
+        Debug.Log("[DB] Complete Create DateDB GameData table");
 
         // PresentDB 사용
         mySqlCommand.CommandText = $"USE `present`;";
