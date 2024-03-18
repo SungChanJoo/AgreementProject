@@ -16,6 +16,7 @@ public class Player_DB
     public RankData RankingInfo;
     public ExpenditionCrew Collections;
     public LastPlayData LastPlayStepData;
+    public AnalyticsProfileData analyticsProfileData;
 }
 [System.Serializable]
 public class Data_value

@@ -48,8 +48,9 @@ public class ProfileText_M : MonoBehaviour
     }
     private void OnEnable()
     {
-        playTime.text = DataBase.Instance.PlayerCharacter[0].TotalTime.ToString();
-        totalAnswer.text = DataBase.Instance.PlayerCharacter[0].TotalAnswers.ToString();
+        playTime.text = DataBase.Instance.PlayerCharacter[DataBase.Instance.CharacterIndex].TotalTime.ToString();
+        totalAnswer.text = DataBase.Instance.PlayerCharacter[DataBase.Instance.CharacterIndex].TotalAnswers.ToString();
+
     }
     private void Start()
     {
@@ -84,7 +85,12 @@ public class ProfileText_M : MonoBehaviour
     private void CalculationPlayTime()
     {
         //시간 계산
-        float totalTime = DataBase.Instance.PlayerCharacter[0].TotalTime;
+        string time = DataBase.Instance.PlayerCharacter[0].TotalTime.ToString();
+        Debug.Log(time);
+        int count = time.Length;
+        count -= 2;
+        float currentTime = float.Parse(time.Insert(count, ".")); 
+        float totalTime = currentTime;
         int minute = (int)(totalTime / 60f);
         float second = totalTime - (minute * 60);
         if (minute == 0)
