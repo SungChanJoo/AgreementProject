@@ -14,7 +14,7 @@ using System.Linq;
 public class Client : MonoBehaviour
 {
     // IP, Port ∞Ì¡§µ 
-    [SerializeField] private string server_IP = "15.164.166.133"; // aws EC2 IP : 15.164.166.133
+    [SerializeField] private string server_IP = "43.201.20.174"; // aws EC2 IP : 43.201.20.174
     [SerializeField] private int server_Port = 2421;
 
     bool socketReady;

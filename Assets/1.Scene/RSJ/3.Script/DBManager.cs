@@ -701,8 +701,8 @@ public class DBManager : MonoBehaviour
         float reactionRate = float.Parse(dataList[5]); // 보여줄 분석 데이터(개인분석표, 프로필), 갱신
         int answerCount = Int32.Parse(dataList[6]); // 갱신
         int answerRate = Int32.Parse(dataList[7]); // 보여줄 분석 데이터(개인분석표, 프로필), 갱신
-        float playTime = float.Parse(dataList[8]); // 보여줄 데이터(분석용 프로필, 랭킹), 갱신
-        int totalScore = Int32.Parse(dataList[9]); // 보여줄 데이터(분석용 프로필, 랭킹), 조건부 갱신
+        float playTime = float.Parse(dataList[8]); // 보여줄 데이터(프로필분석, 랭킹), 갱신
+        int totalScore = Int32.Parse(dataList[9]); // 보여줄 데이터(프로필분석, 랭킹), 조건부 갱신
         int starPoint = Int32.Parse(dataList[10]); // 조건부 갱신
 
         // table 이름
@@ -790,7 +790,7 @@ public class DBManager : MonoBehaviour
         }
 
         // user_info table에 AnswerCount, TotalTime 누적
-        UpdateUserInfoTableForScoreTime(licenseNumber, charactor, answerCount, totalScore);
+        UpdateUserInfoTableForScoreTime(licenseNumber, charactor, answerCount, playTime);
         // rank table에 TotalTime과 TotalScore에 점수 누적 
         UpdateRankTable(licenseNumber, charactor, playTime, totalScore);
         // analytics_level(1,2,3)_Profile table Update

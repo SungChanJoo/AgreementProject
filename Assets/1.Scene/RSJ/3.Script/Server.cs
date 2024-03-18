@@ -55,7 +55,6 @@ public class Server : MonoBehaviour
         if (clients.Count == 0) return;
 
         CheckClientsState();
-        ReceiveDataFromClients();
 
         //if (testBool)
         //{   
@@ -175,6 +174,7 @@ public class Server : MonoBehaviour
         }
     }
 
+    // 클라이언트로부터 요청받음
     private async void ReceiveRequestFromClient(TcpClient client)
     {
         try
@@ -472,11 +472,6 @@ public class Server : MonoBehaviour
     }
 
     private void SendMessageToClients(TcpClient client)
-    {
-
-    }
-
-    private void ReceiveDataFromClients()
     {
 
     }
