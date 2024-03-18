@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.29139164, g: 0.51848644, b: 0.5896723, a: 1}
+  m_IndirectSpecularColor: {r: 0.39183635, g: 0.67341036, b: 0.7564018, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -4168,7 +4168,7 @@ MonoBehaviour:
     TotalQuestions: 0
     TotalScore: 0
   result_Printer: {fileID: 8522782060019054121}
-  source: {fileID: 0}
+  source: {fileID: 2092200718}
   resultText: {fileID: 205810499}
   selectedOperator: 0
   firstNum: 0

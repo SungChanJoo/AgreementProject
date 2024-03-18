@@ -820,7 +820,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 0.5}
   m_AnchorMax: {x: 1, y: 0.5}
-  m_AnchoredPosition: {x: 199.99997, y: 0}
+  m_AnchoredPosition: {x: 199.99994, y: 0}
   m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &751775539
@@ -2360,7 +2360,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0.5}
   m_AnchorMax: {x: 0, y: 0.5}
-  m_AnchoredPosition: {x: -199.99997, y: 0}
+  m_AnchoredPosition: {x: -199.99994, y: 0}
   m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &1550004814
@@ -2641,6 +2641,9 @@ MonoBehaviour:
   BGMAudio: {fileID: 1620371434}
   bgmClip:
   - {fileID: 8300000, guid: 544d518f0c226004490a8cc5a09e69e4, type: 3}
+  - {fileID: 8300000, guid: ac412d55330536b469a0e454877ced86, type: 3}
+  - {fileID: 8300000, guid: 04cecbe2a8d96a446bbf0bcc35ad4126, type: 3}
+  - {fileID: 8300000, guid: bc34d937d5efead49a1be4f334a77674, type: 3}
   audioMixer: {fileID: 24100000, guid: 957ef1d2a9674b54da5612387a80c2b5, type: 2}
   master_slider: {fileID: 1250017953}
   bgm_slider: {fileID: 605074183}

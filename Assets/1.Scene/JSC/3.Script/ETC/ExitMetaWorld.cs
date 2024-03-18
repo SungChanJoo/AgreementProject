@@ -24,7 +24,7 @@ public class ExitMetaWorld : MonoBehaviour
         Destroy(FindObjectOfType<PetSwitchNetworkManager>().gameObject);
         Destroy(FindObjectOfType<CrewSelectManager>().gameObject);
         if (AudioManager.Instance != null)
-            AudioManager.Instance.BGM_Play(0);
+            AudioManager.Instance.BGM_Play(3);
         if (SettingManager.Instance != null)
             SettingManager.Instance.IsMetaWorld = false;
         SceneManager.LoadScene(1);

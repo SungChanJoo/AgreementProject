@@ -42,8 +42,16 @@ public class ProfileButtonEvent : MonoBehaviour
     private void ChangePlayerGameData(int level)
     {
         level -= 1;
-        moreGame.text = DataBase.Instance.PlayerCharacter[DataBase.Instance.CharacterIndex].analyticsProfileData.Data[level].Item1;
-        reactionRate.text =$"{ DataBase.Instance.PlayerCharacter[DataBase.Instance.CharacterIndex].analyticsProfileData.Data[level].Item2}";
-        answersRate.text = $"{ DataBase.Instance.PlayerCharacter[DataBase.Instance.CharacterIndex].analyticsProfileData.Data[level].Item3}";
+        try
+        {
+            //moreGame.text = DataBase.Instance.PlayerCharacter[DataBase.Instance.CharacterIndex].analyticsProfileData.Data[level].Item1;
+            //reactionRate.text =$"{ DataBase.Instance.PlayerCharacter[DataBase.Instance.CharacterIndex].analyticsProfileData.Data[level].Item2}";
+            //answersRate.text = $"{ DataBase.Instance.PlayerCharacter[DataBase.Instance.CharacterIndex].analyticsProfileData.Data[level].Item3}";
+        }
+        catch (System.Exception)
+        {
+
+            Debug.Log("프로필에 할당된 데이터가 없거나 Null입니다.");
+        }
     }
 }
