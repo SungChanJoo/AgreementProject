@@ -20,6 +20,7 @@ public class AnalysisChart : MonoBehaviour
     [SerializeField] private TextMeshProUGUI[] dayText;
     
 
+
     private List<float> playerdata=new List<float>();
     private List<Vector2> answersRate_vector2 = new List<Vector2>();
     private List<Vector2> reactionRate_vector2 = new List<Vector2>();
@@ -33,17 +34,19 @@ public class AnalysisChart : MonoBehaviour
     private Dictionary<(Game_Type, int), List<float>> reaction_Type =
        new Dictionary<(Game_Type, int), List<float>>();
 
-    private Game_Type game_type=0;
-    private int level_num=0;   
+    private Game_Type game_type= Game_Type.A;
+    private int level_num=1;
 
-    Player_DB result_Data = new Player_DB();
+    private AnalyticsData analyticsData;
+
+
 
     private void Start()
     {
+        analyticsData = Client.instance.AppStart_LoadAnalyticsDataFromDB();
         ObjectPooling();
         DataSet();
-        SelectType();
-        
+        ShowChartData();
     }
     private void OnEnable()
     {
@@ -156,20 +159,30 @@ public class AnalysisChart : MonoBehaviour
     public void SelectGame(int num)
     {
         game_type = (Game_Type)num;
-        SelectType();
+        ShowChartData();
     }
     public void SelectLevel(int num)
     {
-        level_num = num;
-        SelectType();
+        level_num = num+1;
+        ShowChartData();
     }
-
-    private void SelectType()
+    private void ShowChartData()
     {
-        List<float> answer_data= answer_Type[(game_type, level_num)];
-        List<float> reaction_data = reaction_Type[(game_type, level_num)];
-        DrawGraph_Dot(answer_data,anDot_obj,true);
-        DrawGraph_Dot(reaction_data,reDot_obj,false);
+        List<float> reactionRate_list = new List<float>();
+        List<float> answerRate_list = new List<float>();
+        for (int i = 1; i < 8; i++)
+        {
+            reactionRate_list.Add(analyticsData.Data[(i, game_type,level_num)].reactionRate);
+            answerRate_list.Add(analyticsData.Data[(i, game_type, level_num)].answerRate);
+            dayText[i-1].text = analyticsData.Data[(i, game_type, level_num)].day;
+        }
+        SelectType(answerRate_list, reactionRate_list);
+
+    }
+    private void SelectType(List<float> answer,List<float> reaction)
+    {        
+        DrawGraph_Dot(answer,anDot_obj,true);
+        DrawGraph_Dot(reaction,reDot_obj,false);
         DrawGraph_Line(anLine_obj, answersRate_vector2);
         DrawGraph_Line(reLine_obj, reactionRate_vector2);
         LineVectorList_Clear();        
@@ -185,15 +198,16 @@ public class AnalysisChart : MonoBehaviour
     {
         if (check)
         {
-            ReactionRateSetActive(anDot_obj, anLine_obj);
+            
+            RateSetActive(reDot_obj, reLine_obj);
         }
         else
         {
-            ReactionRateSetActive(reDot_obj, reLine_obj);
+            RateSetActive(anDot_obj, anLine_obj);
         }
     }
     
-    private void ReactionRateSetActive(List<GameObject> dot_obj, List<GameObject> line_obj)
+    private void RateSetActive(List<GameObject> dot_obj, List<GameObject> line_obj)
     {
         foreach (var obj in dot_obj)
         {
@@ -202,14 +216,8 @@ public class AnalysisChart : MonoBehaviour
         foreach (var obj in line_obj)
         {
             obj.SetActive(!obj.activeInHierarchy);
-        }
-        //for (int i = 0; i < dayText.Length; i++)
-        //{
-        //    dot_obj[i].SetActive(!dot_obj[i].activeInHierarchy);            
-        //}
-        //for (int i = 0; i < dayText.Length-1; i++)
-        //{
-        //    line_obj[i].SetActive(!line_obj[i].activeInHierarchy);
-        //}
+        }        
     }
+
+    
 }      

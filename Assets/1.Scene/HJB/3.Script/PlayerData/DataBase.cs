@@ -66,6 +66,10 @@ public class DataBase : MonoBehaviour
             playerInfo.Collections = Client.instance.AppStart_LoadExpenditionCrewFromDB();
             //마지막 플레이한 스텝 데이터 불러오기
             playerInfo.LastPlayStepData = Client.instance.AppStart_LoadLastPlayFromDB();
+            //플레이어 프로필 데이터 가져오기
+            playerInfo.analyticsProfileData = Client.instance.AppStart_LoadAnalyticsProfileDataFromDB();
+
+
             CharactorAdd();
         }
         catch (System.Exception)
