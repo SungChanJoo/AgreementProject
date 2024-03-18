@@ -289,14 +289,29 @@ public class Cube : MonoBehaviour
     #endregion
     private void JudgeCubeObjType()
     {
-        if (VeneziaManager.Instance.Quest_Img.sprite == sprite || VeneziaManager.Instance.Quest2_Img.sprite == sprite)
+        if(VeneziaManager.Instance.veneGameMode == VeneGameMode.Couple)
         {
-            objectType = ObjectType.CorrectAnswer;
+            if (VeneziaManager.Instance.Quest_Img.sprite == sprite || VeneziaManager.Instance.Quest2_Img.sprite == sprite)
+            {
+                objectType = ObjectType.CorrectAnswer;
+            }
+            else
+            {
+                objectType = ObjectType.Wronganswer;
+            }
         }
         else
         {
-            objectType = ObjectType.Wronganswer;
+            if (VeneziaManager.Instance.Quest_Img.sprite == sprite)
+            {
+                objectType = ObjectType.CorrectAnswer;
+            }
+            else
+            {
+                objectType = ObjectType.Wronganswer;
+            }
         }
+
     }
 
     private void DestoryCube()

@@ -26,8 +26,10 @@ public class VeneziaManager : GameSetting
     public static VeneziaManager Instance = null;
     //전반적인 배네치아 게임을 관리하기 위한 스크립트
     //게임을 진행하면서 정답을 판정해주고, 정답란에 표기해줄 ui를 갈아끼워줄 역할 을 수행 할 것.
+    [Header("veneGameOver")]
+    [SerializeField] private GameObject veneGameOver;
 
-    [SerializeField] private GameObject gameover; // 테스트용 게임오버 이미지
+
     [SerializeField] private GameObject CubeParent;
 
     public VeneGameMode veneGameMode;
@@ -51,6 +53,8 @@ public class VeneziaManager : GameSetting
     public float StartSpeed;
     public int MaxTouchCount;
     public float AccelerationSpeed;
+
+    //커플모드일때 Win/Lose 판단
 
     private string[] KorWord =
     {"학","말","닭","곰","하마","표범","팬더","타조","쿼카","치타","참새",
@@ -91,7 +95,9 @@ public class VeneziaManager : GameSetting
     public int QuestRange;
     public int RemainAnswer; // 게임 진행중 남은 정답 갯수
     public int CorrectAnswerCount; // 맞춘 정답 갯수
+    //1인모드일때는 Click / 2인일때는 두개사용
     public int ClickCount;
+    public int Click_SecondPlayerCount;
     public int LifeTime; // 게임 진행 시간
 
     public int PoolingCool; // 오브젝트 생성 시간
@@ -165,7 +171,6 @@ public class VeneziaManager : GameSetting
             }
         }
 
-        gameover.SetActive(false);
         QuestIndex = (game_Type == Game_Type.E) ? 20 : 10;
         Set_QuestCount();
         RemainAnswer = QuestCount;
@@ -196,10 +201,7 @@ public class VeneziaManager : GameSetting
     {
         //  GameStop();
         Click_Obj();
-        if (TimeSlider.Instance.startTime <= 0)
-        {
-            GameOver();
-        }
+        GameOver();
     }
     //오브젝트 클릭시 입력처리
     //|| (Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Began)
@@ -217,14 +219,14 @@ public class VeneziaManager : GameSetting
                 //print(hit.collider.gameObject.name);
                 //큐브 오브젝트 판단
                 Cube Questprefab = hit.collider.gameObject.GetComponent<Cube>();
-                isFirstPlayerTouch = (Questprefab.playerNum == PlayerNum.One) ? true : false;
+                
                 if (Questprefab != null && Questprefab.objectType == ObjectType.CorrectAnswer) // 큐브를 눌렀을때 Quest 인지 알아야함
                 {
+                    isFirstPlayerTouch = (Questprefab.playerNum == PlayerNum.One) ? true : false;
                     if (QuestCount > -1)
                     {
                         RemainAnswer--;
                         CorrectAnswerCount++;
-                        ClickCount++;
                         trueReactionTime += totalReactionTime;
                         totalReactionTime = 0;
                         NextQuest();
@@ -234,13 +236,15 @@ public class VeneziaManager : GameSetting
                     {
                         GameOver();
                     }
-                    if (isFirstPlayerTouch)
+                    if (isFirstPlayerTouch) // 솔로 모드에서는 One으로 지정됨
                     {
+                        ClickCount++;
                         ObjectPooling.Instance.cubePool.Add(hit.collider.gameObject);
                         hit.collider.gameObject.SetActive(false);
                     }
                     else
                     {
+                        Click_SecondPlayerCount++;
                         ObjectPooling.Instance.cubePoolTwo.Add(hit.collider.gameObject);
                         hit.collider.gameObject.SetActive(false);
                     }
@@ -248,19 +252,21 @@ public class VeneziaManager : GameSetting
                 else if (Questprefab != null && Questprefab.objectType != ObjectType.CorrectAnswer)
                 {
                     //print("오답클릭!");
-                    ClickCount++;
+                    isFirstPlayerTouch = (Questprefab.playerNum == PlayerNum.One) ? true : false;
+                    if (veneGameMode == VeneGameMode.Sole) ClickCount++; // 오답은 1인모드일때만 체크
                     if (isFirstPlayerTouch)
                     {
                         ObjectPooling.Instance.cubePool.Add(hit.collider.gameObject);
                         hit.collider.gameObject.SetActive(false);
+                        TimeSlider.Instance.DecreaseTime_Item(5);
                     }
                     else
                     {
                         ObjectPooling.Instance.cubePoolTwo.Add(hit.collider.gameObject);
                         hit.collider.gameObject.SetActive(false);
+                        TimeSlider.Instance.DecreaseTime_CoupleMode(5,TimeSlider.Instance.slider_PlayerTwo);
                     }
                     totalReactionTime = 0;
-                    TimeSlider.Instance.DecreaseTime_Item(5); //Todo : 클릭한 오답쪽을 기준으로 타임슬러이더 줄일 수 있도록 변경
                 }
                 else
                 {
@@ -274,7 +280,8 @@ public class VeneziaManager : GameSetting
                         hit.collider.gameObject.SetActive(false);
                     }
 
-                    if (item.veneziaItem == VeneziaItem.Pause) // Pause
+                    //솔로 게임만 사용
+                    if (item.veneziaItem == VeneziaItem.Pause && veneGameMode == VeneGameMode.Sole) // Pause
                     {
                         //print("멈춰!");
                         ObjectPooling.Instance.PausePool.Add(hit.collider.gameObject);
@@ -364,6 +371,7 @@ public class VeneziaManager : GameSetting
                 break;
         }
     }
+
     protected override void Level_3(int step)
     {
         GetIndex(3, step);
@@ -526,17 +534,31 @@ public class VeneziaManager : GameSetting
     private void GameOver()
     {
         if (isGameover) return;
-        TimeSlider.Instance.startTime = 0;
-        isGameover = true;
-        totalQuestions = ClickCount;
-        ReactionTime = trueReactionTime / CorrectAnswerCount;
-        //반응속도 할당
-        reactionRate = ReactionTime;
-        answersCount = CorrectAnswerCount;
-        //정답률 계산
-        AnswerRate();
-        //결과표 출력
-        EndGame();
+        if (veneGameMode == VeneGameMode.Sole && TimeSlider.Instance.slider.value == 0)
+        {
+            TimeSlider.Instance.startTime = 0;
+            isGameover = true;
+            
+            totalQuestions = ClickCount;
+            ReactionTime = trueReactionTime / CorrectAnswerCount;
+            //반응속도 할당
+            reactionRate = ReactionTime;
+            answersCount = CorrectAnswerCount;
+            //정답률 계산
+            AnswerRate();
+            //결과표 출력
+            EndGame();
+        }
+        else
+        {
+            if(TimeSlider.Instance.slider.value == 0 || TimeSlider.Instance.slider_PlayerTwo.value == 0)
+            {
+                isGameover = true;
+                veneGameOver.SetActive(true);
+                StopAllCoroutines();
+            }
+        }
+
     }
 
     private void AnswerRate()
@@ -703,139 +725,148 @@ public class VeneziaManager : GameSetting
     //문제 속도 설정
     private void GetSpeed(int lv, int step)
     {
-        if (game_Type == Game_Type.C || game_Type == Game_Type.D)
+        if(veneGameMode == VeneGameMode.Sole)
         {
-            switch (lv)
+            if (game_Type == Game_Type.C || game_Type == Game_Type.D)
             {
-                case 1:
-                    switch (step)
-                    {
-                        case 1:
-                            StartSpeed = 20;
-                            MaxTouchCount = 10;
-                            break;
-                        case 2:
-                            StartSpeed = 20;
-                            MaxTouchCount = 10;
-                            break;
-                        case 3:
-                            StartSpeed = 24;
-                            MaxTouchCount = 11;
-                            break;
-                        case 4:
-                            StartSpeed = 24;
-                            MaxTouchCount = 11;
-                            break;
-                        case 5:
-                            StartSpeed = 28;
-                            MaxTouchCount = 12;
-                            break;
-                        case 6:
-                            StartSpeed = 28;
-                            MaxTouchCount = 12;
-                            break;
-                        default:
-                            break;
-                    }
-                    break;
-                case 2:
-                    switch (step)
-                    {
-                        case 1:
-                            StartSpeed = 22;
-                            MaxTouchCount = 11;
-                            break;
-                        case 2:
-                            StartSpeed = 22;
-                            MaxTouchCount = 11;
-                            break;
-                        case 3:
-                            StartSpeed = 26;
-                            MaxTouchCount = 12;
-                            break;
-                        case 4:
-                            StartSpeed = 26;
-                            MaxTouchCount = 12;
-                            break;
-                        case 5:
-                            StartSpeed = 30;
-                            MaxTouchCount = 13;
-                            break;
-                        case 6:
-                            StartSpeed = 30;
-                            MaxTouchCount = 13;
-                            break;
-                        default:
-                            break;
-                    }
-                    break;
-                case 3:
-                    switch (step)
-                    {
-                        case 1:
-                            StartSpeed = 24;
-                            MaxTouchCount = 12;
-                            break;
-                        case 2:
-                            StartSpeed = 24;
-                            MaxTouchCount = 12;
-                            break;
-                        case 3:
-                            StartSpeed = 28;
-                            MaxTouchCount = 13;
-                            break;
-                        case 4:
-                            StartSpeed = 28;
-                            MaxTouchCount = 13;
-                            break;
-                        case 5:
-                            StartSpeed = 32;
-                            MaxTouchCount = 14;
-                            break;
-                        case 6:
-                            StartSpeed = 32;
-                            MaxTouchCount = 14;
-                            break;
-                        default:
-                            break;
-                    }
-                    break;
-                default:
-                    break;
+                switch (lv)
+                {
+                    case 1:
+                        switch (step)
+                        {
+                            case 1:
+                                StartSpeed = 20;
+                                MaxTouchCount = 10;
+                                break;
+                            case 2:
+                                StartSpeed = 20;
+                                MaxTouchCount = 10;
+                                break;
+                            case 3:
+                                StartSpeed = 24;
+                                MaxTouchCount = 11;
+                                break;
+                            case 4:
+                                StartSpeed = 24;
+                                MaxTouchCount = 11;
+                                break;
+                            case 5:
+                                StartSpeed = 28;
+                                MaxTouchCount = 12;
+                                break;
+                            case 6:
+                                StartSpeed = 28;
+                                MaxTouchCount = 12;
+                                break;
+                            default:
+                                break;
+                        }
+                        break;
+                    case 2:
+                        switch (step)
+                        {
+                            case 1:
+                                StartSpeed = 22;
+                                MaxTouchCount = 11;
+                                break;
+                            case 2:
+                                StartSpeed = 22;
+                                MaxTouchCount = 11;
+                                break;
+                            case 3:
+                                StartSpeed = 26;
+                                MaxTouchCount = 12;
+                                break;
+                            case 4:
+                                StartSpeed = 26;
+                                MaxTouchCount = 12;
+                                break;
+                            case 5:
+                                StartSpeed = 30;
+                                MaxTouchCount = 13;
+                                break;
+                            case 6:
+                                StartSpeed = 30;
+                                MaxTouchCount = 13;
+                                break;
+                            default:
+                                break;
+                        }
+                        break;
+                    case 3:
+                        switch (step)
+                        {
+                            case 1:
+                                StartSpeed = 24;
+                                MaxTouchCount = 12;
+                                break;
+                            case 2:
+                                StartSpeed = 24;
+                                MaxTouchCount = 12;
+                                break;
+                            case 3:
+                                StartSpeed = 28;
+                                MaxTouchCount = 13;
+                                break;
+                            case 4:
+                                StartSpeed = 28;
+                                MaxTouchCount = 13;
+                                break;
+                            case 5:
+                                StartSpeed = 32;
+                                MaxTouchCount = 14;
+                                break;
+                            case 6:
+                                StartSpeed = 32;
+                                MaxTouchCount = 14;
+                                break;
+                            default:
+                                break;
+                        }
+                        break;
+                    default:
+                        break;
+                }
+            }
+            else
+            {   //한자는 lv가 없음 step으로 지정
+                switch (step)
+                {
+                    case 1:
+                        StartSpeed = 20;
+                        MaxTouchCount = 10;
+                        break;
+                    case 2:
+                        StartSpeed = 20;
+                        MaxTouchCount = 10;
+                        break;
+                    case 3:
+                        StartSpeed = 24;
+                        MaxTouchCount = 11;
+                        break;
+                    case 4:
+                        StartSpeed = 24;
+                        MaxTouchCount = 11;
+                        break;
+                    case 5:
+                        StartSpeed = 28;
+                        MaxTouchCount = 12;
+                        break;
+                    case 6:
+                        StartSpeed = 28;
+                        MaxTouchCount = 12;
+                        break;
+                    default:
+                        break;
+                }
             }
         }
         else
-        {   //한자는 lv가 없음 step으로 지정
-            switch (step)
-            {
-                case 1:
-                    StartSpeed = 20;
-                    MaxTouchCount = 10;
-                    break;
-                case 2:
-                    StartSpeed = 20;
-                    MaxTouchCount = 10;
-                    break;
-                case 3:
-                    StartSpeed = 24;
-                    MaxTouchCount = 11;
-                    break;
-                case 4:
-                    StartSpeed = 24;
-                    MaxTouchCount = 11;
-                    break;
-                case 5:
-                    StartSpeed = 28;
-                    MaxTouchCount = 12;
-                    break;
-                case 6:
-                    StartSpeed = 28;
-                    MaxTouchCount = 12;
-                    break;
-                default:
-                    break;
-            }
+        {
+            StartSpeed = 26;
+            MaxTouchCount = 13;
         }
+        
 
     }
 
@@ -850,4 +881,6 @@ public class VeneziaManager : GameSetting
             }
         }
     }
+
+
 }

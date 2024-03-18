@@ -351,6 +351,7 @@ public class ObjectPooling : MonoBehaviour
 
     public IEnumerator Pause_Co()
     {
+        if (VeneziaManager.Instance.veneGameMode == VeneGameMode.Couple) yield break; // 커플모드에서는 생성x
         while (PausePool.Count > 0)
         {
             float cool = Random.Range(45, 51f);
