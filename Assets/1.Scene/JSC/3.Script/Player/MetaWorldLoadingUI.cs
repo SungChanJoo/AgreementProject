@@ -21,7 +21,7 @@ public class MetaWorldLoadingUI : NetworkBehaviour
 
         OnEnterMetaWorld = () =>
         {
-            StartCoroutine(LoadMetaWorld_co());
+            //StartCoroutine(LoadMetaWorld_co());
         };
         //대기열 상태이면 대기열 카운트다운, 카운트가 0되면 메타월드 불러오기 
         OnQueueMetaWorld = () =>
@@ -29,12 +29,12 @@ public class MetaWorldLoadingUI : NetworkBehaviour
             StartCoroutine(UpdateQueueCount_co());
         };
     }
-    public override void OnStartLocalPlayer()
+/*    public override void OnStartLocalPlayer()
     {
         LoadingUI.SetActive(true);
-    }
+    }*/
 
-    //로딩 딜레이
+/*    //로딩 딜레이
     IEnumerator LoadMetaWorld_co()
     {
         yield return new WaitForSeconds(2f);
@@ -46,7 +46,7 @@ public class MetaWorldLoadingUI : NetworkBehaviour
     public void RpcSyncLoadingUI()
     {
         LoadingUI.SetActive(false);
-    }
+    }*/
 
 
     IEnumerator currentSeTimeQueue = null;
