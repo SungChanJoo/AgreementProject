@@ -8,17 +8,17 @@ public enum ObjectType
     CorrectAnswer,
 }
 
-/*public enum Quset_exam
+public enum PlayerNum
 {
-    Before,
-    Current,
-    After,
-}*/
+    One,
+    Two
+}
 
 
 public class Cube : MonoBehaviour
 {
     public ObjectType objectType;
+    public PlayerNum playerNum;
     //  public  Quset_exam quset_Exam;
 
     public float StartSpeed; // 공을 움직일 속도  1 
@@ -29,6 +29,7 @@ public class Cube : MonoBehaviour
 
 
     public float removeTime = 0;
+    public float removeTimeSecond = 0;
 
     [SerializeField] private bool isStart;
     [SerializeField] public Sprite sprite;
@@ -93,20 +94,6 @@ public class Cube : MonoBehaviour
 
     private void Update()
     {
-/*        if (!gameObject.activeSelf)
-        {
-            isStart = false;
-            isFloor = false;
-            isLeftWall = false;
-            isRightWall = false;
-            isCeiling = false;
-            isDirFloorSelect = false;
-            isDirCelingSelect = false;
-            isDirLeftSelect = false;
-            isDirRightSelect = false;
-            isTouch = false;
-        }*/
-
         if (isStart && gameObject.activeSelf)
         {
             Cube_StartMove_();
@@ -302,35 +289,89 @@ public class Cube : MonoBehaviour
     #endregion
     private void JudgeCubeObjType()
     {
-        if (VeneziaManager.Instance.Quest_Img.sprite == sprite)
+        if(VeneziaManager.Instance.veneGameMode == VeneGameMode.Couple)
         {
-            objectType = ObjectType.CorrectAnswer;
+            if (VeneziaManager.Instance.Quest_Img.sprite == sprite || VeneziaManager.Instance.Quest2_Img.sprite == sprite)
+            {
+                objectType = ObjectType.CorrectAnswer;
+            }
+            else
+            {
+                objectType = ObjectType.Wronganswer;
+            }
         }
         else
         {
-            objectType = ObjectType.Wronganswer;
+            if (VeneziaManager.Instance.Quest_Img.sprite == sprite)
+            {
+                objectType = ObjectType.CorrectAnswer;
+            }
+            else
+            {
+                objectType = ObjectType.Wronganswer;
+            }
         }
+
     }
 
     private void DestoryCube()
     {
-        if (objectType == ObjectType.CorrectAnswer && gameObject.activeSelf)
+        if(VeneziaManager.Instance.veneGameMode == VeneGameMode.Sole)
         {
-            if (removeTime >= VeneziaManager.Instance.DestroyTime)
+            if (objectType == ObjectType.CorrectAnswer && gameObject.activeSelf)
             {
-                objectType = ObjectType.Wronganswer;
-                TimeSlider.Instance.DecreaseTime_Item(3);
-                VeneziaManager.Instance.NextQuest();
-                ObjectPooling.Instance.cubePool.Add(gameObject);
-                gameObject.SetActive(false);
-                removeTime = 0;
-                VeneziaManager.Instance.ResetCube();
-            }
-            else
-            {
-                removeTime += Time.deltaTime;
+                if (removeTime >= VeneziaManager.Instance.DestroyTime)
+                {
+                    objectType = ObjectType.Wronganswer;
+                    TimeSlider.Instance.DecreaseTime_Item(3);
+                    VeneziaManager.Instance.NextQuest();
+                    ObjectPooling.Instance.cubePool.Add(gameObject);
+                    gameObject.SetActive(false);
+                    removeTime = 0;
+                    VeneziaManager.Instance.ResetCube();
+                }
+                else
+                {
+                    removeTime += Time.deltaTime;
+                }
             }
         }
+/*        else
+        {
+            if(objectType == ObjectType.CorrectAnswer && gameObject.activeSelf)
+            {
+                if (removeTime >= VeneziaManager.Instance.DestroyTime && playerNum == PlayerNum.One)
+                {
+                    objectType = ObjectType.Wronganswer;
+                    TimeSlider.Instance.DecreaseTime_Item(3);
+                    ObjectPooling.Instance.cubePool.Add(gameObject);
+                    gameObject.SetActive(false);
+                    removeTime = 0;
+                    VeneziaManager.Instance.NextQuest();
+                    VeneziaManager.Instance.ResetCube();
+                }
+                else
+                {
+                    removeTime += Time.deltaTime;
+                }
+
+                if (removeTimeSecond >= VeneziaManager.Instance.DestroyTime && playerNum == PlayerNum.Two)
+                {
+                    objectType = ObjectType.Wronganswer;
+                    TimeSlider.Instance.DecreaseTime_Item(3);
+                    VeneziaManager.Instance.NextQuest();
+                    ObjectPooling.Instance.cubePoolTwo.Add(gameObject);
+                    gameObject.SetActive(false);
+                    removeTimeSecond = 0;
+                    VeneziaManager.Instance.ResetCube();
+                }
+                else
+                {
+                    removeTimeSecond += Time.deltaTime;
+                }
+            }
+        }*/
+
     }
 
     private void GameOver()

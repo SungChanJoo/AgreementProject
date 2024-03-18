@@ -67,8 +67,15 @@ public abstract class GameSetting : MonoBehaviour,ITouchEffect
         //선택한 레벨, 스텝, 시간 값 초기 설정
         game_Type = StepManager.Instance.game_Type;
         step = StepManager.Instance.CurrentStep;
-        level = StepManager.Instance.CurrentLevel;        
-        timeSet = StepManager.Instance.CurrentTime;        
+        level = StepManager.Instance.CurrentLevel;
+        if(TimeSlider.Instance.gameType == GameType.Solo)
+        {
+            timeSet = StepManager.Instance.CurrentTime;
+        }
+        else
+        {
+            timeSet = 60;
+        }
         TimeSlider.Instance.startTime = timeSet;
         TimeSlider.Instance.duration = timeSet;
         Debug.Log($"game_Type : {game_Type}, level : {level}, step: {step} ");        
