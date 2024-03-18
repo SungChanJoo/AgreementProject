@@ -43,7 +43,7 @@ public class Test_Image : MonoBehaviour
     {
         
         
-        //Player_DB db = Client.instance.AppStart_LoadAllDataFromDB();
+        //Player_DB db = Client.instance.AppStart_LoadCharactorDataFromDB();
         //byte[] image = db.image;
             
         byte[] image = Convert.FromBase64String(asd);

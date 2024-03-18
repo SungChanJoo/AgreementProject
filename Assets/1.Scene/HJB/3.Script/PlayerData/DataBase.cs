@@ -59,7 +59,7 @@ public class DataBase : MonoBehaviour
         try
         {
             //플레이어 정보 불러오기
-            playerInfo = Client.instance.AppStart_LoadAllDataFromDB();
+            playerInfo = Client.instance.AppStart_LoadCharactorDataFromDB();
             //랭킹데이터 불러오기
             playerInfo.RankingInfo = Client.instance.AppStart_LoadRankDataFromDB();
             //탐험대원 도감데이터 불러오기

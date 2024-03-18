@@ -20,8 +20,9 @@ public class ProfileText_M : MonoBehaviour
     [SerializeField] private GameObject ErrorText;
 
     private ProfileManager profileManager;
-
+    
     public string PlayerName;
+    
     public string CharacterName
     {
         get { return characterName.text; }
@@ -48,8 +49,9 @@ public class ProfileText_M : MonoBehaviour
     }
     private void OnEnable()
     {
-        playTime.text = DataBase.Instance.PlayerCharacter[0].TotalTime.ToString();
-        totalAnswer.text = DataBase.Instance.PlayerCharacter[0].TotalAnswers.ToString();
+        playTime.text = DataBase.Instance.PlayerCharacter[DataBase.Instance.CharacterIndex].TotalTime.ToString();
+        totalAnswer.text = DataBase.Instance.PlayerCharacter[DataBase.Instance.CharacterIndex].TotalAnswers.ToString();
+
     }
     private void Start()
     {
@@ -84,6 +86,12 @@ public class ProfileText_M : MonoBehaviour
     private void CalculationPlayTime()
     {
         //시간 계산
+        Debug.Log(DataBase.Instance.PlayerCharacter[0].TotalTime);
+        string time = DataBase.Instance.PlayerCharacter[0].TotalTime.ToString();
+        Debug.Log(time);
+        int count = time.Length-2;
+        
+        float currentTime = float.Parse(time.Insert(count, ".")); 
         float totalTime = DataBase.Instance.PlayerCharacter[0].TotalTime;
         int minute = (int)(totalTime / 60f);
         float second = totalTime - (minute * 60);
@@ -102,8 +110,7 @@ public class ProfileText_M : MonoBehaviour
     {
         //추가적으로 플레이어 변경 창에서 이름도 바뀌도록 로직 넣을 것
         CharacterName = DataBase.Instance.PlayerCharacter[0].playerName;
-        Birthday.text = DataBase.Instance.PlayerCharacter[0].BirthDay;
-           
+        Birthday.text = DataBase.Instance.PlayerCharacter[0].BirthDay;           
         totalAnswer.text = DataBase.Instance.PlayerCharacter[0].TotalAnswers.ToString();
         //시간 계산 후 출력
         CalculationPlayTime();        
@@ -113,18 +120,20 @@ public class ProfileText_M : MonoBehaviour
         try
         {
             //데이터 바꾸기
-            DataBase.Instance.PlayerCharacter[0].playerName = ChangeName_Input.text;
-            //바꾼 이름 출력
-            CharacterName = ChangeName_Input.text;
+            DataBase.Instance.PlayerCharacter[0].playerName = ChangeName_Input.text;            
             //DB에 Load하기
             CharacterChangeNameLoad();
             Client.instance.RegisterCharactorName_SaveDataToDB(ChangeName_Input.text);            
         }
         catch (System.Exception)
-        {
-            CharacterName = ChangeName_Input.text;
+        {            
             Debug.Log("네트워크 연결 또는 DB에 접속이 불가합니다.");            
-        }        
+        }
+        finally
+        {
+            //바꾼 이름 출력
+            CharacterName = ChangeName_Input.text;
+        }
         TextClear(ChangeName_Input);
     }
 

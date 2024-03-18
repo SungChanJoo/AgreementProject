@@ -22,6 +22,8 @@ public class AudioManager : MonoBehaviour
 
     private Game_Type game_Type;
 
+    int currentClip=4;
+
     private void Awake()
     {
         if (Instance == null)
@@ -40,15 +42,20 @@ public class AudioManager : MonoBehaviour
     {
         audioMixer.SetFloat("Master", Mathf.Log10(master_slider.value) * 20);
         audioMixer.SetFloat("BGM", Mathf.Log10(bgm_slider.value) * 20);
-        audioMixer.SetFloat("BGM", Mathf.Log10(sfx_slider.value) * 20);
+        audioMixer.SetFloat("SFX", Mathf.Log10(sfx_slider.value) * 20);
         BGM_Play(0);
     }
 
-    // 매개변수로 받은 값으로 BGM 실행
+    //매개변수로 받은 값으로 BGM 실행
     public void BGM_Play(int idx)
     {
-        BGMAudio.clip = bgmClip[idx];
+        if (idx == currentClip)
+        {
+            return;
+        }
+        BGMAudio.clip = bgmClip[idx];        
         BGMAudio.Play();
+        currentClip = idx;
     }
     public void BGM_Stop()
     {

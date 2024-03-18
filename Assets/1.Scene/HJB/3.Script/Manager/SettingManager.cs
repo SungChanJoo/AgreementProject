@@ -171,7 +171,7 @@ public class SettingManager : MonoBehaviour
             Destroy(FindObjectOfType<PetSwitchNetworkManager>().gameObject);
             Destroy(FindObjectOfType<CrewSelectManager>().gameObject);
             if (AudioManager.Instance != null)
-                AudioManager.Instance.BGM_Play(0);
+                AudioManager.Instance.BGM_Play(3);
             IsMetaWorld = false;
             return;
         }

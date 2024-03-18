@@ -19,6 +19,10 @@ public class ProfileButtonEvent : MonoBehaviour
     {
         ChangeImage_Btn(1);
     }
+    private void OnEnable()
+    {
+        
+    }
     public void ChangeImage_Btn(int level)
     {
         for (int i = 0; i < profile_btn.Length; i++)
@@ -32,12 +36,22 @@ public class ProfileButtonEvent : MonoBehaviour
             {
                 profile_btn[i].sprite = Non_img;
             }
+            Debug.Log(answersRate);
         }
     }
     private void ChangePlayerGameData(int level)
     {
-        moreGame.text = $"Lv_{level} 데이터 받기";
-        reactionRate.text =$"Lv_{level}데이터 받기";
-        answersRate.text = $"Lv_{level}데이터 받기";
+        level -= 1;
+        try
+        {
+            //moreGame.text = DataBase.Instance.PlayerCharacter[DataBase.Instance.CharacterIndex].analyticsProfileData.Data[level].Item1;
+            //reactionRate.text =$"{ DataBase.Instance.PlayerCharacter[DataBase.Instance.CharacterIndex].analyticsProfileData.Data[level].Item2}";
+            //answersRate.text = $"{ DataBase.Instance.PlayerCharacter[DataBase.Instance.CharacterIndex].analyticsProfileData.Data[level].Item3}";
+        }
+        catch (System.Exception)
+        {
+
+            Debug.Log("프로필에 할당된 데이터가 없거나 Null입니다.");
+        }
     }
 }

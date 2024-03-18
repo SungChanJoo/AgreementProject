@@ -52,13 +52,14 @@ public abstract class GameSetting : MonoBehaviour,ITouchEffect
 
     private void Awake()
     {
-        //source = GetComponent<AudioSource>();
+        //source = GetComponent<AudioSource>();        
     }
 
     private void Start()
     {
         UpdateDatabaseFromData_co = UpdateDatabaseFromData();
         startSet();
+        AudioManager.Instance.BGMAudio.Stop();
     }
 
     private void startSet()
@@ -156,6 +157,10 @@ public abstract class GameSetting : MonoBehaviour,ITouchEffect
         {
 
             Debug.Log("DB ø¨∞· ∫Œ≈π.");
+        }
+        finally
+        {
+            
         }
     }
 
