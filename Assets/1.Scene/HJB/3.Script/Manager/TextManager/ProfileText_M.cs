@@ -19,10 +19,14 @@ public class ProfileText_M : MonoBehaviour
     [SerializeField] private GameObject Characters;
     [SerializeField] private GameObject ErrorText;
 
+    
+
     private ProfileManager profileManager;
     
     public string PlayerName;
+
     
+
     public string CharacterName
     {
         get { return characterName.text; }
@@ -51,7 +55,7 @@ public class ProfileText_M : MonoBehaviour
     {
         playTime.text = DataBase.Instance.PlayerCharacter[DataBase.Instance.CharacterIndex].TotalTime.ToString();
         totalAnswer.text = DataBase.Instance.PlayerCharacter[DataBase.Instance.CharacterIndex].TotalAnswers.ToString();
-
+        
     }
     private void Start()
     {
