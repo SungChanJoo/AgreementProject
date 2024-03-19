@@ -72,11 +72,13 @@ public class CollectionsManager : MonoBehaviour
             Instance = this;
         else
             Destroy(gameObject);
-        //todo 0220 DB에서 플레이어 돈 받아와서 할당해줘
+        if(Client.instance != null)
+            _money= DataBase.Instance.PlayerCharacter[DataBase.Instance.CharacterIndex].StarCoin;
         _moneyText.text = $"{_money}";
         SetCollections();
         DetailCrewData();
     }
+
     private void OnEnable()
     {
         OnCheckPurchasePossibility += CheckPurchasePossibility;
@@ -84,6 +86,11 @@ public class CollectionsManager : MonoBehaviour
     private void OnDisable()
     {
         OnCheckPurchasePossibility -= CheckPurchasePossibility;
+        //도감 비활성화 시 DB에 현재 탐험대원 도감 반영
+        if (Client.instance != null)
+        {
+            Client.instance.AppExit_SaveExpenditionCrewDataToDB(Collections);
+        }
     }
     public void LoadMetaWorld(string sceneName)
     {
@@ -424,6 +431,11 @@ public class CollectionsManager : MonoBehaviour
             //구매후 창닫기
             _purchaseWindow.SetActive(false);
             _purchaseBtn.GetComponent<Button>().onClick.RemoveAllListeners();
+            //대원 구매 시 DB에 현재 탐험대원 도감 반영
+            if (Client.instance != null)
+            {
+                Client.instance.AppExit_SaveExpenditionCrewDataToDB(Collections);
+            }
         }
         else
         {
@@ -458,17 +470,5 @@ public class CollectionsManager : MonoBehaviour
             _crewInfo.Add(new Crew(CrewData[i]["name"].ToString(), 
                                   CrewData[i]["descript"].ToString()));
         }
-    }
-    private void OnApplicationQuit()
-    {
-        //어플종료시 DB에 마지막으로 플레이한 스텝 위치 저장 
-        if(Client.instance != null)
-        {
-            Client.instance.AppExit_SaveExpenditionCrewDataToDB(Collections);
-            Debug.Log("AppQuit Collections");
-
-        }
-
-
     }
 }
