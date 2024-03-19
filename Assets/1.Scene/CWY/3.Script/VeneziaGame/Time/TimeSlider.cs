@@ -257,4 +257,9 @@ public interface ITimeSlider
             PlayTime += Time.deltaTime;
         }
     }
+
+    public void StopAll()
+    {
+        StopAllCoroutines();
+    }
 }

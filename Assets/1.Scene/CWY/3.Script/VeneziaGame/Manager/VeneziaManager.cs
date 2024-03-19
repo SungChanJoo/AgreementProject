@@ -124,6 +124,12 @@ public class VeneziaManager : GameSetting
 
     public bool isFirstPlayerTouch = false;
     private bool isStart = false;
+
+    //커플모드일때 누가 클릭했는지 판단
+    bool isFirst = false;
+    bool isSecond =false;
+
+
     private void Awake()
     {
         if (Instance == null)
@@ -200,20 +206,53 @@ public class VeneziaManager : GameSetting
     private void Update()
     {
         //  GameStop();
-        Click_Obj();
+        if (!isGameover)
+        {
+            Click_Obj();
+        }
+        CanClickOn();
+
         GameOver();
+    }
+
+    private IEnumerator EnableClickAgain()
+    {
+        // 일정 시간(예: 0.2초) 대기
+        yield return new WaitForSeconds(0.2f);
+
+        // 클릭 가능한 상태로 변경
+        canClick = true;
     }
     //오브젝트 클릭시 입력처리
     //|| (Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Began)
+
+    private float timer = 0f;
+    private bool canClick = true;
+    private void CanClickOn()
+    {
+        // 시간을 업데이트
+        if (!canClick)
+        {
+            timer += Time.deltaTime;
+
+            // 0.2초가 지나면 bool 값을 true로 변경하고 타이머를 리셋
+            if (timer >= 0.2f)
+            {
+                timer = 0f;
+                canClick = true;
+            }
+        }
+    }
+
     private void Click_Obj()
     {
+        if (!canClick) return;
         CheckCubeTypes();
-        print(isFirstPlayerTouch);
         if (Input.GetMouseButtonDown(0))
         {
             Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
             RaycastHit hit;
-
+            canClick = false;
             if (Physics.Raycast(ray, out hit) && !hit.collider.gameObject.CompareTag("Ground"))
             {
                 //print(hit.collider.gameObject.name);
@@ -239,14 +278,18 @@ public class VeneziaManager : GameSetting
                     if (isFirstPlayerTouch) // 솔로 모드에서는 One으로 지정됨
                     {
                         ClickCount++;
+                        isFirst = true;
                         ObjectPooling.Instance.cubePool.Add(hit.collider.gameObject);
                         hit.collider.gameObject.SetActive(false);
+                        ObjectPooling.Instance.CreateBoom(ObjectPooling.Instance.PlayerOne_Boom);
                     }
                     else
                     {
                         Click_SecondPlayerCount++;
+                        isSecond = true;
                         ObjectPooling.Instance.cubePoolTwo.Add(hit.collider.gameObject);
                         hit.collider.gameObject.SetActive(false);
+                        ObjectPooling.Instance.CreateBoom(ObjectPooling.Instance.PlayerTwo_Boom);
                     }
                 }
                 else if (Questprefab != null && Questprefab.objectType != ObjectType.CorrectAnswer)
@@ -256,12 +299,14 @@ public class VeneziaManager : GameSetting
                     if (veneGameMode == VeneGameMode.Sole) ClickCount++; // 오답은 1인모드일때만 체크
                     if (isFirstPlayerTouch)
                     {
+                        isFirst = true;
                         ObjectPooling.Instance.cubePool.Add(hit.collider.gameObject);
                         hit.collider.gameObject.SetActive(false);
                         TimeSlider.Instance.DecreaseTime_Item(5);
                     }
                     else
                     {
+                        isSecond = true;
                         ObjectPooling.Instance.cubePoolTwo.Add(hit.collider.gameObject);
                         hit.collider.gameObject.SetActive(false);
                         TimeSlider.Instance.DecreaseTime_CoupleMode(5,TimeSlider.Instance.slider_PlayerTwo);
@@ -272,14 +317,13 @@ public class VeneziaManager : GameSetting
                 {
                     // 아이템 오브젝트 판단
                     ItemFnc item = hit.collider.gameObject.GetComponent<ItemFnc>();
-                    if (item.veneziaItem == VeneziaItem.Meteor) // veneziaItem이 메테오인 경우
+                    if (item.veneziaItem == VeneziaItem.Meteor && veneGameMode == VeneGameMode.Sole) // veneziaItem이 메테오인 경우
                     {
                         //print("메테오 클릭!"); 
                         ObjectPooling.Instance.MeteorPool.Add(hit.collider.gameObject);
                         TimeSlider.Instance.DecreaseTime_Item(5);
                         hit.collider.gameObject.SetActive(false);
                     }
-
                     //솔로 게임만 사용
                     if (item.veneziaItem == VeneziaItem.Pause && veneGameMode == VeneGameMode.Sole) // Pause
                     {
@@ -288,12 +332,25 @@ public class VeneziaManager : GameSetting
                         hit.collider.gameObject.SetActive(false);
                         StartCoroutine(Pause_co());
                     }
+
+                    if(item.veneziaItem == VeneziaItem.Boom && item.boomType == BoomType.PlayerOne)
+                    {
+                        ObjectPooling.Instance.BoomPool.Add(hit.collider.gameObject);
+                        hit.collider.gameObject.SetActive(false);
+                        TimeSlider.Instance.DecreaseTime_CoupleMode(5, TimeSlider.Instance.slider_PlayerTwo);
+                    }
+                    else if (item.veneziaItem == VeneziaItem.Boom && item.boomType == BoomType.PlayerTwo)
+                    {
+                        ObjectPooling.Instance.BoomPool.Add(hit.collider.gameObject);
+                        hit.collider.gameObject.SetActive(false);
+                        TimeSlider.Instance.DecreaseTime_CoupleMode(5, TimeSlider.Instance.slider);
+                    }
+
                 }
             }
             ResetCube();
+            StartCoroutine(EnableClickAgain());
         }
-
-
     }
 
     IEnumerator Pause_co()
@@ -556,6 +613,7 @@ public class VeneziaManager : GameSetting
                 isGameover = true;
                 veneGameOver.SetActive(true);
                 StopAllCoroutines();
+                TimeSlider.Instance.StopAll();
             }
         }
 
@@ -590,25 +648,41 @@ public class VeneziaManager : GameSetting
         }
         else
         {
-            bool isFirst = true;
             //첫번째 플레이어
-            if (((ObjectPooling.Instance.cubePool.Count > limitCount) || (ObjectPooling.Instance.cubePoolTwo.Count > limitCount)) && isFirst) 
+            if (ObjectPooling.Instance.cubePool.Count > limitCount && isFirst) 
             {
+                print("첫");
                 isFirst = false;
                 StopCoroutine(ObjectPooling.Instance.CubePooling);
                 ObjectPooling.Instance.ReStartCubePooling_co();
             }
-            else if (((ObjectPooling.Instance.cubePool.Count > limitCount) || (ObjectPooling.Instance.cubePoolTwo.Count > limitCount)) && !isFirst)
+            else if (ObjectPooling.Instance.cubePool.Count > limitCount && !isFirst)
             {
+                print("둘");
                 StopCoroutine(ObjectPooling.Instance.CubeRestartPooling);
                 ObjectPooling.Instance.ReStartCubePooling_co();
             }
+
+            //두번째 플레이어
+            if(ObjectPooling.Instance.cubePoolTwo.Count > limitCount && isSecond)
+            {
+                isSecond = false;
+                StopCoroutine(ObjectPooling.Instance.CubePooling);
+                ObjectPooling.Instance.ReStartCubePooling_co();
+            }
+            else if (ObjectPooling.Instance.cubePoolTwo.Count > limitCount && !isSecond)
+            {
+                print("둘");
+                StopCoroutine(ObjectPooling.Instance.CubeRestartPooling);
+                ObjectPooling.Instance.ReStartCubePooling_co();
+            }
+
         }
  
     }
+      
 
-
-    //문제 인댁스 설정
+    //문제 인댁스 설정   
     private void GetIndex(int lv, int step)
     {
         if (game_Type == Game_Type.C || game_Type == Game_Type.D)

@@ -5,15 +5,23 @@ using UnityEngine;
 public enum VeneziaItem
 {
     Pause,
-    Meteor,  
+    Meteor,
+    Boom
+}
+
+public enum BoomType
+{
+    NULL, PlayerOne, PlayerTwo
 }
 
 public class ItemFnc : MonoBehaviour
 {
     //아이템 타입에 따라 게임에 영향을 줄 예정
     public  VeneziaItem veneziaItem;
+    public BoomType boomType;
     public float MeteorSpeed;
     public float PauseSpeed;
+    public float BoomSpeed;
 
     public int Decreasetime;
 
@@ -30,9 +38,14 @@ public class ItemFnc : MonoBehaviour
             float moveY = -1 * MeteorSpeed * Time.deltaTime;
             transform.Translate(0, moveY, 0);
         }
-        else
+        else if(veneziaItem == VeneziaItem.Pause)
         {
             float moveY = -1 * PauseSpeed * Time.deltaTime;
+            transform.Translate(0, moveY, 0);
+        }
+        else if (veneziaItem == VeneziaItem.Boom)
+        {
+            float moveY = -1 * BoomSpeed * Time.deltaTime;
             transform.Translate(0, moveY, 0);
         }
     }
@@ -47,9 +60,12 @@ public class ItemFnc : MonoBehaviour
             {
                 ObjectPooling.Instance.PausePool.Add(gameObject);
             }
-            else
+            else if(veneziaItem == VeneziaItem.Meteor)
             {
                 ObjectPooling.Instance.MeteorPool.Add(gameObject);
+            }else if(veneziaItem == VeneziaItem.Boom)
+            {
+                ObjectPooling.Instance.BoomPool.Add(gameObject);
             }
         }
     }
@@ -58,7 +74,5 @@ public class ItemFnc : MonoBehaviour
     {
         if (VeneziaManager.Instance.isGameover) gameObject.SetActive(false);
     }
-
-
 }
     
