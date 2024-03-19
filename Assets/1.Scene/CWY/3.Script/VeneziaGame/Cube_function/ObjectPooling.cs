@@ -16,9 +16,13 @@ public class ObjectPooling : MonoBehaviour
     [SerializeField] private Transform CubeParentObjectTwo; // 풀링된 오브젝트를 저장할 더미오브젝트
     [SerializeField] private Transform ItemParentObject; // 풀링된 오브젝트를 저장할 더미오브젝트
 
+    [SerializeField] public Transform PlayerOne_Boom;
+    [SerializeField] public Transform PlayerTwo_Boom;
+
 
     [SerializeField] private GameObject MeteorPrefab; //아이템 풀링 해줄 프리팹
     [SerializeField] private GameObject PausePrefab; //아이템 풀링 해줄 프리팹
+    [SerializeField] private GameObject BoomPrefab; //아이템 풀링 해줄 프리팹
 
     public IEnumerator CubePooling;
     public IEnumerator CubeRestartPooling;
@@ -37,6 +41,7 @@ public class ObjectPooling : MonoBehaviour
     //메테오 , 프리즈 등 아이템 생성.
     public List<GameObject> MeteorPool = new List<GameObject>();
     public List<GameObject> PausePool = new List<GameObject>();
+    public List<GameObject> BoomPool = new List<GameObject>();
 
     private Vector3 offset;
     private Vector3 offsetTwo;
@@ -62,8 +67,8 @@ public class ObjectPooling : MonoBehaviour
     private void Start()
     {
         CreateItem();
-        StartCoroutine(Meteor_Co());
-        StartCoroutine(Pause_Co());
+
+        ItemCreatForveneGameMode();
     }
     
 
@@ -366,24 +371,61 @@ public class ObjectPooling : MonoBehaviour
         }
     }
 
+    public void CreateBoom(Transform transform)
+    {
+        if (VeneziaManager.Instance.ClickCount == 3 && BoomPool[0] != null)
+        {
+            float randomValue = Random.Range(0, 40);
+            Vector3 offset = new Vector3(randomValue, 0, 0);
+            BoomPool[0].transform.position = transform.position + offset;
+            BoomPool[0].GetComponent<ItemFnc>().boomType = BoomType.PlayerOne;
+            BoomPool[0].SetActive(true);
+            BoomPool.Remove(BoomPool[0]);
+            VeneziaManager.Instance.ClickCount = 0;
+        }
+        else if (VeneziaManager.Instance.Click_SecondPlayerCount == 3 && BoomPool[0] != null)
+        {
+            float randomValue = Random.Range(0, 40);
+            Vector3 offset = new Vector3(randomValue, 0, 0);
+            BoomPool[0].transform.position = transform.position + offset;
+            BoomPool[0].GetComponent<ItemFnc>().boomType = BoomType.PlayerTwo;
+            BoomPool[0].SetActive(true);
+            BoomPool.Remove(BoomPool[0]);
+            VeneziaManager.Instance.Click_SecondPlayerCount = 0;
+        }
+    }
+
     //아이템 생성
     private void CreateItem()
     {
         //메테오
-        for (int i = 0; i < ItemCount; i++)
+        if(VeneziaManager.Instance.veneGameMode == VeneGameMode.Sole)
         {
-            GameObject item = Instantiate(MeteorPrefab); // 해당 인덱스의 프리팹을 인스턴스화
-            item.SetActive(false); // 활성화하지 않음
-            item.transform.SetParent(ItemParentObject); // 풀 위치에 부모 설정
-            MeteorPool.Add(item); // 아이템 풀 리스트에 추가
-        }
-        //일시정지 
-        for (int i = 0; i < ItemCount; i++)
+            for (int i = 0; i < ItemCount; i++)
+            {
+                GameObject item = Instantiate(MeteorPrefab); // 해당 인덱스의 프리팹을 인스턴스화
+                item.SetActive(false); // 활성화하지 않음
+                item.transform.SetParent(ItemParentObject); // 풀 위치에 부모 설정
+                MeteorPool.Add(item); // 아이템 풀 리스트에 추가
+            }
+            //일시정지 
+            for (int i = 0; i < ItemCount; i++)
+            {
+                GameObject item = Instantiate(PausePrefab); // 해당 인덱스의 프리팹을 인스턴스화
+                item.SetActive(false); // 활성화하지 않음
+                item.transform.SetParent(ItemParentObject); // 풀 위치에 부모 설정
+                PausePool.Add(item); // 아이템 풀 리스트에 추가
+            }
+        }        
+        else if(VeneziaManager.Instance.veneGameMode == VeneGameMode.Couple)
         {
-            GameObject item = Instantiate(PausePrefab); // 해당 인덱스의 프리팹을 인스턴스화
-            item.SetActive(false); // 활성화하지 않음
-            item.transform.SetParent(ItemParentObject); // 풀 위치에 부모 설정
-            PausePool.Add(item); // 아이템 풀 리스트에 추가
+            for (int i = 0; i < 20; i++)
+            {
+                GameObject item = Instantiate(BoomPrefab);
+                item.SetActive(false); // 활성화하지 않음
+                item.transform.SetParent(ItemParentObject); // 풀 위치에 부모 설정
+                BoomPool.Add(item); // 아이템 풀 리스트에 추가
+            }
         }
     }
 
@@ -458,6 +500,15 @@ public class ObjectPooling : MonoBehaviour
                         QuestPrefab.SetActive(false);
                         QuestPrefab.transform.SetParent(CubeParentObject);
                         cubePool.Add(QuestPrefab);
+                        //두번째
+                        GameObject QuestPrefab2 = Instantiate(Cube); // 한글 오브젝트 생성
+                        Cube Cube_sprite2 = QuestPrefab2.GetComponent<Cube>();
+                        Sprite sprite2 = VeneziaManager.Instance.sprites_E[i];
+                        Cube_sprite2.playerNum = PlayerNum.Two;
+                        Cube_sprite2.sprite = sprite2;
+                        QuestPrefab2.SetActive(false);
+                        QuestPrefab2.transform.SetParent(CubeParentObjectTwo);
+                        cubePoolTwo.Add(QuestPrefab2);
                     }
                     else
                     {
@@ -468,9 +519,28 @@ public class ObjectPooling : MonoBehaviour
                         QuestPrefab.SetActive(false);
                         QuestPrefab.transform.SetParent(CubeParentObject);
                         cubePool.Add(QuestPrefab);
+                        //두번
+                        GameObject QuestPrefab2 = Instantiate(Cube); // 한글 오브젝트 생성
+                        Cube Cube_sprite2 = QuestPrefab2.GetComponent<Cube>();
+                        Sprite sprite2 = VeneziaManager.Instance.sprites_H[i];
+                        Cube_sprite2.playerNum = PlayerNum.Two;
+                        Cube_sprite2.sprite = sprite2;
+                        QuestPrefab2.SetActive(false);
+                        QuestPrefab2.transform.SetParent(CubeParentObjectTwo);
+                        cubePoolTwo.Add(QuestPrefab2);
                     }
                 }
             }
+        }
+    }
+
+
+    public void ItemCreatForveneGameMode()
+    {
+        if (VeneziaManager.Instance.veneGameMode == VeneGameMode.Sole)
+        {
+            StartCoroutine(Meteor_Co());
+            StartCoroutine(Pause_Co());
         }
     }
 }
