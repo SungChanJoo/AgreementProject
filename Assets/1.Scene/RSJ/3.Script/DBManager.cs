@@ -46,7 +46,9 @@ public class DBManager : MonoBehaviour
 
     // RankData Load시 조회할 WeeklyRank Table
     // WeeklyRankDB에 어떤 테이블도 없으면(랭킹데이터가없으면) 클라이언트에게 보낼 RankData는 0으로
-    private string referenceWeeklyRankTableName; 
+    private string referenceWeeklyRankTableName;
+    // DB에 기준으로 삼을 일자 저장하고 불러올 변수
+    private DateTime dbStandardDay;
 
     // 서버-클라이언트 string으로 data 주고받을때 구분하기 위한 문자열
     private const string separatorString = "E|";
@@ -90,7 +92,13 @@ public class DBManager : MonoBehaviour
         string pw = "12345678"; //string.IsNullOrEmpty(user_Info.user_Password)? "" : user_Info.user_Password;
         string port = "3306";
         //str_Connection = $"Server={ip};Database={db};Uid={uid};Pwd={pw};Port={port};Charset=utf8;";
-        str_Connection = $"Server={ip};" + $"Database={db};" + $"Uid={uid};" + $"Pwd={pw};" + $"Port={port};" + "CharSet=utf8;"; // ; 세미콜론 주의해라
+        str_Connection = $"Server={ip};" + 
+                         $"Database={db};" + 
+                         $"Uid={uid};" + 
+                         $"Pwd={pw};" + 
+                         $"Port={port};" +
+                         $"Allow User Variables=True;" + // Parameter @Something must be defined 에러
+                         $"CharSet=utf8;"; // ; 세미콜론 주의해라
         Debug.Log($"[DB] DB connect info : {str_Connection}");
     }
 
@@ -149,8 +157,11 @@ public class DBManager : MonoBehaviour
         analyticsProfile1_Columns = new string[] { "User_LicenseNumber", "User_Charactor", "Venezia_Kor_PlayCount", "Venezia_Kor_ReactionRate", "Venezia_Kor_AnswerRate", "Venezia_Eng_PlayCount", "Venezia_Eng_ReactionRate", "Venezia_Eng_AnswerRate", "Venezia_Chn_PlayCount", "Venezia_Chn_ReactionRate", "Venezia_Chn_AnswerRate", "Calculation_PlayCount", "Calculation_ReactionRate", "Calculation_AnswerRate", "Gugudan_PlayCount", "Gugudan_ReactionRate", "Gugudan_AnswerRate", "LastPlayGame" };
         analyticsProfile2_Columns = new string[] { "User_LicenseNumber", "User_Charactor", "Venezia_Kor_PlayCount", "Venezia_Kor_ReactionRate", "Venezia_Kor_AnswerRate", "Venezia_Eng_PlayCount", "Venezia_Eng_ReactionRate", "Venezia_Eng_AnswerRate", "Calculation_PlayCount", "Calculation_ReactionRate", "Calculation_AnswerRate", "Gugudan_PlayCount", "Gugudan_ReactionRate", "Gugudan_AnswerRate", "LastPlayGame" };
 
+        // DB에 저장된 standard day
+        dbStandardDay = LoadStandardDay();
+
         // RankData Load시 조회할 WeeklyRank Table
-        referenceWeeklyRankTableName = "NULL";
+        referenceWeeklyRankTableName = SetWeeklyRankTableName(dbStandardDay);
 
         // 기타 데이터 처리용 Handler
         etcMethodHandler = new ETCMethodHandler();
@@ -1323,9 +1334,6 @@ public class DBManager : MonoBehaviour
         // weeklyRank_Columns = { "User_LicenseNumber", "User_Charactor", "User_Profile", "User_Name", "TotalScore", "TotalTime", "ScorePlace", "TimePlace", "HighestScorePlace", "HighestTimePlace" };
         List<string> return_List = new List<string>();
 
-        // 임시
-        referenceWeeklyRankTableName = "24.03.13_24.03.19";
-
         MySqlCommand mySqlCommand = new MySqlCommand();
         mySqlCommand.Connection = connection;
 
@@ -1378,7 +1386,7 @@ public class DBManager : MonoBehaviour
             string name = reader.GetString("User_Name");
             int totalScore = reader.GetInt32("TotalScore");
             int scorePlace = reader.GetInt32("ScorePlace");
-            int highestScorePlace = 0; // test후 변경 todo
+            int highestScorePlace = reader.GetInt32("HighestScorePlace"); // test후 변경 todo
 
             return_List.Add($"{profile}|{name}|{totalScore}|{scorePlace}|{highestScorePlace}|{separatorString}");
         }
@@ -1429,7 +1437,7 @@ public class DBManager : MonoBehaviour
             string name = reader.GetString("User_Name");
             float totalTime = reader.GetFloat("TotalTime");
             int timePlace = reader.GetInt32("TimePlace");
-            int highestTimePlace = 0; // test후 변경 todo
+            int highestTimePlace = reader.GetInt32("HighestTimePlace"); // test후 변경 todo
 
             return_List.Add($"{profile}|{name}|{totalTime}|{timePlace}|{highestTimePlace}|{separatorString}");
         }
@@ -2136,13 +2144,16 @@ public class DBManager : MonoBehaviour
         MySqlCommand mySqlCommand = new MySqlCommand();
         mySqlCommand.Connection = connection;
 
-        // 오늘(today)과 일주일전(week ago)
-        DateTime currentDate = DateTime.Now; 
-        string today = $"{currentDate.Year.ToString().Substring(2, 2)}.{currentDate.Month:00}.{currentDate.Day:00}";
-        currentDate = currentDate.AddDays(-7);
+        // 오늘(today, 월요일)과 일주일전(week ago, 월요일)
+        // 월요일이 오늘인 때에 실행되므로, 하루와 일주일을 뺸 요일로 이름을 저장한다.
+        DateTime currentDate = DateTime.Now;
+        currentDate = dbStandardDay;
+        currentDate = currentDate.AddDays(-1);
+        string yesterday = $"{currentDate.Year.ToString().Substring(2, 2)}.{currentDate.Month:00}.{currentDate.Day:00}";
+        currentDate = currentDate.AddDays(-6);
         string weekago = $"{currentDate.Year.ToString().Substring(2, 2)}.{currentDate.Month:00}.{currentDate.Day:00}";
 
-        string newTableName = $"{weekago}_{today}";
+        string newTableName = $"{weekago}_{yesterday}";
 
         referenceWeeklyRankTableName = newTableName;
 
@@ -2153,12 +2164,12 @@ public class DBManager : MonoBehaviour
          */
 
         // present DB에 있는 rank table의 컬럼과 데이터를 복사한 후 순위 컬럼 추가
-        string createModifiedTableQuery = $"CREATE TABLE `weeklyrank`.`{newTableName}` LIKE `present`.rank;" +
-                                          $"INSERT INTO `weeklyrank`.`{newTableName}` SELECT * FROM `present`.rank;" +
-                                          $"ALTER TABLE `weeklyrank`.`{newTableName}` ADD COLUMN `ScorePlace` INT;" +
-                                          $"ALTER TABLE `weeklyrank`.`{newTableName}` ADD COLUMN `TimePlace` INT;" +
-                                          $"ALTER TABLE `weeklyrank`.`{newTableName}` ADD COLUMN `HighestScorePlace` INT;" +
-                                          $"ALTER TABLE `weeklyrank`.`{newTableName}` ADD COLUMN `HighestTimePlace` INT;";
+        string createModifiedTableQuery = $"CREATE TABLE `{weeklyRankDB}`.`{newTableName}` LIKE `present`.rank;" +
+                                          $"INSERT INTO `{weeklyRankDB}`.`{newTableName}` SELECT * FROM `present`.rank;" +
+                                          $"ALTER TABLE `{weeklyRankDB}`.`{newTableName}` ADD COLUMN `ScorePlace` INT DEFAULT 0;" +
+                                          $"ALTER TABLE `{weeklyRankDB}`.`{newTableName}` ADD COLUMN `TimePlace` INT DEFAULT 0;" +
+                                          $"ALTER TABLE `{weeklyRankDB}`.`{newTableName}` ADD COLUMN `HighestScorePlace` INT DEFAULT 0;" +
+                                          $"ALTER TABLE `{weeklyRankDB}`.`{newTableName}` ADD COLUMN `HighestTimePlace` INT DEFAULT 0;";
         mySqlCommand.CommandText = createModifiedTableQuery;
         mySqlCommand.ExecuteNonQuery();
 
@@ -2170,6 +2181,12 @@ public class DBManager : MonoBehaviour
         // TotalScore를 기준으로 ScorePlace 순위 Update
         string updateScorePlace = $"SET @rank = 0;" +
                                   $"UPDATE `weeklyrank`.`{newTableName}` SET `ScorePlace` = (@rank:=@rank+1) ORDER BY `TotalScore` DESC;";
+
+        /*
+         string updateScorePlace = $"SET @rank = 0; " + 
+                          $"UPDATE `weeklyrank`.`{newTableName}` SET `ScorePlace` = (@rank:=@rank+1) ORDER BY `TotalScore` DESC;";
+mySqlCommand.CommandText = updateScorePlace;
+         */
         mySqlCommand.CommandText = updateScorePlace;
         mySqlCommand.ExecuteNonQuery();
 
@@ -2179,7 +2196,53 @@ public class DBManager : MonoBehaviour
         mySqlCommand.CommandText = updateTimePlace;
         mySqlCommand.ExecuteNonQuery();
 
-        // todo HighestScorePlace, HighestTimePlace Update
+        // HighestScorePlace, HighestTimePlace Update
+        // tableName : 2주 전_1주 전, 저번주의 ranktable에 기록된 HighestScore, Time 비교해서 더 높으면 갱신, 0이거나 null이거나 또는 낮거나 같으면 그대로 기록 
+        currentDate = currentDate.AddDays(-1);
+        string yesterday_weekago = $"{currentDate.Year.ToString().Substring(2, 2)}.{currentDate.Month:00}.{currentDate.Day:00}";
+        currentDate = currentDate.AddDays(-6);
+        string twoweekago = $"{currentDate.Year.ToString().Substring(2, 2)}.{currentDate.Month:00}.{currentDate.Day:00}";
+
+        string lastWeekTableName = $"{twoweekago}_{yesterday_weekago}";
+
+        // lastWeekTable이 없다면 예외처리
+        string checkTableQuery = $"USE `{weeklyRankDB}`;" +
+                                 $"SHOW TABLES LIKE '{lastWeekTableName}'";
+        mySqlCommand.CommandText = checkTableQuery;
+        object result = mySqlCommand.ExecuteScalar();
+
+        Debug.Log($"[DB] checkTableQuery : {checkTableQuery}");
+        Debug.Log($"[DB] result : {result}");
+
+        string updateCompareQuery;
+
+        if(result == null)  // lastWeekTable이 없다면
+        {
+            Debug.Log($"[DB] dosen't exist lastWeekTable");
+            // highestScorePlace와 highestTimePlace는 새로 생긴 rank table에 있는 ScorePlace와 TimePlace로 갱신
+            updateCompareQuery = $"UPDATE `{weeklyRankDB}`.`{newTableName}` AS current " +
+                                 $"SET current.HighestScorePlace = current.ScorePlace, " +
+                                 $"    current.HighestTimePlace = current.TimePlace";
+        }
+        else // lastWeekTable이 있다면
+        {
+            Debug.Log($"[DB] It exist lastWeekTable");
+            // 1주전(최근) ranktable에 있는 scorePlace와 timePlace를 2주전 ranktable에 있는 highestScorePlace와 highestTimePlace하고 비교해서 갱신
+            updateCompareQuery = $"UPDATE `{weeklyRankDB}`.`{newTableName}` AS current " +
+                                 $"LEFT JOIN `{weeklyRankDB}`.`{lastWeekTableName}` AS lastweek " +
+                                 $"ON current.User_LicenseNumber = lastweek.User_LicenseNumber " +
+                                 $"AND current.User_Charactor = lastweek.User_Charactor " +
+                                 $"SET current.HighestScorePlace = IF(lastweek.HighestScorePlace < current.ScorePlace OR lastweek.HighestScorePlace = '0', current.ScorePlace, lastweek.HighestScorePlace), " +
+                                 $"    current.HighestTimePlace = IF(lastweek.HighestTimePlace < current.TimePlace OR lastweek.HighestTimePlace = '0', current.TimePlace, lastweek.HighestTimePlace) " +
+                                 $"WHERE current.ScorePlace IS NOT NULL AND current.TimePlace IS NOT NULL";
+        }
+        Debug.Log($"[DB] updateCompareQuery : {updateCompareQuery}");
+        mySqlCommand.CommandText = updateCompareQuery;
+        mySqlCommand.ExecuteNonQuery();
+
+        // presentDB로 변경
+        mySqlCommand.CommandText = $"USE `{presentDB}`;";
+        mySqlCommand.ExecuteNonQuery();
 
         Debug.Log("[DB] Complete UpdateWeeklyRankDB!!");
 
@@ -2190,8 +2253,89 @@ public class DBManager : MonoBehaviour
     private void ResetRankTableInPresentDB()
     {
         Debug.Log("[DB] Come in ResetRankTableInPresentDB..");
+        
+        // PresentDB에 있는 rank table의 TotalScore, TotalTime 0으로 리셋
+
+        MySqlCommand mySqlCommand = new MySqlCommand();
+        mySqlCommand.Connection = connection;
+
+        string updateQueryForReset = $"UPDATE `{presentDB}`.`{table.list[1]}` SET `TotalScore` = '0', `TotalTime` = '0'";
+        mySqlCommand.CommandText = updateQueryForReset;
+        mySqlCommand.ExecuteNonQuery();
 
         Debug.Log("[DB] Complete ResetRankTableInPresentDB!!");
+
+        SaveStandardDay();
     }
+
+    // After update ranktable, Save StandardDay
+    private void SaveStandardDay()
+    {
+        Debug.Log("[DB] Come in SaveStandardDay..");
+
+        DateTime saveStandardDay = dbStandardDay.AddDays(7);
+
+        MySqlCommand mySqlCommand = new MySqlCommand();
+        mySqlCommand.Connection = connection;
+
+        Debug.Log($"[DB] saveStandardDay : {saveStandardDay}");
+        Debug.Log($"[DB] saveStandardDay.Date : {saveStandardDay.Date}");
+        Debug.Log($"[DB] saveStandardDay.Date.Day : {saveStandardDay.Date.Day}");
+        Debug.Log($"[DB] saveStandardDay.Date.Date : {saveStandardDay.Date.Date}");
+
+        string updateQuery = $"UPDATE `{presentDB}`.`standardday` SET `StandardDay` = {saveStandardDay.Date.Day}";
+        mySqlCommand.CommandText = updateQuery;
+        mySqlCommand.ExecuteNonQuery();
+
+        Debug.Log("[DB] Complete SaveStandardDay!!");
+    }
+
+    // Load StandardDay to calculate the week
+    public DateTime LoadStandardDay()
+    {
+        Debug.Log("[DB] Come in LoadStandardDay..");
+
+        DateTime dbStandardTime = DateTime.Now;
+
+        MySqlCommand mySqlCommand = new MySqlCommand();
+        mySqlCommand.Connection = connection;
+
+        string selectQuery = $"SELECT * FROM `standardday`";
+        mySqlCommand.CommandText = selectQuery;
+        MySqlDataReader reader = mySqlCommand.ExecuteReader();
+
+        while(reader.Read())
+        {
+            dbStandardTime = reader.GetDateTime(0);
+        }
+        reader.Close();
+        Debug.Log($"[DB] dbStandardTime, it should be 2024.03.18 : {dbStandardTime}");
+
+        Debug.Log("[DB] Comeplete LoadStandardDay..");
+
+        return dbStandardTime;
+    }
+
+    // Set Rank Table Name In WeeklyRankDB
+    private string SetWeeklyRankTableName(DateTime dbStandardDay)
+    {
+        Debug.Log($"[DB] Come in SetWeeklyRankTableName..");
+
+        dbStandardDay = dbStandardDay.AddDays(-1);
+        string standardDay_yesterday = $"{dbStandardDay.Year.ToString().Substring(2, 2)}.{dbStandardDay.Month:00}.{dbStandardDay.Day:00}";
+        dbStandardDay = dbStandardDay.AddDays(-6);
+        string standardDay_weekago = $"{dbStandardDay.Year.ToString().Substring(2, 2)}.{dbStandardDay.Month:00}.{dbStandardDay.Day:00}";
+
+        string rankTableName = $"{standardDay_weekago}_{standardDay_yesterday}";
+
+        Debug.Log($"[DB] standardDay_yesterday = {standardDay_yesterday}");
+        Debug.Log($"[DB] standardDay_weekago = {standardDay_weekago}");
+        Debug.Log($"[DB] rankTableName = {rankTableName}");
+
+        Debug.Log($"[DB] Complete SetWeeklyRankTableName..");
+
+        return rankTableName;
+    }
+
     #endregion
 }

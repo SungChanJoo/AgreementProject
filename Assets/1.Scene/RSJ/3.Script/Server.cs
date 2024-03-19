@@ -27,6 +27,12 @@ public class Server : MonoBehaviour
     // 서버-클라이언트 string으로 data 주고받을때 구분하기 위한 문자열
     private const string separatorString = "E|";
 
+    // 서버 일일타이머(자정) 계산하기 위한 변수
+    private DateTime nextMidnight;
+    private WaitForSeconds waitUntilMidnight;
+    // 서버 한 주를 체크하기 위한 카운트
+    private DateTime standardDay;
+
     // 기타 데이터 처리용 Handler
     private ETCMethodHandler etcMethodHandler = new ETCMethodHandler();
 
@@ -45,6 +51,7 @@ public class Server : MonoBehaviour
     {
         Debug.Log("[Server] Server start callback function");
         ServerCreate();
+        Invoke("TimerSet", 5f);
     }
 
     private void Update()
@@ -114,64 +121,6 @@ public class Server : MonoBehaviour
         ReceiveRequestFromClient(client);
 
         StartListening(); // 클라이언트 받고 다시 실행    
-    }
-
-    private void CheckClientsState()
-    {
-        debugTimer += Time.deltaTime;
-
-        while(debugTimer > debugTime)
-        {
-            Debug.Log($"[Server] Present Connected Clients : {clients.Count}");
-            
-            foreach(TcpClient client in clients)
-            {
-                Debug.Log($"[Server] Connected Clients's IP : {((IPEndPoint)client.Client.RemoteEndPoint).Address}");
-            }
-
-            //DayTimer();
-
-            debugTimer = 0f;
-        }
-
-        foreach (TcpClient client in clients)
-        {
-            if (!IsConnected(client))
-            {
-                Debug.Log("[Server] Client connection is closed");
-                Debug.Log($"[Server] Disconnected clients's IP : {((IPEndPoint)client.Client.RemoteEndPoint).Address}");
-                client.Close();
-                disconnectList.Add(client);
-                Debug.Log($"[Server] After client.Close(), Test check client.Connected bool value : {client.Connected}");
-                clients.Remove(client);
-                continue;
-            }
-            #region etc
-            //// 클라이언트 연결이 끊어졌다면
-            //if (!CheckConnectState(client))
-            //{
-            //    Debug.Log($"Disconnected client's IP {((IPEndPoint)client.Client.RemoteEndPoint).Address}");
-            //    client.Close();
-            //    disconnectList.Add(client);
-            //    continue;
-            //}
-            // 클라이언트로부터 체크 메시지 받기
-            //else
-            //{
-
-            //    //NetworkStream stream = client.tcp.GetStream();
-            //    //if(stream.DataAvailable)
-            //    //{
-            //    //    string data = new StreamReader(stream, true).ReadLine();
-
-            //    //    if(data != null)
-            //    //    {
-            //    //        On
-            //    //    }
-            //    //}
-            //}
-            #endregion
-        }
     }
 
     // 클라이언트로부터 요청받음
@@ -428,6 +377,148 @@ public class Server : MonoBehaviour
         byte[] finishData = Encoding.UTF8.GetBytes("Finish");
         stream.Write(finishData, 0, finishData.Length);
         Debug.Log("[Server] Finish reply request data to client");
+    }
+
+    // Timer 세팅
+    private void TimerSet()
+    {
+        try
+        {
+            // 서버를 실행 한 시점부터 다음 자정까지의 시간 계산
+            nextMidnight = DateTime.Today.AddDays(1);
+            TimeSpan timeUntilMidnight = nextMidnight - DateTime.Now;
+
+            // Test용
+            DateTime testAfterOneMinute = DateTime.Now.AddSeconds(20);
+            timeUntilMidnight = testAfterOneMinute - DateTime.Now;
+
+            // 자정까지 대기할 WaitforSeconds 설정
+            waitUntilMidnight = new WaitForSeconds((float)timeUntilMidnight.TotalSeconds);
+
+            // DB에 저장되어있는 weeklyrank 갱신용 시작 기준일
+            // 그 갱신일로부터 일주일이 지나면 weeklyrankDB table update
+            standardDay = DBManager.instance.LoadStandardDay();
+
+            TimeSpan timeSpan = DateTime.Now.Date - standardDay.Date;
+
+            Debug.Log($"[Server] standardDay : {standardDay}");
+            Debug.Log($"[Server] standardDay.Date : {standardDay.Date}");
+            Debug.Log($"[Server] DateTime.Now : {DateTime.Now}");
+            Debug.Log($"[Server] DateTime.Now.Date : {DateTime.Now.Date}");
+            Debug.Log($"[Server] timeSpan : {timeSpan}");
+            Debug.Log($"[Server] timeSpan.Days : {timeSpan.Days}");
+
+            if(timeSpan.Days == 7)
+            {
+
+            }
+
+            // 43200
+            Debug.Log($"[Server] Waited time until next midnight, timeUntilMidnight : {timeUntilMidnight.TotalSeconds} ");
+
+            // 자정 체크 실행
+            StartCoroutine(CheckMidnight_Co());
+        }
+        catch(Exception e)
+        {
+            Debug.Log($"[Server] Can't execute timerset method, {e.Message}");
+            // 실행이 안되면 5초후에 다시 실행
+            Invoke("TimerSet", 5f);
+        }
+    }
+
+    // 하루가 지났을 때 PresentDB에 있는 gamedata들 새 DateDB(ex) 24.02.21)에 저장
+    private IEnumerator CheckMidnight_Co()
+    {
+        while(true)
+        {
+            Debug.Log($"[Server] Come in CheckMidnight Coroutine");
+            yield return waitUntilMidnight;
+
+            Debug.Log("[Server] A day has passed. Start creating new DateDB for save data");
+
+            // 자정이 되면 DateDB 생성
+            DBManager.instance.CreateDateDB();
+
+            Debug.Log("[Server] Complete Create DateDB");
+
+            // 매주 월요일이 되면 weeklyrankDB에 한주간 rank table 생성
+            TimeSpan timeSpan = DateTime.Now.Date - standardDay.Date;
+
+            if (timeSpan.Days == 1)
+            {
+                Debug.Log("[Server] Start Update WeeklyRankDB");
+                DBManager.instance.UpdateWeeklyRankDB();
+                Debug.Log("[Server] Complete Update WeeklyRankDB");
+            }
+
+            // 자정이 지나고 나서 DateDB를 생성한 후 자정 체크 시간 갱신
+            // CreateDateDB()를 수행하는데 시간이 어느정도 걸리므로, 몇초의 오차가 있을 수 있다.
+            nextMidnight = DateTime.Today.AddDays(1);
+            TimeSpan timeUntilNextMidnight = nextMidnight - DateTime.Now;
+            waitUntilMidnight = new WaitForSeconds((float)timeUntilNextMidnight.TotalSeconds);
+
+            Debug.Log($"[Server] Waited time until next midnight, timeUntilNextMidnight : {timeUntilNextMidnight.TotalSeconds} ");
+        }
+    }
+
+    // 연결된 클라이언트 확인
+    private void CheckClientsState()
+    {
+        debugTimer += Time.deltaTime;
+
+        while (debugTimer > debugTime)
+        {
+            Debug.Log($"[Server] Present Connected Clients : {clients.Count}");
+
+            foreach (TcpClient client in clients)
+            {
+                Debug.Log($"[Server] Connected Clients's IP : {((IPEndPoint)client.Client.RemoteEndPoint).Address}");
+            }
+
+            //DayTimer();
+
+            debugTimer = 0f;
+        }
+
+        foreach (TcpClient client in clients)
+        {
+            if (!IsConnected(client))
+            {
+                Debug.Log("[Server] Client connection is closed");
+                Debug.Log($"[Server] Disconnected clients's IP : {((IPEndPoint)client.Client.RemoteEndPoint).Address}");
+                client.Close();
+                disconnectList.Add(client);
+                Debug.Log($"[Server] After client.Close(), Test check client.Connected bool value : {client.Connected}");
+                clients.Remove(client);
+                continue;
+            }
+            #region etc
+            //// 클라이언트 연결이 끊어졌다면
+            //if (!CheckConnectState(client))
+            //{
+            //    Debug.Log($"Disconnected client's IP {((IPEndPoint)client.Client.RemoteEndPoint).Address}");
+            //    client.Close();
+            //    disconnectList.Add(client);
+            //    continue;
+            //}
+            // 클라이언트로부터 체크 메시지 받기
+            //else
+            //{
+
+            //    //NetworkStream stream = client.tcp.GetStream();
+            //    //if(stream.DataAvailable)
+            //    //{
+            //    //    string data = new StreamReader(stream, true).ReadLine();
+
+            //    //    if(data != null)
+            //    //    {
+            //    //        On
+            //    //    }
+            //    //}
+            //}
+            #endregion
+        }
     }
 
     // 하루가 지났을 때 PresentDB에 있는 gamedata들 새 DB(ex) 24.02.21)에 저장
