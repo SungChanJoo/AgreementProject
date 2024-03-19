@@ -234,6 +234,9 @@ public class CrewMovementManager : MonoBehaviour
         //1 -> 6 5번의 별을 거쳐감
         //finalPos가 SelectedStep보다 작으면 ->방향으로 이동
         // 크면 <- 방향으로 이동
+        var crewAni = SeleteableCrew[SeletedCrewIndex].gameObject.GetComponent<Animator>();
+        crewAni.SetBool("JumpEnd", false);
+        crewAni.SetBool("IsWalk", true);
         for (int i =1; i <= Mathf.Abs(finalPos - SelectedStep); i++)
         {
             Vector3 nextPos;
@@ -255,7 +258,6 @@ public class CrewMovementManager : MonoBehaviour
                 SeleteableCrew[SeletedCrewIndex].transform.rotation = Quaternion.Lerp(SeleteableCrew[SeletedCrewIndex].transform.rotation, Quaternion.LookRotation(targetPos), 0.05f);
                 yield return null;
             }
-            //SeletedCrew.transform.LookAt(nextPos);
 
             while ((SeleteableCrew[SeletedCrewIndex].transform.position - nextPos).sqrMagnitude >0.01f)
             {
@@ -265,18 +267,11 @@ public class CrewMovementManager : MonoBehaviour
 
             yield return new WaitForSeconds(0.5f);
         }
-
-/*        float SetTime = 0f;
-        while (SetTime < 1f)
-        {
-            SetTime += Time.deltaTime;
-            var targetPos = new Vector3(Camera.main.transform.position.x, SeletedCrew.transform.rotation.y, Camera.main.transform.position.z) - SeletedCrew.transform.position;
-            SeletedCrew.transform.rotation = Quaternion.Lerp(SeletedCrew.transform.rotation, Quaternion.LookRotation(targetPos), 0.1f);
-            yield return null;
-        }*/
-        //SeletedCrew.transform.position = CrewPos[SelectedStep-1].position;
-        Debug.Log("CrewPos[SelectedStep].position" + CrewPos[SelectedStep-1].position);
+        crewAni.SetBool("IsWalk", false);
         SeleteableCrew[SeletedCrewIndex].transform.LookAt(Camera.main.transform.position);
+        crewAni.SetTrigger("Jump");
+        yield return new WaitForSeconds(1f);
+        crewAni.SetBool("JumpEnd", true);
         //마지막으로 플레이한 스텝
         LastPlayStepTable.Step[(SelectedGame, SelectedLevel)] = SelectedStep;
         StartCoroutine(FadeOutImg());
@@ -322,7 +317,6 @@ public class CrewMovementManager : MonoBehaviour
         {
             //어플종료시 DB에 마지막으로 플레이한 스텝 위치 저장 
               Client.instance.AppExit_SaveLastPlayDataToDB(LastPlayStepTable);
-              Debug.Log("AppQuit LastPlayStepTable");
         }
     }
 }

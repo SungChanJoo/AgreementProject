@@ -202,7 +202,7 @@ AnimatorState:
   m_MirrorParameterActive: 0
   m_CycleOffsetParameterActive: 0
   m_TimeParameterActive: 0
-  m_Motion: {fileID: 7400016, guid: 335f5ed59eb321948b6d852100dcecce, type: 3}
+  m_Motion: {fileID: 7400016, guid: 26e6316611a99db4a8ea7a0cd86c094a, type: 3}
   m_Tag: 
   m_SpeedParameter: 
   m_MirrorParameter: 
@@ -685,7 +685,7 @@ AnimatorController:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: Crow
+  m_Name: 7.Wolf
   serializedVersion: 5
   m_AnimatorParameters:
   - m_Name: Jump
@@ -956,7 +956,7 @@ AnimatorState:
   m_MirrorParameterActive: 0
   m_CycleOffsetParameterActive: 0
   m_TimeParameterActive: 0
-  m_Motion: {fileID: 7400034, guid: 335f5ed59eb321948b6d852100dcecce, type: 3}
+  m_Motion: {fileID: 7400034, guid: 26e6316611a99db4a8ea7a0cd86c094a, type: 3}
   m_Tag: 
   m_SpeedParameter: 
   m_MirrorParameter: 
@@ -1294,7 +1294,7 @@ AnimatorState:
   m_MirrorParameterActive: 0
   m_CycleOffsetParameterActive: 0
   m_TimeParameterActive: 0
-  m_Motion: {fileID: 7400024, guid: 335f5ed59eb321948b6d852100dcecce, type: 3}
+  m_Motion: {fileID: 7400024, guid: 26e6316611a99db4a8ea7a0cd86c094a, type: 3}
   m_Tag: 
   m_SpeedParameter: 
   m_MirrorParameter: 
