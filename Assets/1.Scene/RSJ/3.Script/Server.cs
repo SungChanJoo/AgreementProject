@@ -445,7 +445,7 @@ public class Server : MonoBehaviour
             // 매주 월요일이 되면 weeklyrankDB에 한주간 rank table 생성
             TimeSpan timeSpan = DateTime.Now.Date - standardDay.Date;
 
-            if (timeSpan.Days == 1)
+            if (timeSpan.Days == 2)
             {
                 Debug.Log("[Server] Start Update WeeklyRankDB");
                 DBManager.instance.UpdateWeeklyRankDB();

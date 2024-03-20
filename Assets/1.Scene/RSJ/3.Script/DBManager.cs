@@ -2282,8 +2282,9 @@ mySqlCommand.CommandText = updateScorePlace;
         Debug.Log($"[DB] saveStandardDay.Date : {saveStandardDay.Date}");
         Debug.Log($"[DB] saveStandardDay.Date.Day : {saveStandardDay.Date.Day}");
         Debug.Log($"[DB] saveStandardDay.Date.Date : {saveStandardDay.Date.Date}");
+        Debug.Log($"[DB] saveStandardDay:yyyy-MM-dd : {saveStandardDay:yyyy-MM-dd}");
 
-        string updateQuery = $"UPDATE `{presentDB}`.`standardday` SET `StandardDay` = {saveStandardDay.Date.Day}";
+        string updateQuery = $"UPDATE `{presentDB}`.`standardday` SET `StandardDay` = '{saveStandardDay:yyyy-MM-dd}'";
         mySqlCommand.CommandText = updateQuery;
         mySqlCommand.ExecuteNonQuery();
 
