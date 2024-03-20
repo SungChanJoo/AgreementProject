@@ -17,6 +17,7 @@ public enum Game_Type
 public abstract class GameSetting : MonoBehaviour,ITouchEffect
 {
     [HideInInspector] public Game_Type game_Type;
+    [HideInInspector] public PlayMode play_mode;
 
     [HideInInspector] public int level;
     [HideInInspector] public int step;
@@ -30,6 +31,7 @@ public abstract class GameSetting : MonoBehaviour,ITouchEffect
     [HideInInspector] public int totalScore;
     [HideInInspector] public float remainingTime;
     [HideInInspector] public int starcount;
+    [HideInInspector] public int starCoin;
 
     [HideInInspector] public bool isStop = true;
 
@@ -68,6 +70,7 @@ public abstract class GameSetting : MonoBehaviour,ITouchEffect
         game_Type = StepManager.Instance.game_Type;
         step = StepManager.Instance.CurrentStep;
         level = StepManager.Instance.CurrentLevel;
+        
         if(TimeSlider.Instance.gameType == GameType.Solo)
         {
             timeSet = StepManager.Instance.CurrentTime;
@@ -142,12 +145,15 @@ public abstract class GameSetting : MonoBehaviour,ITouchEffect
 
         //Result_Data에 게임결과 할당
         ScoreCalculation();
-        
-        
+        //업적 활성화
+        starcount = GameScoreToStarCount(totalScore);
+
         //결과창 UI 활성화
         ResultCanvas_UI();
         //결과표 텍스트 출력
         ResultPrinter_UI();
+        //업적 코인 계산
+        CalculateStarCoin();
 
         try
         {
@@ -172,7 +178,7 @@ public abstract class GameSetting : MonoBehaviour,ITouchEffect
     protected void ResultPrinter_UI()
     {
         //결과표 출력 Result_Data Class 형식으로 넘겨주기
-        result_Printer.ShowText(result_data,game_Type);
+        result_Printer.ShowText(result_data,game_Type,starcount);        
     }
 
     protected void ScoreCalculation()
@@ -199,15 +205,49 @@ public abstract class GameSetting : MonoBehaviour,ITouchEffect
             (int)((answersCount * t + 1) + (n * answers / 100f) * (1 + y * x));
 
         //총 점수 십의자리수 날리기
-        totalScore = (int)(totalScore / 100f) * 100;
+        totalScore = (int)(totalScore / 100f) * 100;        
 
+    }
+    private void CalculateStarCoin()
+    {
+        Player_DB db = DataBase.Instance.PlayerCharacter[0];
+        int db_starCount = db.Data[(game_Type, level, step)].StarCount;
+        
+        starCoin = starcount * 15;
+        Debug.Log($"현재 별의 갯수 : {starcount} 코인 : {starCoin}");
+        if (db_starCount < starcount)
+        {
+           int count = starcount - db_starCount;
+            starCoin += count * 30;
+        }
+        Debug.Log($"totalCoin : {starCoin}");
+        DataBase.Instance.PlayerCharacter[0].StarCoin += starCoin;
+    }
+    private int GameScoreToStarCount(int score)
+    {
+        score *= 2;
+        if (20000 <= score)
+        {
+            return 3;
+        }
+        else if (10000 <= score && score < 20000)
+        {
+            return 2;
+        }
+        else if (7000 <= score && score < 10000)
+        {
+            return 1;
+        }
+        else
+        {
+            return 0;
+        }
     }
 
     private IEnumerator UpdateDatabaseFromData()
     {
         //string day = System.DateTime.Now.ToString("dd-MM-yy");
         Player_DB db = DataBase.Instance.PlayerCharacter[0];
-        starcount = 1;
         Data_value data_Value = new Data_value(reactionRate, answersCount, answers, playTime, totalScore,starcount);        
         
         //만약 totalScore가 DB에 있는 점수보다 크다면 다시 할당

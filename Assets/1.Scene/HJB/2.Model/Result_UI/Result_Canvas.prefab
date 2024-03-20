@@ -196,6 +196,12 @@ MonoBehaviour:
   answers: {fileID: 8522782061026022249}
   playTime: {fileID: 8522782060903182271}
   totalScore: {fileID: 8522782059397313653}
+  start_img:
+  - {fileID: 8522782059436485155}
+  - {fileID: 8522782059267504050}
+  - {fileID: 8522782059242979462}
+  get_img: {fileID: 21300000, guid: 5eff23b9ca60e3442b640bb288251f49, type: 3}
+  non_img: {fileID: 21300000, guid: 7359c5a18d715694ea338446319fd978, type: 3}
 --- !u!1 &8522782059242979460
 GameObject:
   m_ObjectHideFlags: 0

@@ -4,11 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 
-public enum PlayMode
-{
-    Solo,
-    Couple
-}
+
 public class Score : MonoBehaviour
 {
     //점수는 모든게임에서 공통적으로 사용해야 할 요소기 때문에 접근용이성을 위해 싱글톤 패턴을 이용
