@@ -6,6 +6,9 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
+    path: Assets/1.Scene/JSC/1.Scene/LoadingScene.unity
+    guid: d297ac699da1acf44a18f0490a6ea1d9
+  - enabled: 1
     path: Assets/1.Scene/HJB/1.Scene/HJB_Title.unity
     guid: 2765bcd1b0c252f4083baa3dc21152d9
   - enabled: 1
@@ -35,7 +38,4 @@ EditorBuildSettings:
   - enabled: 0
     path: Assets/1.Scene/RSJ/1.Scene/Server.unity
     guid: 8d4e3223c38b259408de5818b7197c88
-  - enabled: 1
-    path: Assets/1.Scene/JSC/1.Scene/LoadingScene.unity
-    guid: d297ac699da1acf44a18f0490a6ea1d9
   m_configObjects: {}
