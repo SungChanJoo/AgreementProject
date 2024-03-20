@@ -287,7 +287,10 @@ public class VeneziaManager : GameSetting
                             isFirst = true;
                             ObjectPooling.Instance.cubePool.Add(hit.collider.gameObject);
                             hit.collider.gameObject.SetActive(false);
-                            ObjectPooling.Instance.CreateBoom(ObjectPooling.Instance.PlayerOne_Boom);
+                            if(veneGameMode == VeneGameMode.Couple)
+                            {
+                                ObjectPooling.Instance.CreateBoom(ObjectPooling.Instance.PlayerOne_Boom);
+                            }
                         }
                         else
                         {
@@ -618,7 +621,7 @@ public class VeneziaManager : GameSetting
             //결과표 출력
             EndGame();
         }
-        else
+        else if(veneGameMode == VeneGameMode.Couple)
         {
             if(TimeSlider.Instance.slider.value == 0 || TimeSlider.Instance.slider_PlayerTwo.value == 0)
             {
