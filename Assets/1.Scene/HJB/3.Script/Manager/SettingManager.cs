@@ -169,7 +169,6 @@ public class SettingManager : MonoBehaviour
             Restart_Btn.SetActive(true);
             NetworkClient.Disconnect();
             Destroy(FindObjectOfType<PetSwitchNetworkManager>().gameObject);
-            Destroy(FindObjectOfType<CrewSelectManager>().gameObject);
             if (AudioManager.Instance != null)
                 AudioManager.Instance.BGM_Play(3);
             IsMetaWorld = false;
@@ -177,6 +176,10 @@ public class SettingManager : MonoBehaviour
         }
         if (CrewMovementManager.Instance != null)
             CrewMovementManager.Instance.ExitStep();
+        //메타별 입장 버튼 이벤트 할당 초기화
+        var crewSelectManager = FindObjectOfType<CrewSelectManager>();
+        if(crewSelectManager != null)
+            Destroy(crewSelectManager.gameObject);
 
     }
     public void Sound_Num(int num)
