@@ -277,7 +277,7 @@ public class VeneziaManager : GameSetting
                             NextQuest();
                         }
 
-                        if (RemainAnswer == 0) // 정답을 모두 맞췄을때 게임 종료
+                        if (RemainAnswer < 0) // 정답을 모두 맞췄을때 게임 종료
                         {
                             GameClear();
                         }
