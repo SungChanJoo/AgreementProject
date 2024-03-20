@@ -65,7 +65,7 @@ public class SettingManager : MonoBehaviour
     }
     public void EnableSettingBtn()
     {
-        if (SceneManager.GetActiveScene().buildIndex!=1)
+        if (SceneManager.GetActiveScene().buildIndex!=2)
         {
             InGameBtn_panel.SetActive(true);
         }
@@ -162,7 +162,7 @@ public class SettingManager : MonoBehaviour
     {
 
         //메뉴 Scene 빌드번호 1로 지정
-        SceneManager.LoadScene(1);
+        SceneManager.LoadScene(2);
         if (IsMetaWorld)
         {
             //메타월드안에서 호출하면 씬 이동을 하게 되면 들어오기 전 상태로 돌리기

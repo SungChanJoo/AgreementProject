@@ -50,7 +50,7 @@ public class VeneGameOver : MonoBehaviour
 
     private void veneCoupleGameOver()
     {
-        if(VeneziaManager.Instance.veneGameMode == VeneGameMode.Couple && !isGameover)
+        if(VeneziaManager.Instance.play_mode == PlayMode.Couple && !isGameover)
         {
             if (VeneziaManager.Instance.isGameover)
             {

@@ -289,7 +289,7 @@ public class Cube : MonoBehaviour
     #endregion
     private void JudgeCubeObjType()
     {
-        if(VeneziaManager.Instance.veneGameMode == VeneGameMode.Couple)
+        if(VeneziaManager.Instance.play_mode == PlayMode.Couple)
         {
             if (VeneziaManager.Instance.Quest_Img.sprite == sprite || VeneziaManager.Instance.Quest2_Img.sprite == sprite)
             {
@@ -316,7 +316,7 @@ public class Cube : MonoBehaviour
 
     private void DestoryCube()
     {
-        if(VeneziaManager.Instance.veneGameMode == VeneGameMode.Sole)
+        if(VeneziaManager.Instance.play_mode == PlayMode.Solo)
         {
             if (objectType == ObjectType.CorrectAnswer && gameObject.activeSelf)
             {

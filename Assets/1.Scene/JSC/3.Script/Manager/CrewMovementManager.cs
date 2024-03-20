@@ -286,14 +286,14 @@ public class CrewMovementManager : MonoBehaviour
             FadeImg.color = new Color(0,0,0, fadeCount);
             yield return null;
         }
-        
-        if ((int)SelectedGame >= 2)
+        int mode_num = (StepManager.Instance.playMode == PlayMode.Couple) ? 6 : 3;        
+        if ((int)SelectedGame >= 2 && 5> (int)SelectedGame)
         {
-            SceneManager.LoadScene(4);
-        }
+            SceneManager.LoadScene(2+mode_num);
+        }        
         else
         {
-            SceneManager.LoadScene((int)SelectedGame + 2);
+            SceneManager.LoadScene((int)SelectedGame + mode_num);
         }        
         StartCoroutine(FadeInImg());
         ExitStep();

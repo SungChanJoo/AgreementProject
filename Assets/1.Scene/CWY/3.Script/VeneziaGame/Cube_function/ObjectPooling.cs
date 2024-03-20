@@ -104,7 +104,7 @@ public class ObjectPooling : MonoBehaviour
             int Randnum = Random.Range(0, cubePool.Count);
             int RandnumTwo = Random.Range(0, cubePoolTwo.Count);
             //솔로모드
-            if(VeneziaManager.Instance.veneGameMode == VeneGameMode.Sole)
+            if(VeneziaManager.Instance.play_mode== PlayMode.Solo)
             {
                 float randomValue = Random.Range(-95, 95);
                 offset = new Vector3(randomValue, 0, 0); // 좌우 변경을위한 랜덤값
@@ -117,7 +117,7 @@ public class ObjectPooling : MonoBehaviour
             }
             
             //솔로모드
-            if (VeneziaManager.Instance.veneGameMode == VeneGameMode.Sole)
+            if (VeneziaManager.Instance.play_mode== PlayMode.Solo)
             {
                 if(cubePool.Count - VeneziaManager.Instance.limitCount == 1)
                 {
@@ -150,7 +150,7 @@ public class ObjectPooling : MonoBehaviour
                 }
             }
             //커플모드
-            if(VeneziaManager.Instance.veneGameMode == VeneGameMode.Couple)
+            if(VeneziaManager.Instance.play_mode == PlayMode.Couple)
             {
                 //First Player pool
                 if(cubePool.Count - VeneziaManager.Instance.limitCount == 1)
@@ -195,7 +195,7 @@ public class ObjectPooling : MonoBehaviour
             int Randnum = Random.Range(0, cubePool.Count);
             int RandnumTwo = Random.Range(0, cubePoolTwo.Count);
             //솔로모드
-            if (VeneziaManager.Instance.veneGameMode == VeneGameMode.Sole)
+            if (VeneziaManager.Instance.play_mode== PlayMode.Solo)
             {
                 float randomValue = Random.Range(-95, 95);
                 offset = new Vector3(randomValue, 0, 0); // 좌우 변경을위한 랜덤값
@@ -208,7 +208,7 @@ public class ObjectPooling : MonoBehaviour
             }
 
             //솔로모드
-            if (VeneziaManager.Instance.veneGameMode == VeneGameMode.Sole)
+            if (VeneziaManager.Instance.play_mode== PlayMode.Solo)
             {
                 if (cubePool.Count - VeneziaManager.Instance.limitCount == 1)
                 {
@@ -240,7 +240,7 @@ public class ObjectPooling : MonoBehaviour
                     cubePool.Remove(cubePool[Randnum]);
                 }
             }//커플모드
-            else if(VeneziaManager.Instance.veneGameMode == VeneGameMode.Couple)
+            else if(VeneziaManager.Instance.play_mode == PlayMode.Couple)
             {
                 //First Player pool
                 if (cubePool.Count - VeneziaManager.Instance.limitCount == 1)
@@ -326,7 +326,7 @@ public class ObjectPooling : MonoBehaviour
             int Randnum = Random.Range(0, cubePool.Count);
             int RandnumTwo = Random.Range(0, cubePoolTwo.Count);
             //솔로모드
-            if (VeneziaManager.Instance.veneGameMode == VeneGameMode.Sole)
+            if (VeneziaManager.Instance.play_mode== PlayMode.Solo)
             {
                 float randomValue = Random.Range(-95, 95);
                 offset = new Vector3(randomValue, 0, 0); // 좌우 변경을위한 랜덤값
@@ -339,7 +339,7 @@ public class ObjectPooling : MonoBehaviour
             }
 
             //솔로모드
-            if (VeneziaManager.Instance.veneGameMode == VeneGameMode.Sole)
+            if (VeneziaManager.Instance.play_mode== PlayMode.Solo)
             {
                 if (cubePool.Count - VeneziaManager.Instance.limitCount == 1)
                 {
@@ -372,7 +372,7 @@ public class ObjectPooling : MonoBehaviour
                 }
             }
             //커플모드
-            if (VeneziaManager.Instance.veneGameMode == VeneGameMode.Couple)
+            if (VeneziaManager.Instance.play_mode == PlayMode.Couple)
             {
                 //First Player pool
                 if (cubePool.Count - VeneziaManager.Instance.limitCount == 1)
@@ -456,7 +456,7 @@ public class ObjectPooling : MonoBehaviour
             int Randnum = Random.Range(0, cubePool.Count);
             int RandnumTwo = Random.Range(0, cubePoolTwo.Count);
             //솔로모드
-            if (VeneziaManager.Instance.veneGameMode == VeneGameMode.Sole)
+            if (VeneziaManager.Instance.play_mode== PlayMode.Solo)
             {
                 float randomValue = Random.Range(-95, 95);
                 offset = new Vector3(randomValue, 0, 0); // 좌우 변경을위한 랜덤값
@@ -468,7 +468,7 @@ public class ObjectPooling : MonoBehaviour
                 offset = new Vector3(random, 0, 0); // 좌우 변경을위한 랜덤값
             }
             //솔로모드
-            if (VeneziaManager.Instance.veneGameMode == VeneGameMode.Sole)
+            if (VeneziaManager.Instance.play_mode== PlayMode.Solo)
             {
                 if (cubePool.Count - VeneziaManager.Instance.limitCount == 1)
                 {
@@ -500,7 +500,7 @@ public class ObjectPooling : MonoBehaviour
                     cubePool.Remove(cubePool[Randnum]);
                 }
             }
-            else if (VeneziaManager.Instance.veneGameMode == VeneGameMode.Couple)
+            else if (VeneziaManager.Instance.play_mode == PlayMode.Couple)
             {
                 //First Player pool
                 if (cubePool.Count - VeneziaManager.Instance.limitCount == 1)
@@ -602,7 +602,7 @@ public class ObjectPooling : MonoBehaviour
 
     public IEnumerator Pause_Co()
     {
-        if (VeneziaManager.Instance.veneGameMode == VeneGameMode.Couple) yield break; // 커플모드에서는 생성x
+        if (VeneziaManager.Instance.play_mode == PlayMode.Couple) yield break; // 커플모드에서는 생성x
         while (PausePool.Count > 0)
         {
             float cool = Random.Range(45, 51f);
@@ -645,7 +645,7 @@ public class ObjectPooling : MonoBehaviour
     private void CreateItem()
     {
         //메테오
-        if(VeneziaManager.Instance.veneGameMode == VeneGameMode.Sole)
+        if(VeneziaManager.Instance.play_mode== PlayMode.Solo)
         {
             for (int i = 0; i < ItemCount; i++)
             {
@@ -663,7 +663,7 @@ public class ObjectPooling : MonoBehaviour
                 PausePool.Add(item); // 아이템 풀 리스트에 추가
             }
         }        
-        else if(VeneziaManager.Instance.veneGameMode == VeneGameMode.Couple)
+        else if(VeneziaManager.Instance.play_mode == PlayMode.Couple)
         {
             for (int i = 0; i < 20; i++)
             {
@@ -681,7 +681,7 @@ public class ObjectPooling : MonoBehaviour
         {
             for (int j = 0; j < CubeCount; j++)
             {
-                if(VeneziaManager.Instance.veneGameMode == VeneGameMode.Sole)
+                if(VeneziaManager.Instance.play_mode== PlayMode.Solo)
                 {
                     if (VeneziaManager.Instance.game_Type == Game_Type.C)
                     {
@@ -783,7 +783,7 @@ public class ObjectPooling : MonoBehaviour
 
     public void ItemCreatForveneGameMode()
     {
-        if (VeneziaManager.Instance.veneGameMode == VeneGameMode.Sole)
+        if (VeneziaManager.Instance.play_mode== PlayMode.Solo)
         {
             StartCoroutine(Meteor_Co());
             StartCoroutine(Pause_Co());
