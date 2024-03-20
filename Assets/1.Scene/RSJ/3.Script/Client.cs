@@ -280,9 +280,9 @@ public class Client : MonoBehaviour
                 {
                     Debug.Log($"[Client] Check [Create]Charactor, dateList[{i}] : {dataList[i]}");
                 }
-                clientCharactor = dataList[0].Split('|')[1];
-                Debug.Log($"[Client] RequestName : {requestName}, get new charactor number : {clientCharactor}");
-                SaveClientDataToJsonFile();
+                //clientCharactor = dataList[0].Split('|')[1];
+                //Debug.Log($"[Client] RequestName : {requestName}, get new charactor number : {clientCharactor}");
+                //SaveClientDataToJsonFile();
                 break;
             case "[Save]CharactorName":
                 Debug.Log($"[Client] RequestName : {requestName}, End handling data");
@@ -350,6 +350,8 @@ public class Client : MonoBehaviour
             case "[Change]Charactor":
                 HandleChangeCharactorData(dataList);
                 Debug.Log($"[Client] RequestName : {requestName}, End handling data");
+                SaveClientDataToJsonFile();
+                Debug.Log($"[Client] After Change Charactor, Save ClientData To Json");
                 break;
             case "[Delete]Charactor":
                 // DB에 있는 data만 삭제하면 되므로 따로 클라이언트가 처리할 필요 없음
@@ -681,6 +683,24 @@ public class Client : MonoBehaviour
         {
             Debug.Log("======================HandleLoadRankData" + filterList[i]);
         }
+
+        // DB에 Load할 rank Table이 없다면 NONE이 들어옴
+        // filterList[0] = NONTHING| // OR rank table이 있다면 filterList[0] = profile|name|score|
+        List<string> tempList = filterList[0].Split('|', StringSplitOptions.RemoveEmptyEntries).ToList();
+        if(tempList[0] == "NOTHING")
+        {
+            if(clientRankData == null)
+            {
+                Debug.Log("[Client] clientRankData Does not exist, maybe come in here");
+            }
+            else
+            {
+                Debug.Log($"[Client] clientRankDate exist, {clientRankData}");
+            }
+
+            return;
+        }
+
         // clientRankData InitSetting
         clientRankData = new RankData();
         clientRankData.rankdata_score = new RankData_value[6];
@@ -888,23 +908,39 @@ public class Client : MonoBehaviour
     // 캐릭터 변경시 데이터 처리 - clientCharactor만 변경
     private void HandleChangeCharactorData(List<string> dataList)
     {
-        Debug.Log("[Client] HandleChangeCharactorData..");
+        Debug.Log("[Client] Come in HandleChangeCharactorData..");
+
+        // 들어오는 dataList
+        // dataList[0] = [Change]Charactor|
+        // dateList[1] = charactorNumber|
+
+        // filterList 형태
+        // filterList[0] = [Change]Charactor|charactorNumber|
+
+        // tempList 형태
+        // tempList[0] = charactorNumber
 
         for (int i = 0; i < dataList.Count; i++)
         {
             Debug.Log($"[Client] ChangeCharactorData[{i}] : {dataList[i]}");
         }
 
-        // dataList[0] = [Change]Charactor|ChangeCharctorNumber|
-        List<string> filterList = dataList[0].Split('|', StringSplitOptions.RemoveEmptyEntries).ToList();
+        // 하나의 string
+        string oneData = etcMethodHandler.CreateOneDataToFilter(dataList);
 
-        // requestName 제거
-        filterList.RemoveAt(0);
+        // filterList
+        List<string> filterList = new List<string>();
+
+        // E| 분할 및 RequestName 제거
+        filterList = oneData.Split(separatorString, StringSplitOptions.RemoveEmptyEntries).ToList();
+        filterList[0] = filterList[0].Substring("[Change]Charactor|".Length);
+
+        List<string> tempList = filterList[0].Split('|', StringSplitOptions.RemoveEmptyEntries).ToList();
 
         // clientCharactor 변경
-        clientCharactor = filterList[0];
+        clientCharactor = tempList[0];
 
-        Debug.Log("[Client] End ChangeCharactorData..");
+        Debug.Log("[Client] Complete ChangeCharactorData..");
     }
 #endregion
 
@@ -1503,7 +1539,20 @@ public class Client : MonoBehaviour
         }
 
         AppGame_SaveResultDataToDB(result_DB, game_Type, level, step);
+    }
 
+    public void OnClickCreateCharactor()
+    {
+        Debug.Log($"[Client] Before CreateCharactor");
+        CreateCharactorData();
+        Debug.Log($"[Client] After CreateCharactor");
+    }
+
+    public void OnClickChangeCharactor()
+    {
+        Debug.Log($"[Client] Before ChangeChractor, clientCharator : {clientCharactor}");
+        ChangeCharactorData(2);
+        Debug.Log($"[Client] After ChangeChractor, clientCharator : {clientCharactor}");
     }
 
     private void OnDestroy()

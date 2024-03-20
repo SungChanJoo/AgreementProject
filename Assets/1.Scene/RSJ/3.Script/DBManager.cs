@@ -383,7 +383,6 @@ public class DBManager : MonoBehaviour
 
         //string[] game_Columns = { "User_LicenseNumber", "User_Charactor", "ReactionRate", "AnswerCount", "AnswerRate", "Playtime", "TotalScore", "StarPoint" };
 
-        int user_Charactor = 1;
         float init_Float = 0f;
         int init_Int = 0;
 
@@ -412,14 +411,15 @@ public class DBManager : MonoBehaviour
         for (int i = 0; i < game_TableList.Count; i++)
         {
             // insert row
-            insertCharactorData_Command = $"INSERT INTO {game_TableList[i]} (`User_LicenseNumber`, `User_Charactor`) VALUES ({clientlicensenumber}, {user_Charactor})";
+            insertCharactorData_Command = $"INSERT INTO {game_TableList[i]} (`User_LicenseNumber`, `User_Charactor`) VALUES ({clientlicensenumber}, {clientcharactor})";
             mySqlCommand.CommandText = insertCharactorData_Command;
             mySqlCommand.ExecuteNonQuery();
 
             // update rowm j=2부터 시작하는 이유는 0은 licensenumber고 1은 charactor번호이고 insert로 넣어줬기 때문에 굳이 또 업데이트를 할 필요가 없음
             for (int j = 2; j < game_Columns.Length; j++)
             {
-                updateCharactorData_Command = $"UPDATE {game_TableList[i]} SET {game_Columns[j]} = @value  WHERE `{game_Columns[0]}` = '{clientlicensenumber}'" ;
+                updateCharactorData_Command = $"UPDATE {game_TableList[i]} SET {game_Columns[j]} = @value  " +
+                                              $"WHERE `{game_Columns[0]}` = '{clientlicensenumber}' AND `{game_Columns[1]}` = '{clientcharactor}'" ;
                 mySqlCommand.CommandText = updateCharactorData_Command;
 
                 // parameter 초기화
@@ -1337,6 +1337,25 @@ public class DBManager : MonoBehaviour
         MySqlCommand mySqlCommand = new MySqlCommand();
         mySqlCommand.Connection = connection;
 
+        // Load할 rank Table이 없다면
+        string showQuery = $"USE `{weeklyRankDB}`;" +
+                           $"SHOW TABLES LIKE '{referenceWeeklyRankTableName}'";
+        mySqlCommand.CommandText = showQuery;
+        object result = mySqlCommand.ExecuteScalar();
+        
+        if(result == null)
+        {
+            Debug.Log($"[DB] WeeklyRankTable is not exist on DB, referenceWeeklyRankTableName : {referenceWeeklyRankTableName}");
+            // rankTable이 없다는 것을 표시
+            return_List.Add("NOTHING|");
+
+            // presentDB로 변경
+            mySqlCommand.CommandText = $"USE `{presentDB}`;";
+            mySqlCommand.ExecuteNonQuery();
+
+            return return_List;
+        }
+
         // Score 1~5등 
         string rankScoreSelectQuery = $"SELECT * FROM `{weeklyRankDB}`.`{referenceWeeklyRankTableName}` ORDER BY `ScorePlace` DESC LIMIT 5;";
         mySqlCommand.CommandText = rankScoreSelectQuery;
@@ -1635,7 +1654,7 @@ public class DBManager : MonoBehaviour
     // 캐릭터 변경시 ClientCharactorNumber 불러오기
     public List<string> ChangeCharactor(int licensenumber, int charactor)
     {
-        Debug.Log("[DB] Come in LoadLastPlayData Method");
+        Debug.Log("[DB] Come in ChangeCharactor Method");
 
         // 클라이언트에서 사용할 데이터 형식 
         // dataList[0] = [Load]LastPlayData|ChangedCharactorNumber|
@@ -1659,7 +1678,7 @@ public class DBManager : MonoBehaviour
         }
         reader.Close();
 
-        Debug.Log("[DB] Complete Load LastPlayData From DB");
+        Debug.Log("[DB] Complete Changer Charactor From DB");
 
         return return_List;
     }
@@ -2053,7 +2072,7 @@ public class DBManager : MonoBehaviour
         mySqlCommand.Parameters.Clear();
         mySqlCommand.Parameters.Add("@licenseNumber", MySqlDbType.Int32);
         mySqlCommand.Parameters.Add("@charactor", MySqlDbType.Float);
-        mySqlCommand.Parameters.Add("@reactionRate", MySqlDbType.Int32);
+        mySqlCommand.Parameters.Add("@reactionRate", MySqlDbType.Float);
         mySqlCommand.Parameters.Add("@answerRate", MySqlDbType.Int32);
 
         // 평균 반응속도, 정답률 구하고 분석 table 생성

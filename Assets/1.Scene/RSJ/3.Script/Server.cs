@@ -51,7 +51,7 @@ public class Server : MonoBehaviour
     {
         Debug.Log("[Server] Server start callback function");
         ServerCreate();
-        Invoke("TimerSet", 5f);
+        //Invoke("TimerSet", 5f);
     }
 
     private void Update()
@@ -192,7 +192,7 @@ public class Server : MonoBehaviour
         // E| 분할
         List<string> filterList = oneData.Split(separatorString, StringSplitOptions.RemoveEmptyEntries).ToList();
 
-        Debug.Log($"[Sever] HandleRequestData filterList.Count : {filterList.Count}");
+        Debug.Log($"[Server] HandleRequestData filterList.Count : {filterList.Count}");
 
         for(int i = 0; i <filterList.Count; i ++)
         {
@@ -214,43 +214,10 @@ public class Server : MonoBehaviour
             clientLicenseNumber = Int32.Parse(baseDataList[1]);
             clientCharactor = Int32.Parse(baseDataList[2]);
         }
-        else if(baseDataList.ElementAtOrDefault(1) != null) // UserData
+        else if(baseDataList.ElementAtOrDefault(1) != null) // UserData, clientLicenseNumber만 있을 때
         {
             clientLicenseNumber = Int32.Parse(baseDataList[1]);
         }
-
-        //if (requestName == "[Create]LicenseNumber") // clientLicenseNumber를 DB로부터 받음
-        //{
-        //    
-        //}
-        //else if(requestName == "[Load]UserData") // clientCharactor를 DB로부터 받음
-        //{
-        //    clientLicenseNumber = Int32.Parse(baseDataList[1]);
-        //}
-        //else
-        //{
-        //    clientLicenseNumber = Int32.Parse(baseDataList[1]);
-        //    clientCharactor = Int32.Parse(baseDataList[2]);
-        //}
-        
-
-        //// 일반적으로 클라이언트에서 보내진 데이터를 처리하는 메서드로 들어올 때, '|'를 제거해서 들어오는데
-        //// 일부 클라이언트에서 E|를 붙여서 보내는 경우에는 '|'가 붙여져서 들어온다
-        //if (dataList[0].Contains('|'))
-        //{
-        //    Debug.Log($"[Server] dataList[0] have '|' so check dataList[0], {dataList[0]}");
-        //    requestName = dataList[0].Split('|', StringSplitOptions.RemoveEmptyEntries)[0]; // 임시로 사용, playerdata save
-        //    Debug.Log($"[Server] Check requestName, dataList[0].Split('|', StringSplitOptions.RemoveEmptyEntries)[0] : {dataList[0].Split('|', StringSplitOptions.RemoveEmptyEntries)[0]}");
-        //}
-        //else if(dataList.ElementAtOrDefault(1) != null && dataList.ElementAtOrDefault(2) != null) // 예외처리, index 1,2가 없으면 넘어감 
-        //{
-        //    clientLicenseNumber = Int32.Parse(dataList[1]);
-        //    clientCharactor = Int32.Parse(dataList[2]);
-        //}
-        //else if (dataList.ElementAtOrDefault(1) != null) // UserData는 LicenseNumber만 가지고 판단하므로, dataList가 index를 1까지만 가지고 있을 경우 따로 예외처리해야함
-        //{
-        //    clientLicenseNumber = Int32.Parse(dataList[1]);
-        //}
 
         // Reply -> Client에게 보낼 List<string>, [0]은 requestName
         List<string> replyRequestData_List = new List<string>();
@@ -280,7 +247,7 @@ public class Server : MonoBehaviour
             case "[Create]Charactor":
                 string newClientCharactor = DBManager.instance.CreateNewCharactorData(clientLicenseNumber, clientCharactor);
                 Debug.Log($"[Server] Finish Create new CharactorData");
-                replyRequestData_List.Add($"{newClientCharactor}|");
+                //replyRequestData_List.Add($"{newClientCharactor}|");
                 break;
             case "[Save]CharactorName":
                 DBManager.instance.SaveCharactorName(filterList);
