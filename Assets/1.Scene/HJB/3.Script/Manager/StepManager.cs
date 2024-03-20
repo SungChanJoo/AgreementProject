@@ -17,7 +17,11 @@ public enum Step
     _4,
     _5,
     _6 = 6,}
-
+public enum PlayMode
+{
+    Solo,
+    Couple
+}
 public enum TimeSet
 {
     _1m = 60,
@@ -34,7 +38,8 @@ public class StepManager : MonoBehaviour
     public Level _Level;
     public int CurrentStep { get; private set; }
     public int CurrentLevel { get; private set; }
-    public int CurrentTime { get; private set; }
+    public int CurrentTime { get; private set; }    
+    public PlayMode playMode { get; private set; }
 
     //여기에 탐험대원 받을 것.
     public int SelectCharacter_num = 1;
@@ -76,6 +81,10 @@ public class StepManager : MonoBehaviour
     public void SelectTimeSet(int time)
     {
         CurrentTime = time;
+    }
+    public void PlayModeChange(int num)
+    {
+        playMode = (PlayMode)num;
     }
 
     public void NextStep()
