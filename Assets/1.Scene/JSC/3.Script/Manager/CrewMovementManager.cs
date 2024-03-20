@@ -261,7 +261,7 @@ public class CrewMovementManager : MonoBehaviour
 
             while ((SeleteableCrew[SeletedCrewIndex].transform.position - nextPos).sqrMagnitude >0.01f)
             {
-                SeleteableCrew[SeletedCrewIndex].transform.position = Vector3.MoveTowards(SeleteableCrew[SeletedCrewIndex].transform.position, nextPos, Time.deltaTime * 50f);
+                SeleteableCrew[SeletedCrewIndex].transform.position = Vector3.MoveTowards(SeleteableCrew[SeletedCrewIndex].transform.position, nextPos, Time.deltaTime * 10f);
                 yield return null;
             }
 
