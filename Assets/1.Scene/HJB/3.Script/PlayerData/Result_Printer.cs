@@ -16,8 +16,6 @@ public class Result_Printer : MonoBehaviour
     [SerializeField] private Sprite get_img;
     [SerializeField] private Sprite non_img;
 
-
-
     public void ShowText(Player_Data data,Game_Type game_Type,int startcount)
     {
 

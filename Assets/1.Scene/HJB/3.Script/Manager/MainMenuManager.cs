@@ -38,15 +38,7 @@ public class MainMenuManager : MonoBehaviour
         NetworkState_UI.text = net_state;
     }
     public void GameScene()
-    {
-        /*        if ((int)game_Type >= 2)
-                {
-                    SceneManager.LoadScene(4);
-                }
-                else
-                {
-                    SceneManager.LoadScene((int)game_Type+2);
-                }*/
+    {        
         if(CrewMovementManager.Instance != null)
             CrewMovementManager.Instance.SelectStep();
     }

@@ -18,7 +18,7 @@ public class QuestData
 
 public enum VeneGameMode
 {
-    Sole, Couple
+    Solo, Couple
 }
 
 public class VeneziaManager : GameSetting
@@ -145,7 +145,7 @@ public class VeneziaManager : GameSetting
 
     private void StartSet()
     {
-        //1 3 4 B D E 한글 영어 한좌veneGameMode == VeneGameMode.Sole
+        //1 3 4 B D E 한글 영어 한좌play_mode == PlayMode.Solo
         if (true)
         {
             if (game_Type == Game_Type.C) //한글
@@ -186,7 +186,7 @@ public class VeneziaManager : GameSetting
         ClickCount = 0;
         
         //퀘스트 오브젝트 생성
-        if(veneGameMode == VeneGameMode.Sole)
+        if(play_mode == PlayMode.Solo)
         {
             ObjectPooling.Instance.CreateQuestPrefab(index, QuestIndex + index);
             limitCount = ObjectPooling.Instance.cubePool.Count - QuestRange;
@@ -201,7 +201,7 @@ public class VeneziaManager : GameSetting
         DisplayRandomQuest();
         //시간 시작 
         StartTime();
-        if(veneGameMode == VeneGameMode.Sole)
+        if(play_mode == PlayMode.Solo)
         {
             ObjectPooling.Instance.StartCubeOne_Pooling_co();
         }
@@ -308,7 +308,7 @@ public class VeneziaManager : GameSetting
                     {
                         //print("오답클릭!");
                         isFirstPlayerTouch = (Questprefab.playerNum == PlayerNum.One) ? true : false;
-                        if (veneGameMode == VeneGameMode.Sole) ClickCount++; // 오답은 1인모드일때만 체크
+                        if (play_mode == PlayMode.Solo) ClickCount++; // 오답은 1인모드일때만 체크
                         if (isFirstPlayerTouch)
                         {
                             isFirst = true;
@@ -329,7 +329,7 @@ public class VeneziaManager : GameSetting
                     {
                         // 아이템 오브젝트 판단
                         ItemFnc item = hit.collider.gameObject.GetComponent<ItemFnc>();
-                        if (veneGameMode == VeneGameMode.Sole && item != null) // veneziaItem이 메테오인 경우
+                        if (play_mode == PlayMode.Solo && item != null) // veneziaItem이 메테오인 경우
                         {
                             if (item.veneziaItem == VeneziaItem.Meteor)
                             {
@@ -494,7 +494,7 @@ public class VeneziaManager : GameSetting
     {
         QuestData[] randomQuest = GetRandomQuest();
         if (randomQuest == null) return;  //퀘스트가 전부 출제 되었을 때 다음문제 실행 방지
-        if(veneGameMode == VeneGameMode.Sole)
+        if(play_mode == PlayMode.Solo)
         {
             Quest_Img.sprite = randomQuest[0].sprite;
             Quest_text.text = randomQuest[0].description;
@@ -543,7 +543,7 @@ public class VeneziaManager : GameSetting
         QuestCount--;
         QuestData[] selectedQuest = new QuestData[2];
         //연속 출제를 방지
-        if(veneGameMode == VeneGameMode.Sole)
+        if(play_mode == PlayMode.Solo)
         {
             randomIndex = Random.Range(index, QuestIndex + index); //첫 출제시 랜덤 인댁스 정하기 
             while (randomIndex == SaverandomIndex[0])
@@ -610,7 +610,7 @@ public class VeneziaManager : GameSetting
     private void GameOver()
     {
         if (isGameover) return;
-        if ((veneGameMode == VeneGameMode.Sole && TimeSlider.Instance.slider.value <= 0))
+        if ((play_mode == PlayMode.Solo && TimeSlider.Instance.slider.value <= 0))
         {
             isGameover = true;
             totalQuestions = ClickCount;
@@ -661,7 +661,7 @@ public class VeneziaManager : GameSetting
 
     public void ResetCube()
     {
-        if(veneGameMode == VeneGameMode.Sole)
+        if(play_mode == PlayMode.Solo)
         {
             bool isFirst = true;
             if (ObjectPooling.Instance.cubePool.Count > limitCount && isFirst)
@@ -828,7 +828,7 @@ public class VeneziaManager : GameSetting
     //문제 속도 설정
     private void GetSpeed(int lv, int step)
     {
-        if(veneGameMode == VeneGameMode.Sole)
+        if(play_mode == PlayMode.Solo)
         {
             if (game_Type == Game_Type.C || game_Type == Game_Type.D)
             {

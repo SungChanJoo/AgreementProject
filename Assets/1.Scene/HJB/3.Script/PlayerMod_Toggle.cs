@@ -9,10 +9,11 @@ public class PlayerMod_Toggle : MonoBehaviour
     [SerializeField] private GameObject[] next_obj;
     [SerializeField] private GameObject filter_Canvas;
     [SerializeField] private GameObject nonfilter_Canvas;
-    public int playerMod = 1;    
+    public int playerMod = 1;
+    public PlayMode playMode = PlayMode.Solo;
     RectTransform rectTransform;
     RectTransform[] rects;
-    Vector3 nextVector3;    
+    Vector3 nextVector3;
     bool onFilter = false;
     public bool playing = false;
     
@@ -56,17 +57,17 @@ public class PlayerMod_Toggle : MonoBehaviour
         }
         playing = true;
         //현재 플레이어의 모드를 확인 후 변경
-        if (playerMod.Equals(1))
+        if (playMode == PlayMode.Solo)
         {
-            playerMod = 2;
+            playMode = PlayMode.Couple;
             nextVector3 = rects[1].position;
         }
         else
         {
-            playerMod = 1;
+            playMode = PlayMode.Solo;
             nextVector3 = rects[0].position;
         }
-        Debug.Log(playerMod);
+        StepManager.Instance.PlayModeChange(playMode);
 
         //현재 이미지가 이동히야 할 위치 값을 넘겨주기
         StartCoroutine(MoveSelect_Obj(nextVector3));

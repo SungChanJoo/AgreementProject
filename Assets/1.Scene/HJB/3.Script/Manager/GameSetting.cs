@@ -6,14 +6,7 @@ using UnityEngine.UI;
 using TMPro;
 using System;
 
-public enum Game_Type
-{
-    A,
-    B,
-    C,
-    D,
-    E,
-}
+
 public abstract class GameSetting : MonoBehaviour,ITouchEffect
 {
     [HideInInspector] public Game_Type game_Type;
@@ -67,6 +60,7 @@ public abstract class GameSetting : MonoBehaviour,ITouchEffect
     private void startSet()
     {
         //선택한 레벨, 스텝, 시간 값 초기 설정
+        play_mode = StepManager.Instance.playMode;
         game_Type = StepManager.Instance.game_Type;
         step = StepManager.Instance.CurrentStep;
         level = StepManager.Instance.CurrentLevel;

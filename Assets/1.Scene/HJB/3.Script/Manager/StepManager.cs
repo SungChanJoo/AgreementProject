@@ -3,6 +3,14 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
+public enum Game_Type
+{
+    A,
+    B,
+    C,
+    D,
+    E,
+}
 public enum Level
 {
     Low_Level =1,
@@ -82,9 +90,9 @@ public class StepManager : MonoBehaviour
     {
         CurrentTime = time;
     }
-    public void PlayModeChange(int num)
+    public void PlayModeChange(PlayMode mode)
     {
-        playMode = (PlayMode)num;
+        playMode = mode;
     }
 
     public void NextStep()
