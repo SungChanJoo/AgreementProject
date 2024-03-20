@@ -979,7 +979,7 @@ public class DBManager : MonoBehaviour
 
         MySqlCommand mySqlCommand = new MySqlCommand();
         mySqlCommand.Connection = connection;
-
+        //Debug.Log("[DB] LoadUserData Make SQL Error");
         // presentDB의 user_info테이블에 있는 Charactor컬럼을 Count, clientlicensenumber가 일치하는곳에서
         string select_Command = $"SELECT `{userinfo_Columns[1]}` FROM `{table.list[0]}` WHERE `{userinfo_Columns[0]}` = '{clientlicensenumber}';";
         mySqlCommand.CommandText = select_Command;

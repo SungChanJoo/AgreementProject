@@ -51,7 +51,7 @@ public class Server : MonoBehaviour
     {
         Debug.Log("[Server] Server start callback function");
         ServerCreate();
-        //Invoke("TimerSet", 5f);
+        Invoke("TimerSet", 5f);
     }
 
     private void Update()
@@ -355,9 +355,9 @@ public class Server : MonoBehaviour
             nextMidnight = DateTime.Today.AddDays(1);
             TimeSpan timeUntilMidnight = nextMidnight - DateTime.Now;
 
-            // Test용
-            DateTime testAfterOneMinute = DateTime.Now.AddSeconds(20);
-            timeUntilMidnight = testAfterOneMinute - DateTime.Now;
+            //// Test용
+            //DateTime testAfterOneMinute = DateTime.Now.AddSeconds(20);
+            //timeUntilMidnight = testAfterOneMinute - DateTime.Now;
 
             // 자정까지 대기할 WaitforSeconds 설정
             waitUntilMidnight = new WaitForSeconds((float)timeUntilMidnight.TotalSeconds);
@@ -404,6 +404,7 @@ public class Server : MonoBehaviour
 
             Debug.Log("[Server] A day has passed. Start creating new DateDB for save data");
 
+            Debug.Log($"[Server] DateTime.Now : {DateTime.Now}");
             // 자정이 되면 DateDB 생성
             DBManager.instance.CreateDateDB();
 
@@ -411,8 +412,9 @@ public class Server : MonoBehaviour
 
             // 매주 월요일이 되면 weeklyrankDB에 한주간 rank table 생성
             TimeSpan timeSpan = DateTime.Now.Date - standardDay.Date;
+            Debug.Log("[Server] Complete Create DateDB");
 
-            if (timeSpan.Days == 2)
+            if (timeSpan.Days == 7)
             {
                 Debug.Log("[Server] Start Update WeeklyRankDB");
                 DBManager.instance.UpdateWeeklyRankDB();
@@ -515,22 +517,6 @@ public class Server : MonoBehaviour
         Debug.Log($"[Server] currenTime = {currentTime}");
         Debug.Log($"[Server] criterionTime = {criterionTime}");
         Debug.Log($"[Server] timeDiff = {timeDiff}");
-
-    }
-
-    // 일주일이 지났을 때 PresentDB에 있는 rankTable data들 새 DB(주간 랭킹 출력용)? or 어떤 DB에 저장
-    private void WeekTimer()
-    {
-
-    }
-
-    private void CreateDBTest()
-    {
-        //DBManager.instance.CreateDaysExGameDataDB();
-    }
-
-    private void SendMessageToClients(TcpClient client)
-    {
 
     }
 

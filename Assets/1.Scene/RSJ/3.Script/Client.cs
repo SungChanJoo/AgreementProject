@@ -18,9 +18,13 @@ public class Client : MonoBehaviour
     [SerializeField] private int server_Port = 2421;
 
     bool socketReady;
+
     // TCP 통신
     private TcpClient client;
     private static NetworkStream stream;
+
+    // 서버 연결 에러시 재연결 확인 용도
+    private bool isReceived;
 
     // login - license, charactor / local(json)로 관리
     public static string clientLicenseNumber;
@@ -197,6 +201,15 @@ public class Client : MonoBehaviour
 
             while (true)
             {
+                // 서버로부터 데이터를 받는데 5초가 걸리면 서버 연결 끊고 다시 접속
+                // 코루틴으로 돌리는데, 
+                //isReceived = false;
+                //StartCoroutine(CheckReceiveTime_Co());
+
+                // 타임아웃 설정 (5초)
+                client.ReceiveTimeout = 5000;
+                Debug.Log($"[Client] client.ReceiveTimeout : {client.ReceiveTimeout}");
+
                 //byte[] buffer = new byte[1024]; // 일반적인 버퍼사이즈
                 byte[] buffer = new byte[16000000]; // 16MiB 버퍼 사이즈 
                 int bytesRead = stream.Read(buffer, 0, buffer.Length); // 데이터를 읽어올때까지 대기 (동기식)
@@ -210,6 +223,7 @@ public class Client : MonoBehaviour
                 // 못받으면 재요청
                 // 네트워크 패킷손실 확인하는 방법
                 // requestName으로 요청한 데이터를 받을 때 , E| separtorString 개수를 파악해서 제대로 개수가 맞는지 확인후 Handling하고 개수가 맞지 않으면 재전송하는 식으로?
+                //isReceived = true;
 
                 // 서버로부터 데이터 전송이 끝나면(Finish) break;
                 List<string> endCheck = receivedRequestData.Split('|').ToList();
@@ -240,6 +254,15 @@ public class Client : MonoBehaviour
         catch (Exception e)
         {
             Debug.Log($"[Client] Error receiving data from server : {e.Message}");
+        }
+        finally
+        {
+            Debug.Log($"[Client] Finally Reconnect To Server After Client.Close");
+            client.Close();
+            socketReady = false;
+
+            // 서버 연결
+            ConnectToServer();
         }
     }
 #endregion
@@ -1600,6 +1623,33 @@ public class Client : MonoBehaviour
     }
 
 #endregion
+
+    private IEnumerator CheckReceiveTime_Co()
+    {
+        Debug.Log("[Client] Come in CheckReceiveTime_Co()");
+        float receiveTime = 0f;
+        receiveTime += Time.deltaTime;
+        yield return new WaitForSeconds(5f);
+
+        // 5초 지난 후 어떤 bool값에 따라 서버 재접속할지 안할지 결정
+        if(isReceived)
+        {
+            // 서버로부터 데이터 제대로 받음
+            Debug.Log("[Client] Collectly Recieved Data From Server");
+            yield break;
+        }
+        else
+        {
+            // 서버로부터 데이터 제대로 못받음 -> 서버 연결 종료
+            Debug.Log("[Client] Collectly Recieved Data From Server");
+            client.Close();
+            socketReady = false;
+
+            // 서버 연결
+            ConnectToServer();
+            Debug.Log("[Client] ReConnect To Server");
+        }
+    }
 
     private void CloseSocket()
     {
