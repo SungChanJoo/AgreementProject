@@ -243,6 +243,8 @@ public class VeneziaManager : GameSetting
                 canClick = true;
             }
         }
+
+        CheckCubeTypes();
     }
 
     private void Click_Obj()
@@ -276,11 +278,6 @@ public class VeneziaManager : GameSetting
                             totalReactionTime = 0;
                             NextQuest();
                         }
-
-                        if (RemainAnswer < 0) // 정답을 모두 맞췄을때 게임 종료
-                        {
-                            GameClear();
-                        }
                         if (isFirstPlayerTouch) // 솔로 모드에서는 One으로 지정됨
                         {
                             ClickCount++;
@@ -299,6 +296,12 @@ public class VeneziaManager : GameSetting
                             ObjectPooling.Instance.cubePoolTwo.Add(hit.collider.gameObject);
                             hit.collider.gameObject.SetActive(false);
                             ObjectPooling.Instance.CreateBoom(ObjectPooling.Instance.PlayerTwo_Boom);
+                        }
+
+
+                        if (RemainAnswer == 0) // 정답을 모두 맞췄을때 게임 종료
+                        {
+                            GameClear();
                         }
                     }
                     else if (Questprefab != null && Questprefab.objectType != ObjectType.CorrectAnswer)
