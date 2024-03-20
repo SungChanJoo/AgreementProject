@@ -345,7 +345,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!114 &427120337
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -358,7 +358,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9f29fac38ef4dd5438c4b09831cf93c8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  server_IP: 15.164.171.16
+  server_IP: 13.209.72.130
   server_Port: 2421
   licenseFolderPath: 
   CharactorData_FromServer: []
@@ -788,6 +788,7 @@ MonoBehaviour:
     StarCoin: 0
   PlayerCharacter: []
   clientInfo: {fileID: 4900000, guid: fd073610bf095c5479bde51ff6d46a95, type: 3}
+  network_state: 0
 --- !u!1 &747682663
 GameObject:
   m_ObjectHideFlags: 0

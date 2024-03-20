@@ -18,7 +18,7 @@ public class QuestData
 
 public enum VeneGameMode
 {
-    Sole, Couple
+    Solo, Couple
 }
 
 public class VeneziaManager : GameSetting
@@ -128,7 +128,7 @@ public class VeneziaManager : GameSetting
     //커플모드일때 누가 클릭했는지 판단
     bool isFirst = false;
     bool isSecond =false;
-
+    bool isNull = false;
 
     private void Awake()
     {
@@ -145,7 +145,7 @@ public class VeneziaManager : GameSetting
 
     private void StartSet()
     {
-        //1 3 4 B D E 한글 영어 한좌veneGameMode == VeneGameMode.Sole
+        //1 3 4 B D E 한글 영어 한좌play_mode == PlayMode.Solo
         if (true)
         {
             if (game_Type == Game_Type.C) //한글
@@ -186,7 +186,7 @@ public class VeneziaManager : GameSetting
         ClickCount = 0;
         
         //퀘스트 오브젝트 생성
-        if(veneGameMode == VeneGameMode.Sole)
+        if(play_mode == PlayMode.Solo)
         {
             ObjectPooling.Instance.CreateQuestPrefab(index, QuestIndex + index);
             limitCount = ObjectPooling.Instance.cubePool.Count - QuestRange;
@@ -201,7 +201,16 @@ public class VeneziaManager : GameSetting
         DisplayRandomQuest();
         //시간 시작 
         StartTime();
-        ObjectPooling.Instance.StartCubePooling_co();
+        if(play_mode == PlayMode.Solo)
+        {
+            ObjectPooling.Instance.StartCubeOne_Pooling_co();
+        }
+        else
+        {
+            ObjectPooling.Instance.StartCubeOne_Pooling_co();
+            ObjectPooling.Instance.StartCubeTwo_Pooling_co();
+        }
+        
     }
     private void Update()
     {
@@ -215,14 +224,6 @@ public class VeneziaManager : GameSetting
         GameOver();
     }
 
-    private IEnumerator EnableClickAgain()
-    {
-        // 일정 시간(예: 0.2초) 대기
-        yield return new WaitForSeconds(0.2f);
-
-        // 클릭 가능한 상태로 변경
-        canClick = true;
-    }
     //오브젝트 클릭시 입력처리
     //|| (Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Began)
 
@@ -242,114 +243,131 @@ public class VeneziaManager : GameSetting
                 canClick = true;
             }
         }
+
+        CheckCubeTypes();
     }
 
     private void Click_Obj()
     {
-        if (!canClick) return;
-        CheckCubeTypes();
-        if (Input.GetMouseButtonDown(0))
+        if (Input.GetMouseButtonDown(0) && canClick)
         {
+            canClick = false;
             Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
             RaycastHit hit;
-            canClick = false;
-            if (Physics.Raycast(ray, out hit) && !hit.collider.gameObject.CompareTag("Ground"))
+            if(Physics.Raycast(ray, out hit))
             {
-                //print(hit.collider.gameObject.name);
-                //큐브 오브젝트 판단
-                Cube Questprefab = hit.collider.gameObject.GetComponent<Cube>();
-                
-                if (Questprefab != null && Questprefab.objectType == ObjectType.CorrectAnswer) // 큐브를 눌렀을때 Quest 인지 알아야함
+                if (hit.collider != null && !hit.collider.gameObject.CompareTag("Ground"))
                 {
-                    isFirstPlayerTouch = (Questprefab.playerNum == PlayerNum.One) ? true : false;
-                    if (QuestCount > -1)
+                    if (hit.collider.gameObject == null)
                     {
-                        RemainAnswer--;
-                        CorrectAnswerCount++;
-                        trueReactionTime += totalReactionTime;
+                        isNull = true;
+                        return;
+                    }
+                    //print(hit.collider.gameObject.name);
+                    //큐브 오브젝트 판단
+                    Cube Questprefab = hit.collider.gameObject.GetComponent<Cube>();
+
+                    if (Questprefab != null && Questprefab.objectType == ObjectType.CorrectAnswer) // 큐브를 눌렀을때 Quest 인지 알아야함
+                    {
+                        isFirstPlayerTouch = (Questprefab.playerNum == PlayerNum.One) ? true : false;
+                        if (QuestCount > -1)
+                        {
+                            RemainAnswer--;
+                            CorrectAnswerCount++;
+                            trueReactionTime += totalReactionTime;
+                            totalReactionTime = 0;
+                            NextQuest();
+                        }
+                        if (isFirstPlayerTouch) // 솔로 모드에서는 One으로 지정됨
+                        {
+                            ClickCount++;
+                            isFirst = true;
+                            ObjectPooling.Instance.cubePool.Add(hit.collider.gameObject);
+                            hit.collider.gameObject.SetActive(false);
+                            if(veneGameMode == VeneGameMode.Couple)
+                            {
+                                ObjectPooling.Instance.CreateBoom(ObjectPooling.Instance.PlayerOne_Boom);
+                            }
+                        }
+                        else
+                        {
+                            Click_SecondPlayerCount++;
+                            isSecond = true;
+                            ObjectPooling.Instance.cubePoolTwo.Add(hit.collider.gameObject);
+                            hit.collider.gameObject.SetActive(false);
+                            ObjectPooling.Instance.CreateBoom(ObjectPooling.Instance.PlayerTwo_Boom);
+                        }
+
+
+                        if (RemainAnswer == 0) // 정답을 모두 맞췄을때 게임 종료
+                        {
+                            GameClear();
+                        }
+                    }
+                    else if (Questprefab != null && Questprefab.objectType != ObjectType.CorrectAnswer)
+                    {
+                        //print("오답클릭!");
+                        isFirstPlayerTouch = (Questprefab.playerNum == PlayerNum.One) ? true : false;
+                        if (play_mode == PlayMode.Solo) ClickCount++; // 오답은 1인모드일때만 체크
+                        if (isFirstPlayerTouch)
+                        {
+                            isFirst = true;
+                            ObjectPooling.Instance.cubePool.Add(hit.collider.gameObject);
+                            hit.collider.gameObject.SetActive(false);
+                            TimeSlider.Instance.DecreaseTime_Item(5);
+                        }
+                        else
+                        {
+                            isSecond = true;
+                            ObjectPooling.Instance.cubePoolTwo.Add(hit.collider.gameObject);
+                            hit.collider.gameObject.SetActive(false);
+                            TimeSlider.Instance.DecreaseTime_CoupleMode(5, TimeSlider.Instance.slider_PlayerTwo);
+                        }
                         totalReactionTime = 0;
-                        NextQuest();
-                    }
-
-                    if (RemainAnswer == 0) // 정답을 모두 맞췄을때 게임 종료
-                    {
-                        GameOver();
-                    }
-                    if (isFirstPlayerTouch) // 솔로 모드에서는 One으로 지정됨
-                    {
-                        ClickCount++;
-                        isFirst = true;
-                        ObjectPooling.Instance.cubePool.Add(hit.collider.gameObject);
-                        hit.collider.gameObject.SetActive(false);
-                        ObjectPooling.Instance.CreateBoom(ObjectPooling.Instance.PlayerOne_Boom);
                     }
                     else
                     {
-                        Click_SecondPlayerCount++;
-                        isSecond = true;
-                        ObjectPooling.Instance.cubePoolTwo.Add(hit.collider.gameObject);
-                        hit.collider.gameObject.SetActive(false);
-                        ObjectPooling.Instance.CreateBoom(ObjectPooling.Instance.PlayerTwo_Boom);
+                        // 아이템 오브젝트 판단
+                        ItemFnc item = hit.collider.gameObject.GetComponent<ItemFnc>();
+                        if (play_mode == PlayMode.Solo && item != null) // veneziaItem이 메테오인 경우
+                        {
+                            if (item.veneziaItem == VeneziaItem.Meteor)
+                            {
+                                //print("메테오 클릭!"); 
+                                ObjectPooling.Instance.MeteorPool.Add(hit.collider.gameObject);
+                                TimeSlider.Instance.DecreaseTime_Item(5);
+                                hit.collider.gameObject.SetActive(false);
+                            }
+                            else if (item.veneziaItem == VeneziaItem.Pause)
+                            {
+                                //print("멈춰!");
+                                ObjectPooling.Instance.PausePool.Add(hit.collider.gameObject);
+                                hit.collider.gameObject.SetActive(false);
+                                StartCoroutine(Pause_co());
+                            }
+                        }
+                        else
+                        {
+                            if(item != null)
+                            {
+                                if (item.veneziaItem == VeneziaItem.Boom && item.boomType == BoomType.PlayerOne)
+                                {
+                                    ObjectPooling.Instance.BoomPool.Add(hit.collider.gameObject);
+                                    hit.collider.gameObject.SetActive(false);
+                                    TimeSlider.Instance.DecreaseTime_CoupleMode(5, TimeSlider.Instance.slider_PlayerTwo);
+                                }
+                                else if (item.veneziaItem == VeneziaItem.Boom && item.boomType == BoomType.PlayerTwo)
+                                {
+                                    ObjectPooling.Instance.BoomPool.Add(hit.collider.gameObject);
+                                    hit.collider.gameObject.SetActive(false);
+                                    TimeSlider.Instance.DecreaseTime_CoupleMode(5, TimeSlider.Instance.slider);
+                                }
+                            }
+                        }
                     }
-                }
-                else if (Questprefab != null && Questprefab.objectType != ObjectType.CorrectAnswer)
-                {
-                    //print("오답클릭!");
-                    isFirstPlayerTouch = (Questprefab.playerNum == PlayerNum.One) ? true : false;
-                    if (veneGameMode == VeneGameMode.Sole) ClickCount++; // 오답은 1인모드일때만 체크
-                    if (isFirstPlayerTouch)
-                    {
-                        isFirst = true;
-                        ObjectPooling.Instance.cubePool.Add(hit.collider.gameObject);
-                        hit.collider.gameObject.SetActive(false);
-                        TimeSlider.Instance.DecreaseTime_Item(5);
-                    }
-                    else
-                    {
-                        isSecond = true;
-                        ObjectPooling.Instance.cubePoolTwo.Add(hit.collider.gameObject);
-                        hit.collider.gameObject.SetActive(false);
-                        TimeSlider.Instance.DecreaseTime_CoupleMode(5,TimeSlider.Instance.slider_PlayerTwo);
-                    }
-                    totalReactionTime = 0;
-                }
-                else
-                {
-                    // 아이템 오브젝트 판단
-                    ItemFnc item = hit.collider.gameObject.GetComponent<ItemFnc>();
-                    if (item.veneziaItem == VeneziaItem.Meteor && veneGameMode == VeneGameMode.Sole) // veneziaItem이 메테오인 경우
-                    {
-                        //print("메테오 클릭!"); 
-                        ObjectPooling.Instance.MeteorPool.Add(hit.collider.gameObject);
-                        TimeSlider.Instance.DecreaseTime_Item(5);
-                        hit.collider.gameObject.SetActive(false);
-                    }
-                    //솔로 게임만 사용
-                    if (item.veneziaItem == VeneziaItem.Pause && veneGameMode == VeneGameMode.Sole) // Pause
-                    {
-                        //print("멈춰!");
-                        ObjectPooling.Instance.PausePool.Add(hit.collider.gameObject);
-                        hit.collider.gameObject.SetActive(false);
-                        StartCoroutine(Pause_co());
-                    }
-
-                    if(item.veneziaItem == VeneziaItem.Boom && item.boomType == BoomType.PlayerOne)
-                    {
-                        ObjectPooling.Instance.BoomPool.Add(hit.collider.gameObject);
-                        hit.collider.gameObject.SetActive(false);
-                        TimeSlider.Instance.DecreaseTime_CoupleMode(5, TimeSlider.Instance.slider_PlayerTwo);
-                    }
-                    else if (item.veneziaItem == VeneziaItem.Boom && item.boomType == BoomType.PlayerTwo)
-                    {
-                        ObjectPooling.Instance.BoomPool.Add(hit.collider.gameObject);
-                        hit.collider.gameObject.SetActive(false);
-                        TimeSlider.Instance.DecreaseTime_CoupleMode(5, TimeSlider.Instance.slider);
-                    }
-
                 }
             }
             ResetCube();
-            StartCoroutine(EnableClickAgain());
         }
     }
 
@@ -476,7 +494,7 @@ public class VeneziaManager : GameSetting
     {
         QuestData[] randomQuest = GetRandomQuest();
         if (randomQuest == null) return;  //퀘스트가 전부 출제 되었을 때 다음문제 실행 방지
-        if(veneGameMode == VeneGameMode.Sole)
+        if(play_mode == PlayMode.Solo)
         {
             Quest_Img.sprite = randomQuest[0].sprite;
             Quest_text.text = randomQuest[0].description;
@@ -525,7 +543,7 @@ public class VeneziaManager : GameSetting
         QuestCount--;
         QuestData[] selectedQuest = new QuestData[2];
         //연속 출제를 방지
-        if(veneGameMode == VeneGameMode.Sole)
+        if(play_mode == PlayMode.Solo)
         {
             randomIndex = Random.Range(index, QuestIndex + index); //첫 출제시 랜덤 인댁스 정하기 
             while (randomIndex == SaverandomIndex[0])
@@ -588,14 +606,13 @@ public class VeneziaManager : GameSetting
         }
     }
     #endregion
+    //타임아웃 게임오버
     private void GameOver()
     {
         if (isGameover) return;
-        if (veneGameMode == VeneGameMode.Sole && TimeSlider.Instance.slider.value == 0)
+        if ((play_mode == PlayMode.Solo && TimeSlider.Instance.slider.value <= 0))
         {
-            TimeSlider.Instance.startTime = 0;
             isGameover = true;
-            
             totalQuestions = ClickCount;
             ReactionTime = trueReactionTime / CorrectAnswerCount;
             //반응속도 할당
@@ -606,7 +623,7 @@ public class VeneziaManager : GameSetting
             //결과표 출력
             EndGame();
         }
-        else
+        else if(veneGameMode == VeneGameMode.Couple)
         {
             if(TimeSlider.Instance.slider.value == 0 || TimeSlider.Instance.slider_PlayerTwo.value == 0)
             {
@@ -618,7 +635,20 @@ public class VeneziaManager : GameSetting
         }
 
     }
-
+    //출제된 문제를 전부 맞췄을때 
+    private void GameClear()
+    {
+        isGameover = true;
+        totalQuestions = ClickCount;
+        ReactionTime = trueReactionTime / CorrectAnswerCount;
+        //반응속도 할당
+        reactionRate = ReactionTime;
+        answersCount = CorrectAnswerCount;
+        //정답률 계산
+        AnswerRate();
+        //결과표 출력
+        EndGame();
+    }
     private void AnswerRate()
     {
         if (CorrectAnswerCount == 0)
@@ -631,50 +661,49 @@ public class VeneziaManager : GameSetting
 
     public void ResetCube()
     {
-        if(veneGameMode == VeneGameMode.Sole)
+        if(play_mode == PlayMode.Solo)
         {
             bool isFirst = true;
             if (ObjectPooling.Instance.cubePool.Count > limitCount && isFirst)
             {
                 isFirst = false;
-                StopCoroutine(ObjectPooling.Instance.CubePooling);
-                ObjectPooling.Instance.ReStartCubePooling_co();
+                StopCoroutine(ObjectPooling.Instance.CubePooling_PlayerOne);
+                ObjectPooling.Instance.ReStartCubePooling_One_co();
             }
             else if (ObjectPooling.Instance.cubePool.Count > limitCount && !isFirst)
             {
-                StopCoroutine(ObjectPooling.Instance.CubeRestartPooling);
-                ObjectPooling.Instance.ReStartCubePooling_co();
+                StopCoroutine(ObjectPooling.Instance.CubeRestartPooling_One);
+                ObjectPooling.Instance.ReStartCubePooling_One_co();
             }
         }
         else
         {
             //첫번째 플레이어
+            bool isFirst = true;
+            bool isSecond = true;
             if (ObjectPooling.Instance.cubePool.Count > limitCount && isFirst) 
             {
-                print("첫");
                 isFirst = false;
-                StopCoroutine(ObjectPooling.Instance.CubePooling);
-                ObjectPooling.Instance.ReStartCubePooling_co();
+                StopCoroutine(ObjectPooling.Instance.CubePooling_PlayerOne);
+                ObjectPooling.Instance.ReStartCubePooling_One_co();
             }
             else if (ObjectPooling.Instance.cubePool.Count > limitCount && !isFirst)
             {
-                print("둘");
-                StopCoroutine(ObjectPooling.Instance.CubeRestartPooling);
-                ObjectPooling.Instance.ReStartCubePooling_co();
+                StopCoroutine(ObjectPooling.Instance.CubeRestartPooling_One);
+                ObjectPooling.Instance.ReStartCubePooling_One_co();
             }
 
             //두번째 플레이어
             if(ObjectPooling.Instance.cubePoolTwo.Count > limitCount && isSecond)
             {
                 isSecond = false;
-                StopCoroutine(ObjectPooling.Instance.CubePooling);
-                ObjectPooling.Instance.ReStartCubePooling_co();
+                StopCoroutine(ObjectPooling.Instance.CubePooling_PlayerTwo);
+                ObjectPooling.Instance.ReStartCubePooling_Two_co();
             }
             else if (ObjectPooling.Instance.cubePoolTwo.Count > limitCount && !isSecond)
             {
-                print("둘");
-                StopCoroutine(ObjectPooling.Instance.CubeRestartPooling);
-                ObjectPooling.Instance.ReStartCubePooling_co();
+                StopCoroutine(ObjectPooling.Instance.CubeRestartPooling_Two);
+                ObjectPooling.Instance.ReStartCubePooling_Two_co();
             }
 
         }
@@ -799,7 +828,7 @@ public class VeneziaManager : GameSetting
     //문제 속도 설정
     private void GetSpeed(int lv, int step)
     {
-        if(veneGameMode == VeneGameMode.Sole)
+        if(play_mode == PlayMode.Solo)
         {
             if (game_Type == Game_Type.C || game_Type == Game_Type.D)
             {

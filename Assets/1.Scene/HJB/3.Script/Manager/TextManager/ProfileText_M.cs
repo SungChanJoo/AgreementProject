@@ -95,7 +95,7 @@ public class ProfileText_M : MonoBehaviour
         Debug.Log(time);
         int count = time.Length-2;
         
-        float currentTime = float.Parse(time.Insert(count, ".")); 
+        //float currentTime = float.Parse(time.Insert(count, ".")); 
         float totalTime = DataBase.Instance.PlayerCharacter[0].TotalTime;
         int minute = (int)(totalTime / 60f);
         float second = totalTime - (minute * 60);

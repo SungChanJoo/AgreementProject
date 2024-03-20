@@ -25,6 +25,7 @@ public class DataBase : MonoBehaviour
     ClientData clientData;
     private int characterIndex = 0;
     private string dataPath;
+    public bool network_state;
     public int CharacterIndex {
         get
         {
@@ -101,12 +102,13 @@ public class DataBase : MonoBehaviour
             //플레이어 프로필 데이터 가져오기
             playerInfo.analyticsProfileData = Client.instance.AppStart_LoadAnalyticsProfileDataFromDB();
 
-
             CharactorAdd();
+            network_state = true;
         }
         catch (System.Exception)
         {
             playerInfo = null;
+            network_state = false;
             Debug.Log("DB에서 플레이어 데이터를 불러오지 못했습니다.");
         }
     }

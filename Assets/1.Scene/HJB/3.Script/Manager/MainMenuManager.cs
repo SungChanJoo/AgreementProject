@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using TMPro;
 
 
 public class MainMenuManager : MonoBehaviour
@@ -22,23 +23,22 @@ public class MainMenuManager : MonoBehaviour
     [SerializeField] private List<GameObject> Level2StarPoint_Panel;
     [SerializeField] private List<GameObject> Level3StarPoint_Panel;
 
+    [SerializeField] private TextMeshProUGUI Cost_UI;
+    [SerializeField] private TextMeshProUGUI NetworkState_UI;
+
+
     public Game_Type game_Type;
     
     private void Start()
     {
         SettingManager.Instance.EnableSettingBtn();        
         AudioManager.Instance.BGM_Play(0);
+        Cost_UI.text = DataBase.Instance.PlayerCharacter[DataBase.Instance.CharacterIndex].StarCoin.ToString();
+        string net_state = DataBase.Instance.network_state ?  "연결": "연결안됨";
+        NetworkState_UI.text = net_state;
     }
     public void GameScene()
-    {
-        /*        if ((int)game_Type >= 2)
-                {
-                    SceneManager.LoadScene(4);
-                }
-                else
-                {
-                    SceneManager.LoadScene((int)game_Type+2);
-                }*/
+    {        
         if(CrewMovementManager.Instance != null)
             CrewMovementManager.Instance.SelectStep();
     }

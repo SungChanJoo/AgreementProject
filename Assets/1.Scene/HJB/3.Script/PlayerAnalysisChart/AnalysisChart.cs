@@ -44,8 +44,7 @@ public class AnalysisChart : MonoBehaviour
     private void Start()
     {
         analyticsData = Client.instance.AppStart_LoadAnalyticsDataFromDB();
-        ObjectPooling();
-        DataSet();
+        ObjectPooling();        
         ShowChartData();
     }
     private void OnEnable()
@@ -72,31 +71,7 @@ public class AnalysisChart : MonoBehaviour
             reLine_obj[i].SetActive(false);
         }
     }
-    private void DataSet()
-    {
-        
-        for (int x = 0; x < 5; x++)
-        {
-            for (int y = 0; y < 3; y++)
-            {
-                List<float> answerData = new List<float>();
-                List<float> reactionData = new List<float>();
-                for (int i = 0; i < 7; i++)
-                {
-                    //Data_value data = new Data_value(i, i, i, i, i);
-                    //result_Data.Data.Add((Game_Type.A, 1, 1), data);
-
-                    answerData.Add(Random.Range(0, 100));
-                    answerData[i] = (answerData[i] - (answerData[i]%5)) / 100f;
-                    reactionData.Add(Random.Range(0, 20f));                    
-                    reactionData[i] = Mathf.Abs((reactionData[i] - (reactionData[i] % 0.5f)) - 20f) / 20f;
-                }
-                answer_Type.Add(((Game_Type)x, y), answerData);
-                reaction_Type.Add(((Game_Type)x, y), reactionData);
-            }
-        }
-
-    }    
+    
     private void DrawGraph_Dot(List<float> data,List<GameObject> dot_obj,bool first)
     {
         //그래프가 그려질 오브젝트의 컴포넌트 가져오기
@@ -118,12 +93,12 @@ public class AnalysisChart : MonoBehaviour
             Dot_Data dot = dot_obj[i].GetComponent<Dot_Data>();
             if (first)
             {
-                dot.Print_DotData(data[i]*100f,first);
+                dot.Print_DotData(data[i]*100f,first);                
                 answersRate_vector2.Add(dayVector2);
             }
             else
             {
-                dot.Print_DotData(Mathf.Abs(data[i]-1f)*20f,first);
+                dot.Print_DotData(Mathf.Abs(data[i]-1f)*20f,first);                
                 reactionRate_vector2.Add(dayVector2);
             }
             //각 점의 위치 지정
@@ -174,6 +149,9 @@ public class AnalysisChart : MonoBehaviour
         {
             reactionRate_list.Add(analyticsData.Data[(i, game_type,level_num)].reactionRate);
             answerRate_list.Add(analyticsData.Data[(i, game_type, level_num)].answerRate);
+            Debug.Log(analyticsData.Data[(i, game_type, level_num)].reactionRate);
+            reactionRate_list[i-1]=Mathf.Abs((reactionRate_list[i-1] - (reactionRate_list[i-1] % 0.5f)) - 20f) / 20f;
+            Debug.Log(reactionRate_list[i-1]);
             dayText[i-1].text = analyticsData.Data[(i, game_type, level_num)].day;
         }
         SelectType(answerRate_list, reactionRate_list);

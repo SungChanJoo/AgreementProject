@@ -12,8 +12,11 @@ public class Result_Printer : MonoBehaviour
     [SerializeField] private TextMeshProUGUI playTime;
     [SerializeField] private TextMeshProUGUI totalScore;
 
+    [SerializeField] private Image[] start_img;
+    [SerializeField] private Sprite get_img;
+    [SerializeField] private Sprite non_img;
 
-    public void ShowText(Player_Data data,Game_Type game_Type)
+    public void ShowText(Player_Data data,Game_Type game_Type,int startcount)
     {
 
         reactionRate.text = data.ReactionRate.ToString("F2");        
@@ -30,8 +33,7 @@ public class Result_Printer : MonoBehaviour
         {
             //60초를 넘겼다면 표시
             playTime.text = $"{minute}분 {(int)second}초";
-        }
-
+        }        
         //총 점수 계산
         totalScore.text = data.TotalScore.ToString();
         
@@ -53,6 +55,22 @@ public class Result_Printer : MonoBehaviour
                 break;
             default:
                 break;
+        }
+        PrintStarCount(startcount);
+    }
+    
+    private void PrintStarCount(int count)
+    {
+        for (int i = 0; i < 3; i++)
+        {
+            if (i<count)
+            {
+                start_img[i].sprite = get_img;
+            }
+            else
+            {
+                start_img[i].sprite = non_img;
+            }
         }
     }
 
