@@ -279,7 +279,7 @@ public class VeneziaManager : GameSetting
 
                         if (RemainAnswer == 0) // 정답을 모두 맞췄을때 게임 종료
                         {
-                            GameOver();
+                            GameClear();
                         }
                         if (isFirstPlayerTouch) // 솔로 모드에서는 One으로 지정됨
                         {
@@ -603,14 +603,13 @@ public class VeneziaManager : GameSetting
         }
     }
     #endregion
+    //타임아웃 게임오버
     private void GameOver()
     {
         if (isGameover) return;
-        if (veneGameMode == VeneGameMode.Sole && TimeSlider.Instance.slider.value == 0)
+        if ((veneGameMode == VeneGameMode.Sole && TimeSlider.Instance.slider.value <= 0))
         {
-            TimeSlider.Instance.startTime = 0;
             isGameover = true;
-            
             totalQuestions = ClickCount;
             ReactionTime = trueReactionTime / CorrectAnswerCount;
             //반응속도 할당
@@ -633,7 +632,20 @@ public class VeneziaManager : GameSetting
         }
 
     }
-
+    //출제된 문제를 전부 맞췄을때 
+    private void GameClear()
+    {
+        isGameover = true;
+        totalQuestions = ClickCount;
+        ReactionTime = trueReactionTime / CorrectAnswerCount;
+        //반응속도 할당
+        reactionRate = ReactionTime;
+        answersCount = CorrectAnswerCount;
+        //정답률 계산
+        AnswerRate();
+        //결과표 출력
+        EndGame();
+    }
     private void AnswerRate()
     {
         if (CorrectAnswerCount == 0)
