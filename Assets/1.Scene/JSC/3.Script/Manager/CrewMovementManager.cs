@@ -251,17 +251,18 @@ public class CrewMovementManager : MonoBehaviour
                 nextPos = CrewPos[finalPos - 1 - i].position;
             }
             float SetTime = 0f;
-            while (SetTime < 1f)
+            //회전속도
+            while (SetTime < 0.3f)
             {
                 SetTime += Time.deltaTime;
                 var targetPos = new Vector3(nextPos.x, SeleteableCrew[SeletedCrewIndex].transform.rotation.y, nextPos.z) - SeleteableCrew[SeletedCrewIndex].transform.position;
                 SeleteableCrew[SeletedCrewIndex].transform.rotation = Quaternion.Lerp(SeleteableCrew[SeletedCrewIndex].transform.rotation, Quaternion.LookRotation(targetPos), 0.05f);
                 yield return null;
             }
-
+            //이동속도
             while ((SeleteableCrew[SeletedCrewIndex].transform.position - nextPos).sqrMagnitude >0.01f)
             {
-                SeleteableCrew[SeletedCrewIndex].transform.position = Vector3.MoveTowards(SeleteableCrew[SeletedCrewIndex].transform.position, nextPos, Time.deltaTime * 10f);
+                SeleteableCrew[SeletedCrewIndex].transform.position = Vector3.MoveTowards(SeleteableCrew[SeletedCrewIndex].transform.position, nextPos, Time.deltaTime * 80f);
                 yield return null;
             }
 
