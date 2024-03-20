@@ -26,7 +26,8 @@ public class MainMenuManager : MonoBehaviour
     
     private void Start()
     {
-        SettingManager.Instance.EnableSettingBtn();
+        SettingManager.Instance.EnableSettingBtn();        
+        AudioManager.Instance.BGM_Play(0);
     }
     public void GameScene()
     {

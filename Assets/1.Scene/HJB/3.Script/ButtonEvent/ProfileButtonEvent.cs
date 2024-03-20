@@ -15,10 +15,12 @@ public class ProfileButtonEvent : MonoBehaviour
     [SerializeField] private TextMeshProUGUI reactionRate;
     [SerializeField] private TextMeshProUGUI answersRate;
 
+    public AnalyticsProfileData analyticsProfile;
     private void Start()
     {
         ChangeImage_Btn(1);
     }
+    
     public void ChangeImage_Btn(int level)
     {
         for (int i = 0; i < profile_btn.Length; i++)
@@ -31,13 +33,41 @@ public class ProfileButtonEvent : MonoBehaviour
             else
             {
                 profile_btn[i].sprite = Non_img;
-            }
+            }            
         }
     }
     private void ChangePlayerGameData(int level)
     {
-        moreGame.text = $"Lv_{level} 데이터 받기";
-        reactionRate.text =$"Lv_{level}데이터 받기";
-        answersRate.text = $"Lv_{level}데이터 받기";
+        level -= 1;
+        try
+        {
+            PlayerProfileDataCheck(level);
+        }
+        catch (System.Exception)
+        {
+
+            Debug.Log("프로필에 할당된 데이터가 없거나 Null입니다.");
+        }
+    }
+
+    private void PlayerProfileDataCheck(int level)
+    {
+        
+        string a =  DataBase.Instance.PlayerCharacter[DataBase.Instance.CharacterIndex].analyticsProfileData.Data[level].Item1;
+        float b = DataBase.Instance.PlayerCharacter[DataBase.Instance.CharacterIndex].analyticsProfileData.Data[level].Item2;
+        int c = DataBase.Instance.PlayerCharacter[DataBase.Instance.CharacterIndex].analyticsProfileData.Data[level].Item3;
+        if (a=="0")
+        {
+            moreGame.text = "플레이한 내역이 없습니다.";
+            reactionRate.text = "";
+            answersRate.text = "";
+        }
+        else
+        {
+            moreGame.text = a;
+            reactionRate.text = $"{b.ToString("F2")}초";
+            answersRate.text = $"{c}%";
+        }
+        
     }
 }

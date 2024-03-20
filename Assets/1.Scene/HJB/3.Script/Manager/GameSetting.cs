@@ -47,18 +47,19 @@ public abstract class GameSetting : MonoBehaviour,ITouchEffect
 
     private IEnumerator UpdateDatabaseFromData_co;
 
-    [HideInInspector]public AudioSource source;
+    public AudioSource source;
 
 
     private void Awake()
     {
-        source = GetComponent<AudioSource>();
+        //source = GetComponent<AudioSource>();        
     }
 
     private void Start()
     {
-        //UpdateDatabaseFromData_co = UpdateDatabaseFromData();
+        UpdateDatabaseFromData_co = UpdateDatabaseFromData();
         startSet();
+        AudioManager.Instance.BGMAudio.Stop();
     }
 
     private void startSet()
@@ -66,8 +67,15 @@ public abstract class GameSetting : MonoBehaviour,ITouchEffect
         //선택한 레벨, 스텝, 시간 값 초기 설정
         game_Type = StepManager.Instance.game_Type;
         step = StepManager.Instance.CurrentStep;
-        level = StepManager.Instance.CurrentLevel;        
-        timeSet = StepManager.Instance.CurrentTime;        
+        level = StepManager.Instance.CurrentLevel;
+        if(TimeSlider.Instance.gameType == GameType.Solo)
+        {
+            timeSet = StepManager.Instance.CurrentTime;
+        }
+        else
+        {
+            timeSet = 60;
+        }
         TimeSlider.Instance.startTime = timeSet;
         TimeSlider.Instance.duration = timeSet;
         Debug.Log($"game_Type : {game_Type}, level : {level}, step: {step} ");        
@@ -141,15 +149,19 @@ public abstract class GameSetting : MonoBehaviour,ITouchEffect
         //결과표 텍스트 출력
         ResultPrinter_UI();
 
-        UpdateDatabaseFromData();
-        //try
-        //{
-        //}
-        //catch (Exception)
-        //{
+        try
+        {
+            StartCoroutine(UpdateDatabaseFromData_co);
+        }
+        catch (Exception)
+        {
 
-        //    Debug.Log("DB 연결 부탁.");
-        //}
+            Debug.Log("DB 연결 부탁.");
+        }
+        finally
+        {
+            
+        }
     }
 
     public void ResultCanvas_UI()
@@ -191,23 +203,25 @@ public abstract class GameSetting : MonoBehaviour,ITouchEffect
 
     }
 
-    private void UpdateDatabaseFromData()
+    private IEnumerator UpdateDatabaseFromData()
     {
         //string day = System.DateTime.Now.ToString("dd-MM-yy");
         Player_DB db = DataBase.Instance.PlayerCharacter[0];
+        starcount = 1;
         Data_value data_Value = new Data_value(reactionRate, answersCount, answers, playTime, totalScore,starcount);        
         
         //만약 totalScore가 DB에 있는 점수보다 크다면 다시 할당
         if (db.Data[(game_Type, level, step)].TotalScore < totalScore)
         {
-            db.Data[(game_Type, level, step)] = data_Value;
+            db.Data[(game_Type, level, step)] = data_Value;            
             Client.instance.AppGame_SaveResultDataToDB(db, game_Type,level,step);
             Debug.Log("정상적으로 DB에 저장");
         }
         else
         {
             Debug.Log("최종점수가 DB에 있는 점수보다 낮아서 저장안함 ");
-        }        
+        }
+        yield return null;
     }
     public void Setting_UI()
     {        

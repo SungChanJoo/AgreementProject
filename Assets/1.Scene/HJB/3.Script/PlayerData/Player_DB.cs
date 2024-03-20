@@ -16,6 +16,9 @@ public class Player_DB
     public RankData RankingInfo;
     public ExpenditionCrew Collections;
     public LastPlayData LastPlayStepData;
+    public AnalyticsProfileData analyticsProfileData;
+
+    public int StarCoin = 0;
 }
 [System.Serializable]
 public class Data_value

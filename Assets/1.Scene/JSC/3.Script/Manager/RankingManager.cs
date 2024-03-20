@@ -78,9 +78,9 @@ public class RankingManager : MonoBehaviour
     public void SetRanking()
     {
         //PlayerTimeData[0].img.sprite = ;
-        var rankInfo = DataBase.Instance.playerInfo.RankingInfo;
-        if (rankInfo != null)
+        if (Client.instance != null)
         {
+            var rankInfo = DataBase.Instance.playerInfo.RankingInfo;
             for (int i = 0; i < timeRankData.Length; i++)
             {
                 timeRankData[i].img.sprite = ProfileImage_Set(rankInfo.rankdata_time[^(i + 2)].userProfile);
@@ -113,10 +113,10 @@ public class RankingManager : MonoBehaviour
     }
     public void SetMyRanking()
     {
-        var rankInfo = DataBase.Instance.playerInfo.RankingInfo;
-        var myData = rankInfo.rankdata_score[5];
-        if (rankInfo != null)
+        if (Client.instance != null)
         {
+            var rankInfo = DataBase.Instance.playerInfo.RankingInfo;
+            var myData = rankInfo.rankdata_score[5];
             Weekly.text = $"기간 : {"1998.3.31~ 3.31"}";
             MyImg.sprite = ProfileImage_Set(myData.userProfile);
             Name.text = $"이름 : {myData.userName}";
@@ -138,7 +138,7 @@ public class RankingManager : MonoBehaviour
         else
         {
             Weekly.text = $"기간 : {"1998.3.31~ 3.31"}";
-            Name.text = $"이름 : {rankInfo.rankdata_score[5].userName}";
+            Name.text = $"이름 : {"바보에"}";
 
             var timeRank = PersnalRank[0].transform.Find("TimeRank").GetChild(0).GetComponent<TMP_Text>();
             var totalTime = PersnalRank[0].transform.Find("TotalTime").GetChild(0).GetComponent<TMP_Text>();

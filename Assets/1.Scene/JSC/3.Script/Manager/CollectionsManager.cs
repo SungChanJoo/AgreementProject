@@ -72,11 +72,13 @@ public class CollectionsManager : MonoBehaviour
             Instance = this;
         else
             Destroy(gameObject);
-        //todo 0220 DB에서 플레이어 돈 받아와서 할당해줘
+        if(Client.instance != null)
+            _money= DataBase.Instance.PlayerCharacter[DataBase.Instance.CharacterIndex].StarCoin;
         _moneyText.text = $"{_money}";
         SetCollections();
         DetailCrewData();
     }
+
     private void OnEnable()
     {
         OnCheckPurchasePossibility += CheckPurchasePossibility;
@@ -84,6 +86,11 @@ public class CollectionsManager : MonoBehaviour
     private void OnDisable()
     {
         OnCheckPurchasePossibility -= CheckPurchasePossibility;
+        //도감 비활성화 시 DB에 현재 탐험대원 도감 반영
+        if (Client.instance != null)
+        {
+            Client.instance.AppExit_SaveExpenditionCrewDataToDB(Collections);
+        }
     }
     public void LoadMetaWorld(string sceneName)
     {
@@ -252,7 +259,7 @@ public class CollectionsManager : MonoBehaviour
     public void SetCollections()
     {
         //DB에 데이터 받아서 선택된 대원과 보유한 대원 리스트 받기
-        if(DataBase.Instance.playerInfo.Collections != null)
+        if(Client.instance != null)
         {
             Collections = DataBase.Instance.playerInfo.Collections;
         }
@@ -261,7 +268,7 @@ public class CollectionsManager : MonoBehaviour
         {
             int selectedCrew = 0;
             List<bool> ownedCrew = new List<bool>();
-            for (int i = 0; i < 32; i++)
+            for (int i = 0; i < CrewList.Count; i++)
             {
                 if(i<5)
                 {
@@ -344,6 +351,7 @@ public class CollectionsManager : MonoBehaviour
             if (_money < Convert.ToInt32(_crewStatusText[i].text))
             {
                 //SetBtnColor(buttonImg, DeniedPurchaseBtnColor);
+                buttonImg.sprite = DeniedImg;
             }
             //아니면 영입가능
             else
@@ -356,7 +364,6 @@ public class CollectionsManager : MonoBehaviour
     //탐험대원 선택
     public void OnSelectPet(int selectIndex, GameObject btn = null, TMP_Text text = null)
     {
-        Debug.Log("SelectPet");
         //이미 선택된 대원입니다.
         if (Collections.SelectedCrew == selectIndex)
         {
@@ -392,8 +399,6 @@ public class CollectionsManager : MonoBehaviour
     //대원 구매
     public void OnPurchaseCrew(int i, GameObject btn = null, TMP_Text text = null)
     {
-        Debug.Log("PurchaseCrew :" + _crewStatusText[i].text);
-
         var crewCost = Convert.ToInt32(_crewStatusText[i].text);
         if (_money >= crewCost)
         {
@@ -426,6 +431,11 @@ public class CollectionsManager : MonoBehaviour
             //구매후 창닫기
             _purchaseWindow.SetActive(false);
             _purchaseBtn.GetComponent<Button>().onClick.RemoveAllListeners();
+            //대원 구매 시 DB에 현재 탐험대원 도감 반영
+            if (Client.instance != null)
+            {
+                Client.instance.AppExit_SaveExpenditionCrewDataToDB(Collections);
+            }
         }
         else
         {
@@ -449,11 +459,7 @@ public class CollectionsManager : MonoBehaviour
             }
         }
     }
-    //버튼 색 변경
-/*    public void SetBtnColor(Image button, Color color)
-    {
-        button.color = color;
-    }*/
+
     //탐험대원 정보(이름, 설명) 불러오기
     public void DetailCrewData()
     {

@@ -90,6 +90,7 @@ public class PlayerMovement : NetworkBehaviour
             if(_setRotateTimebet >= SetFowardRotateTime)
             {
                 transform.rotation = Quaternion.Euler(0f, -180f, 0f);
+                EmtiCanvas.transform.localRotation = Quaternion.Euler(0f, 0f, 0f);
                 _setRotateTimebet = 0f;
             }
         }

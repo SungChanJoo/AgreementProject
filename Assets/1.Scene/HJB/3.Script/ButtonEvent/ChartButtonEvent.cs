@@ -18,9 +18,15 @@ public class ChartButtonEvent : MonoBehaviour
     private Image[] chartlevel_img;
     private Image[] chartGame_img;
 
+   
+
+    private byte current_day;
+    private byte current_gameType;
+    private byte current_level;
     private void Awake()
     {
         ChartButtonReference();
+        
     }
     private void Start()
     {
@@ -51,6 +57,7 @@ public class ChartButtonEvent : MonoBehaviour
                 chartlevel_img[i].sprite = Non_img;
             }
         }
+        current_level = (byte)level;
     }
     public void ChangeButtonChart_Gmae(int game)
     {
@@ -73,6 +80,7 @@ public class ChartButtonEvent : MonoBehaviour
                 chartGame_img[i].sprite = Non_img;
             }
         }
+        current_gameType = (byte)game;
     }
     public void Venezia_Btn(int game)
     {
@@ -87,5 +95,9 @@ public class ChartButtonEvent : MonoBehaviour
                 venezia_btn[i].sprite = Non_img;
             }
         }
+        current_gameType = (byte)game;
     }
+    
+
+
 }
