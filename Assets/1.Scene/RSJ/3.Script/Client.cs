@@ -687,9 +687,16 @@ public class Client : MonoBehaviour
         // DB에 Load할 rank Table이 없다면 NONE이 들어옴
         // filterList[0] = NONTHING| // OR rank table이 있다면 filterList[0] = profile|name|score|
         List<string> tempList = filterList[0].Split('|', StringSplitOptions.RemoveEmptyEntries).ToList();
-        if(tempList[0] == "NOTHING")
+
+        for(int i = 0; i < tempList.Count; i++)
         {
-            if(clientRankData == null)
+            Debug.Log($"[Client] tempList[{i}] : {tempList[i]}");
+        }
+
+
+        if (tempList[0] == "NOTHING")
+        {
+            if (clientRankData == null)
             {
                 Debug.Log("[Client] clientRankData Does not exist, maybe come in here");
             }
@@ -710,18 +717,18 @@ public class Client : MonoBehaviour
         for (int i = 0; i < filterList.Count; i++)
         {
             List<string> part = filterList[i].Split('|', StringSplitOptions.RemoveEmptyEntries).ToList();
-
-            if(i < 5) // score 1~5 등
+            Debug.Log($"[Client] filterList.Count : count i : {i}");
+            if (i < 5) // score 1~5 등
             {
                 clientRankData.rankdata_score[i] = new RankData_value();
-                clientRankData.rankdata_score[i].userProfile = Convert.FromBase64String(part[0]);
+                clientRankData.rankdata_score[i].userProfile = (part[0] == "0") ? null : Convert.FromBase64String(part[0]);
                 clientRankData.rankdata_score[i].userName = part[1];
                 clientRankData.rankdata_score[i].totalScore = Int32.Parse(part[2]);
             }
             else if(i == 5) // 클라이언트 score
             {
                 clientRankData.rankdata_score[i] = new RankData_value();
-                clientRankData.rankdata_score[i].userProfile = Convert.FromBase64String(part[0]);
+                clientRankData.rankdata_score[i].userProfile = (part[0] == "0") ? null : Convert.FromBase64String(part[0]);
                 clientRankData.rankdata_score[i].userName = part[1];
                 clientRankData.rankdata_score[i].totalScore = Int32.Parse(part[2]);
                 clientRankData.rankdata_score[i].scorePlace = Int32.Parse(part[3]);
@@ -730,14 +737,14 @@ public class Client : MonoBehaviour
             else if(i < 11) // time 1~5등
             {
                 clientRankData.rankdata_time[i - 6] = new RankData_value();
-                clientRankData.rankdata_time[i - 6].userProfile = Convert.FromBase64String(part[0]);
+                clientRankData.rankdata_time[i - 6].userProfile = (part[0] == "0") ? null : Convert.FromBase64String(part[0]);
                 clientRankData.rankdata_time[i - 6].userName = part[1];
                 clientRankData.rankdata_time[i - 6].totalTime = float.Parse(part[2]);
             }
             else // 클라이언트 time
             {
                 clientRankData.rankdata_time[i - 6] = new RankData_value();
-                clientRankData.rankdata_time[i - 6].userProfile = Convert.FromBase64String(part[0]);
+                clientRankData.rankdata_time[i - 6].userProfile = (part[0] == "0") ? null : Convert.FromBase64String(part[0]);
                 clientRankData.rankdata_time[i - 6].userName = part[1];
                 clientRankData.rankdata_time[i - 6].totalTime = float.Parse(part[2]);
                 clientRankData.rankdata_time[i - 6].timePlace = Int32.Parse(part[3]);

@@ -1464,6 +1464,11 @@ public class DBManager : MonoBehaviour
 
         Debug.Log("[DB] Complete LoadRankData Method!!");
 
+        // presentDB·Î º¯°æ
+        mySqlCommand.CommandText = $"USE `{presentDB}`;";
+        mySqlCommand.ExecuteNonQuery();
+
+
         return return_List;
     }
 
