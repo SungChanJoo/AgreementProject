@@ -265,7 +265,7 @@ public class CrewMovementManager : MonoBehaviour
                 yield return null;
             }
 
-            yield return new WaitForSeconds(0.5f);
+            yield return new WaitForSeconds(0.1f);
         }
         crewAni.SetBool("IsWalk", false);
         SeleteableCrew[SeletedCrewIndex].transform.LookAt(Camera.main.transform.position);
