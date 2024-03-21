@@ -120,6 +120,10 @@ public class Client : MonoBehaviour
             Debug.Log("[Client] Success Connect to Server!");
             socketReady = true;
 
+            // 타임아웃 설정 (5초)
+            client.ReceiveTimeout = 5000;
+            Debug.Log($"[Client] client.ReceiveTimeout : {client.ReceiveTimeout}");
+
             stream = client.GetStream();// 연결에 성공하면 stream도 계속 연결할 수 있도록
         }
         catch (Exception e)
@@ -206,10 +210,6 @@ public class Client : MonoBehaviour
                 //isReceived = false;
                 //StartCoroutine(CheckReceiveTime_Co());
 
-                // 타임아웃 설정 (5초)
-                client.ReceiveTimeout = 5000;
-                Debug.Log($"[Client] client.ReceiveTimeout : {client.ReceiveTimeout}");
-
                 //byte[] buffer = new byte[1024]; // 일반적인 버퍼사이즈
                 byte[] buffer = new byte[16000000]; // 16MiB 버퍼 사이즈 
                 int bytesRead = stream.Read(buffer, 0, buffer.Length); // 데이터를 읽어올때까지 대기 (동기식)
@@ -224,6 +224,8 @@ public class Client : MonoBehaviour
                 // 네트워크 패킷손실 확인하는 방법
                 // requestName으로 요청한 데이터를 받을 때 , E| separtorString 개수를 파악해서 제대로 개수가 맞는지 확인후 Handling하고 개수가 맞지 않으면 재전송하는 식으로?
                 //isReceived = true;
+                
+
 
                 // 서버로부터 데이터 전송이 끝나면(Finish) break;
                 List<string> endCheck = receivedRequestData.Split('|').ToList();
@@ -253,17 +255,24 @@ public class Client : MonoBehaviour
         }
         catch (Exception e)
         {
-            Debug.Log($"[Client] Error receiving data from server : {e.Message}");
-        }
-        finally
-        {
-            Debug.Log($"[Client] Finally Reconnect To Server After Client.Close");
+            Debug.Log($"[Client] Error receiving data from server, is ReceiveTimeout? : {e.Message}");
+            Debug.Log($"[Client] So Reconnect To Server After Client.Close");
             client.Close();
             socketReady = false;
-
+            
             // 서버 연결
             ConnectToServer();
+            
         }
+        //finally
+        //{
+        //    Debug.Log($"[Client] Finally Reconnect To Server After Client.Close");
+        //    client.Close();
+        //    socketReady = false;
+        //
+        //    // 서버 연결
+        //    ConnectToServer();
+        //}
     }
 #endregion
 

@@ -355,9 +355,9 @@ public class Server : MonoBehaviour
             nextMidnight = DateTime.Today.AddDays(1);
             TimeSpan timeUntilMidnight = nextMidnight - DateTime.Now;
 
-            //// Test용
-            //DateTime testAfterOneMinute = DateTime.Now.AddSeconds(20);
-            //timeUntilMidnight = testAfterOneMinute - DateTime.Now;
+            // Test용
+            DateTime testAfterOneMinute = DateTime.Now.AddSeconds(20);
+            timeUntilMidnight = testAfterOneMinute - DateTime.Now;
 
             // 자정까지 대기할 WaitforSeconds 설정
             waitUntilMidnight = new WaitForSeconds((float)timeUntilMidnight.TotalSeconds);
@@ -459,7 +459,8 @@ public class Server : MonoBehaviour
                 client.Close();
                 disconnectList.Add(client);
                 Debug.Log($"[Server] After client.Close(), Test check client.Connected bool value : {client.Connected}");
-                clients.Remove(client);
+                //clients.Remove(client); // 컬렉션을 반복하고 있는 와중에 컬렉션을 수정할려고 하면 안됨
+                // 수정할 대상을 다른 리스트에 추가하고, 반복이 끝난 후에 해당 리스트의 항목을 삭제
                 continue;
             }
             #region etc
@@ -488,6 +489,13 @@ public class Server : MonoBehaviour
             //}
             #endregion
         }
+
+        foreach(TcpClient disconnectClient in disconnectList)
+        {
+            clients.Remove(disconnectClient);
+        }
+
+
     }
 
     // 하루가 지났을 때 PresentDB에 있는 gamedata들 새 DB(ex) 24.02.21)에 저장
