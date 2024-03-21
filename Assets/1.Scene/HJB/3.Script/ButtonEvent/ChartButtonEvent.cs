@@ -64,10 +64,18 @@ public class ChartButtonEvent : MonoBehaviour
         if (game ==3)
         {
             venezia_panel.SetActive(true);
+            for (int i = 0; i < chartlevel_btn.Length; i++)
+            {
+                chartlevel_img[i].gameObject.SetActive(false);
+            }
         }
         else
         {
             venezia_panel.SetActive(false);
+            for (int i = 0; i < chartlevel_btn.Length; i++)
+            {
+                chartlevel_img[i].gameObject.SetActive(true);
+            }
         }
         for (int i = 0; i < chartgame_btn.Length; i++)
         {

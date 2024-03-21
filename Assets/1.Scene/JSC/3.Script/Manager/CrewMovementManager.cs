@@ -115,7 +115,10 @@ public class CrewMovementManager : MonoBehaviour
         for (int i =0; i < level.Count; i++)
         {
             var step = level[i];
-
+            if (SelectedGame >= Game_Type.C)
+            {
+                SelectedLevel = 1;
+            }
             if (stepInfo.Data[(SelectedGame, SelectedLevel, i+1)].StarCount >0)
             {
                 //별 있으면 노란색

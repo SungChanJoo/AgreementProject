@@ -58,7 +58,42 @@ public class MainMenuManager : MonoBehaviour
         CollectionCavas.SetActive(!CollectionCavas.activeSelf);        
     }
 
-    
+    //베네치아용 선택 Level할당
+    public void SelectLevel_Venezia_Btn()
+    {
+        int level = StepManager.Instance.CurrentLevel+1;
+        //여기에 게임 타입 설정 먼저 만들 것.
+        if (level >= (int)Game_Type.C)
+        {
+            GameType_Btn(level);
+            Debug.Log($"클릭 {level} : {game_Type}");
+        }
+        Step_UI();
+        if (CrewMovementManager.Instance != null)
+        {
+            //탐험대원 보기
+            CrewMovementManager.Instance.ViewCrew();
+            var stepList = new List<GameObject>();
+            for (int i = 0; i < StepOfLevel[level - 2].transform.childCount; i++)
+            {
+                //스텝의 별개수 UI 오브젝트
+                var step = StepOfLevel[level - 2].transform.GetChild(i).Find("StarPoint_Panel").gameObject;
+                stepList.Add(step);
+            }
+            CrewMovementManager.Instance.StepByStarPoint(stepList);
+        }
+        for (int i = 0; i < StepOfLevel.Count; i++)
+        {
+            if (level - 2 == i)
+            {
+                StepOfLevel[i].SetActive(true);
+            }
+            else
+            {
+                StepOfLevel[i].SetActive(false);
+            }
+        }
+    }
     //선택한 Level 할당 이벤트
     public void SelectLevel_Btn(int level)
     {        
@@ -70,6 +105,10 @@ public class MainMenuManager : MonoBehaviour
             Level_UI();
         }
         StepManager.Instance.SelectLevel(level);
+        if (game_Type>=Game_Type.C)
+        {
+            GameType_Btn(level+1);
+        }        
         if (CrewMovementManager.Instance != null)
         {
             //탐험대원 보기

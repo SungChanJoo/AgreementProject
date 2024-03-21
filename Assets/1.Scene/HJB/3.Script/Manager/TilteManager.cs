@@ -22,8 +22,7 @@ public class TilteManager : MonoBehaviour
             licenseFolderPath = Application.persistentDataPath + "/License";
         else
             licenseFolderPath = Application.dataPath + "/License";
-
-        testText.text = licenseFolderPath;
+        
         string licenseFilePath = licenseFolderPath + "/clientlicense.json";
         if (!File.Exists(licenseFilePath))
         {

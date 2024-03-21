@@ -117,9 +117,7 @@ public class SettingManager : MonoBehaviour
     }
     //환경설정 UI Off
     public void Setting_Btn()
-    {
-        
-        
+    {        
         //캔버스의 할당된 카메라가 없다면
         if (setting.worldCamera == null)
         {
@@ -144,6 +142,10 @@ public class SettingManager : MonoBehaviour
         {
             Restart_Btn.SetActive(false);
         }
+        
+        Time.timeScale = setting_Canvas.activeSelf? 1:0;
+        Debug.Log(Time.timeScale);
+        
     }
     
     public void MetaWorldSceneLoad_Btn()

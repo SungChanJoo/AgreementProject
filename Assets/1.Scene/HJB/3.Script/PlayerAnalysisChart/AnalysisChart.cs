@@ -19,6 +19,7 @@ public class AnalysisChart : MonoBehaviour
     [SerializeField] private GameObject answersRate_Line;
     [SerializeField] private TextMeshProUGUI[] dayText;
     
+    [SerializeField] private TextMeshProUGUI noDataText;
 
 
     private List<float> playerdata=new List<float>();
@@ -143,18 +144,26 @@ public class AnalysisChart : MonoBehaviour
     }
     private void ShowChartData()
     {
-        List<float> reactionRate_list = new List<float>();
-        List<float> answerRate_list = new List<float>();
-        for (int i = 1; i < 8; i++)
+        try
         {
-            reactionRate_list.Add(analyticsData.Data[(i, game_type,level_num)].reactionRate);
-            answerRate_list.Add(analyticsData.Data[(i, game_type, level_num)].answerRate);
-            Debug.Log(analyticsData.Data[(i, game_type, level_num)].reactionRate);
-            reactionRate_list[i-1]=Mathf.Abs((reactionRate_list[i-1] - (reactionRate_list[i-1] % 0.5f)) - 20f) / 20f;
-            Debug.Log(reactionRate_list[i-1]);
-            dayText[i-1].text = analyticsData.Data[(i, game_type, level_num)].day;
+            List<float> reactionRate_list = new List<float>();
+            List<float> answerRate_list = new List<float>();
+            for (int i = 1; i < 8; i++)
+            {
+                reactionRate_list.Add(analyticsData.Data[(i, game_type, level_num)].reactionRate);
+                
+                
+                reactionRate_list[i - 1] = Mathf.Abs((reactionRate_list[i - 1] - (reactionRate_list[i - 1] % 0.5f)) - 20f) / 20f;
+                
+                dayText[i - 1].text = analyticsData.Data[(i, game_type, level_num)].day;
+            }
+            SelectType(answerRate_list, reactionRate_list);
         }
-        SelectType(answerRate_list, reactionRate_list);
+        catch (System.Exception)
+        {
+            noDataText.text = "데이터가 없습니다.";
+        }
+        
 
     }
     private void SelectType(List<float> answer,List<float> reaction)
