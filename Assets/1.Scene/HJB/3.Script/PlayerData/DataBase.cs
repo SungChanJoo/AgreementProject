@@ -58,10 +58,16 @@ public class DataBase : MonoBehaviour
     {
         string jsonStringFromFile = File.ReadAllText(dataPath);
         JsonData client_JsonFile = JsonMapper.ToObject(jsonStringFromFile);
-        ClientData.LicenseNumber = client_JsonFile["LicenseNumber"].ToString();
-        ClientData.Charactor = Int32.Parse( client_JsonFile["Charactor"].ToString());
-        ClientData = new ClientData(ClientData.Charactor);
-        UserList = Client.instance.AppStart_LoadUserDataFromDB();
+        ClientData = new ClientData(Int32.Parse(client_JsonFile["Charactor"].ToString()), client_JsonFile["LicenseNumber"].ToString());
+        try
+        {
+            UserList = Client.instance.AppStart_LoadUserDataFromDB();
+
+        }
+        catch(Exception e)
+        {
+            Debug.Log(e + "UserList Don't Load");
+        }
         //createdCharactorCount 이걸로 프로필 프리펩 비활성화
         //UserList에 따라 프로필 데이터 갱신(이름, 사진)
     }
@@ -72,17 +78,20 @@ public class DataBase : MonoBehaviour
     //2. PlayerDataLoad() 변경된 클라이언트의 캐릭터 넘버로 플레이어 데이터 DB에서 불러오기
     public void ChangeCharactor(int charNum)
     {
-        ClientData.Charactor = charNum;
-        JsonData cleintData = JsonMapper.ToJson(ClientData);
-        File.WriteAllText(dataPath, cleintData.ToString());
+        ClientData.Charactor = charNum+1;
+        Client.instance.ChangeCharactorData(ClientData.Charactor);
+
         //clientData.Charactor에 따라 playerInfo를 불러옴, todo 0321 playerInfo에 따른 데이터(init)들을 불러와줘
         PlayerDataLoad();
+        Debug.Log("playerName : " + PlayerCharacter[CharacterIndex].playerName);
+        Debug.Log("playerInfo : " + playerInfo.playerName);
+        
     }
     public void CharactorAdd(string name)
     {
         
         //이 부분에서 플레이어 추가 로직 만들기
-        if (PlayerCharacter.Count >= 3)
+        if (PlayerCharacter.Count >= 5)
         {
             Client.instance.CreateCharactorData(name);
             Debug.Log("최대 30개까지 등록가능합니다.");

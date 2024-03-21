@@ -82,18 +82,17 @@ public class ProfileText_M : MonoBehaviour
         for (int i = 0; i < Characters.transform.childCount - 1; i++)
         {
             var characters = Characters.transform.GetChild(i).GetComponent<PlayerCharacter>();
-            characters.InputName(i);
 
             if (i < DataBase.Instance.UserList.createdCharactorCount)
             {
-
+                Debug.Log(DataBase.Instance.UserList.createdCharactorCount);
+                characters.InputName(i);
                 if (!characters.gameObject.activeSelf)
                     characters.gameObject.SetActive(true);
             }
             else
             {
-                if (characters.gameObject.activeSelf)
-                    characters.gameObject.SetActive(false);
+                break;
             }
         }
     }
@@ -101,7 +100,7 @@ public class ProfileText_M : MonoBehaviour
     public void CharacterChangeNameLoad()
     {
         var characters = Characters.transform.GetChild(DataBase.Instance.ClientData.Charactor).GetComponent<PlayerCharacter>();
-        characters.InputName(DataBase.Instance.ClientData.Charactor);
+        characters.InputName(DataBase.Instance.ClientData.Charactor-1);
     }
 
     private void CalculationPlayTime()
@@ -200,7 +199,7 @@ public class ProfileText_M : MonoBehaviour
 
     public void Registration_InputField()
     {
-        
+        Registration_Input.text = "";
     }
 
 }

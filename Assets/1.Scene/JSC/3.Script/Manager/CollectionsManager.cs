@@ -317,49 +317,57 @@ public class CollectionsManager : MonoBehaviour
         }
         int crewNumber = i; //클로저 방지
         //선택되어 있던 대원은 "출동!" 텍스트
-        if (Collections.SelectedCrew == i)
+        if(Collections == null)
         {
-            if (btn == null && text == null) 
-                button.onClick.AddListener(() => OnSelectPet(crewNumber));
-            else
-                button.onClick.AddListener(() => OnSelectPet(crewNumber, btn, text));
-            buttonText.text = CrewButton._selectedCrew;
-            //SetBtnColor(buttonImg, SelectedBtnColor);
-            buttonImg.sprite = SelectedImg;
+            Debug.Log("Collections is null");
         }
-        //보유한 대원은 "출동" 텍스트
-        else if (Collections.OwnedCrew[i])
-        {
-            if (btn == null && text == null) 
-                button.onClick.AddListener(() => OnSelectPet(crewNumber));
-            else 
-                button.onClick.AddListener(() => OnSelectPet(crewNumber, btn, text));
-            buttonText.text = CrewButton._ownedCrew;
-            //SetBtnColor(buttonImg, DefaultBtnColor);
-            buttonImg.sprite = DefaultImg;
-        }
-        //영입가능한 대원은 Cost 텍스트
         else
         {
-            if (btn == null && text == null) 
-                //button.onClick.AddListener(() => OnPurchaseCrew(crewIndex));
-                button.onClick.AddListener(() => OnViewPurchase(crewNumber));
-            else 
-                //button.onClick.AddListener(() => OnPurchaseCrew(crewIndex, btn, text));
-                button.onClick.AddListener(() => OnViewPurchase(crewNumber));
-            //보유한 금액보다 탐험대원의 비용이 더 비싸면 deniedPurchase
-            if (_money < Convert.ToInt32(_crewStatusText[i].text))
+            if (Collections.SelectedCrew == i)
             {
-                //SetBtnColor(buttonImg, DeniedPurchaseBtnColor);
-                buttonImg.sprite = DeniedImg;
+                if (btn == null && text == null)
+                    button.onClick.AddListener(() => OnSelectPet(crewNumber));
+                else
+                    button.onClick.AddListener(() => OnSelectPet(crewNumber, btn, text));
+                buttonText.text = CrewButton._selectedCrew;
+                //SetBtnColor(buttonImg, SelectedBtnColor);
+                buttonImg.sprite = SelectedImg;
             }
-            //아니면 영입가능
-            else
+            //보유한 대원은 "출동" 텍스트
+            else if (Collections.OwnedCrew[i])
             {
+                if (btn == null && text == null)
+                    button.onClick.AddListener(() => OnSelectPet(crewNumber));
+                else
+                    button.onClick.AddListener(() => OnSelectPet(crewNumber, btn, text));
+                buttonText.text = CrewButton._ownedCrew;
                 //SetBtnColor(buttonImg, DefaultBtnColor);
                 buttonImg.sprite = DefaultImg;
             }
+            //영입가능한 대원은 Cost 텍스트
+            else
+            {
+                if (btn == null && text == null)
+                    //button.onClick.AddListener(() => OnPurchaseCrew(crewIndex));
+                    button.onClick.AddListener(() => OnViewPurchase(crewNumber));
+                else
+                    //button.onClick.AddListener(() => OnPurchaseCrew(crewIndex, btn, text));
+                    button.onClick.AddListener(() => OnViewPurchase(crewNumber));
+                //보유한 금액보다 탐험대원의 비용이 더 비싸면 deniedPurchase
+                if (_money < Convert.ToInt32(_crewStatusText[i].text))
+                {
+                    //SetBtnColor(buttonImg, DeniedPurchaseBtnColor);
+                    buttonImg.sprite = DeniedImg;
+                }
+                //아니면 영입가능
+                else
+                {
+                    //SetBtnColor(buttonImg, DefaultBtnColor);
+                    buttonImg.sprite = DefaultImg;
+                }
+            }
         }
+        
     }
     //탐험대원 선택
     public void OnSelectPet(int selectIndex, GameObject btn = null, TMP_Text text = null)
