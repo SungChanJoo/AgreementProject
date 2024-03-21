@@ -4441,18 +4441,27 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Cube: {fileID: 1079827597520798626, guid: 42324beeb234f8b4b876e05c9fb72576, type: 3}
   Pool_Position: {fileID: 788314112}
+  Pool_PositionTwo: {fileID: 0}
   CubeParentObject: {fileID: 577192753}
+  CubeParentObjectTwo: {fileID: 0}
   ItemParentObject: {fileID: 1774103092}
+  PlayerOne_Boom: {fileID: 0}
+  PlayerTwo_Boom: {fileID: 0}
   MeteorPrefab: {fileID: 371837130864099498, guid: 341d2eb32cfd00e45a350a399d1fbadf, type: 3}
   PausePrefab: {fileID: 7255894919554607050, guid: 75b3928eb8a2b994081d038c0d9042b6, type: 3}
+  BoomPrefab: {fileID: 0}
   sprite: {fileID: 0}
   QuestImg: {fileID: 240970841}
+  QuestTwoImg: {fileID: 0}
   CubeCount: 1
   ItemCount: 5
   cubePool: []
   cubePoolTwo: []
   MeteorPool: []
   PausePool: []
+  BoomPool: []
+  FirstPool: 0
+  SecondPool: 0
 --- !u!4 &824326894 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 8098451086910080548, guid: 65bf97c6f92762d4e89ea01f727d10a3, type: 3}
@@ -7435,23 +7444,23 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1041971267800493504, guid: 64d8fef6ba5e8ed4bb4fa4f8b1fc9f7b, type: 3}
       propertyPath: m_SizeDelta.x
-      value: 500
+      value: 300
       objectReference: {fileID: 0}
     - target: {fileID: 1041971267800493504, guid: 64d8fef6ba5e8ed4bb4fa4f8b1fc9f7b, type: 3}
       propertyPath: m_SizeDelta.y
-      value: 200
+      value: 500
       objectReference: {fileID: 0}
     - target: {fileID: 1041971267800493504, guid: 64d8fef6ba5e8ed4bb4fa4f8b1fc9f7b, type: 3}
       propertyPath: m_LocalScale.x
-      value: 0.10691673
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 1041971267800493504, guid: 64d8fef6ba5e8ed4bb4fa4f8b1fc9f7b, type: 3}
       propertyPath: m_LocalScale.y
-      value: 0.10691673
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 1041971267800493504, guid: 64d8fef6ba5e8ed4bb4fa4f8b1fc9f7b, type: 3}
       propertyPath: m_LocalScale.z
-      value: 0.10691673
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 1041971267800493504, guid: 64d8fef6ba5e8ed4bb4fa4f8b1fc9f7b, type: 3}
       propertyPath: m_LocalPosition.x
@@ -7730,6 +7739,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   game_Type: 0
+  play_mode: 0
   level: 0
   step: 0
   timeSet: 0
@@ -7741,7 +7751,9 @@ MonoBehaviour:
   totalScore: 0
   remainingTime: 0
   starcount: 0
+  starCoin: 0
   isStop: 1
+  settingStop: 0
   startTimeSet: {fileID: 0}
   nextStep_Btn: {fileID: 756554490}
   timeset: 0
@@ -7759,13 +7771,14 @@ MonoBehaviour:
     TotalQuestions: 0
     TotalScore: 0
   result_Printer: {fileID: 756554489}
-  gameover: {fileID: 1249587734}
+  source: {fileID: 0}
+  veneGameOver: {fileID: 0}
   CubeParent: {fileID: 577192752}
   veneGameMode: 0
   isGameover: 0
   Quest_Img: {fileID: 240970841}
-  Quest2_Img: {fileID: 601136170}
   Quest_text: {fileID: 1885517469}
+  Quest2_Img: {fileID: 601136170}
   Quest2_text: {fileID: 763989573}
   sprites_K:
   - {fileID: 21300000, guid: 5470053b39c84334d9ca6b2dd6169183, type: 3}
@@ -8058,10 +8071,12 @@ MonoBehaviour:
   RemainAnswer: 0
   CorrectAnswerCount: 0
   ClickCount: 0
+  Click_SecondPlayerCount: 0
   LifeTime: 0
   PoolingCool: 0
   limitCount: 0
   DestroyTime: 0
+  isFirstPlayerTouch: 0
 --- !u!114 &1566866590
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -10366,16 +10381,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2bb5cf6dadf54af499fb05a8bd93553c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  gameType: 0
   slider: {fileID: 1391337205}
   sliderVar_Image: {fileID: 773295635}
+  slider_PlayerTwo: {fileID: 0}
+  sliderVar_Image_PlayerTwo: {fileID: 0}
   ChangeTime: 0.2
   changeDuration: 10
+  gameType: 0
   time: 0
   PlayTime: 0
   isStop: 0
   isGameOver: 0
   startTime: 300
   duration: 300
+  startTimeTwo: 0
   Decreasetime: 5
   TimeStop: 1
