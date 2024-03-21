@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class ProfileManager : MonoBehaviour
 {
@@ -12,13 +13,16 @@ public class ProfileManager : MonoBehaviour
     [SerializeField] private GameObject PlayerImage_panel;
     [SerializeField] private LoadImage profileLoad ;
 
+    [SerializeField] private InputField characterName;
     private void OnEnable()
     {
         profileLoad.ProfileImage_Set();
     }
     public void PlayerChange_UI()
     {
-        PlayerChange_panel.SetActive(!PlayerChange_panel.activeSelf);        
+        PlayerChange_panel.SetActive(!PlayerChange_panel.activeSelf);
+        if(PlayerChange_panel.activeSelf)
+            PlayerChange_panel.GetComponent<ProfileText_M>().LoadCharacterProfile();
     }
 
     public void PlayerRegistration_UI()
@@ -43,7 +47,15 @@ public class ProfileManager : MonoBehaviour
     }
     public void PlayerChange_btn(int num)
     {
-        DataBase.Instance.CharacterIndex = num;  
+        DataBase.Instance.ChangeCharactor(num);  
+    }
+    public void AddCharacter()
+    {
+        //이름 등록
+        var characters = PlayerChange_panel.GetComponent<ProfileText_M>().
+            Characters.transform.GetChild(DataBase.Instance.UserList.createdCharactorCount).gameObject;
+        characters.SetActive(true);
+        DataBase.Instance.CharactorAdd(characterName.text);
     }
 
 }

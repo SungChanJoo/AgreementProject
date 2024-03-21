@@ -1131,9 +1131,9 @@ public class Client : MonoBehaviour
     }
 
     // Charactor 생성 요청 -> Server에서 보낸 데이터 받았을 때 clientCharactor -> 생성한 charactor번호로 변경
-    public void CreateCharactorData()
+    public void CreateCharactorData(string name)
     {
-        string reqeustData = $"[Create]Charactor|{clientLicenseNumber}|{clientCharactor}|Finish";
+        string reqeustData = $"[Create]Charactor|{clientLicenseNumber}|{clientCharactor}|{name}|Finish";
 
         RequestToServer(reqeustData);
     }
@@ -1583,7 +1583,6 @@ public class Client : MonoBehaviour
     public void OnClickCreateCharactor()
     {
         Debug.Log($"[Client] Before CreateCharactor");
-        CreateCharactorData();
         Debug.Log($"[Client] After CreateCharactor");
     }
 

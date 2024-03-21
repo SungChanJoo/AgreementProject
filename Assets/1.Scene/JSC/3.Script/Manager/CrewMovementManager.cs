@@ -65,7 +65,7 @@ public class CrewMovementManager : MonoBehaviour
         //DB연동해서 최종 플레이한 스텝 초기화
         if (Client.instance != null)
         {
-            LastPlayStepTable = DataBase.Instance.playerInfo.LastPlayStepData;
+            LastPlayStepTable = DataBase.Instance.PlayerCharacter[DataBase.Instance.CharacterIndex].LastPlayStepData;
         }
         else
         {

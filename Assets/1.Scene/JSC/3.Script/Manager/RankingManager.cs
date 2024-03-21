@@ -80,7 +80,7 @@ public class RankingManager : MonoBehaviour
         //PlayerTimeData[0].img.sprite = ;
         if (Client.instance != null)
         {
-            var rankInfo = DataBase.Instance.playerInfo.RankingInfo;
+            var rankInfo = DataBase.Instance.PlayerCharacter[DataBase.Instance.CharacterIndex].RankingInfo;
             for (int i = 0; i < timeRankData.Length; i++)
             {
                 timeRankData[i].img.sprite = ProfileImage_Set(rankInfo.rankdata_time[^(i + 2)].userProfile);

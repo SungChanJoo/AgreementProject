@@ -10,7 +10,7 @@ public class PlayerCharacter : MonoBehaviour
     
     public void InputName(int num)
     {
-        playerName.text = DataBase.Instance.PlayerCharacter[num].playerName;
+        playerName.text = DataBase.Instance.UserList.user[num].Name;
         
         player_num= num;
     }

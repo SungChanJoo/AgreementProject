@@ -20,22 +20,18 @@ public class DataBase : MonoBehaviour
 {
     public static DataBase Instance = null;
     public Player_DB playerInfo;
+    public UserData UserList;
     public List<Player_DB> PlayerCharacter = new List<Player_DB>();
     [SerializeField] TextAsset clientInfo;
-    ClientData clientData;
-    private int characterIndex = 0;
+    public ClientData ClientData;
     private string dataPath;
     public bool network_state;
     public int CharacterIndex {
         get
         {
-
-            return characterIndex;
+            return 0;
         }
-        set
-        {
 
-        }
     }
     private void Awake()
     {
@@ -57,36 +53,43 @@ public class DataBase : MonoBehaviour
             dataPath = Application.dataPath + "/License/clientlicense.json";
         }
     }
+    //전체 캐릭터 프로필 불러오기
+    public void LoadUserList()
+    {
+        string jsonStringFromFile = File.ReadAllText(dataPath);
+        JsonData client_JsonFile = JsonMapper.ToObject(jsonStringFromFile);
+        ClientData.LicenseNumber = client_JsonFile["LicenseNumber"].ToString();
+        ClientData.Charactor = Int32.Parse( client_JsonFile["Charactor"].ToString());
+        ClientData = new ClientData(ClientData.Charactor);
+        UserList = Client.instance.AppStart_LoadUserDataFromDB();
+        //createdCharactorCount 이걸로 프로필 프리펩 비활성화
+        //UserList에 따라 프로필 데이터 갱신(이름, 사진)
+    }
 
-    /*      프로필 변경
-                -라이센스에 대한 DB데이터 전부 불러오기
-            프로필 추가
-                -DB 캐틱터 마지막 인덱스 + 1 에 추가하기
-    */
     //프로필 바꾸는 메소드
     //매개변수 값 = clientData.Charactor번호
     //1. ClientLiscense 변경
     //2. PlayerDataLoad() 변경된 클라이언트의 캐릭터 넘버로 플레이어 데이터 DB에서 불러오기
     public void ChangeCharactor(int charNum)
     {
-        clientData = new ClientData(charNum);
-        characterIndex = charNum;
-        clientData.Charactor = characterIndex;
-        JsonData cleintData = JsonMapper.ToJson(clientData);
+        ClientData.Charactor = charNum;
+        JsonData cleintData = JsonMapper.ToJson(ClientData);
         File.WriteAllText(dataPath, cleintData.ToString());
+        //clientData.Charactor에 따라 playerInfo를 불러옴, todo 0321 playerInfo에 따른 데이터(init)들을 불러와줘
         PlayerDataLoad();
     }
-    public void CharactorAdd()
+    public void CharactorAdd(string name)
     {
+        
         //이 부분에서 플레이어 추가 로직 만들기
-        if (PlayerCharacter.Count >= 30)
+        if (PlayerCharacter.Count >= 3)
         {
+            Client.instance.CreateCharactorData(name);
             Debug.Log("최대 30개까지 등록가능합니다.");
             return;
         }
-        //Player의 Charactor추가
-        PlayerCharacter.Add(playerInfo);
     }
+
     public void PlayerDataLoad()
     {
         try
@@ -101,9 +104,8 @@ public class DataBase : MonoBehaviour
             playerInfo.LastPlayStepData = Client.instance.AppStart_LoadLastPlayFromDB();
             //플레이어 프로필 데이터 가져오기
             playerInfo.analyticsProfileData = Client.instance.AppStart_LoadAnalyticsProfileDataFromDB();
-
-            CharactorAdd();
             network_state = true;
+            //PlayerCharacter[CharacterIndex] = playerInfo;
         }
         catch (System.Exception)
         {

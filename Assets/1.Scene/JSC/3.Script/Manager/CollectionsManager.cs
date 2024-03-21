@@ -89,7 +89,7 @@ public class CollectionsManager : MonoBehaviour
         //도감 비활성화 시 DB에 현재 탐험대원 도감 반영
         if (Client.instance != null)
         {
-            Client.instance.AppExit_SaveExpenditionCrewDataToDB(Collections);
+            //Client.instance.AppExit_SaveExpenditionCrewDataToDB(Collections);
         }
     }
     public void LoadMetaWorld(string sceneName)
