@@ -786,7 +786,14 @@ MonoBehaviour:
     TotalAnswers: 0
     TotalTime: 0
     StarCoin: 0
-  PlayerCharacter: []
+  PlayerCharacter:
+  - playerName: 
+    image: 
+    Day: 
+    BirthDay: 
+    TotalAnswers: 0
+    TotalTime: 0
+    StarCoin: 0
   clientInfo: {fileID: 4900000, guid: fd073610bf095c5479bde51ff6d46a95, type: 3}
   network_state: 0
 --- !u!1 &747682663

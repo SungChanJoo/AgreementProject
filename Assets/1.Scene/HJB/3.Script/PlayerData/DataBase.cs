@@ -105,7 +105,7 @@ public class DataBase : MonoBehaviour
             //플레이어 프로필 데이터 가져오기
             playerInfo.analyticsProfileData = Client.instance.AppStart_LoadAnalyticsProfileDataFromDB();
             network_state = true;
-            //PlayerCharacter[CharacterIndex] = playerInfo;
+            PlayerCharacter[CharacterIndex] = playerInfo;
         }
         catch (System.Exception)
         {
