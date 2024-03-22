@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.39183635, g: 0.67341036, b: 0.7564018, a: 1}
+  m_IndirectSpecularColor: {r: 0.4543181, g: 0.77287054, b: 0.8653661, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -1485,17 +1485,20 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2bb5cf6dadf54af499fb05a8bd93553c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  gameType: 0
   slider: {fileID: 799251394}
   sliderVar_Image: {fileID: 1298881747}
+  slider_PlayerTwo: {fileID: 0}
+  sliderVar_Image_PlayerTwo: {fileID: 0}
   ChangeTime: 0.4
   changeDuration: 10
+  gameType: 0
   time: 0
   PlayTime: 0
   isStop: 0
   isGameOver: 0
   startTime: 6
   duration: 6
+  startTimeTwo: 0
   Decreasetime: 0
   TimeStop: 1
 --- !u!114 &799251394
@@ -3078,17 +3081,6 @@ RectTransform:
   m_CorrespondingSourceObject: {fileID: 1041971267800493504, guid: 64d8fef6ba5e8ed4bb4fa4f8b1fc9f7b, type: 3}
   m_PrefabInstance: {fileID: 1041971266648804337}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &1571644978 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 1041971267800493507, guid: 64d8fef6ba5e8ed4bb4fa4f8b1fc9f7b, type: 3}
-  m_PrefabInstance: {fileID: 1041971266648804337}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!114 &1571644981 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 1041971267800493508, guid: 64d8fef6ba5e8ed4bb4fa4f8b1fc9f7b, type: 3}
@@ -4139,6 +4131,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   game_Type: 0
+  play_mode: 0
   level: 0
   step: 0
   timeSet: 0
@@ -4150,8 +4143,10 @@ MonoBehaviour:
   totalScore: 0
   remainingTime: 0
   starcount: 0
+  starCoin: 0
   isStop: 1
-  startTimeSet: {fileID: 1571644978}
+  settingStop: 0
+  startTimeSet: {fileID: 0}
   nextStep_Btn: {fileID: 8522782060019054123}
   timeset: 2
   resultCanvas_UI: {fileID: 8522782060019054122}
@@ -4469,6 +4464,10 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 959155914}
     m_Modifications:
+    - target: {fileID: 1041971266410868746, guid: 64d8fef6ba5e8ed4bb4fa4f8b1fc9f7b, type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 21300000, guid: a5a8b9e8f2c28ff499765a252fad2313, type: 3}
     - target: {fileID: 1041971267800493504, guid: 64d8fef6ba5e8ed4bb4fa4f8b1fc9f7b, type: 3}
       propertyPath: m_Pivot.x
       value: 0.5
@@ -4499,11 +4498,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1041971267800493504, guid: 64d8fef6ba5e8ed4bb4fa4f8b1fc9f7b, type: 3}
       propertyPath: m_SizeDelta.x
-      value: 500
+      value: 300
       objectReference: {fileID: 0}
     - target: {fileID: 1041971267800493504, guid: 64d8fef6ba5e8ed4bb4fa4f8b1fc9f7b, type: 3}
       propertyPath: m_SizeDelta.y
-      value: 200
+      value: 500
       objectReference: {fileID: 0}
     - target: {fileID: 1041971267800493504, guid: 64d8fef6ba5e8ed4bb4fa4f8b1fc9f7b, type: 3}
       propertyPath: m_LocalPosition.x
@@ -4556,6 +4555,10 @@ PrefabInstance:
     - target: {fileID: 1041971267800493505, guid: 64d8fef6ba5e8ed4bb4fa4f8b1fc9f7b, type: 3}
       propertyPath: m_Name
       value: StartTimeSet
+      objectReference: {fileID: 0}
+    - target: {fileID: 1041971267800493505, guid: 64d8fef6ba5e8ed4bb4fa4f8b1fc9f7b, type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 1041971267800493508, guid: 64d8fef6ba5e8ed4bb4fa4f8b1fc9f7b, type: 3}
       propertyPath: gameSetting

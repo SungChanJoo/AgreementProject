@@ -988,6 +988,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   game_Type: 0
+  play_mode: 0
   level: 0
   step: 0
   timeSet: 0
@@ -999,7 +1000,9 @@ MonoBehaviour:
   totalScore: 0
   remainingTime: 0
   starcount: 0
+  starCoin: 0
   isStop: 1
+  settingStop: 0
   startTimeSet: {fileID: 0}
   nextStep_Btn: {fileID: 1713558300}
   timeset: 0
@@ -2090,23 +2093,23 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1041971267800493504, guid: 64d8fef6ba5e8ed4bb4fa4f8b1fc9f7b, type: 3}
       propertyPath: m_SizeDelta.x
-      value: 500
+      value: 300
       objectReference: {fileID: 0}
     - target: {fileID: 1041971267800493504, guid: 64d8fef6ba5e8ed4bb4fa4f8b1fc9f7b, type: 3}
       propertyPath: m_SizeDelta.y
-      value: 200
+      value: 500
       objectReference: {fileID: 0}
     - target: {fileID: 1041971267800493504, guid: 64d8fef6ba5e8ed4bb4fa4f8b1fc9f7b, type: 3}
       propertyPath: m_LocalScale.x
-      value: 0.10691673
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 1041971267800493504, guid: 64d8fef6ba5e8ed4bb4fa4f8b1fc9f7b, type: 3}
       propertyPath: m_LocalScale.y
-      value: 0.10691673
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 1041971267800493504, guid: 64d8fef6ba5e8ed4bb4fa4f8b1fc9f7b, type: 3}
       propertyPath: m_LocalScale.z
-      value: 0.10691673
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 1041971267800493504, guid: 64d8fef6ba5e8ed4bb4fa4f8b1fc9f7b, type: 3}
       propertyPath: m_LocalPosition.x
@@ -5428,17 +5431,20 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2bb5cf6dadf54af499fb05a8bd93553c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  gameType: 0
   slider: {fileID: 8836855193705866061}
   sliderVar_Image: {fileID: 8836855194716140459}
+  slider_PlayerTwo: {fileID: 0}
+  sliderVar_Image_PlayerTwo: {fileID: 0}
   ChangeTime: 0.35
   changeDuration: 3
+  gameType: 0
   time: 0
   PlayTime: 0
   isStop: 0
   isGameOver: 0
   startTime: 60
   duration: 60
+  startTimeTwo: 0
   Decreasetime: 5
   TimeStop: 1
 --- !u!222 &7739086947249468360

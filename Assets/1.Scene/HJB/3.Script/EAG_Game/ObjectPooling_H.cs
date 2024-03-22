@@ -70,8 +70,7 @@ public class ObjectPooling_H : MonoBehaviour
         //게임이 끝났다면
         if (aopManager.isStop || (timeOut && TimeSlider.Instance.TimeStop)||
             SettingManager.Instance.IsActive)
-        {
-            Debug.Log("중지");
+        {            
             return;
         }
         if (TimeSlider.Instance.slider.value<=0)
@@ -93,7 +92,7 @@ public class ObjectPooling_H : MonoBehaviour
     }
     private void Click_Obj()
     {
-        if (!touchEnable)
+        if (!touchEnable || aopManager.settingStop)
         {
             return;
         }

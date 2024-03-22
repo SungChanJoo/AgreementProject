@@ -103,6 +103,7 @@ public class GuGUDan_Fnc : GameSetting
         Select_onOff(CaseNum);
         QuestMark_onOff(CaseNum);
         Click();
+        
     }
     protected override void startGame()
     {

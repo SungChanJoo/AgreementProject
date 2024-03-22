@@ -57,7 +57,7 @@ public class CrewMovementManager : MonoBehaviour
 
     }
     #region DB Data Init
-    private void InitLastPlayStep()
+    public void InitLastPlayStep()
     {
         Debug.Log("InitLastPlayStep");
         //FinalPlayStepTable.Add((Game_Type.A, 1), 1); // Game_Type.A, 1레벨에서 마지막으로 플레이한 스텝이 1스텝
@@ -65,7 +65,7 @@ public class CrewMovementManager : MonoBehaviour
         //DB연동해서 최종 플레이한 스텝 초기화
         if (Client.instance != null)
         {
-            LastPlayStepTable = DataBase.Instance.playerInfo.LastPlayStepData;
+            LastPlayStepTable = DataBase.Instance.PlayerCharacter[DataBase.Instance.CharacterIndex].LastPlayStepData;
         }
         else
         {
@@ -81,7 +81,7 @@ public class CrewMovementManager : MonoBehaviour
         }
 
     }
-    private void InitPlayerDBData()
+    public void InitPlayerDBData()
     {
         //스텝 별개수 초기화
         if (Client.instance != null)
@@ -115,7 +115,10 @@ public class CrewMovementManager : MonoBehaviour
         for (int i =0; i < level.Count; i++)
         {
             var step = level[i];
-
+            if (SelectedGame >= Game_Type.C)
+            {
+                SelectedLevel = 1;
+            }
             if (stepInfo.Data[(SelectedGame, SelectedLevel, i+1)].StarCount >0)
             {
                 //별 있으면 노란색

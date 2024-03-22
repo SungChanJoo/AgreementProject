@@ -9,6 +9,7 @@ public class PlayerMod_Toggle : MonoBehaviour
     [SerializeField] private GameObject[] next_obj;
     [SerializeField] private GameObject filter_Canvas;
     [SerializeField] private GameObject nonfilter_Canvas;
+    [SerializeField] private GameObject[] MultiplayerDisabled_obj;
     public int playerMod = 1;
     public PlayMode playMode = PlayMode.Solo;
     RectTransform rectTransform;
@@ -61,11 +62,15 @@ public class PlayerMod_Toggle : MonoBehaviour
         {
             playMode = PlayMode.Couple;
             nextVector3 = rects[1].position;
+            MultiplayerDisabled_obj[0].SetActive(false);
+            MultiplayerDisabled_obj[1].SetActive(false);
         }
         else
         {
             playMode = PlayMode.Solo;
             nextVector3 = rects[0].position;
+            MultiplayerDisabled_obj[0].SetActive(true);
+            MultiplayerDisabled_obj[1].SetActive(true);
         }
         StepManager.Instance.PlayModeChange(playMode);
 

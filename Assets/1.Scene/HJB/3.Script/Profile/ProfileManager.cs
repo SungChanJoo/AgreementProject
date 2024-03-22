@@ -1,6 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class ProfileManager : MonoBehaviour
 {
@@ -12,18 +14,23 @@ public class ProfileManager : MonoBehaviour
     [SerializeField] private GameObject PlayerImage_panel;
     [SerializeField] private LoadImage profileLoad ;
 
+    [SerializeField] private TMP_InputField characterName;
     private void OnEnable()
     {
         profileLoad.ProfileImage_Set();
     }
     public void PlayerChange_UI()
     {
-        PlayerChange_panel.SetActive(!PlayerChange_panel.activeSelf);        
+        PlayerChange_panel.SetActive(!PlayerChange_panel.activeSelf);
+        if(PlayerChange_panel.activeSelf)
+            GetComponent<ProfileText_M>().LoadCharacterProfile();
     }
 
     public void PlayerRegistration_UI()
     {
         PlayerRegistration_panel.SetActive(!PlayerRegistration_panel.activeSelf);
+        if (PlayerChange_panel.activeSelf)
+            GetComponent<ProfileText_M>().Registration_InputField();
     }
     public void PlayerNameChange_UI()
     {
@@ -43,7 +50,18 @@ public class ProfileManager : MonoBehaviour
     }
     public void PlayerChange_btn(int num)
     {
-        DataBase.Instance.CharacterIndex = num;  
+        DataBase.Instance.ChangeCharactor(num);  
+    }
+    public void AddCharacter()
+    {
+        //이름 등록
+        var characters = GetComponent<ProfileText_M>().Characters.
+            transform.GetChild(DataBase.Instance.UserList.createdCharactorCount).gameObject;
+        characters.SetActive(true);
+        Debug.Log(characters.name);
+        characters.transform.GetChild(1).transform.Find("Name_Text").gameObject.GetComponent<TMP_Text>().text = characterName.text;
+        DataBase.Instance.CharactorAdd(characterName.text);
+        DataBase.Instance.LoadUserList();
     }
 
 }

@@ -16,10 +16,10 @@ public class ProfileText_M : MonoBehaviour
     [SerializeField] private TMP_InputField ChangeBirthday_Input;
     [SerializeField] private TMP_InputField Registration_Input;
 
-    [SerializeField] private GameObject Characters;
+    public GameObject Characters;
     [SerializeField] private GameObject ErrorText;
 
-    
+    [SerializeField] private List<GameObject> PlayerInfo = new List<GameObject>();
 
     private ProfileManager profileManager;
     
@@ -73,20 +73,35 @@ public class ProfileText_M : MonoBehaviour
     {
         
     }
-    
-    //플레이어 변경 Panel을 클릭 시 호출
-    public void CharacterChangeNameLoad()
+
+
+    public void LoadCharacterProfile()
     {
         //자식의 수만큼 배열선언
-        PlayerCharacter[] characters = new PlayerCharacter[Characters.transform.childCount];
         //- 1은 플레이어 추가 버튼을 제외하기 위함
         for (int i = 0; i < Characters.transform.childCount - 1; i++)
         {
-            //각 이름을 변경하기 위함
-            characters[i] = Characters.transform.GetChild(i).GetComponent<PlayerCharacter>();            
-            characters[i].InputName(i);
+            var characters = Characters.transform.GetChild(i).GetComponent<PlayerCharacter>();
+
+            if (i < DataBase.Instance.UserList.createdCharactorCount)
+            {
+                characters.SetProfile(i);
+                if (!characters.gameObject.activeSelf)
+                    characters.gameObject.SetActive(true);
+            }
+            else
+            {
+                break;
+            }
         }
     }
+    //플레이어 변경 Panel을 클릭 시 호출
+    public void CharacterChangeNameLoad()
+    {
+        var characters = Characters.transform.GetChild(DataBase.Instance.ClientData.Charactor).GetComponent<PlayerCharacter>();
+        characters.SetProfile(DataBase.Instance.ClientData.Charactor-1);
+    }
+
     private void CalculationPlayTime()
     {
         //시간 계산
@@ -183,7 +198,7 @@ public class ProfileText_M : MonoBehaviour
 
     public void Registration_InputField()
     {
-        
+        Registration_Input.text = "";
     }
 
 }

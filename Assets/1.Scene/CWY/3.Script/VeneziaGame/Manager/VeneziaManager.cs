@@ -199,7 +199,7 @@ public class VeneziaManager : GameSetting
         }
         
         DisplayRandomQuest();
-        //시간 시작 
+        //시간 시작
         StartTime();
         if(play_mode == PlayMode.Solo)
         {
@@ -215,7 +215,7 @@ public class VeneziaManager : GameSetting
     private void Update()
     {
         //  GameStop();
-        if (!isGameover)
+        if (!isGameover || !settingStop)
         {
             Click_Obj();
         }

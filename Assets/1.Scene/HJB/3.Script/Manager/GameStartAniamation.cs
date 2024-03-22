@@ -7,51 +7,53 @@ public class GameStartAniamation : MonoBehaviour
 {
     [SerializeField] private GameSetting gameSetting;    
     [SerializeField] private GameObject go_image;
+    [SerializeField] private Sprite[] ready_img;
 
     [SerializeField] private AudioClip[] audioClips;
-
-    private TextMeshProUGUI startTimeSet;
+    
     private Animator startAni;
     private AudioSource source;
+    private Image start_img;
     Game_Type Gametype;
-    int scene_num;
+    int scene_num;    
     private void Awake()
     {
-        startTimeSet = GetComponent<TextMeshProUGUI>();
-        startAni = startTimeSet.gameObject.GetComponent<Animator>();
+        start_img = go_image.GetComponent<Image>();        
+        startAni = GetComponent<Animator>();
         source = GetComponent<AudioSource>();
         
     }
     
 
     public void StartAniamtion()
-    {        
+    {
+        go_image.SetActive(true);
         startAni.SetTrigger("StartAnimation");
+        
     }
     public void Three_CallBack()
     {        
         source.PlayOneShot(audioClips[0]);
-        startTimeSet.text = "3";
+        start_img.sprite = ready_img[0];
     }
     public void Two_CallBack()
     {
         source.PlayOneShot(audioClips[1]);
-        startTimeSet.text = "2";
+        start_img.sprite = ready_img[1];
     }
     public void One_CallBack()
     {
         source.PlayOneShot(audioClips[2]);
-        startTimeSet.text = "1";
+        start_img.sprite = ready_img[2];
     }
     public void Start_CallBack()
     {
-        source.PlayOneShot(audioClips[3]);
-        startTimeSet.text = string.Empty;
-        go_image.SetActive(true);
+        source.PlayOneShot(audioClips[3]);        
+        start_img.sprite = ready_img[3];
     }
     public void StartGame_CallBack()
     {
-        startTimeSet.gameObject.SetActive(false);
+        gameObject.SetActive(false);
         Gametype = gameSetting.game_Type;
         switch (Gametype)
         {
