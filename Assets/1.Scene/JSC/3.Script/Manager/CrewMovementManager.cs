@@ -57,7 +57,7 @@ public class CrewMovementManager : MonoBehaviour
 
     }
     #region DB Data Init
-    private void InitLastPlayStep()
+    public void InitLastPlayStep()
     {
         Debug.Log("InitLastPlayStep");
         //FinalPlayStepTable.Add((Game_Type.A, 1), 1); // Game_Type.A, 1레벨에서 마지막으로 플레이한 스텝이 1스텝
@@ -81,7 +81,7 @@ public class CrewMovementManager : MonoBehaviour
         }
 
     }
-    private void InitPlayerDBData()
+    public void InitPlayerDBData()
     {
         //스텝 별개수 초기화
         if (Client.instance != null)

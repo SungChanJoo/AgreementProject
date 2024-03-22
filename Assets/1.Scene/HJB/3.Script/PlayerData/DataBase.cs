@@ -88,9 +88,12 @@ public class DataBase : MonoBehaviour,IDataReloading
 
         //clientData.Charactor에 따라 playerInfo를 불러옴, todo 0321 playerInfo에 따른 데이터(init)들을 불러와줘
         PlayerDataLoad();
-        Debug.Log("playerName : " + PlayerCharacter[CharacterIndex].playerName);
-        Debug.Log("playerInfo : " + playerInfo.playerName);
-        
+
+        CollectionsManager.Instance.SetCollections();
+        CrewMovementManager.Instance.InitLastPlayStep();
+        CrewMovementManager.Instance.InitPlayerDBData();
+        FindObjectOfType<RankingManager>().SetMyRanking();
+
     }
     public void CharactorAdd(string name)
     {
