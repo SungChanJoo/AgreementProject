@@ -7,6 +7,8 @@ public class RankData
     // 0~4 -> 1~5등 / 5 -> 개인 순위 및 점수
     public RankData_value[] rankdata_score;
     public RankData_value[] rankdata_time;
+
+    public string periodDate;
 }
 
 public class RankData_value

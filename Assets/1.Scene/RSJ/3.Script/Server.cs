@@ -33,15 +33,15 @@ public class Server : MonoBehaviour
     // 서버 한 주를 체크하기 위한 카운트
     private DateTime standardDay;
 
+    // Client Check Timer
+    private float clientCheckTime = 2f;
+    private float clientCheckTimer;
+
     // 기타 데이터 처리용 Handler
     private ETCMethodHandler etcMethodHandler = new ETCMethodHandler();
 
     // Rank용 Timer 변수, 5분마다 실시간 갱신(DB데이터 불러와서) 그 후 클라이언트한테 쏴줘야함(UDP) todo
     private float rankTime = 300f;
-
-    // Debug용
-    private float debugTime = 5f;
-    private float debugTimer;
 
     // Test용 bool
     private bool testBool = true;
@@ -57,19 +57,9 @@ public class Server : MonoBehaviour
     private void Update()
     {
         if (!isServerStarted) return;
-        //Debug.Log("Client가 들어오지 않으면 실행이 되지 않을것");
-        //DayTimer();
         if (clients.Count == 0) return;
 
         CheckClientsState();
-
-        //if (testBool)
-        //{   
-        //    Debug.Log("[Server] TestCreatDBTest");
-        //    testBool = false;
-        //    Debug.Log($"[Server] TestCreatDBTest, testBool value : {testBool}");
-        //    Invoke("CreateDBTest", 5f);
-        //}
     }
 
     // 서버 생성
@@ -130,14 +120,15 @@ public class Server : MonoBehaviour
         {
             NetworkStream stream = client.GetStream();
 
-            while (true)
+            // 연결이 true인동안 -> 연결이 안끊긴동안 
+            while (IsConnected(client))
             {
-                // 연결이 끊겼으면 break
-                if (!IsConnected(client))
-                {
-                    Debug.Log("[Server] Client connection is closed");
-                    break;
-                }
+                //// 연결이 끊겼으면 break
+                //if (!IsConnected(client))
+                //{
+                //    Debug.Log("[Server] Client connection is closed");
+                //    break;
+                //}
 
                 List<string> receivedRequestData_List = new List<string>();
 
@@ -208,6 +199,7 @@ public class Server : MonoBehaviour
         string requestName = baseDataList[0];
         int clientLicenseNumber = 0;
         int clientCharactor = 0;
+        string createCharactorName = null;
 
         if(baseDataList.ElementAtOrDefault(1) != null && baseDataList.ElementAtOrDefault(2) != null) // 일반적으로 clientLicenseNumber와 clientCharactor는 같이 들어옴
         {
@@ -217,6 +209,11 @@ public class Server : MonoBehaviour
         else if(baseDataList.ElementAtOrDefault(1) != null) // UserData, clientLicenseNumber만 있을 때
         {
             clientLicenseNumber = Int32.Parse(baseDataList[1]);
+        }
+        
+        if(baseDataList.ElementAtOrDefault(3) != null)
+        {
+            createCharactorName = baseDataList[3];
         }
 
         // Reply -> Client에게 보낼 List<string>, [0]은 requestName
@@ -245,7 +242,7 @@ public class Server : MonoBehaviour
                 replyRequestData_List.Add($"{clientdata}");
                 break;
             case "[Create]Charactor":
-                string newClientCharactor = DBManager.instance.CreateNewCharactorData(clientLicenseNumber, clientCharactor);
+                string newClientCharactor = DBManager.instance.CreateNewCharactorData(clientLicenseNumber, clientCharactor, createCharactorName);
                 Debug.Log($"[Server] Finish Create new CharactorData");
                 //replyRequestData_List.Add($"{newClientCharactor}|");
                 break;
@@ -355,9 +352,9 @@ public class Server : MonoBehaviour
             nextMidnight = DateTime.Today.AddDays(1);
             TimeSpan timeUntilMidnight = nextMidnight - DateTime.Now;
 
-            // Test용
-            DateTime testAfterOneMinute = DateTime.Now.AddSeconds(20);
-            timeUntilMidnight = testAfterOneMinute - DateTime.Now;
+            //// Test용
+            //DateTime testAfterOneMinute = DateTime.Now.AddSeconds(20);
+            //timeUntilMidnight = testAfterOneMinute - DateTime.Now;
 
             // 자정까지 대기할 WaitforSeconds 설정
             waitUntilMidnight = new WaitForSeconds((float)timeUntilMidnight.TotalSeconds);
@@ -434,68 +431,86 @@ public class Server : MonoBehaviour
     // 연결된 클라이언트 확인
     private void CheckClientsState()
     {
-        debugTimer += Time.deltaTime;
+        clientCheckTimer += Time.deltaTime;
 
-        while (debugTimer > debugTime)
+        // 매 업데이트마다? 1초마다 확인client 연결상태 확인
+        if (clientCheckTimer > clientCheckTime)
         {
-            Debug.Log($"[Server] Present Connected Clients : {clients.Count}");
-
-            foreach (TcpClient client in clients)
+            try
             {
-                Debug.Log($"[Server] Connected Clients's IP : {((IPEndPoint)client.Client.RemoteEndPoint).Address}");
+
+                Debug.Log($"[Server] Present Connected Clients : {clients.Count}");
+
+                foreach (TcpClient client in clients)
+                {
+                    // 연결이 끊긴 client가 있으면 client.Close 후 disconnectList에 Add
+                    if (!IsConnected(client))
+                    {
+                        if(client == null)
+                        {
+                            Debug.Log("[Server] client is null");
+                            Debug.Log($"[Server] clients.Count : {clients.Count}");
+                            Debug.Log($"[Server] disconnectList.Count : {disconnectList.Count}");
+                        }
+                        else
+                        {
+                            Debug.Log($"[Server] client is not null, but connection is disconnected");
+                        }
+
+                        Debug.Log("[Server] Client connection is closed");
+                        Debug.Log($"[Server] Disconnected clients's IP : {((IPEndPoint)client.Client.RemoteEndPoint).Address}");
+                        client.Close();
+                        disconnectList.Add(client);
+                        //Debug.Log($"[Server] After client.Close(), Test check client.Connected bool value : {client.Connected}");
+                        //clients.Remove(client); // 컬렉션을 반복하고 있는 와중에 컬렉션을 수정할려고 하면 안됨
+                        // 수정할 대상을 다른 리스트에 추가하고, 반복이 끝난 후에 해당 리스트의 항목을 삭제
+                        continue;
+                    }
+                    else // 연결중인 Client의 IP 주소 확인
+                    {
+                        Debug.Log($"[Server] Connected Clients's IP : {((IPEndPoint)client.Client.RemoteEndPoint).Address}");
+                    }
+                    #region etc
+                    //// 클라이언트 연결이 끊어졌다면
+                    //if (!CheckConnectState(client))
+                    //{
+                    //    Debug.Log($"Disconnected client's IP {((IPEndPoint)client.Client.RemoteEndPoint).Address}");
+                    //    client.Close();
+                    //    disconnectList.Add(client);
+                    //    continue;
+                    //}
+                    // 클라이언트로부터 체크 메시지 받기
+                    //else
+                    //{
+
+                    //    //NetworkStream stream = client.tcp.GetStream();
+                    //    //if(stream.DataAvailable)
+                    //    //{
+                    //    //    string data = new StreamReader(stream, true).ReadLine();
+
+                    //    //    if(data != null)
+                    //    //    {
+                    //    //        On
+                    //    //    }
+                    //    //}
+                    //}
+                    #endregion
+                }
+            }
+            catch(Exception e)
+            {
+                Debug.Log($"[Server] CheckClientState Exception occurred while Check every 2 seconds, e.Message : {e.Message}");
+            }
+            
+
+            foreach (TcpClient disconnectClient in disconnectList)
+            {
+                clients.Remove(disconnectClient);
             }
 
-            //DayTimer();
-
-            debugTimer = 0f;
+            clientCheckTimer = 0f;
         }
-
-        foreach (TcpClient client in clients)
-        {
-            if (!IsConnected(client))
-            {
-                Debug.Log("[Server] Client connection is closed");
-                Debug.Log($"[Server] Disconnected clients's IP : {((IPEndPoint)client.Client.RemoteEndPoint).Address}");
-                client.Close();
-                disconnectList.Add(client);
-                Debug.Log($"[Server] After client.Close(), Test check client.Connected bool value : {client.Connected}");
-                //clients.Remove(client); // 컬렉션을 반복하고 있는 와중에 컬렉션을 수정할려고 하면 안됨
-                // 수정할 대상을 다른 리스트에 추가하고, 반복이 끝난 후에 해당 리스트의 항목을 삭제
-                continue;
-            }
-            #region etc
-            //// 클라이언트 연결이 끊어졌다면
-            //if (!CheckConnectState(client))
-            //{
-            //    Debug.Log($"Disconnected client's IP {((IPEndPoint)client.Client.RemoteEndPoint).Address}");
-            //    client.Close();
-            //    disconnectList.Add(client);
-            //    continue;
-            //}
-            // 클라이언트로부터 체크 메시지 받기
-            //else
-            //{
-
-            //    //NetworkStream stream = client.tcp.GetStream();
-            //    //if(stream.DataAvailable)
-            //    //{
-            //    //    string data = new StreamReader(stream, true).ReadLine();
-
-            //    //    if(data != null)
-            //    //    {
-            //    //        On
-            //    //    }
-            //    //}
-            //}
-            #endregion
-        }
-
-        foreach(TcpClient disconnectClient in disconnectList)
-        {
-            clients.Remove(disconnectClient);
-        }
-
-
+        
     }
 
     // 하루가 지났을 때 PresentDB에 있는 gamedata들 새 DB(ex) 24.02.21)에 저장
@@ -530,11 +545,20 @@ public class Server : MonoBehaviour
 
     private bool IsConnected(TcpClient client)
     {
-        // 해석 필요
-        bool isConnCheck = !((client.Client.Poll(1000, SelectMode.SelectRead) && (client.Client.Available == 0)) || !client.Client.Connected);
-        //bool isConnCheck = client.Client.Poll(1000, SelectMode.SelectRead) && (client.Client.Available == 0) && client.Client.Connected;
+        try
+        {
+            // 해석 필요
+            bool isConnCheck = !((client.Client.Poll(1000, SelectMode.SelectRead) && (client.Client.Available == 0)) || !client.Client.Connected);
+            //bool isConnCheck = client.Client.Poll(1000, SelectMode.SelectRead) && (client.Client.Available == 0) && client.Client.Connected;
 
-        return isConnCheck;
+            return isConnCheck;
+        }
+        catch(Exception e)
+        {
+            Debug.Log($"[Server] IsConnected Exeception occurred : {e.Message}");
+            return false;
+        }
+        
     }
 
     // 서버 종료

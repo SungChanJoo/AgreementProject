@@ -18,6 +18,8 @@ public class ClientTest : MonoBehaviour
         try
         {
             TestLoadUserData();
+            // todo 서버와 통신해서 데이터가 유실되면 데이터를 받아야하는 객체가 null인지 판단해서 다시 데이터 받아
+           
         }
         catch(Exception e)
         {

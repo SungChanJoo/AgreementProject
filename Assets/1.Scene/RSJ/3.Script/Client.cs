@@ -699,7 +699,8 @@ public class Client : MonoBehaviour
         // filterList[6] = profile|name|totalScore|scorePlace|highestScorePlace|E|
         // filterList[7] = profile|name|totalTime|E|
         // ...
-        // filterList[last] = profile|name|totalTime|timePlace|highestTimePlace|E|
+        // filterList[last-1] = profile|name|totalTime|timePlace|highestTimePlace|E|
+        // filterList[last] = periodDate|E|
         #endregion
 
         // 하나의 string
@@ -773,7 +774,7 @@ public class Client : MonoBehaviour
                 clientRankData.rankdata_time[i - 6].userName = part[1];
                 clientRankData.rankdata_time[i - 6].totalTime = float.Parse(part[2]);
             }
-            else // 클라이언트 time
+            else if(i == 11)// 클라이언트 time
             {
                 clientRankData.rankdata_time[i - 6] = new RankData_value();
                 clientRankData.rankdata_time[i - 6].userProfile = (part[0] == "0") ? null : Convert.FromBase64String(part[0]);
@@ -781,6 +782,10 @@ public class Client : MonoBehaviour
                 clientRankData.rankdata_time[i - 6].totalTime = float.Parse(part[2]);
                 clientRankData.rankdata_time[i - 6].timePlace = Int32.Parse(part[3]);
                 clientRankData.rankdata_time[i - 6].highestTimePlace = Int32.Parse(part[4]);
+            }
+            else // periodDate
+            {
+                clientRankData.periodDate = part[0];
             }
 
         }
@@ -1131,9 +1136,9 @@ public class Client : MonoBehaviour
     }
 
     // Charactor 생성 요청 -> Server에서 보낸 데이터 받았을 때 clientCharactor -> 생성한 charactor번호로 변경
-    public void CreateCharactorData()
+    public void CreateCharactorData(string name)
     {
-        string reqeustData = $"[Create]Charactor|{clientLicenseNumber}|{clientCharactor}|Finish";
+        string reqeustData = $"[Create]Charactor|{clientLicenseNumber}|{clientCharactor}|{name}|Finish";
 
         RequestToServer(reqeustData);
     }
@@ -1583,7 +1588,7 @@ public class Client : MonoBehaviour
     public void OnClickCreateCharactor()
     {
         Debug.Log($"[Client] Before CreateCharactor");
-        CreateCharactorData();
+        CreateCharactorData("asd");
         Debug.Log($"[Client] After CreateCharactor");
     }
 

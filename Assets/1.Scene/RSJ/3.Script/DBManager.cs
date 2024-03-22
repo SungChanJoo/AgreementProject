@@ -206,7 +206,7 @@ public class DBManager : MonoBehaviour
     }
 
     // 새 캐릭터 데이터 생성
-    public string CreateNewCharactorData(int clientlicensenumber, int clientcharactor)
+    public string CreateNewCharactorData(int clientlicensenumber, int clientcharactor, string defaultName = null)
     {
         Debug.Log($"[DB] Create new Charactor data, client's licensenumber : {clientlicensenumber}, clients's charactor : {clientcharactor}");
 
@@ -261,7 +261,7 @@ public class DBManager : MonoBehaviour
             if (i == 2) // User_Name
             {
                 valueParameter.MySqlDbType = MySqlDbType.VarChar;
-                valueParameter.Value = "Guest";
+                valueParameter.Value = defaultName == null? "Guest" : defaultName;
             }
             else if (i == 3) // User_Profile
             {
@@ -1502,6 +1502,9 @@ public class DBManager : MonoBehaviour
         }
         reader.Close();
 
+        // Rank 주간 날짜 보내주기
+        return_List.Add($"{referenceWeeklyRankTableName}|{separatorString}");
+
         Debug.Log("[DB] Complete Load ExpenditionCrew From DB");
 
         return return_List;
@@ -1792,7 +1795,8 @@ public class DBManager : MonoBehaviour
         Debug.Log("[DB] Come in CreateDateDB");
 
         // 생성할 DB 이름
-        string DBName = $"{DateTime.Now.Year.ToString().Substring(2,2)}.{DateTime.Now.Month:00}.{DateTime.Now.Day:00}";
+        DateTime presentTime = DateTime.Now.AddDays(-1);
+        string DBName = $"{presentTime.Year.ToString().Substring(2,2)}.{presentTime.Month:00}.{presentTime.Day:00}";
         Debug.Log($"DBName : {DBName}");
         // 게임 테이블 명, TableName은 생성되면 알아서 테이블들이 담김. 게임을 제외한 나머지 테이블 제거
         TableName gameTable = new TableName();
