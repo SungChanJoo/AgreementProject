@@ -43,7 +43,10 @@ public class ObjectPooling_H : MonoBehaviour
     }
     private void Update()
     {
-        Click_Obj();
+        if (!GameSetting.settingStop)
+        {
+            Click_Obj();
+        }
         TimeCheck();
     }
     //Start 버튼 이벤트가 콜백되면 실행
@@ -92,7 +95,7 @@ public class ObjectPooling_H : MonoBehaviour
     }
     private void Click_Obj()
     {
-        if (!touchEnable || aopManager.settingStop)
+        if (!touchEnable || GameSetting.settingStop)
         {
             return;
         }

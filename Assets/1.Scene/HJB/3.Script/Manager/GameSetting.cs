@@ -28,7 +28,7 @@ public abstract class GameSetting : MonoBehaviour,ITouchEffect
 
     [HideInInspector] public bool isStop = true;
 
-    [HideInInspector] public bool settingStop = false;
+    [HideInInspector] public static bool settingStop = false;
 
     [SerializeField] private TextMeshProUGUI startTimeSet;
 
@@ -44,12 +44,13 @@ public abstract class GameSetting : MonoBehaviour,ITouchEffect
 
     private IEnumerator UpdateDatabaseFromData_co;
 
-    public AudioSource source;    
+    public AudioSource source;
 
 
     private void Awake()
     {
         //source = GetComponent<AudioSource>();        
+
     }
 
     private void Start()
@@ -65,6 +66,7 @@ public abstract class GameSetting : MonoBehaviour,ITouchEffect
         play_mode = StepManager.Instance.playMode;
         game_Type = StepManager.Instance.game_Type;
         step = StepManager.Instance.CurrentStep;
+        level = StepManager.Instance.CurrentLevel;
         if (game_Type >= Game_Type.C)
         {
             level = 1;
@@ -238,7 +240,7 @@ public abstract class GameSetting : MonoBehaviour,ITouchEffect
             return 0;
         }
     }
-
+    
     private IEnumerator UpdateDatabaseFromData()
     {
         //string day = System.DateTime.Now.ToString("dd-MM-yy");
@@ -262,7 +264,7 @@ public abstract class GameSetting : MonoBehaviour,ITouchEffect
     {        
         SettingManager.Instance.EnableSettingBtn();
 
-        settingStop = !settingStop;
+        
         if (isStop)
         {   //게임 시작 전이라면 시간에 영향받지 않는
             SettingManager.Instance.NonTemporalSetting_Btn();
@@ -271,8 +273,7 @@ public abstract class GameSetting : MonoBehaviour,ITouchEffect
         {
             //게임 시작 후라면 시간 정지에 영향 주는 
             SettingManager.Instance.Setting_Btn();
-        }       
-        
+        }        
     }
     public void Start_Btn()
     {

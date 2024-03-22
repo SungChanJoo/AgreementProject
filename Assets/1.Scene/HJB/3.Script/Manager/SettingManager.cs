@@ -32,7 +32,7 @@ public class SettingManager : MonoBehaviour
     [SerializeField] private Image[] SfxSlider_color;
 
     public bool Stop = true;
-    public bool IsActive = false;
+    public bool IsActive = false;    
 
     private int sound_num;
 
@@ -129,7 +129,9 @@ public class SettingManager : MonoBehaviour
         }
         setting_Canvas.SetActive(!setting_Canvas.activeSelf);
         IsActive = setting_Canvas.activeSelf;
+        GameSetting.settingStop = !GameSetting.settingStop;
     }
+   
     public void NonTemporalSetting_Btn()
     {
         //캔버스의 할당된 카메라가 없다면
@@ -143,7 +145,7 @@ public class SettingManager : MonoBehaviour
             Restart_Btn.SetActive(false);
         }
         
-        Time.timeScale = setting_Canvas.activeSelf? 1:0;
+        //Time.timeScale = setting_Canvas.activeSelf? 1:0;
         Debug.Log(Time.timeScale);
         
     }

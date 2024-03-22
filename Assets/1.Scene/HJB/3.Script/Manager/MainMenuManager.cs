@@ -31,7 +31,7 @@ public class MainMenuManager : MonoBehaviour
     
     private void Start()
     {
-        SettingManager.Instance.EnableSettingBtn();        
+        SettingManager.Instance.EnableSettingBtn();
         AudioManager.Instance.BGM_Play(0);
         Cost_UI.text = DataBase.Instance.PlayerCharacter[DataBase.Instance.CharacterIndex].StarCoin.ToString();
         string net_state = DataBase.Instance.network_state ?  "연결": "연결안됨";
