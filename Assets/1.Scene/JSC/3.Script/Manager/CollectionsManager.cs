@@ -22,6 +22,13 @@ class CrewButton
 {
     public const string _selectedCrew = "출동!";
     public const string _ownedCrew = "대기";
+    public static string[] _crewCost = { "0", "0", "0", "0", "0", "0"
+                                       , "0", "0", "0", "0", "0", "0"
+                                       , "0", "0", "0", "0", "0", "0"
+                                       , "0", "0", "50", "50", "50", "0"
+                                       , "0", "0", "0", "0", "0", "0"
+                                       , "0", "0", "0", "0", "50", "50"
+                                       , "50", "0", "0", };
 }
 
 //펫을 고르고 메타별에 입장을 관리하는 매니져
@@ -262,6 +269,7 @@ public class CollectionsManager : MonoBehaviour
         if(Client.instance != null)
         {
             Collections = DataBase.Instance.playerInfo.Collections;
+            Debug.Log(DataBase.Instance.playerInfo.playerName);
         }
         //데이터를 불러오지 못하면 초기화
         else
@@ -299,6 +307,7 @@ public class CollectionsManager : MonoBehaviour
     }
     public void SetupCrewSelectionBtn(int i, GameObject btn = null, TMP_Text text = null)
     {
+
         Image buttonImg;
         Button button;
         TMP_Text buttonText;
@@ -315,6 +324,7 @@ public class CollectionsManager : MonoBehaviour
             button = btn.GetComponent<Button>();
             buttonText = text;
         }
+        button.onClick.RemoveAllListeners();
         int crewNumber = i; //클로저 방지
         //선택되어 있던 대원은 "출동!" 텍스트
         if(Collections == null)
@@ -347,6 +357,7 @@ public class CollectionsManager : MonoBehaviour
             //영입가능한 대원은 Cost 텍스트
             else
             {
+                buttonText.text = CrewButton._crewCost[i];
                 if (btn == null && text == null)
                     //button.onClick.AddListener(() => OnPurchaseCrew(crewIndex));
                     button.onClick.AddListener(() => OnViewPurchase(crewNumber));

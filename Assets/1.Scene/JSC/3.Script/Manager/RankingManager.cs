@@ -117,9 +117,9 @@ public class RankingManager : MonoBehaviour
         {
             var rankInfo = DataBase.Instance.playerInfo.RankingInfo;
             var myData = rankInfo.rankdata_score[5];
-            Weekly.text = $"기간 : {"1998.3.31~ 3.31"}";
-            MyImg.sprite = ProfileImage_Set(myData.userProfile);
-            Name.text = $"이름 : {myData.userName}";
+            Weekly.text = $"기간 : {rankInfo.periodDate}";
+            MyImg.sprite = ProfileImage_Set(DataBase.Instance.playerInfo.image);
+            Name.text = $"이름 : {DataBase.Instance.playerInfo.playerName}";
             var timeRank = PersnalRank[0].transform.Find("TimeRank").GetChild(0).GetComponent<TMP_Text>();
             var totalTime = PersnalRank[0].transform.Find("TotalTime").GetChild(0).GetComponent<TMP_Text>();
             timeRank.text = $"순위 : {myData.scorePlace}\n" +
