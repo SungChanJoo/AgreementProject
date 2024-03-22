@@ -134,10 +134,6 @@ public abstract class GameSetting : MonoBehaviour,ITouchEffect
         TimeSlider.Instance.TimeSliderControll();       
 
         //현재 마지막 Step이면 버튼 비활성화
-        if (step == 6)
-        {
-            nextStep_Btn.SetActive(false);
-        }
         //남은시간
         remainingTime = TimeSlider.Instance.startTime;
         playTime = TimeSlider.Instance.PlayTime;
@@ -147,6 +143,10 @@ public abstract class GameSetting : MonoBehaviour,ITouchEffect
         //업적 활성화
         starcount = GameScoreToStarCount(totalScore);
 
+        if (step == 6 || starcount<1)
+        {
+            nextStep_Btn.SetActive(false);
+        }
         //결과창 UI 활성화
         ResultCanvas_UI();
         //결과표 텍스트 출력
