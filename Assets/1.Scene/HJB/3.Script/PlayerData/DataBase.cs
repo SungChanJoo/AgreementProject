@@ -5,6 +5,11 @@ using LitJson;
 using System;
 using System.IO;
 
+
+public interface IDataReloading
+{
+    public void IDataReloading();
+}
 public class ClientData
 {
     public string LicenseNumber;
@@ -16,7 +21,7 @@ public class ClientData
         Charactor = ci;
     }
 }
-public class DataBase : MonoBehaviour
+public class DataBase : MonoBehaviour,IDataReloading
 {
     public static DataBase Instance = null;
     public Player_DB playerInfo;
@@ -121,9 +126,36 @@ public class DataBase : MonoBehaviour
             playerInfo = null;
             network_state = false;
             Debug.Log("DB에서 플레이어 데이터를 불러오지 못했습니다.");
+            IDataReloading();
         }
     }
 
-    
-
+    public void IDataReloading()
+    {
+        int a = 0;
+        while (a<10)
+        {
+            a++;
+            try
+            {
+                //플레이어 정보 불러오기
+                playerInfo = Client.instance.AppStart_LoadCharactorDataFromDB();
+                //랭킹데이터 불러오기
+                playerInfo.RankingInfo = Client.instance.AppStart_LoadRankDataFromDB();
+                //탐험대원 도감데이터 불러오기
+                playerInfo.Collections = Client.instance.AppStart_LoadExpenditionCrewFromDB();
+                //마지막 플레이한 스텝 데이터 불러오기
+                playerInfo.LastPlayStepData = Client.instance.AppStart_LoadLastPlayFromDB();
+                //플레이어 프로필 데이터 가져오기
+                playerInfo.analyticsProfileData = Client.instance.AppStart_LoadAnalyticsProfileDataFromDB();
+                network_state = true;
+                PlayerCharacter[CharacterIndex] = playerInfo;
+                break;
+            }
+            catch (Exception)
+            {
+                Debug.Log($"현재 데이터를 불러오는 것을 실패하여 재시도합니다...{a}번째 시도중....");
+            }
+        }        
+    }
 }

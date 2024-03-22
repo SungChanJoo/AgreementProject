@@ -13,7 +13,7 @@ public class ButtonEvent : MonoBehaviour
     [SerializeField] private Sprite select_img;
     [SerializeField] private Sprite Non_img;
 
-    [SerializeField]private TextMeshProUGUI[] btn_text;
+    [SerializeField]private TextMeshProUGUI[] btn_text;    
 
     private int level;
     private int timeSet;   
