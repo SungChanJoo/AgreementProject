@@ -58,8 +58,10 @@ public class ProfileManager : MonoBehaviour
         var characters = GetComponent<ProfileText_M>().Characters.
             transform.GetChild(DataBase.Instance.UserList.createdCharactorCount).gameObject;
         characters.SetActive(true);
-        characters.transform.Find("Name_Text").gameObject.GetComponent<TMP_Text>().text = characterName.text;
+        Debug.Log(characters.name);
+        characters.transform.GetChild(1).transform.Find("Name_Text").gameObject.GetComponent<TMP_Text>().text = characterName.text;
         DataBase.Instance.CharactorAdd(characterName.text);
+        DataBase.Instance.LoadUserList();
     }
 
 }

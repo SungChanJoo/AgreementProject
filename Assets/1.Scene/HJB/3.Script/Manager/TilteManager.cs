@@ -41,6 +41,7 @@ public class TilteManager : MonoBehaviour
     }
     public void PlayerLoadData_Btn()
     {
+        DataBase.Instance.LoadUserList();
         DataBase.Instance.PlayerDataLoad();
     }
     public void Registration_UI()

@@ -91,12 +91,12 @@ public class DataBase : MonoBehaviour
     {
         
         //이 부분에서 플레이어 추가 로직 만들기
-        if (PlayerCharacter.Count >= 5)
+        if (UserList.createdCharactorCount >= 5)
         {
-            Client.instance.CreateCharactorData(name);
-            Debug.Log("최대 30개까지 등록가능합니다.");
+            Debug.Log("최대 5개까지 등록가능합니다.");
             return;
         }
+        Client.instance.CreateCharactorData(name);
     }
 
     public void PlayerDataLoad()

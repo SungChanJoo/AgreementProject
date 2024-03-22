@@ -85,8 +85,7 @@ public class ProfileText_M : MonoBehaviour
 
             if (i < DataBase.Instance.UserList.createdCharactorCount)
             {
-                Debug.Log(DataBase.Instance.UserList.createdCharactorCount);
-                characters.InputName(i);
+                characters.SetProfile(i);
                 if (!characters.gameObject.activeSelf)
                     characters.gameObject.SetActive(true);
             }
@@ -100,7 +99,7 @@ public class ProfileText_M : MonoBehaviour
     public void CharacterChangeNameLoad()
     {
         var characters = Characters.transform.GetChild(DataBase.Instance.ClientData.Charactor).GetComponent<PlayerCharacter>();
-        characters.InputName(DataBase.Instance.ClientData.Charactor-1);
+        characters.SetProfile(DataBase.Instance.ClientData.Charactor-1);
     }
 
     private void CalculationPlayTime()
