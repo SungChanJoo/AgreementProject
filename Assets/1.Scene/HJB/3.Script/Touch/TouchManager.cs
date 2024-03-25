@@ -12,9 +12,7 @@ public class TouchManager : MonoBehaviour
 {
     public static TouchManager Instance = null;
     [SerializeField] private GameObject[] effect_obj;
-    [SerializeField] private GameObject beganEffect_obj;
-    [SerializeField] private GameObject beganEffect_vene;
-    [SerializeField] private GameObject beganEffect_gugu;
+    [SerializeField] private GameObject beganEffect_obj;    
     public Canvas uiCanvas; // UI 캔버스
     //public Camera uiCamera; // UI 전용 카메라  
     ParticleSystem[] particles;
@@ -66,7 +64,7 @@ public class TouchManager : MonoBehaviour
             RaycastHit hit;
             if (touch.phase == TouchPhase.Began)
             {
-                GameObject beganTouch = TouchCheck(SceneManager.GetActiveScene().buildIndex);
+                GameObject beganTouch = Instantiate(beganEffect_obj, uiCanvas.transform);
                 beganTouch.transform.position = touch.position;
                 //hit.collider.tag == "Untagged"
                 if (!Physics.Raycast(ray, out hit)&&(hit.collider == null))
@@ -92,22 +90,6 @@ public class TouchManager : MonoBehaviour
             }
         }
     }   
-
-    private GameObject TouchCheck(int scene_index)
-    {
-        switch (scene_index)
-        {
-            case 0:
-            case 1:
-            case 2:
-                return Instantiate(beganEffect_obj, uiCanvas.transform);
-            case 3:
-                return Instantiate(beganEffect_obj, uiCanvas.transform);
-            case 4:
-                return Instantiate(beganEffect_vene, uiCanvas.transform);            
-            default:
-                return Instantiate(beganEffect_obj, uiCanvas.transform); ;
-        }        
-    }
+    
 }
 

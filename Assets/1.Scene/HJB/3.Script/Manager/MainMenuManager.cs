@@ -68,6 +68,11 @@ public class MainMenuManager : MonoBehaviour
             GameType_Btn(level);
             Debug.Log($"클릭 {level} : {game_Type}");
         }
+        if (StepManager.Instance.playMode == PlayMode.Couple)
+        {
+            DoublePlayModVenezia();
+            return;
+        }
         Step_UI();
         if (CrewMovementManager.Instance != null)
         {
@@ -93,6 +98,12 @@ public class MainMenuManager : MonoBehaviour
                 StepOfLevel[i].SetActive(false);
             }
         }
+    }
+    //베네치아 1인모드 선택 Level할당 버튼
+    private void DoublePlayModVenezia()
+    {
+        StepManager.Instance.SelectStep(3);
+        SceneManager.LoadScene(8);        
     }
     //선택한 Level 할당 이벤트
     public void SelectLevel_Btn(int level)
