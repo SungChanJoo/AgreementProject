@@ -59,6 +59,10 @@ public class ButtonEvent : MonoBehaviour
         {
             GameTypeSelectBtn_Text(level_text);
         }
+        if (StepManager.Instance.playMode == PlayMode.Couple)
+        {
+            return;
+        }
         for (int i = 0; i < level_btn.Length; i++)
         {
             if (i == (level - 1))

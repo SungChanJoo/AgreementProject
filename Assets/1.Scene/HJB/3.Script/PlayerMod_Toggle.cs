@@ -25,7 +25,11 @@ public class PlayerMod_Toggle : MonoBehaviour
         for (int i = 0; i < next_obj.Length; i++)
         {
             rects[i] = next_obj[i].GetComponent<RectTransform>();
-        }        
+        }
+        if (StepManager.Instance.playMode == PlayMode.Couple)
+        {
+            PlayerModSelect_Btn();
+        }
     }
 
     public void NextVector()
