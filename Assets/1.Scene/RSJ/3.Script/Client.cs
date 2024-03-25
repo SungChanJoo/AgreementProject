@@ -9,6 +9,7 @@ using System.IO;
 using System.Threading.Tasks;
 using LitJson;
 using System.Linq;
+using TMPro;
 //using Unity.Android;
 
 public class Client : MonoBehaviour
@@ -52,6 +53,8 @@ public class Client : MonoBehaviour
     private ExpenditionCrew clientExpenditionCrew;
     private LastPlayData clientLastPlayData;
     private AnalyticsProfileData clientAnalyticsProfileData;
+    [SerializeField] private GameObject ServerIpObj;
+    [SerializeField] private TMP_InputField ServerIp;
 
     // timer
     private float transmissionTime = 1f;
@@ -78,14 +81,18 @@ public class Client : MonoBehaviour
             Destroy(gameObject);
             return;
         }
+
+    }
+
+    public void SetServerIp()
+    {
+        server_IP = ServerIp.text;
         ETCInitSetting();
         ConnectToServer();
         ClientLoginSet();
-    }
-
-    private void Start()
-    {
-
+        DataBase.Instance.LoadUserList();
+        DataBase.Instance.PlayerDataLoad();
+        ServerIpObj.SetActive(false);
     }
 
     #region Start() Methods, Setting and Connect to Server

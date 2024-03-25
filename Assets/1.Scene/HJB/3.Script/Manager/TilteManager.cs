@@ -15,7 +15,7 @@ public class TilteManager : MonoBehaviour
     [SerializeField] private TMP_InputField name_text;      
     private string licenseFolderPath = string.Empty;
     private bool firstCheck = false;
-    
+/*    
     private void Start()
     {
         //타이틀에서 메인메뉴로 Scene 이동 시 데이터 로드해야함 -> DB 비동기
@@ -26,7 +26,7 @@ public class TilteManager : MonoBehaviour
     {
         DataBase.Instance.LoadUserList();
         DataBase.Instance.PlayerDataLoad();
-    }
+    }*/
     public void Registration_UI()
     {
         string name = DataBase.Instance.PlayerCharacter[DataBase.Instance.CharacterIndex].playerName;

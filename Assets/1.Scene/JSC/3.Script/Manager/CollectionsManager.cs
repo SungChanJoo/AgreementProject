@@ -421,10 +421,6 @@ public class CollectionsManager : MonoBehaviour
         var crewCost = Convert.ToInt32(_crewStatusText[i].text);
         if (_money >= crewCost)
         {
-            //돈 차감
-            _money -= crewCost;
-            _moneyText.text = $"{_money}";
-
             //DB에 반영
             Collections.OwnedCrew[i] = true;
             //텍스트 변경
