@@ -36,6 +36,7 @@ public class MainMenuManager : MonoBehaviour
         Cost_UI.text = DataBase.Instance.PlayerCharacter[DataBase.Instance.CharacterIndex].StarCoin.ToString();
         string net_state = DataBase.Instance.network_state ?  "연결": "연결안됨";
         NetworkState_UI.text = net_state;
+        //플레이어 기본 정보 불러오기        
     }
     public void GameScene()
     {        
