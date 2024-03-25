@@ -99,13 +99,13 @@ public class RankingManager : MonoBehaviour
         {
             for (int i = 0; i < timeRankData.Length; i++)
             {
-                timeRankData[i].nameText.text = $"바보{i}";
+                timeRankData[i].nameText.text = $"{i}";
                 timeRankData[i].totalTimeText.text = $"99시간99분{i}";
             }
 
             for (int i = 0; i < scoreRankData.Length; i++)
             {
-                scoreRankData[i].nameText.text = $"{i}바보";
+                scoreRankData[i].nameText.text = $"{i}";
                 scoreRankData[i].totalScoreText.text = $"{i}9999";
             }
         }
@@ -138,7 +138,7 @@ public class RankingManager : MonoBehaviour
         else
         {
             Weekly.text = $"기간 : {"1998.3.31~ 3.31"}";
-            Name.text = $"이름 : {"바보에"}";
+            Name.text = $"이름 : {"null"}";
 
             var timeRank = PersnalRank[0].transform.Find("TimeRank").GetChild(0).GetComponent<TMP_Text>();
             var totalTime = PersnalRank[0].transform.Find("TotalTime").GetChild(0).GetComponent<TMP_Text>();
