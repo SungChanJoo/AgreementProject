@@ -7,6 +7,7 @@ using TMPro;
 
 public class ProfileText_M : MonoBehaviour
 {
+    public static ProfileText_M Instance = null;
     [SerializeField] private TextMeshProUGUI characterName;
     [SerializeField] private TextMeshProUGUI Birthday;
     [SerializeField] private TextMeshProUGUI playTime;
@@ -17,15 +18,12 @@ public class ProfileText_M : MonoBehaviour
     [SerializeField] private TMP_InputField Registration_Input;
 
     public GameObject Characters;
-    [SerializeField] private GameObject ErrorText;
-
-    [SerializeField] private List<GameObject> PlayerInfo = new List<GameObject>();
+    [SerializeField] private GameObject ErrorText;    
 
     private ProfileManager profileManager;
-    
-    public string PlayerName;
+    [SerializeField] ProfileButtonEvent profileButtonEvent;
 
-    
+    public string PlayerName;       
 
     public string CharacterName
     {
@@ -49,13 +47,16 @@ public class ProfileText_M : MonoBehaviour
     public Sprite PlayerSprite;
     private void Awake()
     {
+        if (Instance == null)
+        {
+            Instance = this;
+        }
+        else
+        {
+            Destroy(gameObject);
+        }        
         profileManager = GetComponent<ProfileManager>();
-    }
-    private void OnEnable()
-    {
-        playTime.text = DataBase.Instance.PlayerCharacter[DataBase.Instance.CharacterIndex].TotalTime.ToString();
-        totalAnswer.text = DataBase.Instance.PlayerCharacter[DataBase.Instance.CharacterIndex].TotalAnswers.ToString();
-        
+        gameObject.SetActive(false);
     }
     private void Start()
     {
@@ -67,12 +68,7 @@ public class ProfileText_M : MonoBehaviour
         {
             Debug.Log("받아온 데이터가 없습니다.");
         }
-    }
-
-    private void PlayerDataLoad_Time_Answer()
-    {
-        
-    }
+    }    
 
 
     public void LoadCharacterProfile()
@@ -102,16 +98,10 @@ public class ProfileText_M : MonoBehaviour
         characters.SetProfile(DataBase.Instance.ClientData.Charactor-1);
     }
 
-    private void CalculationPlayTime()
+    private void CalculationPlayTime(int player_num)
     {
-        //시간 계산
-        Debug.Log(DataBase.Instance.PlayerCharacter[0].TotalTime);
-        string time = DataBase.Instance.PlayerCharacter[0].TotalTime.ToString();
-        Debug.Log(time);
-        int count = time.Length-2;
-        
-        //float currentTime = float.Parse(time.Insert(count, ".")); 
-        float totalTime = DataBase.Instance.PlayerCharacter[0].TotalTime;
+        //시간 계산                     
+        float totalTime = DataBase.Instance.PlayerCharacter[player_num].TotalTime;
         int minute = (int)(totalTime / 60f);
         float second = totalTime - (minute * 60);
         if (minute == 0)
@@ -125,21 +115,23 @@ public class ProfileText_M : MonoBehaviour
             playTime.text = $"{minute}분 {(int)second}초";
         }
     }
-    private void StartLoadCharactorData()
+    public void StartLoadCharactorData()
     {
+        int player_num = DataBase.Instance.CharacterIndex;
         //추가적으로 플레이어 변경 창에서 이름도 바뀌도록 로직 넣을 것
-        CharacterName = DataBase.Instance.PlayerCharacter[0].playerName;
-        Birthday.text = DataBase.Instance.PlayerCharacter[0].BirthDay;           
-        totalAnswer.text = DataBase.Instance.PlayerCharacter[0].TotalAnswers.ToString();
+        CharacterName = DataBase.Instance.PlayerCharacter[player_num].playerName;
+        Birthday.text = DataBase.Instance.PlayerCharacter[player_num].BirthDay;        
+        totalAnswer.text = DataBase.Instance.PlayerCharacter[player_num].TotalAnswers.ToString();
         //시간 계산 후 출력
-        CalculationPlayTime();        
+        CalculationPlayTime(player_num);
+        profileButtonEvent.ChangeImage_Btn(1);
     }
     public void NameChange()
     {
         try
         {
             //데이터 바꾸기
-            DataBase.Instance.PlayerCharacter[0].playerName = ChangeName_Input.text;            
+            DataBase.Instance.PlayerCharacter[DataBase.Instance.CharacterIndex].playerName = ChangeName_Input.text;            
             //DB에 Load하기
             CharacterChangeNameLoad();
             Client.instance.RegisterCharactorName_SaveDataToDB(ChangeName_Input.text);            

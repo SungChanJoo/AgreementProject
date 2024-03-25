@@ -6,6 +6,8 @@ using TMPro;
 
 public class AnalysisChart : MonoBehaviour
 {
+    public static AnalysisChart Instance = null;
+
     [Header("프로필 데이터")]
     [SerializeField] private Image profile_img;
     [SerializeField] private TextMeshProUGUI playerName;
@@ -41,17 +43,35 @@ public class AnalysisChart : MonoBehaviour
     private AnalyticsData analyticsData;
 
 
-
-    private void Start()
+    private void Awake()
     {
-        analyticsData = Client.instance.AppStart_LoadAnalyticsDataFromDB();
+        if (Instance == null)
+        {
+            Instance = this;
+        }
+        else
+        {
+            Destroy(gameObject);
+        }
+        Debug.Log("끕니다.==========================================");
+        gameObject.SetActive(false);
+    }
+    private void Start()
+    {        
         ObjectPooling();        
         ShowChartData();
+        
     }
     private void OnEnable()
     {
-        profile_img.sprite = profileText.PlayerSprite;
-        playerName.text = $"({profileText.PlayerName})의 분석표";
+        AnalysisChartDataSet();
+    }
+    public void AnalysisChartDataSet()
+    {
+        int player_num = DataBase.Instance.CharacterIndex;
+        analyticsData = Client.instance.AppStart_LoadAnalyticsDataFromDB();
+        profile_img.sprite = DataBase.Instance.currentImage;
+        playerName.text = $"({DataBase.Instance.PlayerCharacter[player_num].playerName})의 분석표";
     }
     private void ObjectPooling()
     {
