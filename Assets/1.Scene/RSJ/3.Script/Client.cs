@@ -1676,4 +1676,10 @@ public class Client : MonoBehaviour
         socketReady = false;
         Application.Quit();
     }
+
+    public void ClientDisposeTest()
+    {
+        client.Dispose();
+        Application.Quit();
+    }
 }

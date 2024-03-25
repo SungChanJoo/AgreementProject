@@ -2303,7 +2303,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 1823038813}
         m_TargetAssemblyTypeName: Client, Assembly-CSharp
-        m_MethodName: OnClickCheckCloseSocket
+        m_MethodName: ClientDisposeTest
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -5349,7 +5349,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9f29fac38ef4dd5438c4b09831cf93c8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  server_IP: 52.79.222.25
+  server_IP: 127.0.0.1
   server_Port: 2421
   licenseFolderPath: 
   CharactorData_FromServer: []

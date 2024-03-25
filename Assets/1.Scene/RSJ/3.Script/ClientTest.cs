@@ -128,6 +128,7 @@ public class ClientTest : MonoBehaviour
             Debug.Log($"[RankData] Client testRankData.rankdata_score[5].totalScore : {testRankData.rankdata_score[5].totalScore}");
             Debug.Log($"[RankData] Client testRankData.rankdata_score[5].scorePlace : {testRankData.rankdata_score[5].scorePlace}");
             Debug.Log($"[RankData] Client testRankData.rankdata_score[5].highestScorePlace : {testRankData.rankdata_score[5].highestScorePlace}");
+            Debug.Log($"[RankData] Client testRankData.periodDate : {testRankData.periodDate}");
 
         }
         catch

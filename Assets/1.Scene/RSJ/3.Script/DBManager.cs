@@ -8,11 +8,6 @@ using System;
 using System.Text;
 using System.Linq;
 
-// 싱글톤 쓰자
-// 클라이언트가 서버에 연결했을때? 클라이언트는 이미 자체적으로 IP와 Port를 알아서 서버에 연결함
-// 클라이언트가 로그인 할때 ID와 Password를 입력할텐데, 그때 서버에 있는 DB에서 login table과 비교해서 true면 로그인
-// 회원등록도 일단 만들어놓는다
-// DBManager는 서버에서 관리하는게 맞다
 public class DBManager : MonoBehaviour
 {
     MySqlConnection connection; // DB에 연결하는 클래스
@@ -43,7 +38,6 @@ public class DBManager : MonoBehaviour
     private string[] analyticsProfile1_Columns; // Level 1 (venezia_chn 포함)
     private string[] analyticsProfile2_Columns; // Level 2,3 (venezia_chn 미포함)
     
-
     // RankData Load시 조회할 WeeklyRank Table
     // WeeklyRankDB에 어떤 테이블도 없으면(랭킹데이터가없으면) 클라이언트에게 보낼 RankData는 0으로
     private string referenceWeeklyRankTableName;
@@ -1468,6 +1462,8 @@ public class DBManager : MonoBehaviour
         mySqlCommand.CommandText = $"USE `{presentDB}`;";
         mySqlCommand.ExecuteNonQuery();
 
+        // Rank 주간 날짜 보내주기
+        return_List.Add($"{referenceWeeklyRankTableName}|{separatorString}");
 
         return return_List;
     }
@@ -1501,9 +1497,6 @@ public class DBManager : MonoBehaviour
             }
         }
         reader.Close();
-
-        // Rank 주간 날짜 보내주기
-        return_List.Add($"{referenceWeeklyRankTableName}|{separatorString}");
 
         Debug.Log("[DB] Complete Load ExpenditionCrew From DB");
 
@@ -1795,6 +1788,7 @@ public class DBManager : MonoBehaviour
         Debug.Log("[DB] Come in CreateDateDB");
 
         // 생성할 DB 이름
+        Debug.Log($"[DB] presentTime, DateTime.Now.AddDays : {DateTime.Now}");
         DateTime presentTime = DateTime.Now.AddDays(-1);
         string DBName = $"{presentTime.Year.ToString().Substring(2,2)}.{presentTime.Month:00}.{presentTime.Day:00}";
         Debug.Log($"DBName : {DBName}");
@@ -1996,43 +1990,10 @@ public class DBManager : MonoBehaviour
             switch(i/6) // 스텝1~6
             {
                 case 0: // venezia_kor_level1_analytics 
-                    Wrapper wrapper = new Wrapper();
-                    wrapper.wrap = "[DB] before etcMethodHadler.TestMethod";
-                    Debug.Log(wrapper.wrap);
-                    etcMethodHandler.TestMethod(wrapper);
-                    Debug.Log(wrapper.wrap);
                     etcMethodHandler.AddAnalyticsColumnValueInDB(valueList_ColumnArray_TableArray, valuesInColumnsInTable_Array, i);
-                    Debug.Log($"[DB] i:{i}, creating analyticsTable");
-                    Debug.Log($"[DB] List<AnalyticsColumnValue>[][] valueList_ColumnArray_TableArray.Length = {valueList_ColumnArray_TableArray.Length}");
-                    Debug.Log($"[DB] valueList_ColumnArray_TableArray[i/6] = {(valueList_ColumnArray_TableArray[i/6] == null? "null":"have")}");
-                    // 중복해서 초기화되지 않도록 예외처리
-                    //if (valueList_ColumnArray_TableArray[i / 6] == null)
-                    //{
-                    //    Debug.Log($"[DB] Come in create object ");
-                    //    valueList_ColumnArray_TableArray[i / 6] = new List<AnalyticsColumnValue>[valuesInColumnsInTable_Array[i].Count];
-                    //}
-                    
-                    //for (int j = 0; j < valuesInColumnsInTable_Array[i].Count; j ++) // 테이블에 저장된 행수(유저와 캐릭터들)
-                    //{
-                    //    Debug.Log($"[DB] valuesInColumnsInTable_Array[i].Count = {valuesInColumnsInTable_Array[i].Count}");
-                    //    // 중복해서 초기화되지 않도록 예외처리
-                    //    if (valueList_ColumnArray_TableArray[i / 6][j] == null)
-                    //    {
-                    //        Debug.Log($"[DB] Come in create object in j ");
-                    //        valueList_ColumnArray_TableArray[i / 6][j] = new List<AnalyticsColumnValue>();
-                    //    }
-                    
-                    //    // 데이터가 있다면(0이 아니라면) 추가
-                    //    if(float.Parse(valuesInColumnsInTable_Array[i][j][2]) != 0 && Int32.Parse(valuesInColumnsInTable_Array[i][j][4]) != 0)
-                    //    {
-                    //        int _licenseNumber = Int32.Parse(valuesInColumnsInTable_Array[i][j][0]);
-                    //        int _charactor = Int32.Parse(valuesInColumnsInTable_Array[i][j][1]);
-                    //        float _reactionRate = float.Parse(valuesInColumnsInTable_Array[i][j][2]);
-                    //        int _answerRate = Int32.Parse(valuesInColumnsInTable_Array[i][j][4]);
-                    //        //AnalyticsColumnValue data = new AnalyticsColumnValue(_licenseNumber, _charactor, _reactionRate, _answerRate);
-                    //        valueList_ColumnArray_TableArray[i / 6][j].Add(new AnalyticsColumnValue(_licenseNumber, _charactor, _reactionRate, _answerRate));
-                    //    }
-                    //}
+                    //Debug.Log($"[DB] i:{i}, creating analyticsTable");
+                    //Debug.Log($"[DB] List<AnalyticsColumnValue>[][] valueList_ColumnArray_TableArray.Length = {valueList_ColumnArray_TableArray.Length}");
+                    //Debug.Log($"[DB] valueList_ColumnArray_TableArray[i/6] = {(valueList_ColumnArray_TableArray[i/6] == null? "null":"have")}");
                     break;
                 case 1: // venezia_kor_level2_analytics
                     etcMethodHandler.AddAnalyticsColumnValueInDB(valueList_ColumnArray_TableArray, valuesInColumnsInTable_Array, i);
