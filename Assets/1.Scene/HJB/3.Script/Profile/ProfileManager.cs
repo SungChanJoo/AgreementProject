@@ -23,7 +23,10 @@ public class ProfileManager : MonoBehaviour
     {
         PlayerChange_panel.SetActive(!PlayerChange_panel.activeSelf);
         if(PlayerChange_panel.activeSelf)
+        {
+            DataBase.Instance.LoadUserList();
             GetComponent<ProfileText_M>().LoadCharacterProfile();
+        }
     }
 
     public void PlayerRegistration_UI()
