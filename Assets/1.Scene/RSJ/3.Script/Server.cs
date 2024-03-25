@@ -342,9 +342,9 @@ public class Server : MonoBehaviour
             nextMidnight = DateTime.Today.AddDays(1);
             TimeSpan timeUntilMidnight = nextMidnight - DateTime.Now;
 
-            // Test용
-            DateTime testAfterOneMinute = DateTime.Now.AddSeconds(20);
-            timeUntilMidnight = testAfterOneMinute - DateTime.Now;
+            //// Test용
+            //DateTime testAfterOneMinute = DateTime.Now.AddSeconds(20);
+            //timeUntilMidnight = testAfterOneMinute - DateTime.Now;
 
             // 자정까지 대기할 WaitforSeconds 설정
             waitUntilMidnight = new WaitForSeconds((float)timeUntilMidnight.TotalSeconds);
@@ -406,6 +406,8 @@ public class Server : MonoBehaviour
                 Debug.Log("[Server] Start Update WeeklyRankDB");
                 DBManager.instance.UpdateWeeklyRankDB();
                 Debug.Log("[Server] Complete Update WeeklyRankDB");
+                standardDay = DBManager.instance.LoadStandardDay();
+                Debug.Log("[Server] Server class's standardDay member variable was re allocated after update weeklyRankDB");
             }
 
             // 자정이 지나고 나서 DateDB를 생성한 후 자정 체크 시간 갱신

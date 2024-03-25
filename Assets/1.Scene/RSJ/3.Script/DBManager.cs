@@ -1463,7 +1463,9 @@ public class DBManager : MonoBehaviour
         mySqlCommand.ExecuteNonQuery();
 
         // Rank 주간 날짜 보내주기
-        return_List.Add($"{referenceWeeklyRankTableName}|{separatorString}");
+        string weeklyRankDate = referenceWeeklyRankTableName;
+        weeklyRankDate = weeklyRankDate.Replace("_", " ~ ");
+        return_List.Add($"{weeklyRankDate}|{separatorString}");
 
         return return_List;
     }
@@ -1728,13 +1730,13 @@ public class DBManager : MonoBehaviour
 
         // user_info table의 User_TotalAnswer(누적정답개수), User_TotalTime(누적플레이시간) 초기화
         // analytics_level(1,2,3)_profile table 초기화
-        // 게임데이터의 starpoint가 초기화되지는 모름, 사진도 모름, 음 정확하게 잘 모르겠는거는 내일 물어본다. todo
+        // todo... OBT때 Reset 수정
 
         MySqlCommand mySqlCommand = new MySqlCommand();
         mySqlCommand.Connection = connection;
 
         string update_Command = $"UPDATE `{table.list[0]}` SET `User_TotalAnswers` = '0', `User_TotalTime` = '0' " +
-                                $"WHERE `{userinfo_Columns[0]}` = '{clientlicensenumber}' AND `{userinfo_Columns[1]}` = '{clientcharactor}';";
+                                $"WHERE `{userinfo_Columns[0]}` = '{clientlicensenumber}' AND `{userinfo_Columns[1]}` = '{clientcharactor}'";
         mySqlCommand.CommandText = update_Command;
         mySqlCommand.ExecuteNonQuery();
 
@@ -2136,7 +2138,7 @@ public class DBManager : MonoBehaviour
         // 오늘(today, 월요일)과 일주일전(week ago, 월요일)
         // 월요일이 오늘인 때에 실행되므로, 하루와 일주일을 뺸 요일로 이름을 저장한다.
         DateTime currentDate = DateTime.Now;
-        currentDate = dbStandardDay;
+        //currentDate = dbStandardDay;
         currentDate = currentDate.AddDays(-1);
         string yesterday = $"{currentDate.Year.ToString().Substring(2, 2)}.{currentDate.Month:00}.{currentDate.Day:00}";
         currentDate = currentDate.AddDays(-6);
@@ -2221,8 +2223,8 @@ mySqlCommand.CommandText = updateScorePlace;
                                  $"LEFT JOIN `{weeklyRankDB}`.`{lastWeekTableName}` AS lastweek " +
                                  $"ON current.User_LicenseNumber = lastweek.User_LicenseNumber " +
                                  $"AND current.User_Charactor = lastweek.User_Charactor " +
-                                 $"SET current.HighestScorePlace = IF(lastweek.HighestScorePlace < current.ScorePlace OR lastweek.HighestScorePlace = '0', current.ScorePlace, lastweek.HighestScorePlace), " +
-                                 $"    current.HighestTimePlace = IF(lastweek.HighestTimePlace < current.TimePlace OR lastweek.HighestTimePlace = '0', current.TimePlace, lastweek.HighestTimePlace) " +
+                                 $"SET current.HighestScorePlace = IF(lastweek.HighestScorePlace > current.ScorePlace OR lastweek.HighestScorePlace = '0', current.ScorePlace, lastweek.HighestScorePlace), " +
+                                 $"    current.HighestTimePlace = IF(lastweek.HighestTimePlace > current.TimePlace OR lastweek.HighestTimePlace = '0', current.TimePlace, lastweek.HighestTimePlace) " +
                                  $"WHERE current.ScorePlace IS NOT NULL AND current.TimePlace IS NOT NULL";
         }
         Debug.Log($"[DB] updateCompareQuery : {updateCompareQuery}");
