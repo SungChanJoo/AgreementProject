@@ -245,6 +245,7 @@ public abstract class GameSetting : MonoBehaviour,ITouchEffect
     {
         //string day = System.DateTime.Now.ToString("dd-MM-yy");
         Player_DB db = DataBase.Instance.PlayerCharacter[0];
+        db.StarCoin = DataBase.Instance.PlayerCharacter[0].StarCoin;
         Data_value data_Value = new Data_value(reactionRate, answersCount, answers, playTime, totalScore,starcount);        
         
         //만약 totalScore가 DB에 있는 점수보다 크다면 다시 할당
