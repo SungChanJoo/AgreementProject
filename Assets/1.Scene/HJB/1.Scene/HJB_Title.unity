@@ -345,7 +345,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!114 &427120337
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3260,8 +3260,6 @@ MonoBehaviour:
   - {fileID: 1798053173}
   - {fileID: 2107383589}
   beganEffect_obj: {fileID: 7922116986208562606, guid: 92f17051de517a34db40ac4b847fb161, type: 3}
-  beganEffect_vene: {fileID: 0}
-  beganEffect_gugu: {fileID: 0}
   uiCanvas: {fileID: 2034190215}
   audioClip: {fileID: 8300000, guid: 1a501dfe96030b2428417f0e095b21bd, type: 3}
 --- !u!114 &2034190213
