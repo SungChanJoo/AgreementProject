@@ -171,7 +171,6 @@ public class ProfileText_M : MonoBehaviour
         Birthday.text = text;
         profileManager.PlayerBirthDay_UI();
         TextClear(ChangeBirthday_Input);
-        
     }
     
     public void BirthDayChangeErrorText_EndEdit()
@@ -191,6 +190,23 @@ public class ProfileText_M : MonoBehaviour
     public void Registration_InputField()
     {
         Registration_Input.text = "";
+    }
+
+    public void RecordDelete_Btn()
+    {
+        try
+        {
+            Client.instance.ResetCharactorProfile();
+            DataBase.Instance.PlayerRecordLoad();
+            CalculationPlayTime(DataBase.Instance.CharacterIndex);
+            profileButtonEvent.ChangeImage_Btn(1);
+        }
+        catch (System.Exception)
+        {
+
+            Debug.Log("초기화 도중 오류가 발생했습니다.");
+        }
+              
     }
 
 }

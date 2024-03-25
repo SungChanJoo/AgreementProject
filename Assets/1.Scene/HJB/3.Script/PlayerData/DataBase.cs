@@ -112,7 +112,11 @@ public class DataBase : MonoBehaviour,IDataReloading
         }
         Client.instance.CreateCharactorData(name);
     }
-
+    public void PlayerRecordLoad()
+    {
+        PlayerCharacter[CharacterIndex] = Client.instance.AppStart_LoadCharactorDataFromDB();
+        PlayerCharacter[CharacterIndex].analyticsProfileData = Client.instance.AppStart_LoadAnalyticsProfileDataFromDB();
+    }
     public void PlayerDataLoad()
     {
         try

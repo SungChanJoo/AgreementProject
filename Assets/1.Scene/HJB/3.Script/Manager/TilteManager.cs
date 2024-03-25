@@ -12,8 +12,7 @@ public class TilteManager : MonoBehaviour
     
     [SerializeField] private GameObject RegistrationCanvas;    
     [SerializeField] private TextMeshProUGUI inputError_text;
-    [SerializeField] private TMP_InputField name_text;
-    [SerializeField] private TextMeshProUGUI testText;
+    [SerializeField] private TMP_InputField name_text;      
     private string licenseFolderPath = string.Empty;
     private bool firstCheck = false;
     private void Awake()
@@ -61,6 +60,7 @@ public class TilteManager : MonoBehaviour
     {        
         if (!name_text.text.Equals(string.Empty))
         {
+            Client.instance.RegisterCharactorName_SaveDataToDB(name_text.text);
             SceneManager.LoadScene("HJB_MainMenu");
         }
         else

@@ -69,4 +69,11 @@ public class ProfileButtonEvent : MonoBehaviour
         }
         
     }
+
+    public void PlayerProfileDataDefault()
+    {
+        moreGame.text = "플레이한 내역이 없습니다.";
+        reactionRate.text = "";
+        answersRate.text = "";
+    }
 }
