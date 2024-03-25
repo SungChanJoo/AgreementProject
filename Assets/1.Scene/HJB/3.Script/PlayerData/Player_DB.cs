@@ -18,7 +18,7 @@ public class Player_DB
     public LastPlayData LastPlayStepData;
     public AnalyticsProfileData analyticsProfileData;
 
-    public int StarCoin = 0;
+    public int StarCoin;
 }
 [System.Serializable]
 public class Data_value

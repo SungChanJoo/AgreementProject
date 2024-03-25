@@ -33,10 +33,14 @@ public class MainMenuManager : MonoBehaviour
     {
         SettingManager.Instance.EnableSettingBtn();
         AudioManager.Instance.BGM_Play(0);
-        Cost_UI.text = DataBase.Instance.PlayerCharacter[DataBase.Instance.CharacterIndex].StarCoin.ToString();
+        
         string net_state = DataBase.Instance.network_state ?  "연결": "연결안됨";
         NetworkState_UI.text = net_state;
         //플레이어 기본 정보 불러오기        
+    }
+    private void OnEnable()
+    {
+        Cost_UI.text = DataBase.Instance.PlayerCharacter[DataBase.Instance.CharacterIndex].StarCoin.ToString();
     }
     public void GameScene()
     {        
