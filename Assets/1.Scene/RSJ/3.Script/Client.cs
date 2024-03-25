@@ -78,13 +78,14 @@ public class Client : MonoBehaviour
             Destroy(gameObject);
             return;
         }
+        ETCInitSetting();
+        ConnectToServer();
+        ClientLoginSet();
     }
 
     private void Start()
     {
-        ETCInitSetting();
-        ConnectToServer();
-        ClientLoginSet();
+
     }
 
     #region Start() Methods, Setting and Connect to Server
@@ -121,7 +122,7 @@ public class Client : MonoBehaviour
             socketReady = true;
 
             // 타임아웃 설정 (5초)
-            client.ReceiveTimeout = 5000;
+            client.ReceiveTimeout = 10000;
             Debug.Log($"[Client] client.ReceiveTimeout : {client.ReceiveTimeout}");
 
             stream = client.GetStream();// 연결에 성공하면 stream도 계속 연결할 수 있도록
