@@ -80,10 +80,10 @@ public class DBManager : MonoBehaviour
     // DB 세션에 연결할 때 필요한 정보 초기화
     private void SetStringConnection()
     {
-        string ip = "127.0.0.1"; // 우선 로컬(127.0.0.1)로, aws EC2 IP : 15.165.159.141
+        string ip = "127.0.0.1"; 
         string db = "present";
-        string uid = "root"; //string.IsNullOrEmpty(user_Info.user_Name)? "" : user_Info.user_Name;
-        string pw = "12345678"; //string.IsNullOrEmpty(user_Info.user_Password)? "" : user_Info.user_Password;
+        string uid = "root"; ;
+        string pw = "12345678"; 
         string port = "3306";
         //str_Connection = $"Server={ip};Database={db};Uid={uid};Pwd={pw};Port={port};Charset=utf8;";
         str_Connection = $"Server={ip};" + 
@@ -91,8 +91,8 @@ public class DBManager : MonoBehaviour
                          $"Uid={uid};" + 
                          $"Pwd={pw};" + 
                          $"Port={port};" +
-                         $"Allow User Variables=True;" + // Parameter @Something must be defined 에러
-                         $"CharSet=utf8;"; // ; 세미콜론 주의해라
+                         $"Allow User Variables=True;" + 
+                         $"CharSet=utf8;"; 
         Debug.Log($"[DB] DB connect info : {str_Connection}");
     }
 

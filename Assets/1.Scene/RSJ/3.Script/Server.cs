@@ -342,9 +342,9 @@ public class Server : MonoBehaviour
             nextMidnight = DateTime.Today.AddDays(1);
             TimeSpan timeUntilMidnight = nextMidnight - DateTime.Now;
 
-            //// Test용
-            //DateTime testAfterOneMinute = DateTime.Now.AddSeconds(20);
-            //timeUntilMidnight = testAfterOneMinute - DateTime.Now;
+            // Test용
+            DateTime testAfterOneMinute = DateTime.Now.AddSeconds(20);
+            timeUntilMidnight = testAfterOneMinute - DateTime.Now;
 
             // 자정까지 대기할 WaitforSeconds 설정
             waitUntilMidnight = new WaitForSeconds((float)timeUntilMidnight.TotalSeconds);

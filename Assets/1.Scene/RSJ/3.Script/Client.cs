@@ -120,8 +120,8 @@ public class Client : MonoBehaviour
             Debug.Log("[Client] Success Connect to Server!");
             socketReady = true;
 
-            // 타임아웃 설정 (5초)
-            client.ReceiveTimeout = 5000;
+            // 타임아웃 설정 (10초)
+            client.ReceiveTimeout = 10000;
             Debug.Log($"[Client] client.ReceiveTimeout : {client.ReceiveTimeout}");
 
             stream = client.GetStream();// 연결에 성공하면 stream도 계속 연결할 수 있도록
