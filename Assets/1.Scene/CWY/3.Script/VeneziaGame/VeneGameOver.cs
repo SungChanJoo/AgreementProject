@@ -16,6 +16,7 @@ public class VeneGameOver : MonoBehaviour
     [SerializeField] private TextMeshProUGUI PlayerOneText;
     [SerializeField] private TextMeshProUGUI PlayerTwoText;
 
+    //2인모드 게임종료시 승리/패배 표시해줄 애니메이션
     [Header("PlayerOneAnimation")]
     [SerializeField] private Animator PlayerOne_LoseAnim;
     [SerializeField] private Animator PlayerOne_WinAnim;
@@ -48,6 +49,7 @@ public class VeneGameOver : MonoBehaviour
         veneCoupleGameOver();
     }
 
+    //승패판단
     private void veneCoupleGameOver()
     {
         if(VeneziaManager.Instance.play_mode == PlayMode.Couple && !isGameover)
