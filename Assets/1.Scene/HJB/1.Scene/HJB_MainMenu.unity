@@ -9285,14 +9285,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4e557d20bc1a3c74ebe0161318bdc05b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  StepPos:
+  stepPos:
   - {fileID: 1106489927}
   - {fileID: 1727431344}
   - {fileID: 943291937}
   - {fileID: 89813490}
   - {fileID: 2040138305}
   - {fileID: 1346572094}
-  Depth: 6
+  depth: 6
 --- !u!1 &481065625
 GameObject:
   m_ObjectHideFlags: 0
@@ -37641,14 +37641,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4e557d20bc1a3c74ebe0161318bdc05b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  StepPos:
+  stepPos:
   - {fileID: 536084124}
   - {fileID: 1686347147}
   - {fileID: 1324030281}
   - {fileID: 2110243425}
   - {fileID: 553309606}
   - {fileID: 238020797}
-  Depth: 6
+  depth: 6
 --- !u!1 &1686347147
 GameObject:
   m_ObjectHideFlags: 0
@@ -44390,14 +44390,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4e557d20bc1a3c74ebe0161318bdc05b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  StepPos:
+  stepPos:
   - {fileID: 702538103}
   - {fileID: 1445227358}
   - {fileID: 1993181350}
   - {fileID: 518265598}
   - {fileID: 1633934585}
   - {fileID: 1814666261}
-  Depth: 6
+  depth: 6
 --- !u!1 &2004154315
 GameObject:
   m_ObjectHideFlags: 0

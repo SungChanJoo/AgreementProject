@@ -35,7 +35,7 @@ public class ObjInteractor : NetworkBehaviour
         if (!isLocalPlayer) return;
         if(other.gameObject.CompareTag("MusicKeyboard"))
         {
-            audioClips = other.GetComponent<MusicKeyboard>().audioClips;
+            audioClips = other.GetComponent<MusicKeyboard>().AudioClips;
             time += Time.deltaTime;
             OnClickObj();
         }
