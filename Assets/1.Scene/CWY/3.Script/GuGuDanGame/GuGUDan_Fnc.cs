@@ -19,7 +19,7 @@ public class GuGUDan_Fnc : GameSetting
     //정답은 버튼 1 ~ 9 를 눌러서 입력 
 
     //변경사항 
-    //clear 버튼 추가 및 0~9버튼을 제외한 영역을 눌렀을때도 clear 효과 발생해야함
+    //clear 버튼 추가 및 0~9버튼을 제외한 영역을 눌렀을때도 clear 효과 발생해야함 => 폐기
     //xyz 에서 z값(정답)이 고정이 아니라 , 역산기능도 넣어서 x,y도 랜덤하게 정답일 경우가 있어야함
     //2~9단이 아니라 2~ 19단까지 
     //level & step 단계 추가
@@ -257,6 +257,7 @@ public class GuGUDan_Fnc : GameSetting
         isAnswerCheck = false;
     }
 
+    //게임종료
     private void GameOver()
     {
         //타임슬라이더의 Value 값이 0 일경우 게임 끝.
@@ -301,7 +302,7 @@ public class GuGUDan_Fnc : GameSetting
         {
             if (First_num.text == $"{resultx}")
             {
-                Get_Score();
+                //Get_Score();
                 TrueAnswerCount++; //정답 갯수 증가 -> 정답률 반영에 사용할거
                 isAnswerCheck = true;
                 isAnswerCorrect = true;
@@ -325,7 +326,7 @@ public class GuGUDan_Fnc : GameSetting
         {
             if (Second_num.text == $"{resulty}")
             {
-                Get_Score();
+                //Get_Score();
                 TrueAnswerCount++; //정답 갯수 증가 -> 정답률 반영에 사용할거
                 isAnswerCheck = true;
                 isAnswerCorrect = true;
@@ -349,7 +350,7 @@ public class GuGUDan_Fnc : GameSetting
         {
             if (Answer_num.text == $"{resultz}")
             {
-                Get_Score();
+                //Get_Score();
                 TrueAnswerCount++; //정답 갯수 증가 -> 정답률 반영에 사용할거
                 AnswerCount++;
                 isAnswerCheck = true;
@@ -463,6 +464,7 @@ public class GuGUDan_Fnc : GameSetting
 
     }
 
+    //정답 입력시 자릿수 체크
     private void Check_AnswerNumDigit()
     {
         //문제가 출제 되었을때 정답의 자릿수를 받아오고
@@ -488,9 +490,9 @@ public class GuGUDan_Fnc : GameSetting
         }
     }
 
+    //초기화버튼
     public void Clear_btn()
     {
-        //Todo : 2인모드시 클리어버튼 초기화 위치 지정 필요.
         switch (CaseNum)
         {
             case 0:
@@ -515,7 +517,7 @@ public class GuGUDan_Fnc : GameSetting
 
 
 
-
+    //반응속도
     public void Reaction_speed()
     {
         // 게임시간이 끝날 때 까지 정답을 몇개나 맞췄는지 반응속도 잴것.
@@ -544,19 +546,6 @@ public class GuGUDan_Fnc : GameSetting
             //if (mousePosition.y / Screen.height * canvasSize.y > 255f) Clear_btn();
         }
     }
-
-    public void Get_Score()
-    {
-        //if (buttonType == ButtonType.First)
-        //{
-        //    Score.Instance.Get_FirstScore();
-        //}
-        //else
-        //{
-        //    Score.Instance.Get_SecondScore();
-        //}
-    }
-
     private void Set_QuestCount()
     {
         switch (timeSet)
@@ -576,13 +565,13 @@ public class GuGUDan_Fnc : GameSetting
         StartQuestCount = QuestCount;
     }
 
-
+    //정답률
     private void AnswerRate()
     {
         answers = TrueAnswerCount * 100 / StartQuestCount;
     }
 
-
+    //선택
     private void Select_onOff(int caseNum)
     {
         for (int i = 0; i < select.Length; i++)
@@ -598,6 +587,7 @@ public class GuGUDan_Fnc : GameSetting
         }
     }
 
+    // UI ? on/off
     private void QuestMark_onOff(int caseNum)
     {
         for (int i = 0; i < QuestMark.Length; i++)

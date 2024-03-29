@@ -20,6 +20,7 @@ public interface ITimeSlider
 {
     public static TimeSlider Instance = null;
 
+    //1,2인모드일 경우를 나눠서 슬라이더 지정 
     [SerializeField] public Slider slider;
     [SerializeField] private Image sliderVar_Image;
 
@@ -46,7 +47,7 @@ public interface ITimeSlider
     public float Decreasetime;
 
     public bool TimeStop = true;
-
+    //1번 및 2번 플레이어 슬라이더 코루틴
     IEnumerator timeSlider_co;
     IEnumerator timeSlider_Second_co;
     private void Awake()
