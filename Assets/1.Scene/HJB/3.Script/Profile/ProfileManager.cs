@@ -25,7 +25,7 @@ public class ProfileManager : MonoBehaviour
         if(PlayerChange_panel.activeSelf)
         {
             DataBase.Instance.LoadUserList();
-            GetComponent<ProfileText_M>().LoadCharacterProfile();
+            GetComponent<ProfileText>().LoadCharacterProfile();
         }
     }
 
@@ -33,7 +33,7 @@ public class ProfileManager : MonoBehaviour
     {
         PlayerRegistration_panel.SetActive(!PlayerRegistration_panel.activeSelf);
         if (PlayerChange_panel.activeSelf)
-            GetComponent<ProfileText_M>().Registration_InputField();
+            GetComponent<ProfileText>().Registration_InputField();
     }
     public void PlayerNameChange_UI()
     {
@@ -58,7 +58,7 @@ public class ProfileManager : MonoBehaviour
     public void AddCharacter()
     {
         //이름 등록
-        var characters = GetComponent<ProfileText_M>().Characters.
+        var characters = GetComponent<ProfileText>().Characters.
             transform.GetChild(DataBase.Instance.UserList.createdCharactorCount).gameObject;
         characters.SetActive(true);
         Debug.Log(characters.name);

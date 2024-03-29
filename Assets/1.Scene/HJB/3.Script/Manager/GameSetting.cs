@@ -40,7 +40,7 @@ public abstract class GameSetting : MonoBehaviour,ITouchEffect
 
     public Player_Data result_data;
 
-    public Result_Printer result_Printer;
+    public ResultPrinter result_Printer;
 
     private IEnumerator UpdateDatabaseFromData_co;
 

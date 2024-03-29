@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PlayerMod_Toggle : MonoBehaviour
+public class PlayModToggle : MonoBehaviour
 {
     [SerializeField] private float setTime = 0f;
     [SerializeField] private GameObject select_obj;
@@ -10,14 +10,18 @@ public class PlayerMod_Toggle : MonoBehaviour
     [SerializeField] private GameObject filter_Canvas;
     [SerializeField] private GameObject nonfilter_Canvas;
     [SerializeField] private GameObject[] MultiplayerDisabled_obj;
+
     public int playerMod = 1;
     public PlayMode playMode = PlayMode.Solo;
+    public bool playing = false;
+
+    Vector3 nextVector3;
+
     RectTransform rectTransform;
     RectTransform[] rects;
-    Vector3 nextVector3;
-    bool onFilter = false;
-    public bool playing = false;
     
+    private bool onFilter = false;
+
     private void Start()
     {
         rects = new RectTransform[next_obj.Length];
@@ -26,6 +30,7 @@ public class PlayerMod_Toggle : MonoBehaviour
         {
             rects[i] = next_obj[i].GetComponent<RectTransform>();
         }
+        //메인메뉴로 왔을 시 모드 체크
         if (StepManager.Instance.playMode == PlayMode.Couple)
         {
             PlayerModSelect_Btn();

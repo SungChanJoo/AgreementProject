@@ -44,7 +44,7 @@ public class CollectionsManager : MonoBehaviour
     private List<TMP_Text> _crewStatusText;
     private List<GameObject> _crewStatusBtn;
     [SerializeField] private GameObject _alreadySeletedCrewUI;
-    [SerializeField] private PlayerMod_Toggle PMToggle;
+    [SerializeField] private PlayModToggle PMToggle;
     public Sprite SelectedImg;
     public Sprite DefaultImg;
     public Sprite DeniedImg;
