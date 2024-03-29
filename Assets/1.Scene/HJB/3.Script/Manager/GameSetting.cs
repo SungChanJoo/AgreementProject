@@ -249,7 +249,7 @@ public abstract class GameSetting : MonoBehaviour,ITouchEffect
         if (db.Data[(game_Type, level, step)].TotalScore < totalScore)
         {
             db.Data[(game_Type, level, step)] = data_Value;            
-            Client.instance.AppGame_SaveResultDataToDB(db, game_Type,level,step);
+            Client.Instance.AppGame_SaveResultDataToDB(db, game_Type,level,step);
             Debug.Log("정상적으로 DB에 저장");
         }
         else

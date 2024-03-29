@@ -13,7 +13,7 @@ using System.Linq;
 public class Server : MonoBehaviour
 {
     private const int port = 2421;
-                      
+
     // 클라이언트 여러명 받을 수 있도록 리스트
     private List<TcpClient> clients;
     private List<TcpClient> disconnectList;
@@ -73,7 +73,7 @@ public class Server : MonoBehaviour
             StartListening();
             isServerStarted = true;
         }
-        catch(Exception e)
+        catch (Exception e)
         {
             Debug.Log($"[Server] Server-Client Connect Error! : {e.Message}");
         }
@@ -175,13 +175,13 @@ public class Server : MonoBehaviour
 
         Debug.Log($"[Server] HandleRequestData filterList.Count : {filterList.Count}");
 
-        for(int i = 0; i <filterList.Count; i ++)
+        for (int i = 0; i < filterList.Count; i++)
         {
             //Debug.Log($"[Server] Received Data From Client to filterList[{i}] : {filterList[i]}");
         }
 
         //string requestName = $"[Save]CharactorData";
-        //requestData = $"{requestName}|{clientLicenseNumber}|{clientCharactor}|{separatorString}";
+        //requestData = $"{requestName}|{clientLicenseNumber}|{clientCharactor}|{_separatorString}";
 
         // filterList[0] '|' 분할 -> requestName, clientLicenseNumber, clientCharactor을 얻기 위해서
         List<string> baseDataList = filterList[0].Split('|', StringSplitOptions.RemoveEmptyEntries).ToList();
@@ -191,17 +191,17 @@ public class Server : MonoBehaviour
         int clientCharactor = 0;
         string createCharactorName = null;
 
-        if(baseDataList.ElementAtOrDefault(1) != null && baseDataList.ElementAtOrDefault(2) != null) // 일반적으로 clientLicenseNumber와 clientCharactor는 같이 들어옴
+        if (baseDataList.ElementAtOrDefault(1) != null && baseDataList.ElementAtOrDefault(2) != null) // 일반적으로 clientLicenseNumber와 clientCharactor는 같이 들어옴
         {
             clientLicenseNumber = Int32.Parse(baseDataList[1]);
             clientCharactor = Int32.Parse(baseDataList[2]);
         }
-        else if(baseDataList.ElementAtOrDefault(1) != null) // UserData, clientLicenseNumber만 있을 때
+        else if (baseDataList.ElementAtOrDefault(1) != null) // UserData, clientLicenseNumber만 있을 때
         {
             clientLicenseNumber = Int32.Parse(baseDataList[1]);
         }
-        
-        if(baseDataList.ElementAtOrDefault(3) != null)
+
+        if (baseDataList.ElementAtOrDefault(3) != null)
         {
             createCharactorName = baseDataList[3];
         }
@@ -221,100 +221,98 @@ public class Server : MonoBehaviour
 
                 // 새 라이센스 발급 (유저(플레이어), 로컬에 저장되는 한 개의 라이센스)
                 Debug.Log($"[Server] Creating... User_LicenseNumber");
-                string clientdata = DBManager.instance.CreateLicenseNumber(); 
+                string clientdata = DBManager.Instance.CreateLicenseNumber();
                 clientLicenseNumber = Int32.Parse(clientdata.Split('|')[0]);
 
                 // 새 캐릭터 정보 생성 (유저 한명당 가지는 첫 캐릭터)
                 Debug.Log($"[Server] Creating... new Charactor Data");
-                DBManager.instance.CreateNewCharactorData(clientLicenseNumber, 1); 
+                DBManager.Instance.CreateNewCharactorData(clientLicenseNumber, 1);
 
                 Debug.Log($"[Server] Finish Create LicenseNumber and new CharactorData");
                 replyRequestData_List.Add($"{clientdata}");
                 break;
             case "[Create]Charactor":
-                string newClientCharactor = DBManager.instance.CreateNewCharactorData(clientLicenseNumber, clientCharactor, createCharactorName);
+                string newClientCharactor = DBManager.Instance.CreateNewCharactorData(clientLicenseNumber, clientCharactor, createCharactorName);
                 Debug.Log($"[Server] Finish Create new CharactorData");
                 //replyRequestData_List.Add($"{newClientCharactor}|");
                 break;
             case "[Save]CharactorName":
-                DBManager.instance.SaveCharactorName(filterList);
+                DBManager.Instance.SaveCharactorName(filterList);
                 break;
             case "[Save]CharactorProfile":
-                DBManager.instance.SaveCharactorProfile(filterList);
+                DBManager.Instance.SaveCharactorProfile(filterList);
                 break;
             case "[Save]CharactorBirthday":
-                DBManager.instance.SaveCharactorBirthday(filterList);
+                DBManager.Instance.SaveCharactorBirthday(filterList);
                 break;
             case "[Save]CharactorData":
-                DBManager.instance.SaveCharactorData(filterList);
+                DBManager.Instance.SaveCharactorData(filterList);
                 break;
             case "[Save]ExpenditionCrew":
-                DBManager.instance.SaveCrewData(filterList);
+                DBManager.Instance.SaveCrewData(filterList);
                 break;
             case "[Save]LastPlayData":
-                DBManager.instance.SaveLastPlayData(filterList);
-                break;
-            case "[Save]GameResult":
+                DBManager.Instance.SaveLastPlayData(filterList);
                 break;
             case "[Save]venezia_kor":
-                DBManager.instance.SaveGameResultData(filterList);
+                DBManager.Instance.SaveGameResultData(filterList);
                 break;
             case "[Save]venezia_eng":
-                DBManager.instance.SaveGameResultData(filterList);
+                DBManager.Instance.SaveGameResultData(filterList);
                 break;
             case "[Save]venezia_chn":
-                DBManager.instance.SaveGameResultData(filterList);
+                DBManager.Instance.SaveGameResultData(filterList);
                 break;
             case "[Save]gugudan":
-                DBManager.instance.SaveGameResultData(filterList);
+                DBManager.Instance.SaveGameResultData(filterList);
                 break;
             case "[Save]calculation":
-                DBManager.instance.SaveGameResultData(filterList);
+                DBManager.Instance.SaveGameResultData(filterList);
                 break;
             case "[Load]UserData":
-                tempAllocate = DBManager.instance.LoadUserData(clientLicenseNumber);
+                tempAllocate = DBManager.Instance.LoadUserData(clientLicenseNumber);
                 tempAllocate.ForEach(data => replyRequestData_List.Add(data));
                 break;
             case "[Load]CharactorData":
                 // dataList[1] = user_LicenseNumber, dataList[2] = user_Charactor
-                tempAllocate = DBManager.instance.LoadCharactorData(clientLicenseNumber, clientCharactor);
+                tempAllocate = DBManager.Instance.LoadCharactorData(clientLicenseNumber, clientCharactor);
                 tempAllocate.ForEach(data => replyRequestData_List.Add(data)); // TempList의 각 요소(data = string value) ReplyList에 추가
                 break;
             case "[Load]AnalyticsData":
-                tempAllocate = DBManager.instance.LoadAnalyticsData(clientLicenseNumber, clientCharactor);
+                tempAllocate = DBManager.Instance.LoadAnalyticsData(clientLicenseNumber, clientCharactor);
                 tempAllocate.ForEach(data => replyRequestData_List.Add(data));
                 break;
             case "[Load]RankData":
-                tempAllocate = DBManager.instance.LoadRankData(clientLicenseNumber, clientCharactor);
+                tempAllocate = DBManager.Instance.LoadRankData(clientLicenseNumber, clientCharactor);
                 tempAllocate.ForEach(data => replyRequestData_List.Add(data));
                 break;
             case "[Load]ExpenditionCrew":
-                tempAllocate = DBManager.instance.LoadExpenditionCrew(clientLicenseNumber, clientCharactor);
+                tempAllocate = DBManager.Instance.LoadExpenditionCrew(clientLicenseNumber, clientCharactor);
                 tempAllocate.ForEach(data => replyRequestData_List.Add(data));
                 break;
             case "[Load]LastPlayData":
-                tempAllocate = DBManager.instance.LoadLastPlayData(clientLicenseNumber, clientCharactor);
+                tempAllocate = DBManager.Instance.LoadLastPlayData(clientLicenseNumber, clientCharactor);
                 tempAllocate.ForEach(data => replyRequestData_List.Add(data));
                 break;
             case "[Load]AnalyticsProfileData":
-                tempAllocate = DBManager.instance.LoadAnalyticsProfileData(clientLicenseNumber, clientCharactor);
+                tempAllocate = DBManager.Instance.LoadAnalyticsProfileData(clientLicenseNumber, clientCharactor);
                 tempAllocate.ForEach(data => replyRequestData_List.Add(data));
                 break;
             case "[Change]Charactor":
-                tempAllocate = DBManager.instance.ChangeCharactor(clientLicenseNumber, clientCharactor);
+                tempAllocate = DBManager.Instance.ChangeCharactor(clientLicenseNumber, clientCharactor);
                 tempAllocate.ForEach(data => replyRequestData_List.Add(data));
                 break;
             case "[Delete]Charactor":
-                DBManager.instance.DeleteCharactor(clientLicenseNumber, clientCharactor);
+                DBManager.Instance.DeleteCharactor(clientLicenseNumber, clientCharactor);
                 break;
             case "[Reset]CharactorProfile":
-                DBManager.instance.ResetCharactorProfile(clientLicenseNumber, clientCharactor);
+                DBManager.Instance.ResetCharactorProfile(clientLicenseNumber, clientCharactor);
                 break;
             case "[Test]CreateDB":
-                DBManager.instance.CreateDateDB();
+                DBManager.Instance.CreateDateDB();
                 break;
             case "[Test]UpdateWeeklyRankDB":
-                DBManager.instance.UpdateWeeklyRankDB();
+                DBManager.Instance.UpdateWeeklyRankDB();
                 break;
             default:
                 Debug.Log($"[Server] Handling error that request from client, request name : {requestName}");
@@ -323,9 +321,8 @@ public class Server : MonoBehaviour
 
         for (int i = 0; i < replyRequestData_List.Count; i++)
         {
-            byte[] data = Encoding.UTF8.GetBytes(replyRequestData_List[i]); // string -> byte[] 데이터 형식 변환
+            byte[] data = Encoding.UTF8.GetBytes(replyRequestData_List[i]);
             stream.Write(data, 0, data.Length);
-            //Debug.Log("[Server] Replying... request data to client");
         }
 
         byte[] finishData = Encoding.UTF8.GetBytes("Finish");
@@ -342,16 +339,16 @@ public class Server : MonoBehaviour
             nextMidnight = DateTime.Today.AddDays(1);
             TimeSpan timeUntilMidnight = nextMidnight - DateTime.Now;
 
-            // Test용
-            DateTime testAfterOneMinute = DateTime.Now.AddSeconds(20);
-            timeUntilMidnight = testAfterOneMinute - DateTime.Now;
+            //// Test용
+            //DateTime testAfterOneMinute = DateTime.Now.AddSeconds(20);
+            //timeUntilMidnight = testAfterOneMinute - DateTime.Now;
 
             // 자정까지 대기할 WaitforSeconds 설정
             waitUntilMidnight = new WaitForSeconds((float)timeUntilMidnight.TotalSeconds);
 
             // DB에 저장되어있는 weeklyrank 갱신용 시작 기준일
             // 그 갱신일로부터 일주일이 지나면 weeklyrankDB table update
-            standardDay = DBManager.instance.LoadStandardDay();
+            standardDay = DBManager.Instance.LoadStandardDay();
 
             TimeSpan timeSpan = DateTime.Now.Date - standardDay.Date;
 
@@ -362,18 +359,12 @@ public class Server : MonoBehaviour
             Debug.Log($"[Server] timeSpan : {timeSpan}");
             Debug.Log($"[Server] timeSpan.Days : {timeSpan.Days}");
 
-            if(timeSpan.Days == 7)
-            {
-
-            }
-
-            // 43200
             Debug.Log($"[Server] Waited time until next midnight, timeUntilMidnight : {timeUntilMidnight.TotalSeconds} ");
 
             // 자정 체크 실행
             StartCoroutine(CheckMidnight_Co());
         }
-        catch(Exception e)
+        catch (Exception e)
         {
             Debug.Log($"[Server] Can't execute timerset method, {e.Message}");
             // 실행이 안되면 5초후에 다시 실행
@@ -384,40 +375,42 @@ public class Server : MonoBehaviour
     // 하루가 지났을 때 PresentDB에 있는 gamedata들 새 DateDB(ex) 24.02.21)에 저장
     private IEnumerator CheckMidnight_Co()
     {
-        while(true)
+
+        Debug.Log($"[Server] Come in CheckMidnight Coroutine");
+        yield return waitUntilMidnight;
+
+        Debug.Log("[Server] A day has passed. Start creating new DateDB for save data");
+
+        Debug.Log($"[Server] DateTime.Now : {DateTime.Now}");
+        // 자정이 되면 DateDB 생성
+        DBManager.Instance.CreateDateDB();
+
+        Debug.Log("[Server] Complete Create DateDB");
+
+        // 매주 월요일이 되면 weeklyrankDB에 한주간 rank table 생성
+        TimeSpan timeSpan = DateTime.Now.Date - standardDay.Date;
+        Debug.Log("[Server] Complete Create DateDB");
+
+        if (timeSpan.Days == 7)
         {
-            Debug.Log($"[Server] Come in CheckMidnight Coroutine");
-            yield return waitUntilMidnight;
-
-            Debug.Log("[Server] A day has passed. Start creating new DateDB for save data");
-
-            Debug.Log($"[Server] DateTime.Now : {DateTime.Now}");
-            // 자정이 되면 DateDB 생성
-            DBManager.instance.CreateDateDB();
-
-            Debug.Log("[Server] Complete Create DateDB");
-
-            // 매주 월요일이 되면 weeklyrankDB에 한주간 rank table 생성
-            TimeSpan timeSpan = DateTime.Now.Date - standardDay.Date;
-            Debug.Log("[Server] Complete Create DateDB");
-
-            if (timeSpan.Days == 7)
-            {
-                Debug.Log("[Server] Start Update WeeklyRankDB");
-                DBManager.instance.UpdateWeeklyRankDB();
-                Debug.Log("[Server] Complete Update WeeklyRankDB");
-                standardDay = DBManager.instance.LoadStandardDay();
-                Debug.Log("[Server] Server class's standardDay member variable was re allocated after update weeklyRankDB");
-            }
-
-            // 자정이 지나고 나서 DateDB를 생성한 후 자정 체크 시간 갱신
-            // CreateDateDB()를 수행하는데 시간이 어느정도 걸리므로, 몇초의 오차가 있을 수 있다.
-            nextMidnight = DateTime.Today.AddDays(1);
-            TimeSpan timeUntilNextMidnight = nextMidnight - DateTime.Now;
-            waitUntilMidnight = new WaitForSeconds((float)timeUntilNextMidnight.TotalSeconds);
-
-            Debug.Log($"[Server] Waited time until next midnight, timeUntilNextMidnight : {timeUntilNextMidnight.TotalSeconds} ");
+            Debug.Log("[Server] Start Update WeeklyRankDB");
+            DBManager.Instance.UpdateWeeklyRankDB();
+            Debug.Log("[Server] Complete Update WeeklyRankDB");
+            standardDay = DBManager.Instance.LoadStandardDay();
+            Debug.Log("[Server] Server class's standardDay member variable was re allocated after update weeklyRankDB");
         }
+
+        // 자정이 지나고 나서 DateDB를 생성한 후 자정 체크 시간 갱신
+        // CreateDateDB()를 수행하는데 시간이 어느정도 걸리므로, 몇초의 오차가 있을 수 있다.
+        nextMidnight = DateTime.Today.AddDays(1);
+        TimeSpan timeUntilNextMidnight = nextMidnight - DateTime.Now;
+        waitUntilMidnight = new WaitForSeconds((float)timeUntilNextMidnight.TotalSeconds);
+
+
+        Debug.Log($"[Server] Waited time until next midnight, timeUntilNextMidnight : {timeUntilNextMidnight.TotalSeconds} ");
+
+        // 하루가 지나면 DateDB생성하고 일주일이 됐으면 WeeklyRankDB 생성한 후 다시 하루가 지났는지 체크
+        StartCoroutine(CheckMidnight_Co());
     }
 
     // 연결된 클라이언트 확인
@@ -425,16 +418,16 @@ public class Server : MonoBehaviour
     {
         clientCheckTimer += Time.deltaTime;
 
-        if(clientCheckTimer > clientCheckTime)
+        if (clientCheckTimer > clientCheckTime)
         {
             // 현재 서버에 연결중인 클라이언트가 몇명인지
             Debug.Log($"[Server] Present Connected Clients : {clients.Count}");
 
             foreach (TcpClient client in clients)
             {
-                if(client != null) // 클라이언트가 null이 아니라면
+                if (client != null) // 클라이언트가 null이 아니라면
                 {
-                    Debug.Log($"[Server] Connected clients's IP : {((IPEndPoint)client.Client.RemoteEndPoint).Address}");
+                    Debug.Log($"[Server] Connected _clients's IP : {((IPEndPoint)client.Client.RemoteEndPoint).Address}");
                 }
                 else
                 {
@@ -443,42 +436,42 @@ public class Server : MonoBehaviour
 
                 if (!IsConnected(client)) // client란 변수가 null은 아니어서 한번 확인해보는데, client를 찔러봤는데 반응이 없다면 == 연결이 끊겼다면
                 {
-                    // clients List에 제거할 client 추가
+                    // _clients List에 제거할 client 추가
                     disconnectList.Add(client);
                     Debug.Log($"[Server] The client is not null but it's disconnected, : {((IPEndPoint)client.Client.RemoteEndPoint).Address}");
                 }
             }
 
             // 연결없는 client 제거
-            foreach(TcpClient client in disconnectList)
+            foreach (TcpClient client in disconnectList)
             {
-                Debug.Log($"[Server] Remove client in clients where disconnectList : {((IPEndPoint)client.Client.RemoteEndPoint).Address}");
+                Debug.Log($"[Server] Remove client in _clients where _disconnectList : {((IPEndPoint)client.Client.RemoteEndPoint).Address}");
                 clients.Remove(client);
             }
 
-            // disconnectList 사용하고나서 초기화
+            // _disconnectList 사용하고나서 초기화
             disconnectList.Clear();
 
             clientCheckTimer = 0f;
         }
 
         //// 매 업데이트마다? 1초마다 확인client 연결상태 확인
-        //if (clientCheckTimer > clientCheckTime)
+        //if (_clientCheckTimer > _clientCheckTime)
         //{
         //    try
         //    {
-        //        Debug.Log($"[Server] Present Connected Clients : {clients.Count}");
+        //        Debug.Log($"[Server] Present Connected Clients : {_clients.Count}");
 
-        //        foreach (TcpClient client in clients)
+        //        foreach (TcpClient client in _clients)
         //        {
-        //            // 연결이 끊긴 client가 있으면 client.Close 후 disconnectList에 Add
+        //            // 연결이 끊긴 client가 있으면 client.Close 후 _disconnectList에 Add
         //            if (!IsConnected(client))
         //            {
         //                if(client == null)
         //                {
         //                    Debug.Log("[Server] client is null");
-        //                    Debug.Log($"[Server] clients.Count : {clients.Count}");
-        //                    Debug.Log($"[Server] disconnectList.Count : {disconnectList.Count}");
+        //                    Debug.Log($"[Server] _clients.Count : {_clients.Count}");
+        //                    Debug.Log($"[Server] _disconnectList.Count : {_disconnectList.Count}");
         //                }
         //                else
         //                {
@@ -489,12 +482,12 @@ public class Server : MonoBehaviour
         //                // client는 null이 아니지만 client의 프로퍼티는 null일 수 있다.
         //                if(((IPEndPoint)client.Client.RemoteEndPoint).Address != null)
         //                {
-        //                    Debug.Log($"[Server] Disconnected clients's IP : {((IPEndPoint)client.Client.RemoteEndPoint).Address}");
+        //                    Debug.Log($"[Server] Disconnected _clients's IP : {((IPEndPoint)client.Client.RemoteEndPoint).Address}");
         //                }
         //                client.Close();
-        //                disconnectList.Add(client);
+        //                _disconnectList.Add(client);
         //                //Debug.Log($"[Server] After client.Close(), Test check client.Connected bool value : {client.Connected}");
-        //                //clients.Remove(client); // 컬렉션을 반복하고 있는 와중에 컬렉션을 수정할려고 하면 안됨
+        //                //_clients.Remove(client); // 컬렉션을 반복하고 있는 와중에 컬렉션을 수정할려고 하면 안됨
         //                // 수정할 대상을 다른 리스트에 추가하고, 반복이 끝난 후에 해당 리스트의 항목을 삭제
         //                continue;
         //            }
@@ -508,7 +501,7 @@ public class Server : MonoBehaviour
         //            //{
         //            //    Debug.Log($"Disconnected client's IP {((IPEndPoint)client.Client.RemoteEndPoint).Address}");
         //            //    client.Close();
-        //            //    disconnectList.Add(client);
+        //            //    _disconnectList.Add(client);
         //            //    continue;
         //            //}
         //            // 클라이언트로부터 체크 메시지 받기
@@ -533,11 +526,11 @@ public class Server : MonoBehaviour
         //    {
         //        Debug.Log($"[Server] CheckClientState Exception occurred while Check every 2 seconds, e.Message : {e.Message}");
         //    }
-            
 
-        //    foreach (TcpClient disconnectClient in disconnectList)
+
+        //    foreach (TcpClient disconnectClient in _disconnectList)
         //    {
-        //        clients.Remove(disconnectClient);
+        //        _clients.Remove(disconnectClient);
         //    }
     }
 
@@ -545,13 +538,13 @@ public class Server : MonoBehaviour
     {
         Debug.Log("[Server] Connection is disconnected, so come in CheckCliets Method");
 
-        Debug.Log($"[Server] Before Remove, clients.Count : {clients.Count}");
+        Debug.Log($"[Server] Before Remove, _clients.Count : {clients.Count}");
         // 초기에 생성된 List들에 해당 연결이 끊긴 client 처리
-        // disconnectList.Add(client);
+        // _disconnectList.Add(client);
         clients.Remove(client);
-        Debug.Log("[Server] clients.Remove(client)");
-        
-        Debug.Log($"[Server] After Remove, clients.Count : {clients.Count}");
+        Debug.Log("[Server] _clients.Remove(client)");
+
+        Debug.Log($"[Server] After Remove, _clients.Count : {clients.Count}");
 
         // 연결이 끊겼다면 이미 DisPose되었겠지만 또 한번 Dispose()
         client.Dispose();
@@ -560,7 +553,7 @@ public class Server : MonoBehaviour
         // client 변수에 null 할당하여 참조 해제, 나중에 GC가 수거할 수 있도록
         client = null;
 
-        if(client == null)
+        if (client == null)
         {
             Debug.Log($"[Server] client is null");
         }
@@ -583,9 +576,9 @@ public class Server : MonoBehaviour
         TimeSpan timeDiff = criterionTime - currentTime;
 
         // uint 양수만 사용
-        uint diffHours = (uint)(timeDiff.Hours >= 0? timeDiff.Hours : 0);
-        uint diffMinutes = (uint)(timeDiff.Minutes >= 0? timeDiff.Minutes : 0);
-        uint diffSeconds = (uint)(timeDiff.Seconds >= 0? timeDiff.Seconds : 0);
+        uint diffHours = (uint)(timeDiff.Hours >= 0 ? timeDiff.Hours : 0);
+        uint diffMinutes = (uint)(timeDiff.Minutes >= 0 ? timeDiff.Minutes : 0);
+        uint diffSeconds = (uint)(timeDiff.Seconds >= 0 ? timeDiff.Seconds : 0);
 
         // 현재 시간이 초기화 되는 시간보다 크다면, timeDiff가 음수가 아니고, 0이 아니면
         if (diffHours == 0 && diffMinutes == 0 && diffSeconds > 0 && diffSeconds <= 5)
@@ -621,12 +614,12 @@ public class Server : MonoBehaviour
 
             return isConnCheck;
         }
-        catch(Exception e)
+        catch (Exception e)
         {
             Debug.Log($"[Server] IsConnected Exeception occurred : {e.Message}");
             return false;
         }
-        
+
     }
 
     // 서버 종료
@@ -636,5 +629,5 @@ public class Server : MonoBehaviour
     }
 
 
-    
+
 }

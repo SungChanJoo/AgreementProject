@@ -44,7 +44,7 @@ public class AnalysisChart : MonoBehaviour
 
     private void Start()
     {
-        analyticsData = Client.instance.AppStart_LoadAnalyticsDataFromDB();
+        analyticsData = Client.Instance.AppStart_LoadAnalyticsDataFromDB();
         ObjectPooling();        
         ShowChartData();
     }

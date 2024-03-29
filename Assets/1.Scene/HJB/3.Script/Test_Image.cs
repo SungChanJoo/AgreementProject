@@ -35,7 +35,7 @@ public class Test_Image : MonoBehaviour
             //}
         }
 
-        Client.instance.AppGame_SaveResultDataToDB(result_DB, game_Type, level, step);
+        Client.Instance.AppGame_SaveResultDataToDB(result_DB, game_Type, level, step);
 
     }
     

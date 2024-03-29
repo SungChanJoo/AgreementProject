@@ -17,7 +17,7 @@ public class Client : MonoBehaviour
     [SerializeField] private string server_IP = "43.201.20.174"; // aws EC2 IP : 43.201.20.174
     [SerializeField] private int server_Port = 2421;
 
-    bool socketReady;
+    private bool socketReady;
 
     // TCP 통신
     private TcpClient client;
@@ -27,15 +27,9 @@ public class Client : MonoBehaviour
     private bool isReceived;
 
     // login - license, charactor / local(json)로 관리
-    public static string clientLicenseNumber;
-    public static string clientCharactor;
-    public string licenseFolderPath = string.Empty;
-
-    // 서버로 부터 받은 data를 1차적으로 거른 List
-    public List<string> CharactorData_FromServer;
-
-    // Charactor data를 사용하기 위한 Dictionary
-    public Dictionary<string, List<string>> CharactorData_Dic;
+    public static string ClientLicenseNumber;
+    public static string ClientCharactor;
+    public string LicenseFolderPath = string.Empty;
 
     // 서버-클라이언트 string으로 data 주고받을때 구분하기 위한 문자열
     private const string separatorString = "E|";
@@ -53,9 +47,6 @@ public class Client : MonoBehaviour
     private LastPlayData clientLastPlayData;
     private AnalyticsProfileData clientAnalyticsProfileData;
 
-    // timer
-    private float transmissionTime = 1f;
-
     // 기타 데이터 처리용 Handler
     private ETCMethodHandler etcMethodHandler;
 
@@ -64,13 +55,13 @@ public class Client : MonoBehaviour
         stream = _stream;
     }
 
-    public static Client instance = null;
+    public static Client Instance = null;
 
     private void Awake()
     {
-        if (instance == null)
+        if (Instance == null)
         {
-            instance = this;
+            Instance = this;
             DontDestroyOnLoad(gameObject);
         }
         else
@@ -95,12 +86,6 @@ public class Client : MonoBehaviour
 
         // DB TableName 생성
         table = new TableName();
-
-        // CharactorData Load했을때 받아오는 List 생성
-        CharactorData_FromServer = new List<string>();
-
-        // Dictionary 생성
-        CharactorData_Dic = new Dictionary<string, List<string>>();
 
         // 기타 데이터 처리용 Handler 생성
         etcMethodHandler = new ETCMethodHandler();
@@ -138,27 +123,23 @@ public class Client : MonoBehaviour
     {
         // 연결되지 않았다면 return
         if (!client.Connected) return;
-        //licenseFolderPath = Application.dataPath + "/License";
-
-        // 나중에 안드로이드 할때 Application.persistentDataPath + "/License";
 
         if (Application.platform == RuntimePlatform.Android)
         {
 
-            licenseFolderPath = Application.persistentDataPath + "/License";
+            LicenseFolderPath = Application.persistentDataPath + "/License";
         }
         else
         {
-            licenseFolderPath = Application.dataPath + "/License";
+            LicenseFolderPath = Application.dataPath + "/License";
         }
 
-        string licenseFilePath = licenseFolderPath + "/clientlicense.json";
-        Debug.Log($"제발요 파일경로를 알려주세요{licenseFilePath}");
+        string licenseFilePath = LicenseFolderPath + "/clientlicense.json";
         // 경로에 파일이 존재하지 않는다면 라이센스넘버가 없다는것이고, 처음 접속한다는 뜻
         if (!File.Exists(licenseFilePath))
         {
 
-            Directory.CreateDirectory(licenseFolderPath);
+            Directory.CreateDirectory(LicenseFolderPath);
             // 서버에서 라이센스 넘버를 받아와야함, 그러기 위해 서버에 요청 todo
             Debug.Log($"[Client] This client is entering game for the first time..");
             string requestName = "[Create]LicenseNumber|Finish";
@@ -166,17 +147,17 @@ public class Client : MonoBehaviour
             return; // 처음 접속이라면 폴더 및 파일 저장하고 return
         }
 
-            // 해당 경로에 있는 파일을 읽어 클라이언트 라이센스 넘버를 불러옴
-            string jsonStringFromFile = File.ReadAllText(licenseFilePath);
-            JsonData client_JsonFile = JsonMapper.ToObject(jsonStringFromFile);
-            clientLicenseNumber = client_JsonFile["LicenseNumber"].ToString();
-            clientCharactor = client_JsonFile["Charactor"].ToString();
-            Debug.Log($"[Client] This client's licensenumber(have) : {clientLicenseNumber}");
-            Debug.Log($"[Client] This client's charactor(last charactor) : {clientCharactor}");
-        }
-#endregion
+        // 해당 경로에 있는 파일을 읽어 클라이언트 라이센스 넘버를 불러옴
+        string jsonStringFromFile = File.ReadAllText(licenseFilePath);
+        JsonData client_JsonFile = JsonMapper.ToObject(jsonStringFromFile);
+        ClientLicenseNumber = client_JsonFile["LicenseNumber"].ToString();
+        ClientCharactor = client_JsonFile["Charactor"].ToString();
+        Debug.Log($"[Client] This client's licensenumber(have) : {ClientLicenseNumber}");
+        Debug.Log($"[Client] This client's charactor(last charactor) : {ClientCharactor}");
+    }
+    #endregion
 
-#region Server-Client Communication
+    #region Server-Client Communication
     // 서버 요청 - 매개변수로 string으로 받고, requestName으로 요청사항 구분
     private void RequestToServer(string requestData)
     {
@@ -213,38 +194,19 @@ public class Client : MonoBehaviour
                 //byte[] buffer = new byte[1024]; // 일반적인 버퍼사이즈
                 byte[] buffer = new byte[16000000]; // 16MiB 버퍼 사이즈 
                 int bytesRead = stream.Read(buffer, 0, buffer.Length); // 데이터를 읽어올때까지 대기 (동기식)
-                //int bytesRead = await stream.ReadAsync(buffer, 0, buffer.Length); // 데이터를 읽어올때까지 대기 (비동기식)
                 string receivedRequestData = Encoding.UTF8.GetString(buffer, 0, bytesRead); // 데이터 변환
 
                 receivedRequestData_List.Add(receivedRequestData);
                 Debug.Log($"[Client] Receiving... request data from server : {receivedRequestData}");
-
-                // todo 서버로부터 전송된 데이터를 제대로 받았는지 확인하는게 필요하다
-                // 못받으면 재요청
-                // 네트워크 패킷손실 확인하는 방법
-                // requestName으로 요청한 데이터를 받을 때 , E| separtorString 개수를 파악해서 제대로 개수가 맞는지 확인후 Handling하고 개수가 맞지 않으면 재전송하는 식으로?
-                //isReceived = true;
-                
-
 
                 // 서버로부터 데이터 전송이 끝나면(Finish) break;
                 List<string> endCheck = receivedRequestData.Split('|').ToList();
                 if (endCheck.Contains("Finish"))
                 {
                     Debug.Log($"[Client] Received Finish Data from server : {receivedRequestData}");
+                    
                     // receivedRequestData에 Finish가 있는 경우 Finish를 제거
                     etcMethodHandler.RemoveFinish(receivedRequestData_List, endCheck);
-                    //receivedRequestData_List.RemoveAt(receivedRequestData_List.Count - 1);
-                    //endCheck.RemoveAt(endCheck.Count - 1);
-                    //
-                    //string fixLastIndexInList = null;
-                    //
-                    //for(int i = 0; i < endCheck.Count; i++)
-                    //{
-                    //    fixLastIndexInList += $"{endCheck[i]}|";
-                    //}
-                    //
-                    //receivedRequestData_List.Add(fixLastIndexInList);
 
                     Debug.Log($"[Client] Finish Receive Data From Server");
                     break;
@@ -259,24 +221,15 @@ public class Client : MonoBehaviour
             Debug.Log($"[Client] So Reconnect To Server After Client.Close");
             client.Close();
             socketReady = false;
-            
+
             // 서버 연결
             ConnectToServer();
-            
-        }
-        //finally
-        //{
-        //    Debug.Log($"[Client] Finally Reconnect To Server After Client.Close");
-        //    client.Close();
-        //    socketReady = false;
-        //
-        //    // 서버 연결
-        //    ConnectToServer();
-        //}
-    }
-#endregion
 
-#region Handle Data
+        }
+    }
+    #endregion
+
+    #region Handle Data
     // 서버로부터 받은 데이터 처리
     private void HandleReceivedRequestData(List<string> dataList)
     {
@@ -300,21 +253,13 @@ public class Client : MonoBehaviour
                     tempAllocate += dataList[i];
                     Debug.Log($"[Client] Check User dataList{i} : {dataList[i]}");
                 }
-                //clientLicenseNumber = dataList[0].Split('|')[1];
-                //clientCharactor = dataList[0].Split('|')[2];
-                clientLicenseNumber = tempAllocate.Split('|')[1];
-                clientCharactor = tempAllocate.Split('|')[2];
+                ClientLicenseNumber = tempAllocate.Split('|')[1];
+                ClientCharactor = tempAllocate.Split('|')[2];
                 SaveClientDataToJsonFile();
                 Debug.Log($"[Client] RequestName : {requestName}, get and save licenseNumber to jsonfile");
                 break;
-            case "[Create]Charactor": // todo
-                for (int i = 0; i < dataList.Count; i++)
-                {
-                    Debug.Log($"[Client] Check [Create]Charactor, dateList[{i}] : {dataList[i]}");
-                }
-                //clientCharactor = dataList[0].Split('|')[1];
-                //Debug.Log($"[Client] RequestName : {requestName}, get new charactor number : {clientCharactor}");
-                //SaveClientDataToJsonFile();
+            case "[Create]Charactor":
+                Debug.Log($"[Client] RequestName : {requestName}, End handling data");
                 break;
             case "[Save]CharactorName":
                 Debug.Log($"[Client] RequestName : {requestName}, End handling data");
@@ -328,9 +273,6 @@ public class Client : MonoBehaviour
             case "[Save]CharactorData": // todo
                 //clientCharactor = "22";
                 SaveClientDataToJsonFile();
-                Debug.Log($"[Client] RequestName : {requestName}, End handling data");
-                break;
-            case "[Save]GameResult": // todo
                 Debug.Log($"[Client] RequestName : {requestName}, End handling data");
                 break;
             case "[Save]venezia_kor":
@@ -386,7 +328,6 @@ public class Client : MonoBehaviour
                 Debug.Log($"[Client] After Change Charactor, Save ClientData To Json");
                 break;
             case "[Delete]Charactor":
-                // DB에 있는 data만 삭제하면 되므로 따로 클라이언트가 처리할 필요 없음
                 Debug.Log($"[Client] RequestName : {requestName}, End handling data");
                 break;
             case "[Reset]CharactorProfile":
@@ -403,25 +344,25 @@ public class Client : MonoBehaviour
     {
         // JsonData 생성
         JsonData client_Json = new JsonData();
-        client_Json["LicenseNumber"] = clientLicenseNumber;
-        client_Json["Charactor"] = clientCharactor;
+        client_Json["LicenseNumber"] = ClientLicenseNumber;
+        client_Json["Charactor"] = ClientCharactor;
 
         // Json 데이터를 문자열로 변환하여 파일에 저장
         string jsonString = JsonMapper.ToJson(client_Json);
-        File.WriteAllText(licenseFolderPath + "/clientlicense.json", jsonString);
+        File.WriteAllText(LicenseFolderPath + "/clientlicense.json", jsonString);
     }
 
-    // 공용Json파일에 LicenseNumber 등록 / 비동기로 호출된 것이 끝났을때 동기적으로 호출시키기 위해
+    // public Json파일에 LicenseNumber 등록
     public void PublicSaveClientDataToJsonFile(int charactorNumber)
     {
         // JsonData 생성
         JsonData client_Json = new JsonData();
-        client_Json["LicenseNumber"] = clientLicenseNumber;
+        client_Json["LicenseNumber"] = ClientLicenseNumber;
         client_Json["Charactor"] = charactorNumber;
 
         // Json 데이터를 문자열로 변환하여 파일에 저장
         string jsonString = JsonMapper.ToJson(client_Json);
-        File.WriteAllText(licenseFolderPath + "/clientlicense.json", jsonString);
+        File.WriteAllText(LicenseFolderPath + "/clientlicense.json", jsonString);
     }
 
     // 유저 데이터 처리
@@ -465,7 +406,7 @@ public class Client : MonoBehaviour
         {
             List<string> tempList = filterList[i].Split('|', StringSplitOptions.RemoveEmptyEntries).ToList();
 
-            if(i == 0) clientUserData.createdCharactorCount = Int32.Parse(tempList[0]);
+            if (i == 0) clientUserData.createdCharactorCount = Int32.Parse(tempList[0]);
             else
             {
                 int _charactorNumber = Int32.Parse(tempList[0]);
@@ -531,12 +472,12 @@ public class Client : MonoBehaviour
             if (i == 0) // user_info table에서 가져온 data
             {
                 clientPlayerData.playerName = tempList[1];
-                clientPlayerData.image = Convert.FromBase64String(tempList[2]); // Convert.FromBase64String(CharactorData_Dic["user_info"][1]);
+                clientPlayerData.image = Convert.FromBase64String(tempList[2]);
                 clientPlayerData.Day = "";
                 clientPlayerData.BirthDay = tempList[3];
                 clientPlayerData.TotalAnswers = int.Parse(tempList[4]);
                 clientPlayerData.TotalTime = float.Parse(tempList[5]);
-                //clientPlayerData.Coin = int.Parser(tempList[6]);
+                clientPlayerData.StarCoin = int.Parse(tempList[6]);
             }
             else // game table에서 가져온 data
             {
@@ -557,21 +498,21 @@ public class Client : MonoBehaviour
 
                     clientPlayerData.Data.Add((Game_Type.A, level, step), datavalue);
                 }
-                else if(i <=36) // i가 19~36까지 venezia_eng_level1_step1
+                else if (i <= 36) // i가 19~36까지 venezia_eng_level1_step1
                 {
                     int level = ((i - 1) / 6) - 2;
                     int step = ((i - 1) % 6) + 1;
 
                     clientPlayerData.Data.Add((Game_Type.B, level, step), datavalue);
                 }
-                else if(i <= 42) // i가 37~42까지 venezia_chn_level_step1
+                else if (i <= 42) // i가 37~42까지 venezia_chn_level_step1
                 {
                     int level = 1;
                     int step = ((i - 1) % 6) + 1;
 
                     clientPlayerData.Data.Add((Game_Type.C, level, step), datavalue);
                 }
-                else if(i <= 60) // i가 43~60까지 calculation_level1_step1
+                else if (i <= 60) // i가 43~60까지 calculation_level1_step1
                 {
                     int level = ((i - 1) / 6) - 6;
                     int step = ((i - 1) % 6) + 1;
@@ -585,7 +526,7 @@ public class Client : MonoBehaviour
 
                     clientPlayerData.Data.Add((Game_Type.E, level, step), datavalue);
                 }
-                
+
             }
         }
 
@@ -660,23 +601,22 @@ public class Client : MonoBehaviour
         int games = 5;
         int levels = 3;
 
-        for(int i = 0; i < days; i++)
+        for (int i = 0; i < days; i++)
         {
-            for(int j = 0; j < games; j++)
+            for (int j = 0; j < games; j++)
             {
-                for(int k = 0; k < levels; k++)
+                for (int k = 0; k < levels; k++)
                 {
                     if (j == 2)
                     {
                         Debug.Log($"[Client] Check clientAnalyticsData.Data.Value(reactionRate), i,j,k : {i},{j}, {k} : {clientAnalyticsData.Data[(i + 1, (Game_Type)j, 1)].reactionRate}");
                         break;
                     }
-                    
+
                     Debug.Log($"[Client] Check clientAnalyticsData.Data.Value(reactionRate), i,j,k : {i},{j}, {k} : {clientAnalyticsData.Data[(i + 1, (Game_Type)j, k + 1)].reactionRate}");
                 }
             }
         }
-        //clientAnalyticsData.Data[(1, 0, 1)].answerRate;
 
         Debug.Log("[Client] End HandleLoadAnalyticsData..");
     }
@@ -712,16 +652,12 @@ public class Client : MonoBehaviour
         // E| 분할 및 RequestName 제거
         filterList = oneData.Split(separatorString, StringSplitOptions.RemoveEmptyEntries).ToList();
         filterList[0] = filterList[0].Substring("[Load]RankData|".Length);
-        for(int i = 0; i < filterList.Count; i++)
-        {
-            Debug.Log("======================HandleLoadRankData" + filterList[i]);
-        }
 
         // DB에 Load할 rank Table이 없다면 NONE이 들어옴
         // filterList[0] = NONTHING| // OR rank table이 있다면 filterList[0] = profile|name|score|
         List<string> tempList = filterList[0].Split('|', StringSplitOptions.RemoveEmptyEntries).ToList();
 
-        for(int i = 0; i < tempList.Count; i++)
+        for (int i = 0; i < tempList.Count; i++)
         {
             Debug.Log($"[Client] tempList[{i}] : {tempList[i]}");
         }
@@ -758,7 +694,7 @@ public class Client : MonoBehaviour
                 clientRankData.rankdata_score[i].userName = part[1];
                 clientRankData.rankdata_score[i].totalScore = Int32.Parse(part[2]);
             }
-            else if(i == 5) // 클라이언트 score
+            else if (i == 5) // 클라이언트 score
             {
                 clientRankData.rankdata_score[i] = new RankData_value();
                 clientRankData.rankdata_score[i].userProfile = (part[0] == "0") ? null : Convert.FromBase64String(part[0]);
@@ -767,14 +703,14 @@ public class Client : MonoBehaviour
                 clientRankData.rankdata_score[i].scorePlace = Int32.Parse(part[3]);
                 clientRankData.rankdata_score[i].highestScorePlace = Int32.Parse(part[4]);
             }
-            else if(i < 11) // time 1~5등
+            else if (i < 11) // time 1~5등
             {
                 clientRankData.rankdata_time[i - 6] = new RankData_value();
                 clientRankData.rankdata_time[i - 6].userProfile = (part[0] == "0") ? null : Convert.FromBase64String(part[0]);
                 clientRankData.rankdata_time[i - 6].userName = part[1];
                 clientRankData.rankdata_time[i - 6].totalTime = float.Parse(part[2]);
             }
-            else if(i == 11)// 클라이언트 time
+            else if (i == 11)// 클라이언트 time
             {
                 clientRankData.rankdata_time[i - 6] = new RankData_value();
                 clientRankData.rankdata_time[i - 6].userProfile = (part[0] == "0") ? null : Convert.FromBase64String(part[0]);
@@ -883,7 +819,7 @@ public class Client : MonoBehaviour
         clientLastPlayData = new LastPlayData();
 
         // clientLastPlayData Setting
-        for(int i = 0; i < tempList.Count; i++)
+        for (int i = 0; i < tempList.Count; i++)
         {
             if (i < 3) clientLastPlayData.Step.Add((Game_Type.A, i + 1), Int32.Parse(tempList[i])); // venezia_kor
             else if (i < 6) clientLastPlayData.Step.Add((Game_Type.B, (i + 1) - 3), Int32.Parse(tempList[i])); // venezia_eng
@@ -900,6 +836,7 @@ public class Client : MonoBehaviour
     {
         Debug.Log("[Client] Come in HandleLoadAnalyticsProfileData..");
 
+        #region dataList Format / filterList Format
         // 들어오는 dataList
         // dataList[0] = [Load]AnalyticsProfileData|Level1_게임명|Level1_평균반응속도|Level1_평균정답률|
         //                + Level2_게임명|Leve2_평균반응속도|Level2_평균정답률|Level3_게임명|Leve3_평균반응속도|Level3_평균정답률|
@@ -913,6 +850,7 @@ public class Client : MonoBehaviour
         // tempList[2] = Level1_평균정답률
         // ...
         // tempList[n] = Level3_평균정답률
+        #endregion
 
         // 하나의 string
         string oneData = etcMethodHandler.CreateOneDataToFilter(dataList);
@@ -925,11 +863,6 @@ public class Client : MonoBehaviour
         filterList[0] = filterList[0].Substring("[Load]AnalyticsProfileData|".Length);
 
         List<string> tempList = filterList[0].Split('|', StringSplitOptions.RemoveEmptyEntries).ToList();
-
-        for (int i = 0; i < tempList.Count; i++)
-        {
-            Debug.Log($"[Client] AnalyticsProfileData tempList[{i}] : {tempList[i]}");
-        }
 
         // clientAnalyticsProfileData Initiate
         clientAnalyticsProfileData = new AnalyticsProfileData();
@@ -954,6 +887,7 @@ public class Client : MonoBehaviour
     {
         Debug.Log("[Client] Come in HandleChangeCharactorData..");
 
+        #region dateList Format / filterList Format
         // 들어오는 dataList
         // dataList[0] = [Change]Charactor|
         // dateList[1] = charactorNumber|
@@ -963,11 +897,7 @@ public class Client : MonoBehaviour
 
         // tempList 형태
         // tempList[0] = charactorNumber
-
-        for (int i = 0; i < dataList.Count; i++)
-        {
-            Debug.Log($"[Client] ChangeCharactorData[{i}] : {dataList[i]}");
-        }
+        #endregion
 
         // 하나의 string
         string oneData = etcMethodHandler.CreateOneDataToFilter(dataList);
@@ -982,13 +912,13 @@ public class Client : MonoBehaviour
         List<string> tempList = filterList[0].Split('|', StringSplitOptions.RemoveEmptyEntries).ToList();
 
         // clientCharactor 변경
-        clientCharactor = tempList[0];
+        ClientCharactor = tempList[0];
 
         Debug.Log("[Client] Complete ChangeCharactorData..");
     }
-#endregion
+    #endregion
 
-#region 클라이언트-서버요청
+    #region 클라이언트-서버요청
 
     /*
     Client가 DB에 있는 파일을 Save Load 하는 경우
@@ -1001,17 +931,8 @@ public class Client : MonoBehaviour
     1. 앱 시작 -> AnalyticsProfileData Load (프로필용 분석표) // Only DB
     ------------------------------------------------------------------------------------
     2. 플레이어(charactor) 생성 -> Save, Load
-    2-1. Player_DB Save (기존 CharactorData)
-    2-1. ExpendtionCrew Save (기존 CharactorData)
-    2-1. LastPlay Save (기존 CharactorData)
-    2-2. New Charactor Create (새 ChractorData 생성)
-    2-3. UserData Load (새 CharactorData 기준으로)
-    2-3. Player_DB Load (새 CharactorData)
-    2-3. GameAnalytics Load (새 CharactorData)
-    2-3. RankData Load (새 CharactorData)
-    2-3. ExpenditionCrew Load (새 CharactorData)
-    2-3. LastPlay Load (새 CharactorData)
-    2-3. AnalyticsProfileData Load (새 CharactorData)
+    2-1. New Charactor Create (새 ChractorData 생성)
+    2-2. UserData Load (새 CharactorData 기준으로)
     -------------------------------------------------------------------------------------
     3. 플레이어(Charactor) 변경 -> Save, Load
     3-1. Player_DB Save (기존 CharactorData)
@@ -1025,7 +946,10 @@ public class Client : MonoBehaviour
     3-2. LastPlay Load (변경 CharactorData)
     3-2. AnalyticsProfileData (변경 CharactorData)
     ---------------------------------------------------------------------------------------
-    4. 플레이어(Charactor) 삭제 -> UserData Save(Update) and Load
+    4. 플레이어(Charactor) 삭제 -> UserData Save(DB Update) and UserData Load
+    4-1. Delete Charactor
+    4-2. UserData Load (지워진 UserData 기준으로)
+    ----------------------------------------------------------------------------------------
     5. Charactor Name 등록
     6. Charactor Profile 등록
     7. Charactor Birthday 등록
@@ -1035,18 +959,13 @@ public class Client : MonoBehaviour
     10. 앱 종료 -> Player_DB Save 
     10. 앱 종료 -> ExpenditionCrew Save 
     10. 앱 종료 -> LastPlay Save
-    
-    7. 앱 종료 -> 마지막 접속한 Charactor - LitJson파일로 로컬 저장(clientlicense)
-
-##. 앱 게임 시작 -> TotalScore(int형) Load (game_type, level, step 받음) -> Save GameData
-    --. 랭킹 UI 접속 시(or 랭킹새로고침) -> rank Load  // 일단 테스트용
     */
 
-#region 앱 시작시
+    #region 앱 시작시
     // 앱 시작시 UserData Load
     public UserData AppStart_LoadUserDataFromDB()
     {
-        string requestData = $"[Load]UserData|{clientLicenseNumber}|Finish";
+        string requestData = $"[Load]UserData|{ClientLicenseNumber}|Finish";
         RequestToServer(requestData);
 
         return clientUserData;
@@ -1055,12 +974,8 @@ public class Client : MonoBehaviour
     // 앱 시작시 Player_DB Load
     public Player_DB AppStart_LoadCharactorDataFromDB()
     {
-        //Player_DB playerDB = new Player_DB();
-
-        string requestData = $"[Load]CharactorData|{clientLicenseNumber}|{clientCharactor}|Finish";
+        string requestData = $"[Load]CharactorData|{ClientLicenseNumber}|{ClientCharactor}|Finish";
         RequestToServer(requestData);
-
-        //playerDB = clientPlayerData;
 
         return clientPlayerData;
     }
@@ -1068,21 +983,17 @@ public class Client : MonoBehaviour
     // 앱 시작시 AnalyticsData Load
     public AnalyticsData AppStart_LoadAnalyticsDataFromDB()
     {
-        string requestData = $"[Load]AnalyticsData|{clientLicenseNumber}|{clientCharactor}|Finish";
+        string requestData = $"[Load]AnalyticsData|{ClientLicenseNumber}|{ClientCharactor}|Finish";
         RequestToServer(requestData);
-        
+
         return clientAnalyticsData;
     }
 
     // 앱 시작시 RankData Load
     public RankData AppStart_LoadRankDataFromDB()
     {
-        //RankData return_RankData = new RankData();
-
-        string requestData = $"[Load]RankData|{clientLicenseNumber}|{clientCharactor}|Finish";
+        string requestData = $"[Load]RankData|{ClientLicenseNumber}|{ClientCharactor}|Finish";
         RequestToServer(requestData);
-
-        //return_RankData = clientRankData;
 
         return clientRankData;
     }
@@ -1090,7 +1001,7 @@ public class Client : MonoBehaviour
     // 앱 시작시 ExpenditionCrew Load
     public ExpenditionCrew AppStart_LoadExpenditionCrewFromDB()
     {
-        string requestData = $"[Load]ExpenditionCrew|{clientLicenseNumber}|{clientCharactor}|Finish";
+        string requestData = $"[Load]ExpenditionCrew|{ClientLicenseNumber}|{ClientCharactor}|Finish";
         RequestToServer(requestData);
 
         return clientExpenditionCrew;
@@ -1099,7 +1010,7 @@ public class Client : MonoBehaviour
     // 앱 시작시 LastPlay Load
     public LastPlayData AppStart_LoadLastPlayFromDB()
     {
-        string requestData = $"[Load]LastPlayData|{clientLicenseNumber}|{clientCharactor}|Finish";
+        string requestData = $"[Load]LastPlayData|{ClientLicenseNumber}|{ClientCharactor}|Finish";
         RequestToServer(requestData);
 
         return clientLastPlayData;
@@ -1108,106 +1019,32 @@ public class Client : MonoBehaviour
     // 앱 시작시 AnalyticsProfileData Load
     public AnalyticsProfileData AppStart_LoadAnalyticsProfileDataFromDB()
     {
-        string requestData = $"[Load]AnalyticsProfileData|{clientLicenseNumber}|{clientCharactor}|Finish";
+        string requestData = $"[Load]AnalyticsProfileData|{ClientLicenseNumber}|{ClientCharactor}|Finish";
         RequestToServer(requestData);
 
         return clientAnalyticsProfileData;
     }
+    #endregion
 
-#endregion
-
-#region 캐릭터 생성
-    // Charactor 생성시 Player_DB Save (기존 CharactorData)
-    public void CreateCharactor_SaveCharactorDataToDB(Player_DB playerdb)
-    {
-        SaveCharactorDataToDB(playerdb);
-    }
-
-    // Charactor 생성시 ExpenditionCrew Save (기존 CharactorData)
-    public void CreateCharactor_SaveExpenditionCrewDataToDB(ExpenditionCrew crew)
-    {
-        SaveExpenditionCrewDataToDB(crew);
-    }
-
-    // Charactor 생성시 LastPlay Save (기존 CharactorData)
-    public void CreateCharactor_SaveLastPlayDataToDB(LastPlayData lastplaydata)
-    {
-        SaveLastPlayDataToDB(lastplaydata);
-    }
-
+    #region 캐릭터 생성
     // Charactor 생성 요청 -> Server에서 보낸 데이터 받았을 때 clientCharactor -> 생성한 charactor번호로 변경
     public void CreateCharactorData(string name)
     {
-        string reqeustData = $"[Create]Charactor|{clientLicenseNumber}|{clientCharactor}|{name}|Finish";
-
+        string reqeustData = $"[Create]Charactor|{ClientLicenseNumber}|{ClientCharactor}|{name}|Finish";
         RequestToServer(reqeustData);
     }
 
     // Charactor 생성시 UserData Load (새 CharactorData 기준으로)
     public UserData CreateCharactor_LoadUserDataFromDB()
     {
-        string requestData = $"[Load]UserData|{clientLicenseNumber}|Finish";
+        string requestData = $"[Load]UserData|{ClientLicenseNumber}|Finish";
         RequestToServer(requestData);
 
         return clientUserData;
     }
+    #endregion
 
-    // Charactor 생성시 Player_DB Load (새 CharactorData)
-    public Player_DB CreateCharactor_LoadCharactorDataFromDB()
-    {
-        string requestData = $"[Load]CharactorData|{clientLicenseNumber}|{clientCharactor}|Finish";
-        RequestToServer(requestData);
-
-        return clientPlayerData;
-    }
-
-    // Charactor 생성시 GameAnalytics Load (새 CharactorData)
-    public AnalyticsData CreateCharactor_LoadAnalyticsDataFromDB()
-    {
-        string requestData = $"[Load]AnalyticsData|{clientLicenseNumber}|{clientCharactor}|Finish";
-        RequestToServer(requestData);
-
-        return clientAnalyticsData;
-    }
-
-    // Charactor 생성시 RankData Load (새 CharactorData)
-    public RankData CreateCharactor_LoadRankDataFromDB()
-    {
-        string requestData = $"[Load]RankData|{clientLicenseNumber}|{clientCharactor}|Finish";
-        RequestToServer(requestData);
-
-        return clientRankData;
-    }
-
-    // Charactor 생성시 ExpenditionCrew Load (새 CharactorData) 
-    public ExpenditionCrew CreateCharactor_LoadExpenditionCrewFromDB()
-    {
-        string requestData = $"[Load]ExpenditionCrew|{clientLicenseNumber}|{clientCharactor}|Finish";
-        RequestToServer(requestData);
-
-        return clientExpenditionCrew;
-    }
-
-    // Charactor 생성시 LastPlay Load (새 CharactorData) 
-    public LastPlayData CreateCharactor_LoadLastPlayFromDB()
-    {
-        string requestData = $"[Load]LastPlayData|{clientLicenseNumber}|{clientCharactor}|Finish";
-        RequestToServer(requestData);
-
-        return clientLastPlayData;
-    }
-
-    // Charactor 생성시 AnalyticsProfileData Load (새 CharactorData)
-    public AnalyticsProfileData CreateCharactor_LoadAnalyticsProfileDataFromDB()
-    {
-        string requestData = $"[Load]AnalyticsProfileData|{clientLicenseNumber}|{clientCharactor}|Finish";
-        RequestToServer(requestData);
-
-        return clientAnalyticsProfileData;
-    }
-#endregion
-
-#region 캐릭터 변경
+    #region 캐릭터 변경
     // Charactor 변경시 Player_DB Save (기존 CharactorData)
     public void ChangeCharactor_SaveCharactorDataToDB(Player_DB playerdb)
     {
@@ -1229,15 +1066,14 @@ public class Client : MonoBehaviour
     // Charactor 변경 요청 -> Server에서 보낸 데이터 받았을 때 clientCharactor -> 변경한 charactor번호로 변경, todo
     public void ChangeCharactorData(int changeCharactor)
     {
-        string reqeustData = $"[Change]Charactor|{clientLicenseNumber}|{changeCharactor}|Finish";
-
+        string reqeustData = $"[Change]Charactor|{ClientLicenseNumber}|{changeCharactor}|Finish";
         RequestToServer(reqeustData);
     }
 
     // Charactor 변경시 UserData Load (변경 CharactorData 기준으로)
     public UserData ChangeCharactor_LoadUserDataFromDB()
     {
-        string requestData = $"[Load]UserData|{clientLicenseNumber}|Finish";
+        string requestData = $"[Load]UserData|{ClientLicenseNumber}|Finish";
         RequestToServer(requestData);
 
         return clientUserData;
@@ -1246,7 +1082,7 @@ public class Client : MonoBehaviour
     // Charactor 변경시 Player_DB Load (변경 CharatrorData)
     public Player_DB ChangeCharactor_LoadCharactorDataFromDB()
     {
-        string requestData = $"[Load]CharactorData|{clientLicenseNumber}|{clientCharactor}|Finish";
+        string requestData = $"[Load]CharactorData|{ClientLicenseNumber}|{ClientCharactor}|Finish";
         RequestToServer(requestData);
 
         return clientPlayerData;
@@ -1255,7 +1091,7 @@ public class Client : MonoBehaviour
     // Charactor 변경시 GameAnalytics Load (변경 CharactorData)
     public AnalyticsData ChangeCharactor_LoadAnalyticsDataFromDB()
     {
-        string requestData = $"[Load]AnalyticsData|{clientLicenseNumber}|{clientCharactor}|Finish";
+        string requestData = $"[Load]AnalyticsData|{ClientLicenseNumber}|{ClientCharactor}|Finish";
         RequestToServer(requestData);
 
         return clientAnalyticsData;
@@ -1264,7 +1100,7 @@ public class Client : MonoBehaviour
     // Charactor 변경시 RankData Load (변경 CharactorData)
     public RankData ChangeCharactor_LoadRankDataFromDB()
     {
-        string requestData = $"[Load]RankData|{clientLicenseNumber}|{clientCharactor}|Finish";
+        string requestData = $"[Load]RankData|{ClientLicenseNumber}|{ClientCharactor}|Finish";
         RequestToServer(requestData);
 
         return clientRankData;
@@ -1273,7 +1109,7 @@ public class Client : MonoBehaviour
     // Charactor 변경시 ExpenditionCrew Load (변경 CharactorData) 
     public ExpenditionCrew ChangeCharactor_LoadExpenditionCrewFromDB()
     {
-        string requestData = $"[Load]ExpenditionCrew|{clientLicenseNumber}|{clientCharactor}|Finish";
+        string requestData = $"[Load]ExpenditionCrew|{ClientLicenseNumber}|{ClientCharactor}|Finish";
         RequestToServer(requestData);
 
         return clientExpenditionCrew;
@@ -1282,7 +1118,7 @@ public class Client : MonoBehaviour
     // Charactor 변경시 LastPlay Load (변경 CharactorData) 
     public LastPlayData ChangeCharactor_LoadLastPlayFromDB()
     {
-        string requestData = $"[Load]LastPlayData|{clientLicenseNumber}|{clientCharactor}|Finish";
+        string requestData = $"[Load]LastPlayData|{ClientLicenseNumber}|{ClientCharactor}|Finish";
         RequestToServer(requestData);
 
         return clientLastPlayData;
@@ -1291,77 +1127,57 @@ public class Client : MonoBehaviour
     // Charactor 변경시 AnalyticsProfileData Load
     public AnalyticsProfileData ChangeCharactor_LoadAnalyticsProfileDataFromDB()
     {
-        string requestData = $"[Load]AnalyticsProfileData|{clientLicenseNumber}|{clientCharactor}|Finish";
+        string requestData = $"[Load]AnalyticsProfileData|{ClientLicenseNumber}|{ClientCharactor}|Finish";
         RequestToServer(requestData);
 
         return clientAnalyticsProfileData;
     }
-#endregion
+    #endregion
 
+    #region 캐릭터 삭제
     // Charactor Delete
     public void DeleteCharactor(int deleteCharactor)
     {
-        string requestData = $"[Delete]Charactor|{clientLicenseNumber}|{deleteCharactor}|Finish";
-
+        string requestData = $"[Delete]Charactor|{ClientLicenseNumber}|{deleteCharactor}|Finish";
         RequestToServer(requestData);
     }
 
     // Charactor 삭제 후 UserData Load
     public UserData DeleteCharactor_LoadUserData()
     {
-        string requestData = $"[Load]UserData|{clientLicenseNumber}|Finish";
+        string requestData = $"[Load]UserData|{ClientLicenseNumber}|Finish";
         RequestToServer(requestData);
 
         return clientUserData;
     }
+    #endregion 
 
     // Charactor Name 등록
     public void RegisterCharactorName_SaveDataToDB(string name)
     {
         // DB에 저장할 때 user_licensenumber와 user_charactor의 value에 맞는 row에 넣어야 하므로 저 값들이 필요
         // requestData = 요청제목|라이센스|캐릭터번호|{name}|
-        string requestData = $"[Save]CharactorName|{clientLicenseNumber}|{clientCharactor}|{name}|Finish";
-
+        string requestData = $"[Save]CharactorName|{ClientLicenseNumber}|{ClientCharactor}|{name}|Finish";
         RequestToServer(requestData);
     }
 
     // Charactor Profile 등록
     public void RegisterCharactorProfile_SaveDataToDB(byte[] image)
     {
-        /*
-         string base64 = "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";
-        byte[] profile = Convert.FromBase64String(base64);
-
-        RegisterCharactorProfile_SaveDataToDB(profile);
-         */
-
-
-        // DB에 저장할 때 user_licensenumber와 user_charactor의 value에 맞는 row에 넣어야 하므로 저 값들이 필요
-        // requestData = 요청제목|라이센스|캐릭터번호|{image}|
-
         // byte[] image -> Base64 문자열로 변환
         string imageBase64 = Convert.ToBase64String(image);
-        string requestData = $"[Save]CharactorProfile|{clientLicenseNumber}|{clientCharactor}|{imageBase64}|Finish";
-
+        string requestData = $"[Save]CharactorProfile|{ClientLicenseNumber}|{ClientCharactor}|{imageBase64}|Finish";
         RequestToServer(requestData);
     }
 
     // Charactor Birthday 등록
     public void RegisterCharactorBirthday_SaveDataToDB(string birthday)
     {
-        string requestData = $"[Save]CharactorBirthday|{clientLicenseNumber}|{clientCharactor}|{birthday}|Finish";
-
+        string requestData = $"[Save]CharactorBirthday|{ClientLicenseNumber}|{ClientCharactor}|{birthday}|Finish";
         RequestToServer(requestData);
     }
 
-    // 게임 시작시 TotalScore Load
-    public int AppGame_LoadTotalScoreFromDB(Game_Type game_type, int level, int step)
-    {
-
-        return 0;
-    }
-
-    // 재백이가 만든 Result_Data를 매개변수로 받아서 DB에 저장하는 메서드(server에 요청 -> RequestServer)
+    // Result_Data를 매개변수로 받아서 DB에 저장하는 메서드(server에 요청 -> RequestServer)
     public void AppGame_SaveResultDataToDB(Player_DB resultdata, Game_Type game_type, int level, int step)
     {
         // requestData = RequestName[0]/User_Licensenumber[1]/User_Charactor[2]/ReactionRate[3]/.../StarPoint[8]
@@ -1370,7 +1186,7 @@ public class Client : MonoBehaviour
         string values;
         string gameName;
 
-        switch(game_type)
+        switch (game_type)
         {
             case Game_Type.A:
                 gameName = "venezia_kor";
@@ -1396,32 +1212,17 @@ public class Client : MonoBehaviour
         Data_value datavalue = resultdata.Data[(game_type, level, step)];
 
         requestName = $"[Save]{gameName}";
-        values = $"{level}|{step}|{clientLicenseNumber}|{clientCharactor}|{datavalue.ReactionRate}|{datavalue.AnswersCount}|{datavalue.Answers}|{datavalue.PlayTime}|{datavalue.TotalScore}|{datavalue.StarCount}|";
+        values = $"{level}|{step}|{ClientLicenseNumber}|{ClientCharactor}|{datavalue.ReactionRate}|{datavalue.AnswersCount}|{datavalue.Answers}|{datavalue.PlayTime}|{datavalue.TotalScore}|{datavalue.StarCount}|";
 
         requestData = $"{requestName}|{values}Finish";
-
         RequestToServer(requestData);
     }
 
     // 캐릭터 프로필 일부 데이터 초기화
     public void ResetCharactorProfile()
     {
-        string requestData = $"[Reset]CharactorProfile|{clientLicenseNumber}|{clientCharactor}|Finish";
-
+        string requestData = $"[Reset]CharactorProfile|{ClientLicenseNumber}|{ClientCharactor}|Finish";
         RequestToServer(requestData);
-    }
-
-    // 랭킹 UI 접속 시 Rank Load
-    public RankData Ranking_LoadRankDataFromDB()
-    {
-        RankData return_RankData = new RankData();
-
-        string requestData = $"[Load]RankData|{clientLicenseNumber}|{clientCharactor}|Finish";
-        RequestToServer(requestData);
-
-        return_RankData = clientRankData;
-
-        return return_RankData;
     }
 
     // 앱 종료시 Player_DB Save
@@ -1441,41 +1242,23 @@ public class Client : MonoBehaviour
     {
         SaveLastPlayDataToDB(lastplaydata);
     }
+    #endregion
 
-#endregion
-
-#region 중복 기능 Method (Save)
+    #region 중복 기능 Method (Save)
     // Save Charactor(Player_DB) Data To DB
     private void SaveCharactorDataToDB(Player_DB playerdb)
     {
         string requestData;
         string requestName = $"[Save]CharactorData";
-        requestData = $"{requestName}|{clientLicenseNumber}|{clientCharactor}|{separatorString}";
+        requestData = $"{requestName}|{ClientLicenseNumber}|{ClientCharactor}|{separatorString}";
 
-        string base64 = "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";
         string imagebase64 = Convert.ToBase64String(playerdb.image);
-
-        /*
-         list.Add("user_info");
-        list.Add("rank");
-        list.Add("crew");
-        list.Add("lastplaygame");
-
-        // AnalyticsProfile table
-        list.Add("analyltics_level1_profile");
-        list.Add("analyltics_level2_profile");
-        list.Add("analyltics_level3_profile");
-         */
 
         // table.list[0] == user_info
         requestData += $"{table.list[0]}|{playerdb.playerName}|{imagebase64}|{playerdb.BirthDay}|{playerdb.TotalAnswers}|{playerdb.TotalTime}|{separatorString}";
-        //requestData += $"{table.list[0]}|{separatorString}";
         // table.list[1] == rank
-        //requestData += $"{table.list[1]}|{}";
         // table.list[2] == crew
-        //requestData += $"{}";
         // table.list[3] == lastplaygame
-        //requestData += $"{}";
         // table.list[4] == analyltics_level1_profile
         // table.list[5] == analyltics_level2_profile
         // table.list[6] == analyltics_level3_profile
@@ -1499,12 +1282,7 @@ public class Client : MonoBehaviour
             starCount_List.Add(datavalue.StarCount);
         }
 
-        for (int i = 0; i < reactionRate_List.Count; i++)
-        {
-            Debug.Log($"reactionRate_List[i] : {reactionRate_List[i]}, count : {i}");
-        }
-
-        // gameTable(i=4부터)
+        // gameTable(i=7부터)
         for (int i = 7; i < table.list.Count; i++)
         {
             requestData += $"{table.list[i]}|{reactionRate_List[i - 7]}|{answersCount_List[i - 7]}|{answers_List[i - 7]}|{playTime_List[i - 7]}|{totalScore_List[i - 7]}|{starCount_List[i - 7]}|{separatorString}";
@@ -1520,13 +1298,13 @@ public class Client : MonoBehaviour
     {
         //requestData = [Save]ExpenditionCrew|license|charactor|LastSelectCrew|Crew1|Crew2|... |Crew(n)|Finish
         string requestName = "[Save]ExpenditionCrew";
-        string requestData = $"{requestName}|{clientLicenseNumber}|{clientCharactor}|";
+        string requestData = $"{requestName}|{ClientLicenseNumber}|{ClientCharactor}|";
 
         // SelectedCrew 추가
         requestData += $"{crew.SelectedCrew}|";
 
         // True(보유) -> 1 / False(미보유) -> 0
-        for(int i = 0; i < crew.OwnedCrew.Count; i++)
+        for (int i = 0; i < crew.OwnedCrew.Count; i++)
         {
             if (crew.OwnedCrew[i]) requestData += "1|";
             else requestData += "0|";
@@ -1542,9 +1320,9 @@ public class Client : MonoBehaviour
     {
         //requestData = [Save]LastPlayData|license|charactor| (game1_level1)의 value | (game1_level2)의 value | ... | (game5_level3)의 value |Finish
         string requestName = "[Save]LastPlayData";
-        string requestData = $"{requestName}|{clientLicenseNumber}|{clientCharactor}|";
+        string requestData = $"{requestName}|{ClientLicenseNumber}|{ClientCharactor}|";
 
-        for(int i = 0; i < lastplaydata.Step.Values.Count; i++)
+        for (int i = 0; i < lastplaydata.Step.Values.Count; i++)
         {
             if (i < 3) requestData += $"{lastplaydata.Step[(Game_Type.A, i + 1)]}|"; // venezia_kor
             else if (i < 6) requestData += $"{lastplaydata.Step[(Game_Type.B, (i + 1) - 3)]}|"; // venezia_kor
@@ -1557,17 +1335,16 @@ public class Client : MonoBehaviour
 
         RequestToServer(requestData);
     }
+    #endregion
 
-#endregion
-
-#region TestMethods
+    #region TestMethods
     public void OnClickSaveGameDataTest()
     {
         Game_Type game_Type = Game_Type.A;
         int level = 1;
         int step = 2;
         Player_DB result_DB = new Player_DB();
-        Data_value data_Value = new Data_value(234.21f, 23, 12, 22.44f, 18000,3);
+        Data_value data_Value = new Data_value(234.21f, 23, 12, 22.44f, 18000, 3);
         //Reult_DB가 Null일 때 처리
         if (!result_DB.Data.ContainsKey((game_Type, level, step)))
         {
@@ -1594,9 +1371,9 @@ public class Client : MonoBehaviour
 
     public void OnClickChangeCharactor()
     {
-        Debug.Log($"[Client] Before ChangeChractor, clientCharator : {clientCharactor}");
+        Debug.Log($"[Client] Before ChangeChractor, clientCharator : {ClientCharactor}");
         ChangeCharactorData(2);
-        Debug.Log($"[Client] After ChangeChractor, clientCharator : {clientCharactor}");
+        Debug.Log($"[Client] After ChangeChractor, clientCharator : {ClientCharactor}");
     }
 
     private void OnDestroy()
@@ -1635,8 +1412,7 @@ public class Client : MonoBehaviour
 
         RequestToServer(requestData);
     }
-
-#endregion
+    #endregion
 
     private IEnumerator CheckReceiveTime_Co()
     {
@@ -1646,7 +1422,7 @@ public class Client : MonoBehaviour
         yield return new WaitForSeconds(5f);
 
         // 5초 지난 후 어떤 bool값에 따라 서버 재접속할지 안할지 결정
-        if(isReceived)
+        if (isReceived)
         {
             // 서버로부터 데이터 제대로 받음
             Debug.Log("[Client] Collectly Recieved Data From Server");

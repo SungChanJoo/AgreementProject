@@ -142,7 +142,7 @@ public class ProfileText_M : MonoBehaviour
             DataBase.Instance.PlayerCharacter[0].playerName = ChangeName_Input.text;            
             //DB에 Load하기
             CharacterChangeNameLoad();
-            Client.instance.RegisterCharactorName_SaveDataToDB(ChangeName_Input.text);            
+            Client.Instance.RegisterCharactorName_SaveDataToDB(ChangeName_Input.text);            
         }
         catch (System.Exception)
         {            
@@ -169,7 +169,7 @@ public class ProfileText_M : MonoBehaviour
             //데이터 바꾸기
             DataBase.Instance.PlayerCharacter[0].BirthDay = ChangeBirthday_Input.text;
             //DB에 Load하기
-            Client.instance.RegisterCharactorBirthday_SaveDataToDB(ChangeBirthday_Input.text);
+            Client.Instance.RegisterCharactorBirthday_SaveDataToDB(ChangeBirthday_Input.text);
 
         }
         catch (System.Exception)

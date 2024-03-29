@@ -99,7 +99,7 @@ public class LoadImage : MonoBehaviour
             string test = Convert.ToBase64String(saveImage);
             Debug.Log(test);
             DataBase.Instance.PlayerCharacter[0].image = saveImage;
-            Client.instance.RegisterCharactorProfile_SaveDataToDB(saveImage);
+            Client.Instance.RegisterCharactorProfile_SaveDataToDB(saveImage);
         }
         catch (Exception)
         {

@@ -72,7 +72,7 @@ public class CollectionsManager : MonoBehaviour
             Instance = this;
         else
             Destroy(gameObject);
-        if(Client.instance != null)
+        if(Client.Instance != null)
             _money= DataBase.Instance.PlayerCharacter[DataBase.Instance.CharacterIndex].StarCoin;
         _moneyText.text = $"{_money}";
         SetCollections();
@@ -87,7 +87,7 @@ public class CollectionsManager : MonoBehaviour
     {
         OnCheckPurchasePossibility -= CheckPurchasePossibility;
         //도감 비활성화 시 DB에 현재 탐험대원 도감 반영
-        if (Client.instance != null)
+        if (Client.Instance != null)
         {
             //Client.instance.AppExit_SaveExpenditionCrewDataToDB(Collections);
         }
@@ -259,7 +259,7 @@ public class CollectionsManager : MonoBehaviour
     public void SetCollections()
     {
         //DB에 데이터 받아서 선택된 대원과 보유한 대원 리스트 받기
-        if(Client.instance != null)
+        if(Client.Instance != null)
         {
             Collections = DataBase.Instance.playerInfo.Collections;
         }
@@ -440,9 +440,9 @@ public class CollectionsManager : MonoBehaviour
             _purchaseWindow.SetActive(false);
             _purchaseBtn.GetComponent<Button>().onClick.RemoveAllListeners();
             //대원 구매 시 DB에 현재 탐험대원 도감 반영
-            if (Client.instance != null)
+            if (Client.Instance != null)
             {
-                Client.instance.AppExit_SaveExpenditionCrewDataToDB(Collections);
+                Client.Instance.AppExit_SaveExpenditionCrewDataToDB(Collections);
             }
         }
         else

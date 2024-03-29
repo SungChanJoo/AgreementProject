@@ -63,7 +63,7 @@ public class CrewMovementManager : MonoBehaviour
         //FinalPlayStepTable.Add((Game_Type.A, 1), 1); // Game_Type.A, 1레벨에서 마지막으로 플레이한 스텝이 1스텝
         //FinalPlayStepTable[(Game_Type.A, 1)] = 2;// 스텝 2로 변경
         //DB연동해서 최종 플레이한 스텝 초기화
-        if (Client.instance != null)
+        if (Client.Instance != null)
         {
             LastPlayStepTable = DataBase.Instance.PlayerCharacter[DataBase.Instance.CharacterIndex].LastPlayStepData;
         }
@@ -84,7 +84,7 @@ public class CrewMovementManager : MonoBehaviour
     public void InitPlayerDBData()
     {
         //스텝 별개수 초기화
-        if (Client.instance != null)
+        if (Client.Instance != null)
         {
             stepInfo = DataBase.Instance.PlayerCharacter[DataBase.Instance.CharacterIndex];
         }
@@ -317,10 +317,10 @@ public class CrewMovementManager : MonoBehaviour
 
     private void OnApplicationQuit()
     {
-        if (Client.instance != null)
+        if (Client.Instance != null)
         {
             //어플종료시 DB에 마지막으로 플레이한 스텝 위치 저장 
-              Client.instance.AppExit_SaveLastPlayDataToDB(LastPlayStepTable);
+              Client.Instance.AppExit_SaveLastPlayDataToDB(LastPlayStepTable);
         }
     }
 }

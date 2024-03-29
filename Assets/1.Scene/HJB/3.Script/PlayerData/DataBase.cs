@@ -66,7 +66,7 @@ public class DataBase : MonoBehaviour,IDataReloading
         ClientData = new ClientData(Int32.Parse(client_JsonFile["Charactor"].ToString()), client_JsonFile["LicenseNumber"].ToString());
         try
         {
-            UserList = Client.instance.AppStart_LoadUserDataFromDB();
+            UserList = Client.Instance.AppStart_LoadUserDataFromDB();
 
         }
         catch(Exception e)
@@ -84,7 +84,7 @@ public class DataBase : MonoBehaviour,IDataReloading
     public void ChangeCharactor(int charNum)
     {
         ClientData.Charactor = charNum+1;
-        Client.instance.ChangeCharactorData(ClientData.Charactor);
+        Client.Instance.ChangeCharactorData(ClientData.Charactor);
 
         //clientData.Charactor에 따라 playerInfo를 불러옴, todo 0321 playerInfo에 따른 데이터(init)들을 불러와줘
         PlayerDataLoad();
@@ -104,7 +104,7 @@ public class DataBase : MonoBehaviour,IDataReloading
             Debug.Log("최대 5개까지 등록가능합니다.");
             return;
         }
-        Client.instance.CreateCharactorData(name);
+        Client.Instance.CreateCharactorData(name);
     }
 
     public void PlayerDataLoad()
@@ -112,15 +112,15 @@ public class DataBase : MonoBehaviour,IDataReloading
         try
         {
             //플레이어 정보 불러오기
-            playerInfo = Client.instance.AppStart_LoadCharactorDataFromDB();
+            playerInfo = Client.Instance.AppStart_LoadCharactorDataFromDB();
             //랭킹데이터 불러오기
-            playerInfo.RankingInfo = Client.instance.AppStart_LoadRankDataFromDB();
+            playerInfo.RankingInfo = Client.Instance.AppStart_LoadRankDataFromDB();
             //탐험대원 도감데이터 불러오기
-            playerInfo.Collections = Client.instance.AppStart_LoadExpenditionCrewFromDB();
+            playerInfo.Collections = Client.Instance.AppStart_LoadExpenditionCrewFromDB();
             //마지막 플레이한 스텝 데이터 불러오기
-            playerInfo.LastPlayStepData = Client.instance.AppStart_LoadLastPlayFromDB();
+            playerInfo.LastPlayStepData = Client.Instance.AppStart_LoadLastPlayFromDB();
             //플레이어 프로필 데이터 가져오기
-            playerInfo.analyticsProfileData = Client.instance.AppStart_LoadAnalyticsProfileDataFromDB();
+            playerInfo.analyticsProfileData = Client.Instance.AppStart_LoadAnalyticsProfileDataFromDB();
             network_state = true;
             PlayerCharacter[CharacterIndex] = playerInfo;
         }
@@ -142,15 +142,15 @@ public class DataBase : MonoBehaviour,IDataReloading
             try
             {
                 //플레이어 정보 불러오기
-                playerInfo = Client.instance.AppStart_LoadCharactorDataFromDB();
+                playerInfo = Client.Instance.AppStart_LoadCharactorDataFromDB();
                 //랭킹데이터 불러오기
-                playerInfo.RankingInfo = Client.instance.AppStart_LoadRankDataFromDB();
+                playerInfo.RankingInfo = Client.Instance.AppStart_LoadRankDataFromDB();
                 //탐험대원 도감데이터 불러오기
-                playerInfo.Collections = Client.instance.AppStart_LoadExpenditionCrewFromDB();
+                playerInfo.Collections = Client.Instance.AppStart_LoadExpenditionCrewFromDB();
                 //마지막 플레이한 스텝 데이터 불러오기
-                playerInfo.LastPlayStepData = Client.instance.AppStart_LoadLastPlayFromDB();
+                playerInfo.LastPlayStepData = Client.Instance.AppStart_LoadLastPlayFromDB();
                 //플레이어 프로필 데이터 가져오기
-                playerInfo.analyticsProfileData = Client.instance.AppStart_LoadAnalyticsProfileDataFromDB();
+                playerInfo.analyticsProfileData = Client.Instance.AppStart_LoadAnalyticsProfileDataFromDB();
                 network_state = true;
                 PlayerCharacter[CharacterIndex] = playerInfo;
                 break;

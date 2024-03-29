@@ -78,7 +78,7 @@ public class RankingManager : MonoBehaviour
     public void SetRanking()
     {
         //PlayerTimeData[0].img.sprite = ;
-        if (Client.instance != null)
+        if (Client.Instance != null)
         {
             var rankInfo = DataBase.Instance.PlayerCharacter[DataBase.Instance.CharacterIndex].RankingInfo;
             for (int i = 0; i < timeRankData.Length; i++)
@@ -113,7 +113,7 @@ public class RankingManager : MonoBehaviour
     }
     public void SetMyRanking()
     {
-        if (Client.instance != null)
+        if (Client.Instance != null)
         {
             var rankInfo = DataBase.Instance.playerInfo.RankingInfo;
             var myData = rankInfo.rankdata_score[5];
