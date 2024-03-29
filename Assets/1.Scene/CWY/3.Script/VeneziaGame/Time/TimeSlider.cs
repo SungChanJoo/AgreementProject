@@ -250,7 +250,7 @@ public interface ITimeSlider
     {
         isGameOver = true;
     }
-
+    //플레이타임 체크
     public void PlayTimeChecker()
     {
         if (startTime != 0 && !SettingManager.Instance.IsActive)

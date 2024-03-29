@@ -56,6 +56,7 @@ public class VeneziaManager : GameSetting
 
     //커플모드일때 Win/Lose 판단
 
+    #region QuestData
     private string[] KorWord =
     {"학","말","닭","곰","하마","표범","팬더","타조","쿼카","치타","참새",
      "제비","젖소","염소","여우","악어","사자","사슴","돼지","기린","개미","오리",
@@ -90,9 +91,11 @@ public class VeneziaManager : GameSetting
     "밭 전", "앞 전", "뒤 후", "오른 우", "왼 좌", "비 우", "번개 전", "눈 설", "나라 국", "나라이름 한",
     "백성 민", "돌 석", "높을 고", "벗 우", "사람 인", "장인 공", "늙을 로", "길 도", "글월 문"
     };
+    #endregion
 
+    #region 시작할 때 변수 셋팅
     public int QuestCount;  // 딕셔너리에 들어갈 퀘스트 갯수 //10문제 <
-    public int QuestRange;
+    public int QuestRange; //출제 범위
     public int RemainAnswer; // 게임 진행중 남은 정답 갯수
     public int CorrectAnswerCount; // 맞춘 정답 갯수
     //1인모드일때는 Click / 2인일때는 두개사용
@@ -129,7 +132,7 @@ public class VeneziaManager : GameSetting
     bool isFirst = false;
     bool isSecond =false;
     bool isNull = false;
-
+    #endregion
     private void Awake()
     {
         if (Instance == null)
@@ -246,7 +249,8 @@ public class VeneziaManager : GameSetting
 
         CheckCubeTypes();
     }
-
+    //클릭했을때(터치했을때) 를 기준으로 터치한 곳에 아이템이 있을경우
+    // 아이템 및 큐브를 터치할 경우 해당 행위에 대한 판정
     private void Click_Obj()
     {
         if (Input.GetMouseButtonDown(0) && canClick)
@@ -371,6 +375,7 @@ public class VeneziaManager : GameSetting
         }
     }
 
+    //Pause를 누를경우 시간정지기능
     IEnumerator Pause_co()
     {
         TimeSlider.Instance.isStop = true;
@@ -659,6 +664,7 @@ public class VeneziaManager : GameSetting
         answers = CorrectAnswerCount * 100 / ClickCount;
     }
 
+    //큐브를 누르면 리스트에 넣고 다시 풀링을 하기 위한 작업
     public void ResetCube()
     {
         if(play_mode == PlayMode.Solo)
@@ -973,6 +979,7 @@ public class VeneziaManager : GameSetting
 
     }
 
+    //큐브 타입 판정
     private void CheckCubeTypes()
     {
 
