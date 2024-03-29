@@ -4,11 +4,11 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 
-public class MovingCube : MonoBehaviour
+public class BubbleObject : MonoBehaviour
 {
     [SerializeField] private float timeSet;
 
-    [SerializeField] private TextMeshPro cube_text;
+    [SerializeField] private TextMeshPro cubeText;
 
     public float result = 0;
 
@@ -24,21 +24,17 @@ public class MovingCube : MonoBehaviour
     private void Update()
     {
         reactionRate += Time.deltaTime;
-        transform.LookAt(Camera.main.transform);
-    }
-    private void OnEnable()
-    {
         
     }
-
-    public void Start_Obj(int _first, char _operator, int _second)
+    
+    public void ObjectTextPrint(int _first, char _operator, int _second)
     {        
-        cube_text.text = $"{_first} {_operator} {_second}";
+        cubeText.text = $"{_first} {_operator} {_second}";
     }    
     public void ExplosionAni()
     {
         animator.SetTrigger("Explosion");
-        cube_text.text = "";
+        cubeText.text = "";
     }
     public void DefaultAni()
     {
@@ -50,14 +46,7 @@ public class MovingCube : MonoBehaviour
     }
     private IEnumerator UpScale_Co()
     {
-        yield return new WaitForSeconds(0.5f);
-        //float time = 0f;
-        //while (time < 2f && transform.localScale.x<30f)
-        //{
-        //    time += Time.deltaTime;
-        //    transform.localScale += new Vector3(0.05f, 0.05f);
-        //    yield return null;
-        //}
+        yield return new WaitForSeconds(0.5f);        
         float duration = 2f;
         float startTime = Time.time;
 
@@ -67,6 +56,7 @@ public class MovingCube : MonoBehaviour
         {
             float fraction = (Time.time - startTime) / duration;
             transform.localScale = Vector3.Lerp(transform.localScale, targetScale, fraction);
+            transform.LookAt(Camera.main.transform);
             yield return null;
         }
     }

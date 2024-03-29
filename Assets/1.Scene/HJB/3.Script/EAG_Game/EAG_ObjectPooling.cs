@@ -2,22 +2,21 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class ObjectPooling_H : MonoBehaviour
+public class EAG_ObjectPooling : MonoBehaviour
 {
 
     [SerializeField] private GameObject cube_Obj;
     [SerializeField] private GameObject[] poolPosition;
     [SerializeField] private GameObject defaultPosition;
     [SerializeField] private EAG_Manager aopManager;
-    [SerializeField] private EAG_Animation eag_ani;
-    [SerializeField] private int speed;
+    [SerializeField] private EAG_Animation eag_ani;    
 
     private List<GameObject> cubePool = new List<GameObject>();
     private List<GameObject> bool_Pool = new List<GameObject>();    
-    private List<float> reactionList = new List<float>();
-    private MovingCube resultObject;
+    private List<float> reactRateList = new List<float>();
+    private BubbleObject resultObject;
 
-    public float answer;
+    public float Answer;
     private int problom_count=0;
     private int answer_count = 0;
     private int totalQuestions = 0;
@@ -29,7 +28,7 @@ public class ObjectPooling_H : MonoBehaviour
     private IEnumerator WaitExplosionBubble_co;
     private IEnumerator NextQuestionAni_co;
 
-    public static ObjectPooling_H Instance = null;
+    public static EAG_ObjectPooling Instance = null;
     private void Awake()
     {
         if (Instance ==null)
@@ -43,6 +42,7 @@ public class ObjectPooling_H : MonoBehaviour
     }
     private void Update()
     {
+        //설정창이 켜져 있다면 인게임 터치 제한
         if (!GameSetting.settingStop)
         {
             Click_Obj();
@@ -108,7 +108,7 @@ public class ObjectPooling_H : MonoBehaviour
             if (Physics.Raycast(ray, out hit) && !hit.collider.gameObject.CompareTag("Ground") && !hit.collider.CompareTag("AnswerCheck"))
             {                
                 //정답 체크
-                MovingCube movingCube = hit.collider.GetComponent<MovingCube>();
+                BubbleObject movingCube = hit.collider.GetComponent<BubbleObject>();
                 //중복터치 방지를 위한 Tag 변경
                 hit.collider.tag = "AnswerCheck";
                 
@@ -123,12 +123,17 @@ public class ObjectPooling_H : MonoBehaviour
     }
 
     public void GameOver()
-    {
+    {        
         StopAllCoroutines();
+        //게임 끝
         aopManager.isStop = true;
+        //정답 개수
         aopManager.answersCount = answer_count;
+        //평균 반응 속도 계산
         ReactionCalculation();
+        //정답률 계산
         AnswerRate();
+        //게임 종료 및 결과 UI 활성화
         aopManager.EndGame();
     }
     private void CubeStart()
@@ -150,7 +155,7 @@ public class ObjectPooling_H : MonoBehaviour
             cubePool[i].SetActive(true);
             cubePool[i].tag = "Untagged";
             //풀에 담겨있는 오브젝트에 값 지정
-            MovingCube movingcube = cubePool[i].GetComponent<MovingCube>();
+            BubbleObject movingcube = cubePool[i].GetComponent<BubbleObject>();
             //상태 True만 담기는 리스트
             bool_Pool.Add(cubePool[i]);
             movingcube.index = i;
@@ -186,22 +191,22 @@ public class ObjectPooling_H : MonoBehaviour
                 resultObject = movingcube;
             }
             //여기에 숫자 할당
-            movingcube.Start_Obj(firstNum,_operator , secondNum);
+            movingcube.ObjectTextPrint(firstNum,_operator , secondNum);
 
             //문제 개수를 계속 체크
             problom_count--;
         }
     }    
     
-    private void Answer_Check(MovingCube movingCube)
+    private void Answer_Check(BubbleObject movingCube)
     {        
-        if (movingCube.result.Equals(answer))
+        if (movingCube.result.Equals(Answer))
         {
             isCorrect = true;
             answer_count++;
             waitTime = 0;
             //정답오브젝트의 반응속도를 담기
-            reactionList.Add(movingCube.reactionRate);
+            reactRateList.Add(movingCube.reactionRate);
             Next_Result();
         }
         else
@@ -221,7 +226,7 @@ public class ObjectPooling_H : MonoBehaviour
         {
             for (int i = start; i >= 0 && i < bool_Pool.Count; i += step)
             {
-                MovingCube movingCube = bool_Pool[i].GetComponent<MovingCube>();
+                BubbleObject movingCube = bool_Pool[i].GetComponent<BubbleObject>();
                 TakeResult(movingCube.result);
                 resultObject = movingCube;
                 return;
@@ -237,8 +242,8 @@ public class ObjectPooling_H : MonoBehaviour
     //정답 결과 출력 메서드
     private void TakeResult(float result)
     {
-        answer = result;
-        aopManager.Show_Result(answer);
+        Answer = result;
+        aopManager.Show_Result(Answer);
     }
 
     private void DataDefaultSetting()
@@ -268,11 +273,11 @@ public class ObjectPooling_H : MonoBehaviour
     {
         //반응속도 리스트를 가지고 평균반응속도 계산
         float reaction = 0;
-        for (int i = 0; i < reactionList.Count; i++)
+        for (int i = 0; i < reactRateList.Count; i++)
         {
-            reaction += reactionList[i];
+            reaction += reactRateList[i];
         }
-        aopManager.reactionRate = (reaction / reactionList.Count);        
+        aopManager.reactionRate = (reaction / reactRateList.Count);        
     }
 
     private void AnswerRate()
@@ -281,7 +286,7 @@ public class ObjectPooling_H : MonoBehaviour
         aopManager.answers = answer_count * 100 / totalQuestions;
     }
 
-    private IEnumerator WaitExplosionBubble_Co(MovingCube obj)
+    private IEnumerator WaitExplosionBubble_Co(BubbleObject obj)
     {
         //방울 터지는 애니메이션
         obj.ExplosionAni();
@@ -304,7 +309,7 @@ public class ObjectPooling_H : MonoBehaviour
         eag_ani.CreateProblem();                
         for (int i = 0; i < cubePool.Count; i++)
         {
-            MovingCube bubble = cubePool[i].GetComponent<MovingCube>();
+            BubbleObject bubble = cubePool[i].GetComponent<BubbleObject>();
             bubble.UpScale();
         }
         yield return new WaitForSeconds(0.3f);
@@ -326,6 +331,7 @@ public class ObjectPooling_H : MonoBehaviour
             }
             if (fraction>0.8f)
             {
+                //다음 문제 출시
                 CubeStart();
                 break;
             }

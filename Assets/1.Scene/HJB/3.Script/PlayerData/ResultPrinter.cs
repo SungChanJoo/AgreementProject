@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 
-public class Result_Printer : MonoBehaviour
+public class ResultPrinter : MonoBehaviour
 {    
     [SerializeField] private TextMeshProUGUI reactionRate;
     [SerializeField] private TextMeshProUGUI answerCount;
@@ -47,12 +47,10 @@ public class Result_Printer : MonoBehaviour
                 answerCount.text = $"정답:{data.AnswersCount} / 클릭 수:{data.TotalQuestions}";
                 break;
             case Game_Type.C:
-                answerCount.text = $"정답:{data.AnswersCount} / 총 문제 수:{data.TotalQuestions}";
-                break;
             case Game_Type.D:
-                break;
             case Game_Type.E:
-                break;
+                answerCount.text = $"정답:{data.AnswersCount} / 총 문제 수:{data.TotalQuestions}";
+                break;            
             default:
                 break;
         }
@@ -61,6 +59,7 @@ public class Result_Printer : MonoBehaviour
     
     private void PrintStarCount(int count)
     {
+        //점수에 따른 별 카운트
         for (int i = 0; i < 3; i++)
         {
             if (i<count)

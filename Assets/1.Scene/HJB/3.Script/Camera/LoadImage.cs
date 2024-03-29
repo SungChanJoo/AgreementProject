@@ -11,7 +11,7 @@ using System;
 public class LoadImage : MonoBehaviour
 {
     public static LoadImage Instance = null;
-    [SerializeField] private ProfileText_M profileText_;
+    [SerializeField] private ProfileText profileText_;
     [SerializeField] private GameObject content_obj;
     [SerializeField] private GameObject image_prefeb;
     [SerializeField] private Image profile_Img;

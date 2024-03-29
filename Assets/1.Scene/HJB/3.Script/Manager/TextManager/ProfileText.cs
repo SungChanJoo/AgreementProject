@@ -5,9 +5,9 @@ using UnityEngine.UI;
 using TMPro;
 
 
-public class ProfileText_M : MonoBehaviour
+public class ProfileText : MonoBehaviour
 {
-    public static ProfileText_M Instance = null;
+    public static ProfileText Instance = null;
     [SerializeField] private TextMeshProUGUI characterName;
     [SerializeField] private TextMeshProUGUI Birthday;
     [SerializeField] private TextMeshProUGUI playTime;
@@ -18,7 +18,7 @@ public class ProfileText_M : MonoBehaviour
     [SerializeField] private TMP_InputField Registration_Input;
 
     public GameObject Characters;
-    [SerializeField] private GameObject ErrorText;    
+    [SerializeField] private GameObject ErrorText;
 
     private ProfileManager profileManager;
     [SerializeField] ProfileButtonEvent profileButtonEvent;

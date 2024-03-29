@@ -96,7 +96,7 @@ public class DataBase : MonoBehaviour,IDataReloading
         FindObjectOfType<RankingManager>().SetMyRanking();
         //플레이어 프로필 정보 및 분석표 변경
         PlayerImageConvert();
-        ProfileText_M.Instance.StartLoadCharactorData();
+        ProfileText.Instance.StartLoadCharactorData();
         LoadImage.Instance.ProfileImage_Set();
         AnalysisChart.Instance.AnalysisChartDataSet();
 

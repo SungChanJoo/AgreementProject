@@ -11,7 +11,7 @@ public class AnalysisChart : MonoBehaviour
     [Header("프로필 데이터")]
     [SerializeField] private Image profile_img;
     [SerializeField] private TextMeshProUGUI playerName;
-    [SerializeField] private ProfileText_M profileText;
+    [SerializeField] private ProfileText profileText;
 
     [Header("차트 참조")]
     [SerializeField] private GameObject BackGroundTile_obj;    
