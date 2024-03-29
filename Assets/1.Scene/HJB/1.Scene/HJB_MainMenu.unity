@@ -88684,32 +88684,32 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 06210bbd8f1a1734fb8c4b17983925df, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  TimeRankUI:
+  timeRankUI:
   - {fileID: 6496168536311587160}
   - {fileID: 6496168537262022214}
   - {fileID: 6496168537780651058}
-  ScoreRankUI:
+  scoreRankUI:
   - {fileID: 6496168536207549194}
   - {fileID: 6496168536524306184}
   - {fileID: 6496168537777942029}
-  TimeRankPlayerPanel:
+  timeRankPlayerPanel:
   - {fileID: 6496168536314830786}
   - {fileID: 6496168537789391848}
   - {fileID: 6496168536632762787}
   - {fileID: 6496168536892961322}
   - {fileID: 6496168537083450275}
-  ScoreRankPlayerPanel:
+  scoreRankPlayerPanel:
   - {fileID: 6496168537211612406}
   - {fileID: 6496168536422161814}
   - {fileID: 6496168536890540429}
   - {fileID: 6496168537832809821}
   - {fileID: 6496168537810986349}
-  Weekly: {fileID: 6496168536691856062}
-  Name: {fileID: 6496168535964968161}
-  PersnalRank:
+  weekly: {fileID: 6496168536691856062}
+  playerName: {fileID: 6496168535964968161}
+  persnalRank:
   - {fileID: 6496168537780651058}
   - {fileID: 6496168537777942029}
-  MyImg: {fileID: 6496168537017420342}
+  myImg: {fileID: 6496168537017420342}
 --- !u!222 &6496168536106833330
 CanvasRenderer:
   m_ObjectHideFlags: 0
