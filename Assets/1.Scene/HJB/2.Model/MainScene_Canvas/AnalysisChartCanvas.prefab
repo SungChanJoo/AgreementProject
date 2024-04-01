@@ -409,7 +409,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 2647092258438077342}
+      - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: AnalysisChart, Assembly-CSharp
         m_MethodName: ReactionRate_Btn
         m_Mode: 6
@@ -1943,7 +1943,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 2647092258438077342}
+      - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: AnalysisChart, Assembly-CSharp
         m_MethodName: SelectLevel
         m_Mode: 3
@@ -1955,7 +1955,7 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
-      - m_Target: {fileID: 5232715757008005016}
+      - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: ChartButtonEvent, Assembly-CSharp
         m_MethodName: ChangeButtonChart_Level
         m_Mode: 3
@@ -2302,7 +2302,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 2647092258438077342}
+      - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: AnalysisChart, Assembly-CSharp
         m_MethodName: SelectGame
         m_Mode: 3
@@ -2314,7 +2314,7 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
-      - m_Target: {fileID: 5232715757008005016}
+      - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: ChartButtonEvent, Assembly-CSharp
         m_MethodName: ChangeButtonChart_Gmae
         m_Mode: 3
@@ -2448,7 +2448,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 2647092258438077342}
+      - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: AnalysisChart, Assembly-CSharp
         m_MethodName: SelectLevel
         m_Mode: 3
@@ -2460,7 +2460,7 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
-      - m_Target: {fileID: 5232715757008005016}
+      - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: ChartButtonEvent, Assembly-CSharp
         m_MethodName: ChangeButtonChart_Level
         m_Mode: 3
@@ -2805,7 +2805,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 2647092258438077342}
+      - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: AnalysisChart, Assembly-CSharp
         m_MethodName: SelectGame
         m_Mode: 3
@@ -2817,7 +2817,7 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
-      - m_Target: {fileID: 5232715757008005016}
+      - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: ChartButtonEvent, Assembly-CSharp
         m_MethodName: ChangeButtonChart_Gmae
         m_Mode: 3
@@ -3363,8 +3363,6 @@ GameObject:
   - component: {fileID: 2647092258438077024}
   - component: {fileID: 2647092258438077025}
   - component: {fileID: 2647092258438077026}
-  - component: {fileID: 2647092258438077342}
-  - component: {fileID: 5232715757008005016}
   m_Layer: 5
   m_Name: AnalysisChartCanvas
   m_TagString: Untagged
@@ -3458,62 +3456,6 @@ MonoBehaviour:
   m_BlockingMask:
     serializedVersion: 2
     m_Bits: 4294967295
---- !u!114 &2647092258438077342
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2647092258438077027}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1dbf7deb06df84043a59818faeac4a4f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  profile_img: {fileID: 1443712164428874063}
-  playerName: {fileID: 8397164523123408904}
-  profileText: {fileID: 0}
-  BackGroundTile_obj: {fileID: 2647092258715109813}
-  reactionRate_Dot: {fileID: 2712551572102335255, guid: 6e56b766d1f13dc43ac0e440043a4220, type: 3}
-  answersRate_Dot: {fileID: 5670470072977728095, guid: e1653758be3e4e749a5476ab7d6f9cea, type: 3}
-  reactionRate_Line: {fileID: 4353364786757755542, guid: 4a730c03294f77346953ee103500f307, type: 3}
-  answersRate_Line: {fileID: 4353364786757755542, guid: 015b6d1f732ba4c40a56e058a2e58e67, type: 3}
-  dayText:
-  - {fileID: 2647092257347052082}
-  - {fileID: 2647092258447983571}
-  - {fileID: 2647092258102714112}
-  - {fileID: 2647092258729677483}
-  - {fileID: 2647092257297085589}
-  - {fileID: 2647092257672530514}
-  - {fileID: 2647092257975888161}
-  noDataText: {fileID: 8662581531218569501}
---- !u!114 &5232715757008005016
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2647092258438077027}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f260ac7f3f4fefb4486780350d9d3142, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  chartlevel_btn:
-  - {fileID: 2647092257783813880}
-  - {fileID: 2647092257666336694}
-  - {fileID: 2647092258935281981}
-  chartgame_btn:
-  - {fileID: 2647092257756381133}
-  - {fileID: 2647092258597288444}
-  - {fileID: 2647092258075658555}
-  venezia_btn:
-  - {fileID: 3625013189797153093}
-  - {fileID: 2329159156073350468}
-  - {fileID: 4608501085099614798}
-  select_img: {fileID: 21300000, guid: 5fbcb8cf54396784aac46d0515a80f95, type: 3}
-  Non_img: {fileID: 21300000, guid: 0853d44b148160a4ea98021ee942cb41, type: 3}
-  venezia_panel: {fileID: 7106440079258603924}
 --- !u!1 &2647092258439255345
 GameObject:
   m_ObjectHideFlags: 0
@@ -3822,7 +3764,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 2647092258438077342}
+      - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: AnalysisChart, Assembly-CSharp
         m_MethodName: SelectGame
         m_Mode: 3
@@ -3834,7 +3776,7 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
-      - m_Target: {fileID: 5232715757008005016}
+      - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: ChartButtonEvent, Assembly-CSharp
         m_MethodName: ChangeButtonChart_Gmae
         m_Mode: 3
@@ -4507,7 +4449,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 2647092258438077342}
+      - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: AnalysisChart, Assembly-CSharp
         m_MethodName: SelectLevel
         m_Mode: 3
@@ -4519,7 +4461,7 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
-      - m_Target: {fileID: 5232715757008005016}
+      - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: ChartButtonEvent, Assembly-CSharp
         m_MethodName: ChangeButtonChart_Level
         m_Mode: 3
@@ -4732,7 +4674,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 2647092258438077342}
+      - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: AnalysisChart, Assembly-CSharp
         m_MethodName: SelectGame
         m_Mode: 3
@@ -4744,7 +4686,7 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
-      - m_Target: {fileID: 5232715757008005016}
+      - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: ChartButtonEvent, Assembly-CSharp
         m_MethodName: Venezia_Btn
         m_Mode: 3
@@ -5013,7 +4955,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 2647092258438077342}
+      - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: AnalysisChart, Assembly-CSharp
         m_MethodName: SelectGame
         m_Mode: 3
@@ -5025,7 +4967,7 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
-      - m_Target: {fileID: 5232715757008005016}
+      - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: ChartButtonEvent, Assembly-CSharp
         m_MethodName: Venezia_Btn
         m_Mode: 3
@@ -5158,7 +5100,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 2647092258438077342}
+      - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: AnalysisChart, Assembly-CSharp
         m_MethodName: ReactionRate_Btn
         m_Mode: 6
@@ -5562,7 +5504,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 2647092258438077342}
+      - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: AnalysisChart, Assembly-CSharp
         m_MethodName: SelectGame
         m_Mode: 3
@@ -5574,7 +5516,7 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
-      - m_Target: {fileID: 5232715757008005016}
+      - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: ChartButtonEvent, Assembly-CSharp
         m_MethodName: Venezia_Btn
         m_Mode: 3

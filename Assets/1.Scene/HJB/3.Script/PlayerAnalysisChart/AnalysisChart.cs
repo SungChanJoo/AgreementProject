@@ -52,8 +52,7 @@ public class AnalysisChart : MonoBehaviour
         else
         {
             Destroy(gameObject);
-        }        
-        gameObject.SetActive(false);
+        }                
     }
     private void Start()
     {        

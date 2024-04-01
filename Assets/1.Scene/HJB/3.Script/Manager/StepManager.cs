@@ -42,8 +42,8 @@ public class StepManager : MonoBehaviour
 
     public static StepManager Instance = null;
     public Game_Type game_Type;
-    public Step _Setp;
-    public Level _Level;
+    public Step Setp;
+    public Level Level;
     public int CurrentStep { get; private set; }
     public int CurrentLevel { get; private set; }
     public int CurrentTime { get; private set; }    
