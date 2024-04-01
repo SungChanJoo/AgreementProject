@@ -13,13 +13,13 @@ public class SkyBox : MonoBehaviour
     private void Start()
     {
         RenderSettings.skybox = MoningBox;
-        timeHalf = TimeSlider.Instance.startTime / 2;
+        timeHalf = TimeSlider.Instance.StartTime_ / 2;
     }
 
 
     private void Update()
     {
-        if(TimeSlider.Instance.startTime <= timeHalf)
+        if(TimeSlider.Instance.StartTime_ <= timeHalf)
         {
             if (!ischange)
             {

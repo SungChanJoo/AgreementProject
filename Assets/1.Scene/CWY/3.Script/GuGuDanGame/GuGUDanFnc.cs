@@ -10,7 +10,7 @@ enum ButtonType
     Second
 }
 
-public class GuGUDan_Fnc : GameSetting
+public class GuGUDanFnc : GameSetting
 {
     [SerializeField] private ButtonType buttonType;
     //구구단 게임 기능 관련 스크립트
@@ -25,14 +25,14 @@ public class GuGUDan_Fnc : GameSetting
     //level & step 단계 추가
     //오답 처리시 시간감소
 
-    [SerializeField] private TextMeshProUGUI First_num;  // 첫번째 칸에 들어갈 숫자
-    [SerializeField] private TextMeshProUGUI Second_num; // 두번째 칸에 들어갈 숫자.
-    [SerializeField] private TextMeshProUGUI Answer_num; // 정답을 입력받을 칸 
+    [SerializeField] private TextMeshProUGUI first_num;  // 첫번째 칸에 들어갈 숫자
+    [SerializeField] private TextMeshProUGUI second_num; // 두번째 칸에 들어갈 숫자.
+    [SerializeField] private TextMeshProUGUI answer_num; // 정답을 입력받을 칸 
 
     [SerializeField] private Button[] buttons; // 0~9 버튼 
 
     [SerializeField] private GameObject[] select;
-    [SerializeField] private GameObject[] QuestMark;
+    [SerializeField] private GameObject[] questMark;
     [SerializeField] private Animator anim;
     [SerializeField] Canvas canvas;
 
@@ -84,9 +84,9 @@ public class GuGUDan_Fnc : GameSetting
 
     private void Awake()
     {
-        First_num.text = "0";
-        Second_num.text = "";
-        Answer_num.text = "??";
+        first_num.text = "0";
+        second_num.text = "";
+        answer_num.text = "??";
         buttonText = "";
 
     }
@@ -126,29 +126,29 @@ public class GuGUDan_Fnc : GameSetting
         // 1. x 가 비어있을 경우 ?? x Y = z  
         // 2. Y가 비어있을 경우 X x ?? = z
         // 3. z가 비어있을 경우 X x Y = ??
-        int First = int.Parse(First_num.text);
-        int Second = int.Parse(Second_num.text);
-        int result = int.Parse(First_num.text) * int.Parse(Second_num.text);
+        int First = int.Parse(first_num.text);
+        int Second = int.Parse(second_num.text);
+        int result = int.Parse(first_num.text) * int.Parse(second_num.text);
 
         //정답이 될 숫자 위치 랜덤으로 선택.
         switch (Random.Range(0, 3))
         {
             case 0: // x 쪽을 역산
-                First_num.text = "?";
-                Second_num.text = Second.ToString();
-                Answer_num.text = result.ToString();
+                first_num.text = "?";
+                second_num.text = Second.ToString();
+                answer_num.text = result.ToString();
                 CaseNum = 0;
                 break;
             case 1: // y쪽을 역산
-                First_num.text = First.ToString();
-                Second_num.text = "?";
-                Answer_num.text = result.ToString();
+                first_num.text = First.ToString();
+                second_num.text = "?";
+                answer_num.text = result.ToString();
                 CaseNum = 1;
                 break;
             case 2: // 기본 연산
-                First_num.text = First.ToString();
-                Second_num.text = Second.ToString();
-                Answer_num.text = "??";
+                first_num.text = First.ToString();
+                second_num.text = Second.ToString();
+                answer_num.text = "??";
                 CaseNum = 2;
                 break;
             default:
@@ -161,26 +161,26 @@ public class GuGUDan_Fnc : GameSetting
     {
         if (step < 4)
         {
-            First_num.text = Random.Range(2, 7).ToString();
-            Second_num.text = Random.Range(1, 10).ToString();
+            first_num.text = Random.Range(2, 7).ToString();
+            second_num.text = Random.Range(1, 10).ToString();
         }
         else
         {
-            First_num.text = Random.Range(2, 10).ToString();
-            Second_num.text = Random.Range(1, 10).ToString();
+            first_num.text = Random.Range(2, 10).ToString();
+            second_num.text = Random.Range(1, 10).ToString();
         }
     }
     private void Lv2_RandomNum(int step)
     {
         if (step < 4)
         {
-            First_num.text = Random.Range(2, 10).ToString();
-            Second_num.text = Random.Range(1, 15).ToString();
+            first_num.text = Random.Range(2, 10).ToString();
+            second_num.text = Random.Range(1, 15).ToString();
         }
         else
         {
-            First_num.text = Random.Range(2, 10).ToString();
-            Second_num.text = Random.Range(1, 20).ToString();
+            first_num.text = Random.Range(2, 10).ToString();
+            second_num.text = Random.Range(1, 20).ToString();
         }
 
     }
@@ -188,13 +188,13 @@ public class GuGUDan_Fnc : GameSetting
     {
         if (step < 4)
         {
-            First_num.text = Random.Range(2, 15).ToString();
-            Second_num.text = Random.Range(1, 20).ToString();
+            first_num.text = Random.Range(2, 15).ToString();
+            second_num.text = Random.Range(1, 20).ToString();
         }
         else
         {
-            First_num.text = Random.Range(2, 20).ToString();
-            Second_num.text = Random.Range(1, 20).ToString();
+            first_num.text = Random.Range(2, 20).ToString();
+            second_num.text = Random.Range(1, 20).ToString();
         }
     }
     #region lv별 게임
@@ -261,7 +261,7 @@ public class GuGUDan_Fnc : GameSetting
     private void GameOver()
     {
         //타임슬라이더의 Value 값이 0 일경우 게임 끝.
-        if (TimeSlider.Instance.slider.value == 0)
+        if (TimeSlider.Instance.Slider.value == 0)
         {
             ReactionTime = trueReactionTime / TrueAnswerCount;
             totalReactionTime = 0;
@@ -293,14 +293,14 @@ public class GuGUDan_Fnc : GameSetting
     //정답 판단 함수
     public void AnswerCheck()
     {
-        if (TimeSlider.Instance.slider.value == 0) return; // 타임오버시 리턴
+        if (TimeSlider.Instance.Slider.value == 0) return; // 타임오버시 리턴
         //정답일경우
-        int resultx = int.Parse(Answer_num.text) / int.Parse(Second_num.text);
-        int resulty = int.Parse(Answer_num.text) / int.Parse(First_num.text);
-        int resultz = int.Parse(First_num.text) * int.Parse(Second_num.text);
+        int resultx = int.Parse(answer_num.text) / int.Parse(second_num.text);
+        int resulty = int.Parse(answer_num.text) / int.Parse(first_num.text);
+        int resultz = int.Parse(first_num.text) * int.Parse(second_num.text);
         if (CaseNum == 0) //x 쪽 역산
         {
-            if (First_num.text == $"{resultx}")
+            if (first_num.text == $"{resultx}")
             {
                 //Get_Score();
                 TrueAnswerCount++; //정답 갯수 증가 -> 정답률 반영에 사용할거
@@ -324,7 +324,7 @@ public class GuGUDan_Fnc : GameSetting
         }
         else if (CaseNum == 1) // y쪽을 역산
         {
-            if (Second_num.text == $"{resulty}")
+            if (second_num.text == $"{resulty}")
             {
                 //Get_Score();
                 TrueAnswerCount++; //정답 갯수 증가 -> 정답률 반영에 사용할거
@@ -348,7 +348,7 @@ public class GuGUDan_Fnc : GameSetting
         }
         else if (CaseNum == 2)
         {
-            if (Answer_num.text == $"{resultz}")
+            if (answer_num.text == $"{resultz}")
             {
                 //Get_Score();
                 TrueAnswerCount++; //정답 갯수 증가 -> 정답률 반영에 사용할거
@@ -390,14 +390,14 @@ public class GuGUDan_Fnc : GameSetting
                 if (isFirst_Click)
                 {
                     isInputValue = true;
-                    First_num.text = num.ToString();
+                    first_num.text = num.ToString();
                     isFirst_Click = false;
                     isSecond_Click = true;
                     Click_Count++;
                 }
                 else if (isSecond_Click)
                 {
-                    First_num.text += num.ToString();
+                    first_num.text += num.ToString();
                     isSecond_Click = false;
                     Click_Count++;
                 }
@@ -406,14 +406,14 @@ public class GuGUDan_Fnc : GameSetting
                 if (isFirst_Click)
                 {
                     isInputValue = true;
-                    Second_num.text = num.ToString();
+                    second_num.text = num.ToString();
                     isFirst_Click = false;
                     isSecond_Click = true;
                     Click_Count++;
                 }
                 else if (isSecond_Click)
                 {
-                    Second_num.text += num.ToString();
+                    second_num.text += num.ToString();
                     isSecond_Click = false;
                     Click_Count++;
                 }
@@ -422,21 +422,21 @@ public class GuGUDan_Fnc : GameSetting
                 if (isFirst_Click)
                 {
                     isInputValue = true;
-                    Answer_num.text = num.ToString();
+                    answer_num.text = num.ToString();
                     isFirst_Click = false;
                     isSecond_Click = true;
                     Click_Count++;
                 }
                 else if (isSecond_Click)
                 {
-                    Answer_num.text += num.ToString();
+                    answer_num.text += num.ToString();
                     isSecond_Click = false;
                     isThird_Click = true;
                     Click_Count++;
                 }
                 else if (isThird_Click)
                 {
-                    Answer_num.text += num.ToString();
+                    answer_num.text += num.ToString();
                     isThird_Click = false;
                     Click_Count++;
                 }
@@ -473,15 +473,15 @@ public class GuGUDan_Fnc : GameSetting
         switch (CaseNum)
         {
             case 0: //x에 들어가는 최대 자릿수
-                int firstnum = int.Parse(Answer_num.text) / int.Parse(Second_num.text);
+                int firstnum = int.Parse(answer_num.text) / int.Parse(second_num.text);
                 FirstNumDigit = firstnum.ToString().Length;
                 break;
             case 1: //y에 들어가는 최대 자릿수
-                int secondnum = int.Parse(Answer_num.text) / int.Parse(First_num.text);
+                int secondnum = int.Parse(answer_num.text) / int.Parse(first_num.text);
                 SecondNumDigit = secondnum.ToString().Length;
                 break;
             case 2: //z에 들어가는 최대 자릿수
-                int AnswerNum = int.Parse(First_num.text) * int.Parse(Second_num.text);
+                int AnswerNum = int.Parse(first_num.text) * int.Parse(second_num.text);
                 AnswerNumDigit = AnswerNum.ToString().Length;
                 break;
 
@@ -496,13 +496,13 @@ public class GuGUDan_Fnc : GameSetting
         switch (CaseNum)
         {
             case 0:
-                First_num.text = "?";
+                first_num.text = "?";
                 break;
             case 1:
-                Second_num.text = "?";
+                second_num.text = "?";
                 break;
             case 2:
-                Answer_num.text = "??";
+                answer_num.text = "??";
                 break;
             default:
                 break;
@@ -590,15 +590,15 @@ public class GuGUDan_Fnc : GameSetting
     // UI ? on/off
     private void QuestMark_onOff(int caseNum)
     {
-        for (int i = 0; i < QuestMark.Length; i++)
+        for (int i = 0; i < questMark.Length; i++)
         {
             if (i == caseNum && !isInputValue)
             {
-                QuestMark[i].SetActive(true);
+                questMark[i].SetActive(true);
             }
             else
             {
-                QuestMark[i].SetActive(false);
+                questMark[i].SetActive(false);
             }
         }
     }

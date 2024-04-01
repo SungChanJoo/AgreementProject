@@ -5,10 +5,10 @@ using UnityEngine.UI;
 
 public class CanvasImg : MonoBehaviour
 {
-    [SerializeField] Image image;
-    [SerializeField] Cube cube;
+    [SerializeField] private Image image;
+    [SerializeField] private Cube cube;
     void Start()
     {
-        image.sprite = cube.sprite;
+        image.sprite = cube.Sprite;
     }
 }

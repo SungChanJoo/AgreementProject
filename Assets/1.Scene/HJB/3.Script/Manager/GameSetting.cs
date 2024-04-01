@@ -72,7 +72,7 @@ public abstract class GameSetting : MonoBehaviour,ITouchEffect
             level = 1;
         }
         
-        if(TimeSlider.Instance.gameType == GameType.Solo)
+        if(TimeSlider.Instance.GameType == GameType.Solo)
         {
             timeSet = StepManager.Instance.CurrentTime;
         }
@@ -80,8 +80,8 @@ public abstract class GameSetting : MonoBehaviour,ITouchEffect
         {
             timeSet = 60;
         }
-        TimeSlider.Instance.startTime = timeSet;
-        TimeSlider.Instance.duration = timeSet;
+        TimeSlider.Instance.StartTime_ = timeSet;
+        TimeSlider.Instance.Duration = timeSet;
         Debug.Log($"game_Type : {game_Type}, level : {level}, step: {step} ");        
         
     }
@@ -137,7 +137,7 @@ public abstract class GameSetting : MonoBehaviour,ITouchEffect
 
         //현재 마지막 Step이면 버튼 비활성화
         //남은시간
-        remainingTime = TimeSlider.Instance.startTime;
+        remainingTime = TimeSlider.Instance.StartTime_;
         playTime = TimeSlider.Instance.PlayTime;
 
         //Result_Data에 게임결과 할당
