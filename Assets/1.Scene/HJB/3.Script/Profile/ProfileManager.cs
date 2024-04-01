@@ -15,7 +15,11 @@ public class ProfileManager : MonoBehaviour
     [SerializeField] private LoadImage profileLoad ;
 
     [SerializeField] private TMP_InputField characterName;
-    private void OnEnable()
+    private void Start()
+    {
+        profileLoad.ProfileImage_Set();
+    }
+    public void ProfileDataSet()
     {
         profileLoad.ProfileImage_Set();
     }

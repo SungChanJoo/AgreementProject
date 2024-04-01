@@ -55,8 +55,7 @@ public class ProfileText : MonoBehaviour
         {
             Destroy(gameObject);
         }        
-        profileManager = GetComponent<ProfileManager>();
-        gameObject.SetActive(false);
+        profileManager = GetComponent<ProfileManager>();        
     }
     private void Start()
     {

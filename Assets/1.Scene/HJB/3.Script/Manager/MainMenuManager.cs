@@ -31,9 +31,9 @@ public class MainMenuManager : MonoBehaviour
     
     private void Start()
     {
+
         SettingManager.Instance.EnableSettingBtn();
-        AudioManager.Instance.BGM_Play(0);
-        
+        AudioManager.Instance.BGM_Play(0);        
         string net_state = DataBase.Instance.network_state ?  "연결": "연결안됨";
         NetworkState_UI.text = net_state;
         //플레이어 기본 정보 불러오기        
@@ -160,11 +160,7 @@ public class MainMenuManager : MonoBehaviour
             CrewMovementManager.Instance.ViewCrew();
         GameScene();
     } 
-    public void SelectTime(int time)
-    {
-        StepManager.Instance.SelectTimeSet(time);
-        Debug.Log(time);
-    }
+    
 
     
     public void Level_UI()

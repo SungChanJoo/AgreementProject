@@ -21,7 +21,8 @@ public class SettingManager : MonoBehaviour
     [SerializeField] private Canvas setting;
     [SerializeField] private GameObject InGameBtn_panel;
     [SerializeField] private GameObject ReQuestion_panel;
-    
+    [SerializeField] private GameObject kidsTimer_panel;
+
     [Header("Checkmark ON/OFF 위부터 순서대로")]
     [SerializeField] private GameObject[] on_img;
     [SerializeField] private GameObject[] Off_img;
@@ -43,7 +44,7 @@ public class SettingManager : MonoBehaviour
     private Color set_color = new Color(0.30f,0.59f,0.96f);
     private Color handle_color = new Color(0.03f, 0.43f, 0.95f);
 
-
+    private TimeButtonEvent timeButton;
 
     private void Awake()
     {        
@@ -56,9 +57,8 @@ public class SettingManager : MonoBehaviour
         {
             Destroy(gameObject);
         }
-        
-    }    
-    
+        timeButton = GetComponent<TimeButtonEvent>();
+    }        
     private IEnumerator Start()
     {        
         yield return StartCoroutine(AppSetPermission_Co());
@@ -68,10 +68,12 @@ public class SettingManager : MonoBehaviour
         if (SceneManager.GetActiveScene().buildIndex!=2)
         {
             InGameBtn_panel.SetActive(true);
+            kidsTimer_panel.SetActive(false);
         }
         else
         {
             InGameBtn_panel.SetActive(false);
+            kidsTimer_panel.SetActive(true);
         }
     }
     //만약 앱 처음 실행 시 거부했다면 인앱 내에서 다시 접근 권한 요청하기 위함
@@ -254,14 +256,13 @@ public class SettingManager : MonoBehaviour
         AudioManager.Instance.SliderControll(num,check);
 
         
-    }
-    private void PlayerSaveData()
-    { 
-        //여기서 상재형 메서드 받아서 Save 할 것.(Player_DB형식)
-        //DataBase.Instance.PlayerCharacter[0];
-    }
-     
+    }   
 
+    public void SelectTime(int time)
+    {
+        StepManager.Instance.SelectTimeSet(time);
+        timeButton.ChangeColor_Time(time);        
+    }
 
     //Application 종료 버튼
     public void ApplicationExit_Btn()
