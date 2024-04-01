@@ -91,7 +91,7 @@ public class RankingManager : MonoBehaviour
             for (int i = 0; i < scoreRankData.Length; i++)
             {
                 scoreRankData[i].Img.sprite = ProfileImage_Set(rankInfo.rankdata_time[^(i + 2)].userProfile);
-                scoreRankData[i].NameText.text =          rankInfo.rankdata_score[^(i + 2)].userName;
+                scoreRankData[i].NameText.text = rankInfo.rankdata_score[^(i + 2)].userName;
                 scoreRankData[i].TotalScoreText.text = $"{rankInfo.rankdata_score[^(i + 2)].totalScore}";
             }
         }

@@ -22,7 +22,7 @@ public class ExitMetaWorld : MonoBehaviour
     public void ExitWorld()
     {
         NetworkClient.Disconnect(); // 클라이언트 연결해제
-        Destroy(FindObjectOfType<PetSwitchNetworkManager>().gameObject);
+        Destroy(FindObjectOfType<CrewSwitchNetworkManager>().gameObject);
         Destroy(FindObjectOfType<CrewSelectManager>().gameObject);
         if (AudioManager.Instance != null)
             AudioManager.Instance.BGM_Play(3);

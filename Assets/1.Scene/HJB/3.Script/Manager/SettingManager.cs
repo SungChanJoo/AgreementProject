@@ -174,7 +174,7 @@ public class SettingManager : MonoBehaviour
             //메타월드안에서 호출하면 씬 이동을 하게 되면 들어오기 전 상태로 돌리기
             Restart_Btn.SetActive(true);
             NetworkClient.Disconnect();
-            Destroy(FindObjectOfType<PetSwitchNetworkManager>().gameObject);
+            Destroy(FindObjectOfType<CrewSwitchNetworkManager>().gameObject);
             Destroy(FindObjectOfType<CrewSelectManager>().gameObject);
             if (AudioManager.Instance != null)
                 AudioManager.Instance.BGM_Play(3);

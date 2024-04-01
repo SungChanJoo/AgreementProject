@@ -34,8 +34,6 @@ class CrewButton
 //펫을 고르고 메타별에 입장을 관리하는 매니져
 public class CollectionsManager : MonoBehaviour
 {
-
-
     public static CollectionsManager Instance = null;
 
     [Header("Collections")]
