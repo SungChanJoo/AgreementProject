@@ -158,7 +158,8 @@ public class ProfileText : MonoBehaviour
         try
         {
             //데이터 바꾸기
-            DataBase.Instance.PlayerCharacter[0].BirthDay = ChangeBirthday_Input.text;
+            DataBase.Instance.PlayerCharacter[DataBase.Instance.CharacterIndex].BirthDay 
+                = ChangeBirthday_Input.text;
             //DB에 Load하기
             Client.instance.RegisterCharactorBirthday_SaveDataToDB(ChangeBirthday_Input.text);
 
@@ -173,7 +174,7 @@ public class ProfileText : MonoBehaviour
     }
     
     public void BirthDayChangeErrorText_EndEdit()
-    {
+    {   //생일 입력 조건이 맞지 않을 시
         string text = ChangeBirthday_Input.text;
         if (text.Length!=8)
         {
@@ -192,7 +193,7 @@ public class ProfileText : MonoBehaviour
     }
 
     public void RecordDelete_Btn()
-    {
+    {   //플레이어 기록 초기화
         try
         {
             Client.instance.ResetCharactorProfile();

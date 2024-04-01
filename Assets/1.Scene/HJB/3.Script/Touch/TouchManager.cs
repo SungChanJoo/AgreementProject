@@ -11,14 +11,21 @@ public interface ITouchEffect
 public class TouchManager : MonoBehaviour
 {
     public static TouchManager Instance = null;
+    public Canvas UICanvas; // UI 캔버스
+
     [SerializeField] private GameObject[] effect_obj;
     [SerializeField] private GameObject beganEffect_obj;    
-    public Canvas uiCanvas; // UI 캔버스
-    //public Camera uiCamera; // UI 전용 카메라  
+    [SerializeField] private AudioClip audioClip;
+    
     ParticleSystem[] particles;
 
-    [SerializeField] private AudioClip audioClip;
     private AudioSource source;
+
+
+    /*
+        파일이름 : ParticleEffectForUGUI-main
+        UI Particle 라이브러리를 이용하여 3D의 Particle을 UI 화면상에 출력하도록 하였음
+     */
 
     private void Awake()
     {
@@ -48,7 +55,7 @@ public class TouchManager : MonoBehaviour
     }
     private void TouchEffect()
     {
-        if (Input.touchCount ==0)
+        if (Input.touchCount == 0 )
         {
             for (int i = 0; i < particles.Length; i++)
             {
@@ -57,34 +64,33 @@ public class TouchManager : MonoBehaviour
         }
         for (int i = 0; i < Input.touchCount; i++)
         {
-            Touch touch = Input.GetTouch(i);
-
-            //RectTransformUtility.ScreenPointToLocalPointInRectangle(uiCanvas.GetComponent<RectTransform>(), touch.position, Camera.main, out localPoint);
+            Touch touch = Input.GetTouch(i);            
             Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
             RaycastHit hit;
+
+            //기본 터치 효과
             if (touch.phase == TouchPhase.Began)
             {
-                GameObject beganTouch = Instantiate(beganEffect_obj, uiCanvas.transform);
-                beganTouch.transform.position = touch.position;
-                //hit.collider.tag == "Untagged"
+                GameObject beganTouch = Instantiate(beganEffect_obj, UICanvas.transform);
+                beganTouch.transform.position = touch.position;                
                 if (!Physics.Raycast(ray, out hit)&&(hit.collider == null))
-                {
-                    
+                {                    
                     source.PlayOneShot(audioClip);                    
                 }                
-            }            
+            }
+
+            //길게 눌렀을 시 효과
             if (i < particles.Length)
             {
                 effect_obj[i].transform.position = touch.position;
-                if (touch.phase == TouchPhase.Moved)
+                if (touch.phase == TouchPhase.Moved&& !particles[i].isPlaying)
                 {                    
-                    if (!particles[i].isPlaying)
-                    {
-                        particles[i].Play();
-                    }
+                    particles[i].Play();
+                    
                 }
                 else if (touch.phase == TouchPhase.Ended || touch.phase == TouchPhase.Canceled)
                 {
+                    //터치 입력이 끝났을 때
                     particles[i].Stop();
                 }
             }

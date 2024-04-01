@@ -22,20 +22,13 @@ public class AnalysisChart : MonoBehaviour
     [SerializeField] private TextMeshProUGUI[] dayText;
     
     [SerializeField] private TextMeshProUGUI noDataText;
-
-
-    private List<float> playerdata=new List<float>();
+    
     private List<Vector2> answersRate_vector2 = new List<Vector2>();
     private List<Vector2> reactionRate_vector2 = new List<Vector2>();
     private List<GameObject> reDot_obj = new List<GameObject>();
     private List<GameObject> anDot_obj = new List<GameObject>();
     private List<GameObject> reLine_obj = new List<GameObject>();
-    private List<GameObject> anLine_obj = new List<GameObject>();
-
-    private Dictionary<(Game_Type, int), List<float>> answer_Type =
-        new Dictionary<(Game_Type, int), List<float>>();
-    private Dictionary<(Game_Type, int), List<float>> reaction_Type =
-       new Dictionary<(Game_Type, int), List<float>>();
+    private List<GameObject> anLine_obj = new List<GameObject>();   
 
     private Game_Type game_type= Game_Type.A;
     private int level_num=1;
@@ -68,6 +61,8 @@ public class AnalysisChart : MonoBehaviour
     {
         int player_num = DataBase.Instance.CharacterIndex;
         analyticsData = Client.instance.AppStart_LoadAnalyticsDataFromDB();
+
+        //플레이어의 이름과 이미지 출력
         profile_img.sprite = DataBase.Instance.currentImage;
         playerName.text = $"({DataBase.Instance.PlayerCharacter[player_num].playerName})의 분석표";
     }
@@ -161,7 +156,7 @@ public class AnalysisChart : MonoBehaviour
         ShowChartData();
     }
     private void ShowChartData()
-    {
+    {       //리스트에 DB에서 받아온 데이터 담기
         try
         {
             List<float> reactionRate_list = new List<float>();
@@ -185,7 +180,7 @@ public class AnalysisChart : MonoBehaviour
 
     }
     private void SelectType(List<float> answer,List<float> reaction)
-    {        
+    {
         DrawGraph_Dot(answer,anDot_obj,true);
         DrawGraph_Dot(reaction,reDot_obj,false);
         DrawGraph_Line(anLine_obj, answersRate_vector2);
@@ -201,9 +196,9 @@ public class AnalysisChart : MonoBehaviour
 
     public void  ReactionRate_Btn(bool check)
     {
+        //선택에 따른 그래프 표시
         if (check)
         {
-            
             RateSetActive(reDot_obj, reLine_obj);
         }
         else

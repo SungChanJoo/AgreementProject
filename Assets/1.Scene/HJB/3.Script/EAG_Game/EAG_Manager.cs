@@ -30,13 +30,13 @@ public class EAG_Manager : GameSetting
 
     [SerializeField] private AudioClip[] audioClip;
 
-    //결과 출력
     public void Show_Result(float result)
     {
+        //결과 출력
         resultText.text = result.ToString();
     }
     protected override void startGame()
-    {
+    {   //게임 시작 시 실행
         StartGamePooling();
     }
     private void StartGamePooling()
@@ -59,7 +59,7 @@ public class EAG_Manager : GameSetting
             case Operator.Mul:
                 result = firstNum * secondNum;
                 break;
-            case Operator.Div:
+            case Operator.Div:      //0으로 나누어 떨어지는 수 조건
                 while (firstNum % secondNum != 0 || firstNum < secondNum)
                 {
                     GenerateRandomNumbers();
@@ -78,6 +78,7 @@ public class EAG_Manager : GameSetting
 
     public override void TouchSoundCheck(bool answerCheck)
     {
+        //정답 및 오답에 따른 효과음 출력
         if (answerCheck)
         {
             source.PlayOneShot(audioClip[0]);

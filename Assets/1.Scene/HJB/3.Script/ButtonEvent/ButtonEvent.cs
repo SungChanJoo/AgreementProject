@@ -16,8 +16,7 @@ public class ButtonEvent : MonoBehaviour
     private int level;
     private int timeSet;   
     
-    private Image[] level_img;
-    private Image[] time_img;   
+    private Image[] level_img;    
     private void Awake()
     {
         level_img = new Image[level_btn.Length];        
@@ -44,6 +43,7 @@ public class ButtonEvent : MonoBehaviour
     public void ChangeColor_Level()
     {
         ButtonDataSet();
+        //Level 선택 시 게임에 따른 표시
         string[] venezia_text = { "한글", "영어", "한자" };
         string[] level_text = { "Lv_1", "Lv_2", "Lv_3" };
         if (StepManager.Instance.game_Type >= Game_Type.C)

@@ -40,7 +40,7 @@ public class ProfileManager : MonoBehaviour
             GetComponent<ProfileText>().Registration_InputField();
     }
     public void PlayerNameChange_UI()
-    {
+    {        
         PlayerNameChange_panel.SetActive(!PlayerNameChange_panel.activeSelf);
     }
     public void PlayerBirthDay_UI()

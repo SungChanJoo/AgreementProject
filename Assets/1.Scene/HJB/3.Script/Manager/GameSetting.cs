@@ -46,12 +46,7 @@ public abstract class GameSetting : MonoBehaviour,ITouchEffect
 
     public AudioSource source;
 
-
-    private void Awake()
-    {
-        //source = GetComponent<AudioSource>();        
-
-    }
+    private int IndexDB;
 
     private void Start()
     {
@@ -82,7 +77,8 @@ public abstract class GameSetting : MonoBehaviour,ITouchEffect
         }
         TimeSlider.Instance.StartTime_ = timeSet;
         TimeSlider.Instance.Duration = timeSet;
-        Debug.Log($"game_Type : {game_Type}, level : {level}, step: {step} ");        
+        Debug.Log($"game_Type : {game_Type}, level : {level}, step: {step} ");
+        IndexDB = DataBase.Instance.CharacterIndex;
         
     }
     private void ResultDataSet()
@@ -207,21 +203,23 @@ public abstract class GameSetting : MonoBehaviour,ITouchEffect
     }
     private void CalculateStarCoin()
     {
-        Player_DB db = DataBase.Instance.PlayerCharacter[0];
-        int db_starCount = db.Data[(game_Type, level, step)].StarCount;
         
-        starCoin = starcount * 15;
-        Debug.Log($"현재 별의 갯수 : {starcount} 코인 : {starCoin}");
+        Player_DB db = DataBase.Instance.PlayerCharacter[IndexDB];
+        int db_starCount = db.Data[(game_Type, level, step)].StarCount;
+        //기본 StarCoin 지급
+        starCoin = starcount * 15;        
+        
+        //최초 Star를 획득 시 30개 지급
         if (db_starCount < starcount)
         {
            int count = starcount - db_starCount;
             starCoin += count * 30;
-        }
-        Debug.Log($"totalCoin : {starCoin}");
+        }        
         DataBase.Instance.PlayerCharacter[0].StarCoin += starCoin;
     }
     private int GameScoreToStarCount(int score)
     {
+        //Score 2배 후 Score에 따른 Star 반환
         score *= 2;
         if (20000 <= score)
         {
@@ -242,16 +240,15 @@ public abstract class GameSetting : MonoBehaviour,ITouchEffect
     }
     
     private IEnumerator UpdateDatabaseFromData()
-    {
-        //string day = System.DateTime.Now.ToString("dd-MM-yy");
-        Player_DB db = DataBase.Instance.PlayerCharacter[0];
-        db.StarCoin = DataBase.Instance.PlayerCharacter[0].StarCoin;
+    {        
+        Player_DB db = DataBase.Instance.PlayerCharacter[IndexDB];
+        db.StarCoin = DataBase.Instance.PlayerCharacter[IndexDB].StarCoin;
         Data_value data_Value = new Data_value(reactionRate, answersCount, answers, playTime, totalScore,starcount);        
         
         //만약 totalScore가 DB에 있는 점수보다 크다면 다시 할당
         if (db.Data[(game_Type, level, step)].TotalScore < totalScore)
         {
-            db.Data[(game_Type, level, step)] = data_Value;            
+            db.Data[(game_Type, level, step)] = data_Value;
             Client.instance.AppGame_SaveResultDataToDB(db, game_Type,level,step);
             Debug.Log("정상적으로 DB에 저장");
         }
@@ -295,6 +292,6 @@ public abstract class GameSetting : MonoBehaviour,ITouchEffect
 
     public virtual void TouchSoundCheck(bool answerCheck)
     {
-
+        //각 게임매니저 override 
     }
 }
