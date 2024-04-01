@@ -6,42 +6,42 @@ using TMPro;
 
 public class VeneGameOver : MonoBehaviour
 {
-    [SerializeField] private GameObject GameOverUI; // 게임오버 UI
-    [SerializeField] private GameObject[] LobbyBot; // 1 bot 2 / 2 bot 2
-    [SerializeField] private GameObject[] PlayerOneBtn; // Player Win , Lose 버튼 => 승자만 보여줄것
-    [SerializeField] private GameObject[] PlayerTwoBtn;
+    [SerializeField] private GameObject gameOverUI; // 게임오버 UI
+    [SerializeField] private GameObject[] lobbyBot; // 1 bot 2 / 2 bot 2
+    [SerializeField] private GameObject[] playerOneBtn; // Player Win , Lose 버튼 => 승자만 보여줄것
+    [SerializeField] private GameObject[] playerTwoBtn;
 
     [SerializeField] GameObject Pooling;
 
-    [SerializeField] private TextMeshProUGUI PlayerOneText;
-    [SerializeField] private TextMeshProUGUI PlayerTwoText;
+    [SerializeField] private TextMeshProUGUI playerOneText;
+    [SerializeField] private TextMeshProUGUI playerTwoText;
 
     //2인모드 게임종료시 승리/패배 표시해줄 애니메이션
     [Header("PlayerOneAnimation")]
-    [SerializeField] private Animator PlayerOne_LoseAnim;
-    [SerializeField] private Animator PlayerOne_WinAnim;
+    [SerializeField] private Animator playerOne_LoseAnim;
+    [SerializeField] private Animator playerOne_WinAnim;
     [Header("PlayerTwoAnimation")]
-    [SerializeField] private Animator PlayerTwo_Lose_Anim;
-    [SerializeField] private Animator PlayerTwo_Win_Anim;
+    [SerializeField] private Animator playerTwo_Lose_Anim;
+    [SerializeField] private Animator playerTwo_Win_Anim;
 
     private bool isGameover = false;
 
     private void Start()
     {
-        PlayerOneText.text = "";
-        PlayerTwoText.text = "";
+        playerOneText.text = "";
+        playerTwoText.text = "";
 
-        for (int i = 0; i < LobbyBot.Length; i++)
+        for (int i = 0; i < lobbyBot.Length; i++)
         {
-            LobbyBot[i].SetActive(false);
+            lobbyBot[i].SetActive(false);
         }
 
         for (int i = 0; i < 2; i++)
         {
-            PlayerOneBtn[i].SetActive(false);
-            PlayerTwoBtn[i].SetActive(false);
+            playerOneBtn[i].SetActive(false);
+            playerTwoBtn[i].SetActive(false);
         }
-        GameOverUI.SetActive(false);
+        gameOverUI.SetActive(false);
     }
 
     private void Update()
@@ -54,39 +54,39 @@ public class VeneGameOver : MonoBehaviour
     {
         if(VeneziaManager.Instance.play_mode == PlayMode.Couple && !isGameover)
         {
-            if (VeneziaManager.Instance.isGameover)
+            if (VeneziaManager.Instance.IsGameover)
             {
-                GameOverUI.SetActive(true);
+                gameOverUI.SetActive(true);
                 Pooling.SetActive(false);
-                if (TimeSlider.Instance.slider.value <= 0)
+                if (TimeSlider.Instance.Slider.value <= 0)
                 {
                     isGameover = true;
                     //Player 2 승
-                    for (int i = 0; i < PlayerTwoBtn.Length; i++)
+                    for (int i = 0; i < playerTwoBtn.Length; i++)
                     {
-                        PlayerTwoBtn[i].SetActive(true);
-                        PlayerOneText.text = "Lose";
-                        PlayerTwoText.text = "Win";
+                        playerTwoBtn[i].SetActive(true);
+                        playerOneText.text = "Lose";
+                        playerTwoText.text = "Win";
                         // 1 2 > win lose / 3 4 win lose
-                        LobbyBot[1].SetActive(true);
-                        LobbyBot[2].SetActive(true);
-                        PlayerTwo_Win_Anim.SetBool("isWin", true);
-                        PlayerOne_LoseAnim.SetBool("isLose", true);
+                        lobbyBot[1].SetActive(true);
+                        lobbyBot[2].SetActive(true);
+                        playerTwo_Win_Anim.SetBool("isWin", true);
+                        playerOne_LoseAnim.SetBool("isLose", true);
                     }
                 }
-                else if (TimeSlider.Instance.slider_PlayerTwo.value <= 0)
+                else if (TimeSlider.Instance.Slider_PlayerTwo.value <= 0)
                 {
                     //Player1  승
                     isGameover = true;
-                    for (int i = 0; i < PlayerOneBtn.Length; i++)
+                    for (int i = 0; i < playerOneBtn.Length; i++)
                     {
-                        PlayerOneBtn[i].SetActive(true);
-                        LobbyBot[0].SetActive(true);
-                        LobbyBot[3].SetActive(true);
-                        PlayerOneText.text = "Win";
-                        PlayerTwoText.text = "Lose";
-                        PlayerTwo_Lose_Anim.SetBool("isLose", true);
-                        PlayerOne_WinAnim.SetBool("isWin", true);
+                        playerOneBtn[i].SetActive(true);
+                        lobbyBot[0].SetActive(true);
+                        lobbyBot[3].SetActive(true);
+                        playerOneText.text = "Win";
+                        playerTwoText.text = "Lose";
+                        playerTwo_Lose_Anim.SetBool("isLose", true);
+                        playerOne_WinAnim.SetBool("isWin", true);
                     }
                 }
 

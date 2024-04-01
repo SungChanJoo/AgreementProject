@@ -76,7 +76,7 @@ public class EAG_ObjectPooling : MonoBehaviour
         {            
             return;
         }
-        if (TimeSlider.Instance.slider.value<=0)
+        if (TimeSlider.Instance.Slider.value<=0)
         {
             timeOut = true;
             GameOver();

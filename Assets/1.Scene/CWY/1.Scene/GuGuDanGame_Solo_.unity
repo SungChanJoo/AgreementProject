@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.29936957, g: 0.29936957, b: 0.29936957, a: 1}
+  m_IndirectSpecularColor: {r: 0.29936928, g: 0.25352806, b: 0.21969268, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -1002,7 +1002,6 @@ MonoBehaviour:
   starcount: 0
   starCoin: 0
   isStop: 1
-  settingStop: 0
   startTimeSet: {fileID: 0}
   nextStep_Btn: {fileID: 1713558300}
   timeset: 0
@@ -1022,9 +1021,9 @@ MonoBehaviour:
   result_Printer: {fileID: 1713558299}
   source: {fileID: 287009999}
   buttonType: 0
-  First_num: {fileID: 522410091}
-  Second_num: {fileID: 956137005}
-  Answer_num: {fileID: 137966615}
+  first_num: {fileID: 522410091}
+  second_num: {fileID: 956137005}
+  answer_num: {fileID: 137966615}
   buttons:
   - {fileID: 180118131}
   - {fileID: 1492327968}
@@ -1040,10 +1039,7 @@ MonoBehaviour:
   - {fileID: 315485530}
   - {fileID: 810345488}
   - {fileID: 1314879240}
-  QuestMark:
-  - {fileID: 1727402918}
-  - {fileID: 1743723415}
-  - {fileID: 79806963}
+  questMark: []
   anim: {fileID: 0}
   canvas: {fileID: 1215284665}
   audioClip:
