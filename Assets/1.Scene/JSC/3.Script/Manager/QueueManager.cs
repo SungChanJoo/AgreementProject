@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Mirror;
 
-//
+//탐험대원 = 플레이어 정보를 담고 있는 클래스
 public class PlayerInfo
 {
     public NetworkConnectionToClient PlayerConnection;
@@ -19,21 +19,22 @@ public class PlayerInfo
         
     }
 }
+//대기열 관리 클래스
 public class QueueManager : NetworkBehaviour
 {
     public static QueueManager Instance = null;
     public Queue<PlayerInfo> WaitingQueue = new Queue<PlayerInfo>(); //대기열
 
-    List<PlayerInfo> roomPlayerList1 = new List<PlayerInfo>();
-    List<PlayerInfo> roomPlayerList2 = new List<PlayerInfo>();
+    List<PlayerInfo> roomPlayerList1 = new List<PlayerInfo>(); //1번방
+    List<PlayerInfo> roomPlayerList2 = new List<PlayerInfo>(); //2번방
     //List<int> _roomPlayerList3 = new List<int>();
     
     List<int> exitPlayerList = new List<int>(); //나간 플레이어 목록
 
     [SerializeField]
-    private int peopleLimitCount = 1; //한 방에 들어갈 수 있는 인원
+    private int peopleLimitCount = 1; //한 방에 들어갈 수 있는 최대인원
     
-    public List<GameObject> PlayerPetList; //탐험대원 프리펩 목록
+    public List<GameObject> PlayerCrewList; //탐험대원 프리펩 목록
 
     public List<Transform> PlayerSpawnPos = new List<Transform>();
     private void Awake()
@@ -66,7 +67,7 @@ public class QueueManager : NetworkBehaviour
     [Command(requiresAuthority = false)]
     public void CmdEnterPlayer(int selectedPetIndex, NetworkConnectionToClient playerId = null)
     {
-        var playerInfo = new PlayerInfo(playerId, PlayerPetList[selectedPetIndex], "NoNamed");
+        var playerInfo = new PlayerInfo(playerId, PlayerCrewList[selectedPetIndex], "NoNamed");
         
         //대기열에 사람이 없다면 바로 방에 들어감
         if (WaitingQueue.Count <= 0)
@@ -76,8 +77,8 @@ public class QueueManager : NetworkBehaviour
             {
                 //플레이어 추가
                 roomPlayerList1.Add(playerInfo);
-                //플레이어 펫
-                SwitchPlayerPrefeb(playerId, PlayerPetList[selectedPetIndex], PlayerSpawnPos[0].position);
+                //플레이어 변경
+                SwitchPlayerPrefeb(playerId, PlayerCrewList[selectedPetIndex], PlayerSpawnPos[0].position);
             }
 /*            else if (_roomPlayerList2.Count < _peopleLimitCount)
             {

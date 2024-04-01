@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Mirror;
 
-//탐험대원 프리펩 변경 클래스
+//메타별 탐험대원 프리펩 변경 클래스
 public class CrewSwitchNetworkManager : NetworkManager
 {
     public void ReplacePlayer(NetworkConnectionToClient conn, GameObject newPrefab, Vector3 spawnPos)

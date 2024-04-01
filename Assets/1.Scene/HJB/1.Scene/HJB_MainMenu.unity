@@ -71484,45 +71484,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cba3cce0571e09d4eb3dc5452eaaec04, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _crewList:
-  - {fileID: 3894376814091610077}
-  - {fileID: 3894376814033988728}
-  - {fileID: 5002890627260063716}
-  - {fileID: 5002890626817812710}
-  - {fileID: 5002890626621476016}
-  - {fileID: 5002890627023333737}
-  - {fileID: 5002890626493743899}
-  - {fileID: 664038664}
-  - {fileID: 57839683}
-  - {fileID: 1172029492}
-  - {fileID: 321142752}
-  - {fileID: 1677246674}
-  - {fileID: 222874236}
-  - {fileID: 1420426798}
-  - {fileID: 4642479}
-  - {fileID: 575870842}
-  - {fileID: 1408349406}
-  - {fileID: 1379301076}
-  - {fileID: 1741833487}
-  - {fileID: 704874461}
-  - {fileID: 1220901128}
-  - {fileID: 1122888746}
-  - {fileID: 1972700625}
-  - {fileID: 1395077050}
-  - {fileID: 1414735400}
-  - {fileID: 878097216}
-  - {fileID: 313107252}
-  - {fileID: 779062437}
-  - {fileID: 203318687}
-  - {fileID: 186081478}
-  - {fileID: 2116654698}
-  - {fileID: 883379695}
-  - {fileID: 805015967}
-  - {fileID: 330875377}
-  - {fileID: 984927748}
-  - {fileID: 1862098695}
-  - {fileID: 645441923}
-  CrewSelectCanvas: {fileID: 3894376814653478730}
+  crewContents: {fileID: 3894376813279827525}
+  crewSelectCanvas: {fileID: 3894376814653478730}
   SelectedCrewIndex: 0
 --- !u!1 &5002890626002716201
 GameObject:
@@ -83048,61 +83011,24 @@ MonoBehaviour:
   - {fileID: 8144764568272537506}
   - {fileID: 8144764567264156040}
   - {fileID: 8144764567503637049}
-  _alreadySeletedCrewUI: {fileID: 6204678615377235568}
-  PMToggle: {fileID: 6204678616574161403}
+  alreadySeletedCrewUI: {fileID: 6204678615377235568}
+  pmToggle: {fileID: 6204678616574161403}
   SelectedImg: {fileID: 21300000, guid: 5fbcb8cf54396784aac46d0515a80f95, type: 3}
   DefaultImg: {fileID: 21300000, guid: 0853d44b148160a4ea98021ee942cb41, type: 3}
   DeniedImg: {fileID: 21300000, guid: 85394bf031622354aa6021dddbc70305, type: 3}
-  _purchaseWindow: {fileID: 6204678616576510465}
-  _purchaseText: {fileID: 6204678615954859656}
-  _purchaseBtn: {fileID: 6204678616150767148}
-  _deniedPurchaseUI: {fileID: 6204678616507140279}
-  _deniedPurchaseDuration: 1
-  _moneyText: {fileID: 6204678616589580456}
-  _detailWindow: {fileID: 6204678616691565948}
-  _crewDataList: {fileID: 4900000, guid: 2c49f6bde0604014db287307c051f795, type: 3}
-  _crewModel:
-  - {fileID: 1171691391762325727}
-  - {fileID: 1171691390497125929}
-  - {fileID: 1171691391520812336}
-  - {fileID: 1171691391872283565}
-  - {fileID: 1171691391097024697}
-  - {fileID: 1659276904495975059}
-  - {fileID: 8807568570668015456}
-  - {fileID: 173459739684167571}
-  - {fileID: 6928621673572490553}
-  - {fileID: 4408535265160391687}
-  - {fileID: 2588530434002252559}
-  - {fileID: 7626547861112091713}
-  - {fileID: 6465212725125027575}
-  - {fileID: 5395771287343692403}
-  - {fileID: 2450274550910807117}
-  - {fileID: 3258971864487769234}
-  - {fileID: 330159448491763141}
-  - {fileID: 2700354113267303084}
-  - {fileID: 6668545374031112904}
-  - {fileID: 1281512323012452640}
-  - {fileID: 1764735577920998606}
-  - {fileID: 235377175740197480}
-  - {fileID: 1886390084965723210}
-  - {fileID: 3736813600426020349}
-  - {fileID: 8403003805826971308}
-  - {fileID: 2657909852300077961}
-  - {fileID: 6435608826911315817}
-  - {fileID: 5752816727737321099}
-  - {fileID: 7917539744608354150}
-  - {fileID: 4060395338818583484}
-  - {fileID: 8430649205942305986}
-  - {fileID: 4088089743137281229}
-  - {fileID: 5471672059624283225}
-  - {fileID: 8424285180914262390}
-  - {fileID: 7373052921434454067}
-  - {fileID: 5391722809064919538}
-  - {fileID: 8727191570931569081}
-  _crewName: {fileID: 6204678615959521765}
-  _crewDescript: {fileID: 6204678614838396612}
-  _detailSelectBtn: {fileID: 6204678615110428551}
-  _detailSelectText: {fileID: 6204678615448282669}
+  purchaseWindow: {fileID: 6204678616576510465}
+  purchaseText: {fileID: 6204678615954859656}
+  purchaseBtn: {fileID: 6204678616150767148}
+  deniedPurchaseUI: {fileID: 6204678616507140279}
+  deniedPurchaseDuration: 1
+  moneyText: {fileID: 6204678616589580456}
+  detailWindow: {fileID: 6204678616691565948}
+  crewDataList: {fileID: 4900000, guid: 2c49f6bde0604014db287307c051f795, type: 3}
+  crewModel: {fileID: 6204678616474116276}
+  crewName: {fileID: 6204678615959521765}
+  crewDescript: {fileID: 6204678614838396612}
+  detailSelectBtn: {fileID: 6204678615110428551}
+  detailSelectText: {fileID: 6204678615448282669}
 --- !u!114 &6204678615539034964
 MonoBehaviour:
   m_ObjectHideFlags: 0

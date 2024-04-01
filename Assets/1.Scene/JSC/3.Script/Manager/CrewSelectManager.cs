@@ -5,28 +5,27 @@ using UnityEngine.SceneManagement;
 using TMPro;
 using UnityEngine.UI;
 
-//펫을 고르고 메타별에 입장을 관리하는 매니져
+//탐험대원을 선택하고 메타별에 입장을 관리하는 클래스
 public class CrewSelectManager : MonoBehaviour
 {
     public static CrewSelectManager Instance = null;
-    public List<GameObject> _crewList;
-    public GameObject CrewSelectCanvas;
-    private List<TMP_Text> _crewStatusText;
-    private List<GameObject> _crewStatusBtn;
+    [SerializeField] private GameObject crewContents;
+    private List<GameObject> crewList;
+    [SerializeField] private GameObject crewSelectCanvas;
+    private List<TMP_Text> crewStatusText;
+    private List<GameObject> crewStatusBtn;
     public int SelectedCrewIndex = 0;
     private void Awake()
     {
         if(Instance == null)
         {
             Instance = this;
-
         }
         else
         {
             Destroy(gameObject);
             return;
         }
-
     }
     private void Start()
     {
@@ -46,44 +45,49 @@ public class CrewSelectManager : MonoBehaviour
 
     public void OnViewSelectCrewUI()
     {
-        CrewSelectCanvas.SetActive(!CrewSelectCanvas.activeSelf);
+        crewSelectCanvas.SetActive(!crewSelectCanvas.activeSelf);
         SelectedCrewIndex = CollectionsManager.Instance.Collections.SelectedCrew;
-        for (int i = 0; i < _crewList.Count; i++)
+        for (int i = 0; i < crewList.Count; i++)
         {
             //보유중인 대원이 아닐경우 게임오브젝트 활성화 -> 비활성화, 비활성화 -> 활성화
             if (CollectionsManager.Instance.Collections.OwnedCrew[i])
             {
-                _crewList[i].SetActive(true);
+                crewList[i].SetActive(true);
                 //선택되어 있던 대원은 "출동!" 텍스트
                 if(SelectedCrewIndex == i)
                 {
-                    _crewStatusText[i].text = CrewButton._selectedCrew;
+                    crewStatusText[i].text = CrewButton._selectedCrew;
                     //_crewStatusBtn[i].GetComponent<Image>().color = CollectionsManager.Instance.SelectedBtnColor;
-                    _crewStatusBtn[i].GetComponent<Image>().sprite = CollectionsManager.Instance.SelectedImg;
+                    crewStatusBtn[i].GetComponent<Image>().sprite = CollectionsManager.Instance.SelectedImg;
                 }
                 //보유한 대원은 "출동 대기" 텍스트
                 else
                 {
-                    _crewStatusText[i].text = CrewButton._ownedCrew;
+                    crewStatusText[i].text = CrewButton._ownedCrew;
                     //_crewStatusBtn[i].GetComponent<Image>().color = CollectionsManager.Instance.DefaultBtnColor;
-                    _crewStatusBtn[i].GetComponent<Image>().sprite = CollectionsManager.Instance.DefaultImg;
+                    crewStatusBtn[i].GetComponent<Image>().sprite = CollectionsManager.Instance.DefaultImg;
                 }
             }
             else
-                _crewList[i].SetActive(false);
+                crewList[i].SetActive(false);
         }
     }
     public void SetSeleteCrewUI()
     {
-        //텍스트, 버튼 초기화
-        _crewStatusBtn = new List<GameObject>();
-        _crewStatusText = new List<TMP_Text>();
-        for (int i = 0; i < _crewList.Count; i++)
+        //탐험대원 프리펩 초기화
+        for (int i = 0; i < crewContents.transform.childCount; i++)
         {
-            _crewStatusBtn.Add(_crewList[i].transform.Find("Button").gameObject);
-            _crewStatusText.Add(_crewStatusBtn[i].transform.Find("Text (TMP)").gameObject.GetComponent<TMP_Text>());
+            crewList.Add(crewContents.transform.GetChild(i).gameObject);
+        }
+        //텍스트, 버튼 초기화
+        crewStatusBtn = new List<GameObject>();
+        crewStatusText = new List<TMP_Text>();
+        for (int i = 0; i < crewList.Count; i++)
+        {
+            crewStatusBtn.Add(crewList[i].transform.Find("Button").gameObject);
+            crewStatusText.Add(crewStatusBtn[i].transform.Find("Text (TMP)").gameObject.GetComponent<TMP_Text>());
             
-            var button = _crewStatusBtn[i].GetComponent<Button>();
+            var button = crewStatusBtn[i].GetComponent<Button>();
             int crewNumber = i; //클로저 방지
             button.onClick.AddListener(() => OnSelectPet(crewNumber));
         }
@@ -92,31 +96,20 @@ public class CrewSelectManager : MonoBehaviour
     //탐험대원 선택
     public void OnSelectPet(int selectIndex)
     {
-        Debug.Log("SelectPet");
-        //이미 선택된 대원입니다.
-/*        if (CollectionsManager.Instance.Collections.SelectedCrew == selectIndex)
+        //대원이 "출동 대기" -> "출동!" 으로, 이전 "출동!" -> "출동 대기" 상태로 변경
+        if (crewStatusText[selectIndex].text.Equals(CrewButton._ownedCrew))
         {
-            StartCoroutine(ViewAlreadySeletedCrew_co());
-        }*/
-        //else
-        {
-            //대원이 "출동 대기" -> "출동!" 으로, 이전 "출동!" -> "출동 대기" 상태로 변경
-            if (_crewStatusText[selectIndex].text.Equals(CrewButton._ownedCrew))
-            {
+            //"출동!" 상태인 탐험대원 "출동!" -> "출동 대기" 
+            crewStatusBtn[SelectedCrewIndex].GetComponent<Image>().sprite = CollectionsManager.Instance.DefaultImg;
+            crewStatusText[SelectedCrewIndex].text = CrewButton._ownedCrew;
+            //"출동 대기" -> "출동!"
+            crewStatusText[selectIndex].text = CrewButton._selectedCrew;
+            crewStatusBtn[selectIndex].GetComponent<Image>().sprite = CollectionsManager.Instance.SelectedImg;
 
-                //"출동!" 상태인 탐험대원 "출동!" -> "출동 대기" 
-                _crewStatusBtn[SelectedCrewIndex].GetComponent<Image>().sprite = CollectionsManager.Instance.DefaultImg;
-                _crewStatusText[SelectedCrewIndex].text = CrewButton._ownedCrew;
-                //"출동 대기" -> "출동!"
-                _crewStatusText[selectIndex].text = CrewButton._selectedCrew;
-                _crewStatusBtn[selectIndex].GetComponent<Image>().sprite = CollectionsManager.Instance.SelectedImg;
-                //_crewStatusBtn[selectIndex].GetComponent<Image>().color = CollectionsManager.Instance.SelectedBtnColor;
-
-                //상세보기 버튼 변경
-                SelectedCrewIndex = selectIndex;
-                //선택된 대원 도감에 반영
-                CollectionsManager.Instance.OnSelectPet(selectIndex);
-            }
+            //상세보기 버튼 변경
+            SelectedCrewIndex = selectIndex;
+            //선택된 대원 도감에 반영
+            CollectionsManager.Instance.OnSelectPet(selectIndex);
         }
     }
 }

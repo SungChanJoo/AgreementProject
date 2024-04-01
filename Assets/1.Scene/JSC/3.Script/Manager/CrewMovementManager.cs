@@ -5,6 +5,7 @@ using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 using System;
 
+//스텝 이동시 탐험대원 이동 관리 클래스
 public class CrewMovementManager : MonoBehaviour
 {
     public static CrewMovementManager Instance = null;
@@ -20,10 +21,10 @@ public class CrewMovementManager : MonoBehaviour
     public List<Transform> Level3;
     public List<GameObject> SeleteableCrew;
     public int SeletedCrewIndex;
-    List<Transform> CrewPos;
+    List<Transform> crewPos;
     int finalPos;
     public GameObject FadeObj;
-    private Image FadeImg;
+    private Image fadeImg;
     [SerializeField] private Sprite star;
     [SerializeField] private Sprite starGray;
     Player_DB stepInfo;
@@ -47,7 +48,7 @@ public class CrewMovementManager : MonoBehaviour
             if (SeleteableCrew[i].activeSelf)
                 SeleteableCrew[i].SetActive(false);
         }
-        FadeImg = FadeObj.GetComponent<Image>();
+        fadeImg = FadeObj.GetComponent<Image>();
 
         for(int i = 0; i< Level.Count; i++)
         {
@@ -81,6 +82,7 @@ public class CrewMovementManager : MonoBehaviour
         }
 
     }
+    //초기 DB 데이터 받아서 게임, 레벨, 스텝별 별개수 초기화
     public void InitPlayerDBData()
     {
         //스텝 별개수 초기화
@@ -107,7 +109,7 @@ public class CrewMovementManager : MonoBehaviour
         }
     } 
     #endregion
-    //별 개수에 따라 스텝 머터리얼 변경
+    //별 머터리얼 변경
     //별 0개는 하얀색, 별 1개 이상은 노란색
     private void LoadStarColor(List<Transform> level)
     {
@@ -131,6 +133,7 @@ public class CrewMovementManager : MonoBehaviour
         }
     }
 
+    //스텝별 별 개수에 따라 이미지 변경
     public void StepByStarPoint(List<GameObject> starPointPanel)
     {
         int starCount;
@@ -178,8 +181,8 @@ public class CrewMovementManager : MonoBehaviour
                 Level[i].SetActive(false);
             }
         }
-
-        CrewPos = SelectedLevel switch
+        //스텝에 따라 탐험대원 이동경로 변경
+        crewPos = SelectedLevel switch
         { 
             1 => Level1,
             2 => Level2,
@@ -187,15 +190,16 @@ public class CrewMovementManager : MonoBehaviour
             _ => null,
         };
 
-        //별 개수에 따른 스텝 머터리얼 색 변경
-        LoadStarColor(CrewPos);
+        //별 머터리얼 변경
+        LoadStarColor(crewPos);
 
-        if (CrewPos != null)
+        if (crewPos != null)
         {
             //초기 탐험대원 위치
             finalPos = LastPlayStepTable.Step[(SelectedGame, SelectedLevel)]; // 선택된 게임의 선택된 레벨의 스텝
-            SeleteableCrew[SeletedCrewIndex].transform.position = CrewPos[finalPos - 1].position;
+            SeleteableCrew[SeletedCrewIndex].transform.position = crewPos[finalPos - 1].position;
         }
+        //정면바라보기
             SeleteableCrew[SeletedCrewIndex].transform.LookAt(Camera.main.transform.position);
 
     }
@@ -210,7 +214,7 @@ public class CrewMovementManager : MonoBehaviour
         }
     }
 
-    //스텝 선택시
+    //스텝 선택시 탐험대원 프리펩 이동
     //1. 대원 이동
     //2. 마지막으로 플레이한 스텝 변경
     public void SelectStep()
@@ -246,12 +250,12 @@ public class CrewMovementManager : MonoBehaviour
             //오른쪽이동
             if(finalPos <= SelectedStep)
             {
-                nextPos = CrewPos[finalPos - 1 + i].position;
+                nextPos = crewPos[finalPos - 1 + i].position;
             }
             //왼쪽이동
             else
             {
-                nextPos = CrewPos[finalPos - 1 - i].position;
+                nextPos = crewPos[finalPos - 1 - i].position;
             }
             float SetTime = 0f;
             //회전속도
@@ -284,10 +288,10 @@ public class CrewMovementManager : MonoBehaviour
     IEnumerator FadeOutImg()
     {
         var fadeCount = 0f;
-        while (FadeImg.color.a < 1)
+        while (fadeImg.color.a < 1)
         {
             fadeCount += 0.02f;
-            FadeImg.color = new Color(0,0,0, fadeCount);
+            fadeImg.color = new Color(0,0,0, fadeCount);
             yield return null;
         }
         int mode_num = (StepManager.Instance.playMode == PlayMode.Couple) ? 6 : 3;        
@@ -305,10 +309,10 @@ public class CrewMovementManager : MonoBehaviour
     IEnumerator FadeInImg()
     {
         var fadeCount = 1f;
-        while (FadeImg.color.a > 0)
+        while (fadeImg.color.a > 0)
         {
             fadeCount -= 0.02f;
-            FadeImg.color = new Color(0, 0, 0, fadeCount);
+            fadeImg.color = new Color(0, 0, 0, fadeCount);
             yield return null;
         }
         FadeObj.SetActive(false);
