@@ -1895,7 +1895,6 @@ public class DBManager : MonoBehaviour
         // DateDB에 _presentDB에서 가져온 데이터(게임데이터만) 복사 생성
         for (int i = 0; i < gameTable.list.Count; i++) // Table
         {
-            Debug.Log($"[DB] 2");
             for (int j = 0; j < valuesInColumnsInTable_Array[i].Count; j++) // Columns
             {
                 // 0 -> licenseNumber, 1 -> charactor
@@ -2069,10 +2068,10 @@ public class DBManager : MonoBehaviour
 
         // 매주 월요일 00시 00분 업데이트(초기화)
         // 매일 present DB에 있는 rank table에 게임 데이터들을 누적시키다가
-        // 월요일(일요일->월요일)이 되었을 때 _presentDB.rankTable에 있는 data들 값을 _weeklyRankDB에 있는 table에 저장
-        // 나중에(todo) weeklyrank DB에 있는 table들의 이름은 주간별로 가지게 될 것임 ex) 24.3.11-24.3.17 / 24.3.18-24.3.31
-        // _presentDB.rank table에서 데이터 가져올 때 개인의 Scoreplace, Timeplace (주간순위) / HighestScorePlace, HighestTimePlace (최고순위) 판별해서 WeeklyDB에 저장
-        // WeeklyDB에 저장 후 _presentDB.rankTable 초기화
+        // 월요일(일요일->월요일)이 되었을 때 _presentDB.rankTable에 있는 data들 값을 weeklyRankDB에 있는 table에 저장
+        // 나중에(todo) weeklyrank DB에 있는 table들의 이름은 주간별로 가지게 될 것임 ex) 24.3.11-24.3.17 / 24.3.18-24.3.24
+        // presentDB.rank table에서 데이터 가져올 때 개인의 Scoreplace, Timeplace (주간순위) / HighestScorePlace, HighestTimePlace (최고순위) 판별해서 WeeklyDB에 저장
+        // WeeklyDB에 저장 후 presentDB.rankTable 초기화
 
         // rank table -> [0]:User_LicenseNumber, [1]:User_Charactor, [2]:User_Profile, [3]:User_Name, [4]:TotalTime, [5]"TotalScore
         MySqlCommand mySqlCommand = new MySqlCommand();
@@ -2101,15 +2100,15 @@ public class DBManager : MonoBehaviour
         mySqlCommand.CommandText = createModifiedTableQuery;
         mySqlCommand.ExecuteNonQuery();
 
-        // TotalScore를 기준으로 ScorePlace 순위 Update
+        // TotalScore를 기준으로 ScorePlace 순위 Update, 점수가 0이면 제외
         string updateScorePlace = $"SET @rank = 0;" +
-                                  $"UPDATE `weeklyrank`.`{newTableName}` SET `ScorePlace` = (@rank:=@rank+1) ORDER BY `TotalScore` DESC;";
+                                  $"UPDATE `weeklyrank`.`{newTableName}` SET `ScorePlace` = (@rank:=@rank+1) WHERE `TotalScore` <> 0 ORDER BY `TotalScore` DESC;";
         mySqlCommand.CommandText = updateScorePlace;
         mySqlCommand.ExecuteNonQuery();
 
-        // TotalTime을 기준으로 TimePlace 순위 Update
+        // TotalTime을 기준으로 TimePlace 순위 Update, 시간이 0이면 제외
         string updateTimePlace = $"SET @rank = 0;" +
-                                 $"UPDATE `weeklyrank`.`{newTableName}` SET `TimePlace` = (@rank:=@rank+1) ORDER BY `TotalTime` DESC;";
+                                 $"UPDATE `weeklyrank`.`{newTableName}` SET `TimePlace` = (@rank:=@rank+1) WHERE `TotalTime` <> 0 ORDER BY `TotalTime` DESC;";
         mySqlCommand.CommandText = updateTimePlace;
         mySqlCommand.ExecuteNonQuery();
 
@@ -2146,15 +2145,24 @@ public class DBManager : MonoBehaviour
                                  $"LEFT JOIN `{weeklyRankDB}`.`{lastWeekTableName}` AS lastweek " +
                                  $"ON current.User_LicenseNumber = lastweek.User_LicenseNumber " +
                                  $"AND current.User_Charactor = lastweek.User_Charactor " +
-                                 $"SET current.HighestScorePlace = IF(lastweek.HighestScorePlace > current.ScorePlace OR lastweek.HighestScorePlace = '0', current.ScorePlace, lastweek.HighestScorePlace), " +
-                                 $"    current.HighestTimePlace = IF(lastweek.HighestTimePlace > current.TimePlace OR lastweek.HighestTimePlace = '0', current.TimePlace, lastweek.HighestTimePlace) " +
-                                 $"WHERE current.ScorePlace IS NOT NULL AND current.TimePlace IS NOT NULL";
+                                 $"SET current.HighestScorePlace = IF((lastweek.HighestScorePlace > current.ScorePlace AND current.ScorePlace <> 0) OR lastweek.HighestScorePlace = 0, current.ScorePlace, lastweek.HighestScorePlace), " +
+                                 $"    current.HighestTimePlace = IF((lastweek.HighestTimePlace > current.TimePlace AND current.TimePlace <> 0) OR lastweek.HighestTimePlace = 0, current.TimePlace, lastweek.HighestTimePlace) ";
         }
-        Debug.Log($"[DB] updateCompareQuery : {updateCompareQuery}");
         mySqlCommand.CommandText = updateCompareQuery;
         mySqlCommand.ExecuteNonQuery();
 
-        // _presentDB로 변경
+        // 최근 1주간 rank 테이블에 새로 생긴 유저의 HighestScorePlace와 HighestTimePlace가 NULL이거나 0이면 가장 높은 등수들을 최근 ScorePlace와 TimePlace로 변경
+        string updateDefaultValueQuery = $"UPDATE `{weeklyRankDB}`.`{newTableName}` AS current " +
+                                         $"SET current.HighestScorePlace = IF(current.HighestScorePlace IS NULL OR current.HighestScorePlace = 0, current.ScorePlace, current.HighestScorePlace), " +
+                                         $"    current.HighestTimePlace = IF(current.HighestTimePlace IS NULL OR current.HighestTimePlace = 0, current.TimePlace, current.HighestScorePlace) ";
+        mySqlCommand.CommandText = updateDefaultValueQuery;
+        mySqlCommand.ExecuteNonQuery();
+        /*
+         
+
+         */
+
+        // presentDB로 변경
         mySqlCommand.CommandText = $"USE `{presentDB}`;";
         mySqlCommand.ExecuteNonQuery();
 

@@ -339,9 +339,9 @@ public class Server : MonoBehaviour
             nextMidnight = DateTime.Today.AddDays(1);
             TimeSpan timeUntilMidnight = nextMidnight - DateTime.Now;
 
-            //// Test용
-            //DateTime testAfterOneMinute = DateTime.Now.AddSeconds(20);
-            //timeUntilMidnight = testAfterOneMinute - DateTime.Now;
+            // Test용
+            DateTime testAfterOneMinute = DateTime.Now.AddSeconds(10);
+            timeUntilMidnight = testAfterOneMinute - DateTime.Now;
 
             // 자정까지 대기할 WaitforSeconds 설정
             waitUntilMidnight = new WaitForSeconds((float)timeUntilMidnight.TotalSeconds);
@@ -397,7 +397,7 @@ public class Server : MonoBehaviour
             DBManager.Instance.UpdateWeeklyRankDB();
             Debug.Log("[Server] Complete Update WeeklyRankDB");
             standardDay = DBManager.Instance.LoadStandardDay();
-            Debug.Log("[Server] Server class's standardDay member variable was re allocated after update weeklyRankDB");
+            Debug.Log("[Server] Server class's standardDay member variable was reallocated after update weeklyRankDB");
         }
 
         // 자정이 지나고 나서 DateDB를 생성한 후 자정 체크 시간 갱신
@@ -406,6 +406,8 @@ public class Server : MonoBehaviour
         TimeSpan timeUntilNextMidnight = nextMidnight - DateTime.Now;
         waitUntilMidnight = new WaitForSeconds((float)timeUntilNextMidnight.TotalSeconds);
 
+        //Debug.Log("[Server] Test TimerSet Coroutine ");
+        //waitUntilMidnight = new WaitForSeconds(10f);
 
         Debug.Log($"[Server] Waited time until next midnight, timeUntilNextMidnight : {timeUntilNextMidnight.TotalSeconds} ");
 
@@ -455,83 +457,6 @@ public class Server : MonoBehaviour
             clientCheckTimer = 0f;
         }
 
-        //// 매 업데이트마다? 1초마다 확인client 연결상태 확인
-        //if (_clientCheckTimer > _clientCheckTime)
-        //{
-        //    try
-        //    {
-        //        Debug.Log($"[Server] Present Connected Clients : {_clients.Count}");
-
-        //        foreach (TcpClient client in _clients)
-        //        {
-        //            // 연결이 끊긴 client가 있으면 client.Close 후 _disconnectList에 Add
-        //            if (!IsConnected(client))
-        //            {
-        //                if(client == null)
-        //                {
-        //                    Debug.Log("[Server] client is null");
-        //                    Debug.Log($"[Server] _clients.Count : {_clients.Count}");
-        //                    Debug.Log($"[Server] _disconnectList.Count : {_disconnectList.Count}");
-        //                }
-        //                else
-        //                {
-        //                    Debug.Log($"[Server] client is not null, but connection is disconnected");
-        //                }
-
-        //                Debug.Log("[Server] Client connection is closed");
-        //                // client는 null이 아니지만 client의 프로퍼티는 null일 수 있다.
-        //                if(((IPEndPoint)client.Client.RemoteEndPoint).Address != null)
-        //                {
-        //                    Debug.Log($"[Server] Disconnected _clients's IP : {((IPEndPoint)client.Client.RemoteEndPoint).Address}");
-        //                }
-        //                client.Close();
-        //                _disconnectList.Add(client);
-        //                //Debug.Log($"[Server] After client.Close(), Test check client.Connected bool value : {client.Connected}");
-        //                //_clients.Remove(client); // 컬렉션을 반복하고 있는 와중에 컬렉션을 수정할려고 하면 안됨
-        //                // 수정할 대상을 다른 리스트에 추가하고, 반복이 끝난 후에 해당 리스트의 항목을 삭제
-        //                continue;
-        //            }
-        //            else // 연결중인 Client의 IP 주소 확인
-        //            {
-        //                Debug.Log($"[Server] Connected Clients's IP : {((IPEndPoint)client.Client.RemoteEndPoint).Address}");
-        //            }
-        //            #region etc
-        //            //// 클라이언트 연결이 끊어졌다면
-        //            //if (!CheckConnectState(client))
-        //            //{
-        //            //    Debug.Log($"Disconnected client's IP {((IPEndPoint)client.Client.RemoteEndPoint).Address}");
-        //            //    client.Close();
-        //            //    _disconnectList.Add(client);
-        //            //    continue;
-        //            //}
-        //            // 클라이언트로부터 체크 메시지 받기
-        //            //else
-        //            //{
-
-        //            //    //NetworkStream stream = client.tcp.GetStream();
-        //            //    //if(stream.DataAvailable)
-        //            //    //{
-        //            //    //    string data = new StreamReader(stream, true).ReadLine();
-
-        //            //    //    if(data != null)
-        //            //    //    {
-        //            //    //        On
-        //            //    //    }
-        //            //    //}
-        //            //}
-        //            #endregion
-        //        }
-        //    }
-        //    catch(Exception e)
-        //    {
-        //        Debug.Log($"[Server] CheckClientState Exception occurred while Check every 2 seconds, e.Message : {e.Message}");
-        //    }
-
-
-        //    foreach (TcpClient disconnectClient in _disconnectList)
-        //    {
-        //        _clients.Remove(disconnectClient);
-        //    }
     }
 
     private void CheckClients(TcpClient client)
@@ -540,7 +465,6 @@ public class Server : MonoBehaviour
 
         Debug.Log($"[Server] Before Remove, _clients.Count : {clients.Count}");
         // 초기에 생성된 List들에 해당 연결이 끊긴 client 처리
-        // _disconnectList.Add(client);
         clients.Remove(client);
         Debug.Log("[Server] _clients.Remove(client)");
 
@@ -561,36 +485,6 @@ public class Server : MonoBehaviour
         {
             Debug.Log($"[Server] client is not null");
         }
-
-    }
-
-    // 하루가 지났을 때 PresentDB에 있는 gamedata들 새 DB(ex) 24.02.21)에 저장
-    private void DayTimer()
-    {
-        // 현재 시간
-        DateTime currentTime = DateTime.Now;
-        // 초기화가 되는 시간 (23시 59분 55초)
-        DateTime criterionTime = new DateTime(currentTime.Year, currentTime.Month, currentTime.Day, 11, 50, 55);
-
-        // TimeSpan, 현재시간과 초기화시간 차이
-        TimeSpan timeDiff = criterionTime - currentTime;
-
-        // uint 양수만 사용
-        uint diffHours = (uint)(timeDiff.Hours >= 0 ? timeDiff.Hours : 0);
-        uint diffMinutes = (uint)(timeDiff.Minutes >= 0 ? timeDiff.Minutes : 0);
-        uint diffSeconds = (uint)(timeDiff.Seconds >= 0 ? timeDiff.Seconds : 0);
-
-        // 현재 시간이 초기화 되는 시간보다 크다면, timeDiff가 음수가 아니고, 0이 아니면
-        if (diffHours == 0 && diffMinutes == 0 && diffSeconds > 0 && diffSeconds <= 5)
-        {
-            // 새 DB 생성 및 저장 / presentDB gamedata초기화
-            Debug.Log("[Server] A day has passed. Create new DB for save data and Reset presentDB some datas");
-
-        }
-
-        Debug.Log($"[Server] currenTime = {currentTime}");
-        Debug.Log($"[Server] criterionTime = {criterionTime}");
-        Debug.Log($"[Server] timeDiff = {timeDiff}");
 
     }
 
