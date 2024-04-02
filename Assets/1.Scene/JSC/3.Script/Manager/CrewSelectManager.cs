@@ -4,17 +4,22 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using TMPro;
 using UnityEngine.UI;
+using LitJson;
+using System.IO;
 
 //탐험대원을 선택하고 메타별에 입장을 관리하는 클래스
 public class CrewSelectManager : MonoBehaviour
 {
     public static CrewSelectManager Instance = null;
     [SerializeField] private GameObject crewContents;
-    private List<GameObject> crewList;
+    private List<GameObject> crewList = new List<GameObject>();
     [SerializeField] private GameObject crewSelectCanvas;
+    [SerializeField] private GameObject enterMetaWorldCanvas;
+    [SerializeField] private TMP_InputField metaWorldIpText;
     private List<TMP_Text> crewStatusText;
     private List<GameObject> crewStatusBtn;
     public int SelectedCrewIndex = 0;
+    string path = string.Empty;
     private void Awake()
     {
         if(Instance == null)
@@ -26,6 +31,15 @@ public class CrewSelectManager : MonoBehaviour
             Destroy(gameObject);
             return;
         }
+        if (path.Equals(string.Empty))
+        {
+            if (Application.platform == RuntimePlatform.Android)
+            {
+                path = Application.persistentDataPath + "/License";
+            }
+            else
+                path = Application.dataPath + "/License";
+        }
     }
     private void Start()
     {
@@ -33,6 +47,7 @@ public class CrewSelectManager : MonoBehaviour
     }
     public void LoadMetaWorld(string sceneName)
     {
+        SettingIp(path);
         LoadingSceneController.LoadScene(sceneName);
         //메타별 입장시 노래 멈추기
         if(AudioManager.Instance != null)
@@ -41,6 +56,14 @@ public class CrewSelectManager : MonoBehaviour
         DontDestroyOnLoad(gameObject);
         if(SettingManager.Instance != null)
             SettingManager.Instance.IsMetaWorld = true;
+    }
+    private void SettingIp(string path)
+    {
+        List<Item> item = new List<Item>();
+        item.Add(new Item($"{Type.Client}", metaWorldIpText.text, "7777"));
+
+        JsonData data = JsonMapper.ToJson(item);
+        File.WriteAllText(path + "/License.json", data.ToString());
     }
 
     public void OnViewSelectCrewUI()
@@ -111,5 +134,11 @@ public class CrewSelectManager : MonoBehaviour
             //선택된 대원 도감에 반영
             CollectionsManager.Instance.OnSelectPet(selectIndex);
         }
+    }
+    //메타월드 Ip입력창 보기
+    public void OnViewEnterCanvas()
+    {
+
+        enterMetaWorldCanvas.SetActive(!enterMetaWorldCanvas.activeSelf);
     }
 }

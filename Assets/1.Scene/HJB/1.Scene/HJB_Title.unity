@@ -4613,7 +4613,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 
+  m_text: 127.0.0.1
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 15fb799ad5ebe4046924938f8511ab77, type: 2}
   m_sharedMaterial: {fileID: -1571892271189879514, guid: 15fb799ad5ebe4046924938f8511ab77, type: 2}
@@ -4770,11 +4770,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5f2e798025360264fa1e87665d06ded5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  UICanvas: {fileID: 0}
   effect_obj:
   - {fileID: 1798053173}
   - {fileID: 2107383589}
   beganEffect_obj: {fileID: 7922116986208562606, guid: 92f17051de517a34db40ac4b847fb161, type: 3}
-  uiCanvas: {fileID: 2034190215}
   audioClip: {fileID: 8300000, guid: 1a501dfe96030b2428417f0e095b21bd, type: 3}
 --- !u!114 &2034190213
 MonoBehaviour:

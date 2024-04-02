@@ -90,8 +90,9 @@ public class ServerChecker : MonoBehaviour
 
             ServerIp = strServerIp;
             ServerPort = strPort;
+
             type = (Type)Enum.Parse(typeof(Type), strType);
-            Debug.Log($"{type}{ServerIp}");
+            Debug.Log($"{type}{ServerIp}|");
             manager.networkAddress = ServerIp;
             kcp.port = ushort.Parse(ServerPort);
 

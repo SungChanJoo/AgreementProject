@@ -62,7 +62,7 @@ public class CollectionsManager : MonoBehaviour
     [SerializeField] private TextAsset crewDataList;
     private List<Crew> crewInfo;
     [SerializeField] private GameObject crewModel;
-    private List<GameObject> crewModelList;
+    private List<GameObject> crewModelList = new List<GameObject>();
     [SerializeField] private TMP_Text crewName;
     [SerializeField] private TMP_Text crewDescript;
     [SerializeField] private GameObject detailSelectBtn;
@@ -78,10 +78,12 @@ public class CollectionsManager : MonoBehaviour
             Instance = this;
         else
             Destroy(gameObject);
+    }
+    private void Start()
+    {
         SetCollections();
         InitDetailCrewData();
     }
-
     public void OnViewPurchase(int crewNumber)
     {
         Debug.Log("OnViewPurchase");
@@ -459,7 +461,7 @@ public class CollectionsManager : MonoBehaviour
     public void InitDetailCrewData()
     {
         //상세보기 탐험대원 프리펩 초기화
-        for(int i =0; i< crewModel.transform.childCount; i++)
+        for(int i = 0; i< crewModel.transform.childCount; i++)
         {
             crewModelList.Add(crewModel.transform.GetChild(i).gameObject);
         }
