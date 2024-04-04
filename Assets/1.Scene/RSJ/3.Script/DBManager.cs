@@ -933,10 +933,6 @@ public class DBManager : MonoBehaviour
         float updateReacitonRate = dbReactionRate + reactionrate;
         int updateAnswerRate = dbAnswerRate + answerrate;
 
-        //string update_Command = $"
-        //`{table.list[0]}` SET `{_userinfoColumns[1]}` = `{_userinfoColumns[1]}` - 1 " +
-        //$"WHERE `{_userinfoColumns[0]}` = '{clientlicensenumber}' AND `{_userinfoColumns[1]}` > '{deletecharactornumber}';";
-
         string update_Command = $"UPDATE `{tableName}` SET `{tableColumns[0]}`= '{updatePlayCount}', `{tableColumns[1]}` = '{updateReacitonRate}', " +
                                 $"`{tableColumns[2]}` = '{updateAnswerRate}', `LastPlayGame` = '{lastPlayGame}' " +
                                 $"WHERE `User_LicenseNumber` = '{licensenumber}' AND `User_Charactor` = '{charactor}';";
@@ -1049,43 +1045,6 @@ public class DBManager : MonoBehaviour
                                 string user_Coin = reader.GetInt32("User_Coin").ToString();
                                 // table 구분을 위해 맨 앞에 {selectTable.list[i]} 추가
                                 return_TempData = $"{selectTable.list[i]}|{user_Name}|{user_Profile}|{user_Birthday}|{user_TotalAnswers}|{user_TotalTime}|{user_Coin}|{separatorString}";
-                                return_TableData.Add(return_TempData);
-                                break;
-                            case "rank": // todo presentdb에 있는 rank table이 아니라 `rank` db에 있는 데이터들을 가져와야함
-                                Debug.Log("[DB] LoadCharactorData - rank table");
-                                string rank_TotalTime = reader.GetString("TotalTime");
-                                string rank_TotalScore = reader.GetString("TotalScore");
-                                return_TempData = $"{selectTable.list[i]}|{rank_TotalTime}|{rank_TotalScore}|{separatorString}";
-                                return_TableData.Add(return_TempData);
-                                break;
-                            case "crew":
-                                Debug.Log("[DB] LoadCharactorData - crew table");
-                                return_TempData = $"{selectTable.list[i]}|";
-                                for (int j = 2; j < crewColumns.Length; j++) // 0->licensenumber, 1->charactor
-                                {
-                                    string tempStr = reader.GetInt32(crewColumns[j]).ToString();
-                                    return_TempData += $"{tempStr}|";
-                                    //if(j == 2) // finallyselectedcrew column
-                                    //{
-                                    //    tempStr = reader.GetInt32(_crewColumns[j]).ToString(); INT
-                                    //}
-                                    //else
-                                    //{
-                                    //    tempStr = reader.GetInt32 DB에 저장된 타입이 TINYINT인데, 제대로 꺼내와지나 체크해봐야함
-                                    //}
-                                }
-                                return_TempData += $"{separatorString}";
-                                return_TableData.Add(return_TempData);
-                                break;
-                            case "lastplaygame":
-                                Debug.Log("[DB] LoadCharactorData - lastplaygame table");
-                                return_TempData = $"{selectTable.list[i]}";
-                                for (int j = 2; j < lastplaygameColumns.Length; j++) // 0->licensenumber, 1->charactor
-                                {
-                                    string tempStr = reader.GetInt32(lastplaygameColumns[j]).ToString();
-                                    return_TempData += $"{tempStr}|";
-                                }
-                                return_TempData += $"{separatorString}";
                                 return_TableData.Add(return_TempData);
                                 break;
                             default:
@@ -1268,35 +1227,9 @@ public class DBManager : MonoBehaviour
     public List<string> LoadRankData(int licensenumber, int charactor)
     {
         Debug.Log("[DB] Come in LoadRankData Method..");
-        //////////////////////////////// SELECT * FROM `present`.`user_info` ORDER BY `User_LicenseNumber` ASC LIMIT 1000; DB ORDER BY 생각할것
-        ///// ASC = Ascend, DESC = Descend
-
+        
         // weeklyrank DB에 있는 table 사용
         // Score, Time 별 Rank 1~5위 및 6번째 자기 자신의 데이터 
-
-        /*
-         public class RankData
-        {
-        // 0~4 -> 1~5등 / 5 -> 개인 순위 및 점수
-        public RankData_value[] rankdata_score;
-        public RankData_value[] rankdata_time;
-        }
-
-        public class RankData_value
-        {
-        public int userlicensenumber;
-        public int usercharactor;
-        public byte[] userProfile;
-        public string userName;
-        public int totalScore;
-        public float totalTime;
-        // 개인(index 5)용 순위
-        public int scorePlace;
-        public int timePlace;
-        public int highScorePlace;
-        public int highTimePlace;
-        }
-         */
 
         // 클라이언트에서 사용할 List 형식
         // dataList[0] = "[Load]RankData|place|profile|name|time or score|E|";
@@ -1305,7 +1238,6 @@ public class DBManager : MonoBehaviour
         // dataList[2] = profile|name|totalScore|E|
         // dataList[6] = profile|name|totalScore|scorePlace|highestScorePlace|E|
         // dataList[7] = profile|name|totalTime|E|
-
         // dataList[last] = profile|name|totalTime|timePlace|highestTimePlace|E|
 
         // _weeklyRankColumns = { "User_LicenseNumber", "User_Charactor", "User_Profile", "User_Name", "TotalScore", "TotalTime", "ScorePlace", "TimePlace", "HighestScorePlace", "HighestTimePlace" };
@@ -1337,10 +1269,6 @@ public class DBManager : MonoBehaviour
         string rankScoreSelectQuery = $"SELECT * FROM `{weeklyRankDB}`.`{referenceWeeklyRankTableName}` ORDER BY `ScorePlace` DESC LIMIT 5;";
         mySqlCommand.CommandText = rankScoreSelectQuery;
         MySqlDataReader reader = mySqlCommand.ExecuteReader();
-        //if(!reader.IsClosed)
-        //{
-        //    reader.Close
-        //}
 
         while (reader.Read())
         {
@@ -1677,19 +1605,62 @@ public class DBManager : MonoBehaviour
 
         // 캐릭터를 제거한 후 해당 캐릭터 번호보다 높은 번호를 가진 캐릭터들의 번호 -1씩 내려줌
         // 예를 들어 1~5번 캐릭터가 존재하는데, 3번캐릭터를 제거하면 4,5번 캐릭터 -> 3,4번 캐릭터번호로
+        // 모든 DB와 테이블에 해당 캐릭터 번호 삭제하고 같은 라이센스넘버의 캐릭터 번호 내려야함
         MySqlCommand mySqlCommand = new MySqlCommand();
         mySqlCommand.Connection = connection;
 
-        for (int i = 0; i < table.list.Count; i++)
-        {
-            string delete_Command = $"DELETE FROM `{table.list[i]}` WHERE `{userinfoColumns[0]}` = '{clientlicensenumber}' AND `{userinfoColumns[1]}` = '{deletecharactornumber}';";
-            mySqlCommand.CommandText = delete_Command;
-            mySqlCommand.ExecuteNonQuery();
+        // 모든 데이터베이스 조회, weeklyRank DB는 제외
+        List<string> databases = new List<string>();
+        string selectAllDBQuery = $"SELECT SCHEMA_NAME FROM information_schema.SCHEMATA WHERE SCHEMA_NAME NOT IN ('information_schema', 'mysql', 'performance_schema', 'weeklyrank')";
+        mySqlCommand.CommandText = selectAllDBQuery;
+        MySqlDataReader reader = mySqlCommand.ExecuteReader();
 
-            string update_Command = $"UPDATE `{table.list[i]}` SET `{userinfoColumns[1]}` = `{userinfoColumns[1]}` - 1 " +
-                                $"WHERE `{userinfoColumns[0]}` = '{clientlicensenumber}' AND `{userinfoColumns[1]}` > '{deletecharactornumber}';";
-            mySqlCommand.CommandText = update_Command;
-            mySqlCommand.ExecuteNonQuery();
+        while(reader.Read())
+        {
+            string databaseName = reader.GetString(0);
+            databases.Add(databaseName);
+        }
+        reader.Close();
+        Debug.Log("[DB] Almost databases add to List");
+
+        // 데이터베이스마다 모든 테이블 조회
+        foreach(string databaseName in databases)
+        {
+            List<string> tables = new List<string>();
+            string selectAllTableQuery = $"SELECT TABLE_NAME FROM information_schema.TABLES WHERE TABLE_SCHEMA = '{databaseName}'";
+            mySqlCommand.CommandText = selectAllTableQuery;
+            reader = mySqlCommand.ExecuteReader();
+
+            while(reader.Read())
+            {
+                string tableName = reader.GetString(0);
+                tables.Add(tableName);
+            }
+            reader.Close();
+            Debug.Log($"[DB] All tables add to List in {databaseName}");
+
+            // present DB에서 standardday table 예외처리
+            if(databaseName == "present")
+            {
+                tables.Remove("standardday");
+            }
+
+            // 테이블마다 캐릭터 제거 및 번호 -1씩 업데이트
+            foreach (string tableName in tables)
+            {
+                // 캐릭터 제거 쿼리 및 실행
+                string deleteQuery = $"DELETE FROM `{databaseName}`.`{tableName}` WHERE `User_LicenseNumber` = '{clientlicensenumber}' AND `User_Charactor` = '{deletecharactornumber}'";
+                mySqlCommand.CommandText = deleteQuery;
+                mySqlCommand.ExecuteNonQuery();
+
+                // 삭제된 캐릭터 번호보다 높은 번호를 가진 캐릭터들의 번호를 -1씩 업데이트
+                string updateQuery = $"UPDATE `{databaseName}`.`{tableName}` SET `User_Charactor` = `User_Charactor` - 1 " +
+                                     $"WHERE `User_LicenseNumber` = '{clientlicensenumber}' AND `User_Charactor` > '{deletecharactornumber}'";
+                mySqlCommand.CommandText = updateQuery;
+                mySqlCommand.ExecuteNonQuery();
+            }
+
+            Debug.Log($"[DB] Check procedure - delete and update, database name : {databaseName}");
         }
 
         Debug.Log("[DB] Complete DeleteCharactor Method..");

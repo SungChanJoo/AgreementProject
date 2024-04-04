@@ -339,9 +339,9 @@ public class Server : MonoBehaviour
             nextMidnight = DateTime.Today.AddDays(1);
             TimeSpan timeUntilMidnight = nextMidnight - DateTime.Now;
 
-            // Test용
-            DateTime testAfterOneMinute = DateTime.Now.AddSeconds(10);
-            timeUntilMidnight = testAfterOneMinute - DateTime.Now;
+            //// Test용
+            //DateTime testAfterOneMinute = DateTime.Now.AddSeconds(10);
+            //timeUntilMidnight = testAfterOneMinute - DateTime.Now;
 
             // 자정까지 대기할 WaitforSeconds 설정
             waitUntilMidnight = new WaitForSeconds((float)timeUntilMidnight.TotalSeconds);
@@ -429,7 +429,7 @@ public class Server : MonoBehaviour
             {
                 if (client != null) // 클라이언트가 null이 아니라면
                 {
-                    Debug.Log($"[Server] Connected _clients's IP : {((IPEndPoint)client.Client.RemoteEndPoint).Address}");
+                    Debug.Log($"[Server] Connected clients's IP : {((IPEndPoint)client.Client.RemoteEndPoint).Address}");
                 }
                 else
                 {
@@ -447,7 +447,7 @@ public class Server : MonoBehaviour
             // 연결없는 client 제거
             foreach (TcpClient client in disconnectList)
             {
-                Debug.Log($"[Server] Remove client in _clients where _disconnectList : {((IPEndPoint)client.Client.RemoteEndPoint).Address}");
+                Debug.Log($"[Server] Remove client in clients where disconnectList : {((IPEndPoint)client.Client.RemoteEndPoint).Address}");
                 clients.Remove(client);
             }
 
@@ -463,12 +463,12 @@ public class Server : MonoBehaviour
     {
         Debug.Log("[Server] Connection is disconnected, so come in CheckCliets Method");
 
-        Debug.Log($"[Server] Before Remove, _clients.Count : {clients.Count}");
+        Debug.Log($"[Server] Before Remove, clients.Count : {clients.Count}");
         // 초기에 생성된 List들에 해당 연결이 끊긴 client 처리
         clients.Remove(client);
-        Debug.Log("[Server] _clients.Remove(client)");
+        Debug.Log("[Server] clients.Remove(client)");
 
-        Debug.Log($"[Server] After Remove, _clients.Count : {clients.Count}");
+        Debug.Log($"[Server] After Remove, clients.Count : {clients.Count}");
 
         // 연결이 끊겼다면 이미 DisPose되었겠지만 또 한번 Dispose()
         client.Dispose();

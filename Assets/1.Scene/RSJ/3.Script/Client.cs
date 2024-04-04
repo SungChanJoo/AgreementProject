@@ -1412,6 +1412,13 @@ public class Client : MonoBehaviour
 
         RequestToServer(requestData);
     }
+
+    public void OnClickDeleteCharactorTest()
+    {
+        string requestData = $"[Delete]Charactor|{ClientLicenseNumber}|2|Finish";
+
+        RequestToServer(requestData);       
+    }
     #endregion
 
     private IEnumerator CheckReceiveTime_Co()
