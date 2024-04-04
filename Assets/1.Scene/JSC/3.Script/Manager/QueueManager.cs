@@ -27,12 +27,12 @@ public class QueueManager : NetworkBehaviour
 
     List<PlayerInfo> roomPlayerList1 = new List<PlayerInfo>(); //1번방
     List<PlayerInfo> roomPlayerList2 = new List<PlayerInfo>(); //2번방
-    //List<int> _roomPlayerList3 = new List<int>();
+    List<PlayerInfo> roomPlayerList3 = new List<PlayerInfo>(); //3번방
     
     List<int> exitPlayerList = new List<int>(); //나간 플레이어 목록
 
     [SerializeField]
-    private int peopleLimitCount = 1; //한 방에 들어갈 수 있는 최대인원
+    private int peopleLimitCount = 4; //한 방에 들어갈 수 있는 최대인원
     
     public List<GameObject> PlayerCrewList; //탐험대원 프리펩 목록
 
@@ -80,15 +80,16 @@ public class QueueManager : NetworkBehaviour
                 //플레이어 변경
                 SwitchPlayerPrefeb(playerId, PlayerCrewList[selectedPetIndex], PlayerSpawnPos[0].position);
             }
-/*            else if (_roomPlayerList2.Count < _peopleLimitCount)
+            else if (roomPlayerList2.Count < peopleLimitCount)
             {
-                _roomPlayerList2.Add(playerInfo);
-                SwitchPlayerPrefeb(playerId, PlayerPetList[selectedPetIndex], PlayerSpawnPos[1].position);
-            }*/
-            /*            else if (_roomPlayerList3.Count < _peopleLimitCount)
-                        {
-                            _roomPlayerList3.Add(playerId.connectionId);
-                        }*/
+                roomPlayerList2.Add(playerInfo);
+                SwitchPlayerPrefeb(playerId, PlayerCrewList[selectedPetIndex], PlayerSpawnPos[1].position);
+            }
+            else if (roomPlayerList3.Count < peopleLimitCount)
+            {
+                roomPlayerList3.Add(playerInfo);
+                SwitchPlayerPrefeb(playerId, PlayerCrewList[selectedPetIndex], PlayerSpawnPos[2].position);
+            }
             //모든 방이 다 찼다면 대기열에 추가
             else
             {
@@ -130,10 +131,16 @@ public class QueueManager : NetworkBehaviour
             Debug.Log($"RemovePlayer in Room1 {playerId}");
             EnterRoomInQueue(roomPlayerList1, 0);
         }
-/*        else if (RemovePlayerInRoom(_roomPlayerList2, playerId))
-        { 
+        else if (RemovePlayerInRoom(roomPlayerList2, playerId))
+        {
             Debug.Log($"RemovePlayer in Room2 {playerId}");
-        }*/
+            EnterRoomInQueue(roomPlayerList2, 1);
+        }
+        else if (RemovePlayerInRoom(roomPlayerList3, playerId))
+        {
+            EnterRoomInQueue(roomPlayerList3, 3);
+            Debug.Log($"RemovePlayer in Room3 {playerId}");
+        }
         //대기열에 있는 플레이어가 나가면 exitPlayerList에 등록
         else
         {
@@ -218,10 +225,10 @@ public class QueueManager : NetworkBehaviour
         {
             Debug.Log($"RoomPlayerList2 : RoomNumber/{i} PlayerNumber/{roomPlayerList2[i].PlayerConnection.address}");
         }
-        /*        for (int i = 0; i < _roomPlayerList3.Count; i++)
-                {
-                    Debug.Log($"RoomPlayerList3 : RoomNumber/{i} PlayerNumber/{_roomPlayerList3[i]}");
-                }*/
+        for (int i = 0; i < roomPlayerList3.Count; i++)
+        {
+            Debug.Log($"RoomPlayerList3 : RoomNumber/{i}PlayerNumber/{roomPlayerList3[i].PlayerConnection.address}");
+        }
 
     }
     //어플 종료 시 연결해제
