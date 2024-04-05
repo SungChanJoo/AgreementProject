@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Mirror;
 
+//탐험대원 = 플레이어 정보를 담고 있는 클래스
 public class PlayerInfo
 {
     public NetworkConnectionToClient PlayerConnection;
@@ -18,23 +19,22 @@ public class PlayerInfo
         
     }
 }
+//대기열 관리 클래스
 public class QueueManager : NetworkBehaviour
 {
     public static QueueManager Instance = null;
     public Queue<PlayerInfo> WaitingQueue = new Queue<PlayerInfo>(); //대기열
 
-    List<PlayerInfo> _roomPlayerList1 = new List<PlayerInfo>();
-    List<PlayerInfo> _roomPlayerList2 = new List<PlayerInfo>();
-    //List<int> _roomPlayerList3 = new List<int>();
+    List<PlayerInfo> roomPlayerList1 = new List<PlayerInfo>(); //1번방
+    List<PlayerInfo> roomPlayerList2 = new List<PlayerInfo>(); //2번방
+    List<PlayerInfo> roomPlayerList3 = new List<PlayerInfo>(); //3번방
     
-    List<int> _exitPlayerList = new List<int>(); //나간 플레이어 목록
+    List<int> exitPlayerList = new List<int>(); //나간 플레이어 목록
 
     [SerializeField]
-    private int _peopleLimitCount = 1; //한 방에 들어갈 수 있는 인원
-    public GameObject NonePlayer;
+    private int peopleLimitCount = 4; //한 방에 들어갈 수 있는 최대인원
     
-    public List<GameObject> PlayerPetList;
-    public int SelectedPetIndex = 0;
+    public List<GameObject> PlayerCrewList; //탐험대원 프리펩 목록
 
     public List<Transform> PlayerSpawnPos = new List<Transform>();
     private void Awake()
@@ -67,28 +67,29 @@ public class QueueManager : NetworkBehaviour
     [Command(requiresAuthority = false)]
     public void CmdEnterPlayer(int selectedPetIndex, NetworkConnectionToClient playerId = null)
     {
-        var playerInfo = new PlayerInfo(playerId, PlayerPetList[selectedPetIndex], "NoNamed");
+        var playerInfo = new PlayerInfo(playerId, PlayerCrewList[selectedPetIndex], "NoNamed");
         
         //대기열에 사람이 없다면 바로 방에 들어감
         if (WaitingQueue.Count <= 0)
         {
             //방인원수가 제한인원보다 적다면 다음방으로 이동
-            if (_roomPlayerList1.Count < _peopleLimitCount)
+            if (roomPlayerList1.Count < peopleLimitCount)
             {
                 //플레이어 추가
-                _roomPlayerList1.Add(playerInfo);
-                //플레이어 펫
-                SwitchPlayerPrefeb(playerId, PlayerPetList[selectedPetIndex], PlayerSpawnPos[0].position);
+                roomPlayerList1.Add(playerInfo);
+                //플레이어 변경
+                SwitchPlayerPrefeb(playerId, PlayerCrewList[selectedPetIndex], PlayerSpawnPos[0].position);
             }
-/*            else if (_roomPlayerList2.Count < _peopleLimitCount)
+            else if (roomPlayerList2.Count < peopleLimitCount)
             {
-                _roomPlayerList2.Add(playerInfo);
-                SwitchPlayerPrefeb(playerId, PlayerPetList[selectedPetIndex], PlayerSpawnPos[1].position);
-            }*/
-            /*            else if (_roomPlayerList3.Count < _peopleLimitCount)
-                        {
-                            _roomPlayerList3.Add(playerId.connectionId);
-                        }*/
+                roomPlayerList2.Add(playerInfo);
+                SwitchPlayerPrefeb(playerId, PlayerCrewList[selectedPetIndex], PlayerSpawnPos[1].position);
+            }
+            else if (roomPlayerList3.Count < peopleLimitCount)
+            {
+                roomPlayerList3.Add(playerInfo);
+                SwitchPlayerPrefeb(playerId, PlayerCrewList[selectedPetIndex], PlayerSpawnPos[2].position);
+            }
             //모든 방이 다 찼다면 대기열에 추가
             else
             {
@@ -108,7 +109,7 @@ public class QueueManager : NetworkBehaviour
         ViewPlayerList();
     }
 
-    //방에 있는 플레이어제거 메서드
+    //방에 있는 플레이어 제거 메서드
     public bool RemovePlayerInRoom(List<PlayerInfo> PlayerList, NetworkConnectionToClient playerId)
     {
         for (int i = 0; i < PlayerList.Count; i++)
@@ -121,22 +122,29 @@ public class QueueManager : NetworkBehaviour
         }
         return false;
     }
+    //플레이어 나갈 때 발생 이벤트
     public void OnExitPlayer(NetworkConnectionToClient playerId)
     {
         //방에 있는 유저 제거
-        if (RemovePlayerInRoom(_roomPlayerList1, playerId))
+        if (RemovePlayerInRoom(roomPlayerList1, playerId))
         {
             Debug.Log($"RemovePlayer in Room1 {playerId}");
-            EnterRoomInQueue(_roomPlayerList1, 0);
+            EnterRoomInQueue(roomPlayerList1, 0);
         }
-/*        else if (RemovePlayerInRoom(_roomPlayerList2, playerId))
-        { 
+        else if (RemovePlayerInRoom(roomPlayerList2, playerId))
+        {
             Debug.Log($"RemovePlayer in Room2 {playerId}");
-        }*/
+            EnterRoomInQueue(roomPlayerList2, 1);
+        }
+        else if (RemovePlayerInRoom(roomPlayerList3, playerId))
+        {
+            EnterRoomInQueue(roomPlayerList3, 3);
+            Debug.Log($"RemovePlayer in Room3 {playerId}");
+        }
         //대기열에 있는 플레이어가 나가면 exitPlayerList에 등록
         else
         {
-            _exitPlayerList.Add(playerId.connectionId);
+            exitPlayerList.Add(playerId.connectionId);
         }
         ViewPlayerList();
     }
@@ -144,13 +152,13 @@ public class QueueManager : NetworkBehaviour
     public PlayerInfo CheckExitPlayer(PlayerInfo player)
     {
         //대기열에 있는 플레이어가 나간 플레이어가 목록에 있으면 다음 대기인원 
-        while (_exitPlayerList.Contains(player.PlayerConnection.connectionId))
+        while (exitPlayerList.Contains(player.PlayerConnection.connectionId))
         {
             Debug.Log("Aleady Exit Player");
             if (WaitingQueue.Count > 0)
             {
                 player = WaitingQueue.Dequeue();
-                _exitPlayerList.Remove(player.PlayerConnection.connectionId);
+                exitPlayerList.Remove(player.PlayerConnection.connectionId);
             }
             //대기열에 사람이 없을때
             else
@@ -173,7 +181,7 @@ public class QueueManager : NetworkBehaviour
             if(player == null) return;
             //방인원수가 제한인원보다 적다면 다음방으로 이동
             Transform playerSpawnPos = transform;
-            if (roomPlayerList.Count < _peopleLimitCount)
+            if (roomPlayerList.Count < peopleLimitCount)
             {
                 //플레이어 추가
                 roomPlayerList.Add(player);
@@ -189,7 +197,7 @@ public class QueueManager : NetworkBehaviour
                 if (player.PlayerConnection.connectionId == playerList.Value.connectionId)
                 {
                     //플레이어 프리펩 교체
-                    if (NetworkManager.singleton is PetSwitchNetworkManager manager)
+                    if (NetworkManager.singleton is CrewSwitchNetworkManager manager)
                     {
                         SwitchPlayerPrefeb(playerList.Value, player.PlayerPrefeb, playerSpawnPos.position);
                     }
@@ -201,7 +209,7 @@ public class QueueManager : NetworkBehaviour
     //플레이어 프리펩 교체요청
     private void SwitchPlayerPrefeb(NetworkConnectionToClient playerId, GameObject playerPrefeb, Vector3 SpawnPos)
     {
-        if (NetworkManager.singleton is PetSwitchNetworkManager manager)
+        if (NetworkManager.singleton is CrewSwitchNetworkManager manager)
         {
             manager.ReplacePlayer(playerId, playerPrefeb, SpawnPos);
         }
@@ -209,18 +217,18 @@ public class QueueManager : NetworkBehaviour
     
     public void ViewPlayerList()
     {
-        for (int i = 0; i < _roomPlayerList1.Count; i++)
+        for (int i = 0; i < roomPlayerList1.Count; i++)
         {
-            Debug.Log($"RoomPlayerList1 : RoomNumber/{i} PlayerNumber/{_roomPlayerList1[i].PlayerConnection.address}");
+            Debug.Log($"RoomPlayerList1 : RoomNumber/{i} PlayerNumber/{roomPlayerList1[i].PlayerConnection.address}");
         }
-        for (int i = 0; i < _roomPlayerList2.Count; i++)
+        for (int i = 0; i < roomPlayerList2.Count; i++)
         {
-            Debug.Log($"RoomPlayerList2 : RoomNumber/{i} PlayerNumber/{_roomPlayerList2[i].PlayerConnection.address}");
+            Debug.Log($"RoomPlayerList2 : RoomNumber/{i} PlayerNumber/{roomPlayerList2[i].PlayerConnection.address}");
         }
-        /*        for (int i = 0; i < _roomPlayerList3.Count; i++)
-                {
-                    Debug.Log($"RoomPlayerList3 : RoomNumber/{i} PlayerNumber/{_roomPlayerList3[i]}");
-                }*/
+        for (int i = 0; i < roomPlayerList3.Count; i++)
+        {
+            Debug.Log($"RoomPlayerList3 : RoomNumber/{i}PlayerNumber/{roomPlayerList3[i].PlayerConnection.address}");
+        }
 
     }
     //어플 종료 시 연결해제

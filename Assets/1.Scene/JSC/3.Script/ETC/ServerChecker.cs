@@ -36,35 +36,35 @@ public class ServerChecker : MonoBehaviour
     public Type type = Type.Client;
     //public string InitServerIP = "54.180.92.129";
     public string InitServerIP = "127.0.0.1";
-    private NetworkManager _manager;
-    private KcpTransport _kcp;
+    private NetworkManager manager;
+    private KcpTransport kcp;
 
-    private string _path = string.Empty;
+    private string path = string.Empty;
     public string ServerIp { get; private set; }
     public string ServerPort { get; private set; }
 
     private void Awake()
     {
         
-        if(_path.Equals(string.Empty))
+        if(path.Equals(string.Empty))
         {
             if (Application.platform == RuntimePlatform.Android)
             {
-                _path = Application.persistentDataPath + "/License";
+                path = Application.persistentDataPath + "/License";
             }
             else
-                _path = Application.dataPath + "/License";
+                path = Application.dataPath + "/License";
         }
-        if(!File.Exists(_path))//폴더 검사
+        if(!File.Exists(path))//폴더 검사
         {
-            Directory.CreateDirectory(_path);
+            Directory.CreateDirectory(path);
         }
-        if(!File.Exists(_path + "/License.json"))// 파일 검사
+        if(!File.Exists(path + "/License.json"))// 파일 검사
         {
-            DefaultData(_path);
+            DefaultData(path);
         }
-        _manager = GetComponent<NetworkManager>();
-        _kcp = (KcpTransport)_manager.transport;
+        manager = GetComponent<NetworkManager>();
+        kcp = (KcpTransport)manager.transport;
     }
     private void DefaultData(string path)
     {
@@ -82,7 +82,7 @@ public class ServerChecker : MonoBehaviour
 
         try
         {
-            string jsonString = File.ReadAllText(_path + "/License.json");
+            string jsonString = File.ReadAllText(path + "/License.json");
             JsonData itemData = JsonMapper.ToObject(jsonString);
             string strType = itemData[0]["License"].ToString();
             string strServerIp = itemData[0]["ServerIP"].ToString();
@@ -90,10 +90,11 @@ public class ServerChecker : MonoBehaviour
 
             ServerIp = strServerIp;
             ServerPort = strPort;
+
             type = (Type)Enum.Parse(typeof(Type), strType);
-            Debug.Log($"{type}{ServerIp}");
-            _manager.networkAddress = ServerIp;
-            _kcp.port = ushort.Parse(ServerPort);
+            Debug.Log($"{type}{ServerIp}|");
+            manager.networkAddress = ServerIp;
+            kcp.port = ushort.Parse(ServerPort);
 
             return type;
         }
@@ -127,8 +128,8 @@ public class ServerChecker : MonoBehaviour
         }
         else
         {
-            _manager.StartServer();
-            Debug.Log($"{_manager.networkAddress} StartServer...");
+            manager.StartServer();
+            Debug.Log($"{manager.networkAddress} StartServer...");
             NetworkServer.OnConnectedEvent += (NetworkConnectionToClient) =>
             {
                 Debug.Log($"New Client Connect : {NetworkConnectionToClient.address}");
@@ -141,8 +142,8 @@ public class ServerChecker : MonoBehaviour
     }
     public void StartClient()
     {
-        _manager.StartClient();
-        Debug.Log($"{_manager.networkAddress} : StartClient...");
+        manager.StartClient();
+        Debug.Log($"{manager.networkAddress} : StartClient...");
     }
 
     private void OnApplicationQuit()
@@ -150,12 +151,12 @@ public class ServerChecker : MonoBehaviour
         //클라이언트라면 연결해제
         if(NetworkClient.isConnected)
         {
-            _manager.StopClient();
+            manager.StopClient();
         }
         //서버라면 서버 종료
         if(NetworkServer.active)
         {
-            _manager.StopServer();
+            manager.StopServer();
         }
     }
 }

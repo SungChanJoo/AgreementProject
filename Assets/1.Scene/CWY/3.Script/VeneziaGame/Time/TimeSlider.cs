@@ -20,33 +20,34 @@ public interface ITimeSlider
 {
     public static TimeSlider Instance = null;
 
-    [SerializeField] public Slider slider;
+    //1,2인모드일 경우를 나눠서 슬라이더 지정 
+    [SerializeField] public Slider Slider;
     [SerializeField] private Image sliderVar_Image;
 
-    [SerializeField] public Slider slider_PlayerTwo;
+    [SerializeField] public Slider Slider_PlayerTwo;
     [SerializeField] private Image sliderVar_Image_PlayerTwo;
 
-    [SerializeField] private float ChangeTime;
+    [SerializeField] private float changeTime;
     [SerializeField] private float changeDuration;
 
-    public GameType gameType;
+    public GameType GameType;
 
-    public float time=0;
+    public float Time=0;
 
     public float PlayTime = 0;
 
-    public bool isStop = false;
-    public bool isGameOver = false;
+    public bool IsStop = false;
+    public bool IsGameOver = false;
 
-    [HideInInspector]public float startTime;
-    [HideInInspector]public float duration;
+    [HideInInspector]public float StartTime_;
+    [HideInInspector]public float Duration;
 
-    [HideInInspector] public float startTimeTwo;
+    [HideInInspector] public float StartTimeTwo;
 
     public float Decreasetime;
 
     public bool TimeStop = true;
-
+    //1번 및 2번 플레이어 슬라이더 코루틴
     IEnumerator timeSlider_co;
     IEnumerator timeSlider_Second_co;
     private void Awake()
@@ -57,7 +58,7 @@ public interface ITimeSlider
         }
         else
         {
-            if (gameType == GameType.Couple)
+            if (GameType == GameType.Couple)
             {
                 return;
             }
@@ -72,39 +73,39 @@ public interface ITimeSlider
     {        
         float endTime = 0f;
         Color startColor = sliderVar_Image.color; // 시작 색상
-        while (startTime > endTime)
+        while (StartTime_ > endTime)
         {
             //슬라이더 max value가 1이므로 제한시간에 맞게 감소할 수 있도록 값을 계산
-            float normalizedTime = (startTime - endTime) / duration;
-            slider.value = normalizedTime;
-            startTime -= time;
-            if (slider.value <= ChangeTime)
+            float normalizedTime = (StartTime_ - endTime) / Duration;
+            Slider.value = normalizedTime;
+            StartTime_ -= Time;
+            if (Slider.value <= changeTime)
             {
                 StartCoroutine(ChangeColorOverTime(startColor,sliderVar_Image));
             }
             yield return null;
         }
-        slider.value = 0; // 종료 시간에 맞춰 슬라이더의 값을 설정 약간의 오차를 방지하기위해 값을 한번더 명시.
+        Slider.value = 0; // 종료 시간에 맞춰 슬라이더의 값을 설정 약간의 오차를 방지하기위해 값을 한번더 명시.
     }
 
     private IEnumerator timeSlider_Second()
     {
-        startTimeTwo = startTime;
+        StartTimeTwo = StartTime_;
         float endTime = 0f;
         Color startColor = sliderVar_Image_PlayerTwo.color; // 시작 색상
-        while (startTimeTwo > endTime)
+        while (StartTimeTwo > endTime)
         {
             // 슬라이더 max value가 1이므로 제한시간에 맞게 감소할 수 있도록 값을 계산
-            float normalizedTime = (startTimeTwo - endTime) / duration;
-            slider_PlayerTwo.value = normalizedTime; // 이 부분을 수정
-            startTimeTwo -= time;
-            if (slider_PlayerTwo.value <= ChangeTime)
+            float normalizedTime = (StartTimeTwo - endTime) / Duration;
+            Slider_PlayerTwo.value = normalizedTime; // 이 부분을 수정
+            StartTimeTwo -= Time;
+            if (Slider_PlayerTwo.value <= changeTime)
             {
                 StartCoroutine(ChangeColorOverTime(startColor, sliderVar_Image_PlayerTwo));
             }
             yield return null;
         }
-        slider_PlayerTwo.value = 0; // 종료 시간에 맞춰 슬라이더의 값을 설정 약간의 오차를 방지하기위해 값을 한번더 명시.
+        Slider_PlayerTwo.value = 0; // 종료 시간에 맞춰 슬라이더의 값을 설정 약간의 오차를 방지하기위해 값을 한번더 명시.
     }
 
 
@@ -132,7 +133,7 @@ public interface ITimeSlider
                 image.color += offset;
             }
             // 경과 시간 업데이트
-            elapsedTime += Time.deltaTime;
+            elapsedTime += UnityEngine.Time.deltaTime;
             // 대기
             yield return null;
         }
@@ -142,37 +143,37 @@ public interface ITimeSlider
 
     public void DecreaseTime()
     {
-        Instance.startTime -= Decreasetime;
+        Instance.StartTime_ -= Decreasetime;
     }
 
     public void DecreaseTime_Item(int Decreasetime)
     {
-           startTime -= Decreasetime;
-            if (startTime < 0)
+           StartTime_ -= Decreasetime;
+            if (StartTime_ < 0)
             {
-                startTime = 0;
-                slider.value = 0; 
+                StartTime_ = 0;
+                Slider.value = 0; 
             }
     }
 
     public void DecreaseTime_CoupleMode(int Decreasetime, Slider slider_)
     {
-        if(slider_ == slider)
+        if(slider_ == Slider)
         {
-            startTime -= Decreasetime;
-            if (startTime < 0)
+            StartTime_ -= Decreasetime;
+            if (StartTime_ < 0)
             { 
-                startTime = 0; 
-                slider.value = 0;
+                StartTime_ = 0; 
+                Slider.value = 0;
             }
         }
         else
         {
-            startTimeTwo -= Decreasetime;
-            if(startTimeTwo < 0)
+            StartTimeTwo -= Decreasetime;
+            if(StartTimeTwo < 0)
             {
-                startTimeTwo = 0;
-                slider_PlayerTwo.value = 0;
+                StartTimeTwo = 0;
+                Slider_PlayerTwo.value = 0;
             }
         }
 
@@ -180,18 +181,18 @@ public interface ITimeSlider
 
     public void TimeControl()
     {
-        if (!isStop)
+        if (!IsStop)
         {
-            time = Time.deltaTime;
+            Time = UnityEngine.Time.deltaTime;
         }
         else
         {
-            time = Time.unscaledDeltaTime;
+            Time = UnityEngine.Time.unscaledDeltaTime;
         }        
     }
     public void StartTime()
     {
-        if(gameType == GameType.Solo)
+        if(GameType == GameType.Solo)
         {
             timeSlider_co = timeSlider();
             StartCoroutine(timeSlider_co);
@@ -209,7 +210,7 @@ public interface ITimeSlider
     {        
         //시간 설정 변경을 위한 연산
         TimeStop = TimeStop.Equals(true) ? false : true;
-        if(gameType == GameType.Solo)
+        if(GameType == GameType.Solo)
         {
             if (!TimeStop && timeSlider_co == null)
             {
@@ -247,14 +248,14 @@ public interface ITimeSlider
     }
     public void GameOver()
     {
-        isGameOver = true;
+        IsGameOver = true;
     }
-
+    //플레이타임 체크
     public void PlayTimeChecker()
     {
-        if (startTime != 0 && !SettingManager.Instance.IsActive)
+        if (StartTime_ != 0 && !SettingManager.Instance.IsActive)
         {
-            PlayTime += Time.deltaTime;
+            PlayTime += UnityEngine.Time.deltaTime;
         }
     }
 

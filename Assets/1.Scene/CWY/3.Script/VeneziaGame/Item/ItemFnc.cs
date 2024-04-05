@@ -17,8 +17,8 @@ public enum BoomType
 public class ItemFnc : MonoBehaviour
 {
     //아이템 타입에 따라 게임에 영향을 줄 예정
-    public  VeneziaItem veneziaItem;
-    public BoomType boomType;
+    public  VeneziaItem VeneziaItem;
+    public BoomType BoomType;
     public float MeteorSpeed;
     public float PauseSpeed;
     public float BoomSpeed;
@@ -27,23 +27,23 @@ public class ItemFnc : MonoBehaviour
 
     private void Update()
     {
-       if(!TimeSlider.Instance.isStop) ItemMove();
+       if(!TimeSlider.Instance.IsStop) ItemMove();
         GameOver();
     }
 
     private void ItemMove()
     {
-        if (veneziaItem == VeneziaItem.Meteor)
+        if (VeneziaItem == VeneziaItem.Meteor)
         {
             float moveY = -1 * MeteorSpeed * Time.deltaTime;
             transform.Translate(0, moveY, 0);
         }
-        else if(veneziaItem == VeneziaItem.Pause)
+        else if(VeneziaItem == VeneziaItem.Pause)
         {
             float moveY = -1 * PauseSpeed * Time.deltaTime;
             transform.Translate(0, moveY, 0);
         }
-        else if (veneziaItem == VeneziaItem.Boom)
+        else if (VeneziaItem == VeneziaItem.Boom)
         {
             float moveY = -1 * BoomSpeed * Time.deltaTime;
             transform.Translate(0, moveY, 0);
@@ -56,14 +56,14 @@ public class ItemFnc : MonoBehaviour
         if (other.gameObject.CompareTag("Ground"))
         {
             gameObject.SetActive(false);
-            if(veneziaItem == VeneziaItem.Pause)
+            if(VeneziaItem == VeneziaItem.Pause)
             {
                 ObjectPooling.Instance.PausePool.Add(gameObject);
             }
-            else if(veneziaItem == VeneziaItem.Meteor)
+            else if(VeneziaItem == VeneziaItem.Meteor)
             {
                 ObjectPooling.Instance.MeteorPool.Add(gameObject);
-            }else if(veneziaItem == VeneziaItem.Boom)
+            }else if(VeneziaItem == VeneziaItem.Boom)
             {
                 ObjectPooling.Instance.BoomPool.Add(gameObject);
             }
@@ -72,7 +72,7 @@ public class ItemFnc : MonoBehaviour
 
     private void GameOver()
     {
-        if (VeneziaManager.Instance.isGameover) gameObject.SetActive(false);
+        if (VeneziaManager.Instance.IsGameover) gameObject.SetActive(false);
     }
 }
     

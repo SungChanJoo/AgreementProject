@@ -2,18 +2,18 @@ using UnityEngine;
 
 public class MapScrolling : MonoBehaviour
 {
-    public Transform target;
-    public float speed;
-    public Vector3 dir = Vector3.left;
+    public Transform Target;
+    public float Speed;
+    public Vector3 Dir = Vector3.left;
 
-    public RectTransform rectTransform;
+    public RectTransform RectTransform;
 
     Vector3 savePosition;
     float initialScreenWidth;
 
     private void Start()
     {
-        savePosition = target.position;
+        savePosition = Target.position;
         initialScreenWidth = Screen.width;
     }
 
@@ -21,7 +21,7 @@ public class MapScrolling : MonoBehaviour
     {
         float screenWidthRatio = Screen.width / initialScreenWidth;
 
-        transform.position += dir * speed * Time.deltaTime * screenWidthRatio;
+        transform.position += Dir * Speed * Time.deltaTime * screenWidthRatio;
     }
 
     private void OnTriggerExit2D(Collider2D collision)

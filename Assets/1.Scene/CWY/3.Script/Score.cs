@@ -13,13 +13,13 @@ public class Score : MonoBehaviour
     public static Score Instance = null;
     //Todo : 추후에 게임모드별로 참조하도록 설정 변경 필요 => 현재는 개인모드여도 3개다 참조해야함 (기능구현에 문제는 없으나 불필요한 참조 발생)
     [SerializeField] private TextMeshProUGUI score_text;
-    [SerializeField] private TextMeshProUGUI Firstscore_text;
-    [SerializeField] private TextMeshProUGUI Secondscore_text;
+    [SerializeField] private TextMeshProUGUI firstscore_text;
+    [SerializeField] private TextMeshProUGUI secondscore_text;
     
 
-    private int Count;
-    private int FirstCount;
-    private int SecondCount;
+    private int count;
+    private int firstCount;
+    private int secondCount;
 
     private bool isOk; // 이걸통해서 관리할것 (isOk true면 겜오브젝트삭제 아니면 말고.) <- 나중에 변경 
 
@@ -49,12 +49,12 @@ public class Score : MonoBehaviour
     {
         if (playMode == PlayMode.Solo)
         {
-            Firstscore_text.text = "0";
+            firstscore_text.text = "0";
         }
         else
         {
-            Firstscore_text.text = "0";
-            Secondscore_text.text = "0";
+            firstscore_text.text = "0";
+            secondscore_text.text = "0";
         }
     }
     //---------------------------------------------------------
@@ -62,8 +62,8 @@ public class Score : MonoBehaviour
     {
         if (true)//playMode == PlayMode.Solo)
         {
-            FirstCount++;
-            Firstscore_text.text = FirstCount.ToString();
+            firstCount++;
+            firstscore_text.text = firstCount.ToString();
         }
     }
 
@@ -71,8 +71,8 @@ public class Score : MonoBehaviour
     {
         if (true)//playMode == PlayMode.커플)
         {
-            SecondCount++;
-            Secondscore_text.text = SecondCount.ToString();
+            secondCount++;
+            secondscore_text.text = secondCount.ToString();
         }
     }
 

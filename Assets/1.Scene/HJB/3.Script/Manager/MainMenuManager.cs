@@ -31,11 +31,16 @@ public class MainMenuManager : MonoBehaviour
     
     private void Start()
     {
-        SettingManager.Instance.EnableSettingBtn();        
-        AudioManager.Instance.BGM_Play(0);
-        Cost_UI.text = DataBase.Instance.PlayerCharacter[DataBase.Instance.CharacterIndex].StarCoin.ToString();
+
+        SettingManager.Instance.EnableSettingBtn();
+        AudioManager.Instance.BGM_Play(0);        
         string net_state = DataBase.Instance.network_state ?  "연결": "연결안됨";
         NetworkState_UI.text = net_state;
+        //플레이어 기본 정보 불러오기        
+    }
+    private void OnEnable()
+    {
+        Cost_UI.text = DataBase.Instance.PlayerCharacter[DataBase.Instance.CharacterIndex].StarCoin.ToString();
     }
     public void GameScene()
     {        
@@ -68,6 +73,11 @@ public class MainMenuManager : MonoBehaviour
             GameType_Btn(level);
             Debug.Log($"클릭 {level} : {game_Type}");
         }
+        if (StepManager.Instance.playMode == PlayMode.Couple)
+        {
+            DoublePlayModVenezia();
+            return;
+        }
         Step_UI();
         if (CrewMovementManager.Instance != null)
         {
@@ -93,6 +103,12 @@ public class MainMenuManager : MonoBehaviour
                 StepOfLevel[i].SetActive(false);
             }
         }
+    }
+    //베네치아 1인모드 선택 Level할당 버튼
+    private void DoublePlayModVenezia()
+    {
+        StepManager.Instance.SelectStep(3);
+        SceneManager.LoadScene(8);        
     }
     //선택한 Level 할당 이벤트
     public void SelectLevel_Btn(int level)
@@ -144,11 +160,7 @@ public class MainMenuManager : MonoBehaviour
             CrewMovementManager.Instance.ViewCrew();
         GameScene();
     } 
-    public void SelectTime(int time)
-    {
-        StepManager.Instance.SelectTimeSet(time);
-        Debug.Log(time);
-    }
+    
 
     
     public void Level_UI()

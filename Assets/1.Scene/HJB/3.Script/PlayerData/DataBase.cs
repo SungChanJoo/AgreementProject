@@ -31,6 +31,7 @@ public class DataBase : MonoBehaviour,IDataReloading
     public ClientData ClientData;
     private string dataPath;
     public bool network_state;
+    public Sprite currentImage;
     public int CharacterIndex {
         get
         {
@@ -93,6 +94,11 @@ public class DataBase : MonoBehaviour,IDataReloading
         CrewMovementManager.Instance.InitLastPlayStep();
         CrewMovementManager.Instance.InitPlayerDBData();
         FindObjectOfType<RankingManager>().SetMyRanking();
+        //플레이어 프로필 정보 및 분석표 변경
+        PlayerImageConvert();
+        ProfileText.Instance.StartLoadCharactorData();
+        LoadImage.Instance.ProfileImage_Set();
+        AnalysisChart.Instance.AnalysisChartDataSet();
 
     }
     public void CharactorAdd(string name)
@@ -106,7 +112,11 @@ public class DataBase : MonoBehaviour,IDataReloading
         }
         Client.Instance.CreateCharactorData(name);
     }
-
+    public void PlayerRecordLoad()
+    {
+        PlayerCharacter[CharacterIndex] = Client.instance.AppStart_LoadCharactorDataFromDB();
+        PlayerCharacter[CharacterIndex].analyticsProfileData = Client.instance.AppStart_LoadAnalyticsProfileDataFromDB();
+    }
     public void PlayerDataLoad()
     {
         try
@@ -123,6 +133,7 @@ public class DataBase : MonoBehaviour,IDataReloading
             playerInfo.analyticsProfileData = Client.Instance.AppStart_LoadAnalyticsProfileDataFromDB();
             network_state = true;
             PlayerCharacter[CharacterIndex] = playerInfo;
+            PlayerImageConvert();
         }
         catch (System.Exception)
         {
@@ -160,5 +171,16 @@ public class DataBase : MonoBehaviour,IDataReloading
                 Debug.Log($"현재 데이터를 불러오는 것을 실패하여 재시도합니다...{a}번째 시도중....");
             }
         }        
+    }
+
+    private void PlayerImageConvert()
+    {
+        byte[] fileData = PlayerCharacter[CharacterIndex].image;
+        Texture2D texture = new Texture2D(2, 2);
+        texture.LoadImage(fileData);
+        Rect rect = new Rect(0, 0, texture.width, texture.height);
+        Texture2D texture2Dload = texture;
+
+        currentImage = Sprite.Create(texture2Dload, rect, new Vector2(0.5f, 0.5f));
     }
 }

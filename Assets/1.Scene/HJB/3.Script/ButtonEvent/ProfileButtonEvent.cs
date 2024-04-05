@@ -51,8 +51,7 @@ public class ProfileButtonEvent : MonoBehaviour
     }
 
     private void PlayerProfileDataCheck(int level)
-    {
-        
+    {        
         string a =  DataBase.Instance.PlayerCharacter[DataBase.Instance.CharacterIndex].analyticsProfileData.Data[level].Item1;
         float b = DataBase.Instance.PlayerCharacter[DataBase.Instance.CharacterIndex].analyticsProfileData.Data[level].Item2;
         int c = DataBase.Instance.PlayerCharacter[DataBase.Instance.CharacterIndex].analyticsProfileData.Data[level].Item3;
@@ -69,5 +68,12 @@ public class ProfileButtonEvent : MonoBehaviour
             answersRate.text = $"{c}%";
         }
         
+    }
+
+    public void PlayerProfileDataDefault()
+    {
+        moreGame.text = "플레이한 내역이 없습니다.";
+        reactionRate.text = "";
+        answersRate.text = "";
     }
 }

@@ -42,8 +42,8 @@ public class StepManager : MonoBehaviour
 
     public static StepManager Instance = null;
     public Game_Type game_Type;
-    public Step _Setp;
-    public Level _Level;
+    public Step Setp;
+    public Level Level;
     public int CurrentStep { get; private set; }
     public int CurrentLevel { get; private set; }
     public int CurrentTime { get; private set; }    
@@ -98,8 +98,7 @@ public class StepManager : MonoBehaviour
     public void NextStep()
     {
         //현재 Step에서 다음 Step으로 변경 후 씬 로드        
-        SelectStep(CurrentStep + 1);
-        
+        SelectStep(CurrentStep + 1);        
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
     }
 
