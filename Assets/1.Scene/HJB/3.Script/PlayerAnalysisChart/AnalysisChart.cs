@@ -60,7 +60,7 @@ public class AnalysisChart : MonoBehaviour
     public void AnalysisChartDataSet()
     {
         int player_num = DataBase.Instance.CharacterIndex;
-        analyticsData = Client.instance.AppStart_LoadAnalyticsDataFromDB();
+        analyticsData = Client.Instance.AppStart_LoadAnalyticsDataFromDB();
 
         //플레이어의 이름과 이미지 출력
         profile_img.sprite = DataBase.Instance.currentImage;

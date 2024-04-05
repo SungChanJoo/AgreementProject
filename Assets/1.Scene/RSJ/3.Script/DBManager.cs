@@ -529,7 +529,7 @@ public class DBManager : MonoBehaviour
         Debug.Log("[DB] Come in save charactor data");
 
         // filterList[0] : $"{requestName}|{clientLicenseNumber}|{clientCharactor}|"
-        // filterList[1] : $"{table.list[0]}|{playerdb.playerName}|{Convert.ToBase64String(playerdb.image)}|{playerdb.BirthDay}|{playerdb.TotalAnswers}|{playerdb.TotalTime}|";
+        // filterList[1] : $"{table.list[0]}|{playerdb.playerName}|{Convert.ToBase64String(playerdb.image)}|{playerdb.BirthDay}|{playerdb.TotalAnswers}|{playerdb.TotalTime}|{playerdb.StarCoin}|";
         // filterList[2~n-1] : $"{table.list[i]}|{reactionRate_List[i - 4]}|{answersCount_List[i - 4]}|{answers_List[i - 4]}|{playTime_List[i - 4]}|{totalScore_List[i - 4]}|{starCount_List[i - 4]}|}";
         // filterList[n] : $"Finish"
 
@@ -555,13 +555,14 @@ public class DBManager : MonoBehaviour
             {
                 update_Command = $"UPDATE `{tempAllocate[0]}` SET ";
                 tempAllocate.RemoveAt(0);
-                for (int j = 2; j < userinfoColumns.Length - 1; j++) // 0,1 - license, charactor , todo 나중에 코인 playerdata에 추가되면 길이 원래대로 Length-1 -> Length
+                for (int j = 2; j < userinfoColumns.Length; j++) // 0,1 - license, charactor
                 {
                     if (j == 2) update_Command += $"`{userinfoColumns[j]}` = '{tempAllocate[j - 2]}', "; // name, string
                     else if (j == 3) update_Command += $"`{userinfoColumns[j]}` = '{tempAllocate[j - 2]}', "; // profile, Base64 (MediumBlob)
                     else if (j == 4) update_Command += $"`{userinfoColumns[j]}` = '{tempAllocate[j - 2]}', "; // birthday, string
                     else if (j == 5) update_Command += $"`{userinfoColumns[j]}` = {Int32.Parse(tempAllocate[j - 2])}, "; // totalanswers, int
                     else if (j == 6) update_Command += $"`{userinfoColumns[j]}` = {float.Parse(tempAllocate[j - 2])} "; // totaltime, float
+                    else if (j == 7) update_Command += $"`{userinfoColumns[j]}` = {Int32.Parse(tempAllocate[j - 2])} "; // coin, int
                 }
                 update_Command += $"WHERE `{userinfoColumns[0]}` = {clientLicenseNumber} AND `{userinfoColumns[1]}` = {clientCharactor};";
             }
@@ -653,12 +654,43 @@ public class DBManager : MonoBehaviour
         Debug.Log("[DB] Complete save lastplay data");
     }
 
+    // DB에 코인 저장
+    public void SaveCoinData(List<string> filterList)
+    {
+        // requestName = "[Save]Coin";
+        // requestData = $"{requestName}|{ClientLicenseNumber}|{ClientCharactor}|{coin}|{separatorString}";
+        // filterList[0] =  "{requestName}|{ClientLicenseNumber}|{ClientCharactor}|{coin}|"
+        // dataList[0] = [Save]Coin
+        // dataList[1] = User_LicenseNumber
+        // dataList[2] = User_Charactor
+        // dataList[3] = Coin
+
+        Debug.Log("[DB] Come in SaveCoinData method");
+
+        List<string> dataList = filterList[0].Split('|', StringSplitOptions.RemoveEmptyEntries).ToList();
+
+        // licenseNumber, charactor, coin
+        int licenseNumber = Int32.Parse(dataList[1]);
+        int charactor = Int32.Parse(dataList[2]);
+        int coin = Int32.Parse(dataList[3]);
+
+        MySqlCommand mySqlCommand = new MySqlCommand();
+        mySqlCommand.Connection = connection;
+
+        string updateCoinQuery = $"UPDATE `{table.list[0]}` SET `{userinfoColumns[7]}` = '{coin}' " +
+                                 $"WHERE `{userinfoColumns[0]}` = '{licenseNumber}' AND `{userinfoColumns[1]}` = '{charactor}'";
+        mySqlCommand.CommandText = updateCoinQuery;
+        mySqlCommand.ExecuteNonQuery();
+
+        Debug.Log("[DB] Complete save coin data method!");
+    }
+
     // DB에 게임결과 저장
     public void SaveGameResultData(List<string> filterList)
     {
         // DB gametable column순 : User_Licensenumber/User_Charactor/ReactionRate/AnswerCount/AnswerRate/Playtime/TotalScore/StarPoint
         // requestName = $"[Save]{gameName}";
-        // values = $"{level}|{step}|{clientLicenseNumber}|{clientCharactor}|{datavalue.ReactionRate}|{datavalue.AnswersCount}|{datavalue.Answers}|{datavalue.PlayTime}|{datavalue.TotalScore}|";
+        // values = $"{level}|{step}|{clientLicenseNumber}|{clientCharactor}|{resultdata.StarCoin}|{datavalue.ReactionRate}|{datavalue.AnswersCount}|{datavalue.Answers}|{datavalue.PlayTime}|{datavalue.TotalScore}|";
         // requestData = $"{requestName}|{values}Finish";
         // filterList[0] => "RequestName|level|step|User_Licensenumber|User_Charactor|ReactionRate|...|TotalScore
         // dataList[0] = [Save]venezia_kor
@@ -666,12 +698,13 @@ public class DBManager : MonoBehaviour
         // dataList[2] = step
         // dataList[3] = User_LicenseNumber
         // dataList[4] = User_Charactor
-        // dataList[5] = ReactionRate
-        // dataList[6] = AnswerCount
-        // dataList[7] = AnswerRate
-        // dataList[8] = PlayTime
-        // dataList[9] = TotalScore
-        // dataList[10] = StarPoint
+        // dataList[5] = User_Coin
+        // dataList[6] = ReactionRate
+        // dataList[7] = AnswerCount
+        // dataList[8] = AnswerRate
+        // dataList[9] = PlayTime
+        // dataList[10] = TotalScore
+        // dataList[11] = StarPoint
 
         Debug.Log("[DB] Come in SaveGameResultData method");
 
@@ -687,17 +720,18 @@ public class DBManager : MonoBehaviour
         int level = Int32.Parse(dataList[1]);
         int step = Int32.Parse(dataList[2]);
 
-        // licenseNumber, charactor
+        // licenseNumber, charactor, coin
         int licenseNumber = Int32.Parse(dataList[3]);
         int charactor = Int32.Parse(dataList[4]);
+        int coin = Int32.Parse(dataList[5]);
 
         // game datas
-        float reactionRate = float.Parse(dataList[5]); // 보여줄 분석 데이터(개인분석표, 프로필), 갱신
-        int answerCount = Int32.Parse(dataList[6]); // 갱신
-        int answerRate = Int32.Parse(dataList[7]); // 보여줄 분석 데이터(개인분석표, 프로필), 갱신
-        float playTime = float.Parse(dataList[8]); // 보여줄 데이터(프로필분석, 랭킹), 갱신
-        int totalScore = Int32.Parse(dataList[9]); // 보여줄 데이터(프로필분석, 랭킹), 조건부 갱신
-        int starPoint = Int32.Parse(dataList[10]); // 조건부 갱신
+        float reactionRate = float.Parse(dataList[6]); // 보여줄 분석 데이터(개인분석표, 프로필), 갱신
+        int answerCount = Int32.Parse(dataList[7]); // 갱신
+        int answerRate = Int32.Parse(dataList[8]); // 보여줄 분석 데이터(개인분석표, 프로필), 갱신
+        float playTime = float.Parse(dataList[9]); // 보여줄 데이터(프로필분석, 랭킹), 갱신
+        int totalScore = Int32.Parse(dataList[10]); // 보여줄 데이터(프로필분석, 랭킹), 조건부 갱신
+        int starPoint = Int32.Parse(dataList[11]); // 조건부 갱신
 
         // table 이름
         string table_Name = $"{gameName}_level{level}_step{step}";
@@ -783,6 +817,8 @@ public class DBManager : MonoBehaviour
             mySqlCommand.ExecuteNonQuery();
         }
 
+        // user_info table에 coin Update
+        PrivateSaveCoinData(licenseNumber, charactor, coin);
         // user_info table에 AnswerCount, TotalTime 누적
         UpdateUserInfoTableForScoreTime(licenseNumber, charactor, answerCount, playTime);
         // rank table에 TotalTime과 TotalScore에 점수 누적 
@@ -791,6 +827,22 @@ public class DBManager : MonoBehaviour
         UpdateAnalyticsProfileTable(licenseNumber, charactor, gameType, level, reactionRate, answerRate);
 
         Debug.Log($"[DB] Complete SaveGameResultData To DB");
+    }
+
+    // 게임이 끝날때마다 user_info table에 coin 누적
+    private void PrivateSaveCoinData(int licensenumber, int charactor, int coin)
+    {
+        Debug.Log("[DB] Come in PrivateSaveCoinData method");
+
+        MySqlCommand mySqlCommand = new MySqlCommand();
+        mySqlCommand.Connection = connection;
+
+        string updateCoinQuery = $"UPDATE `{table.list[0]}` SET `{userinfoColumns[7]}` = '{coin}' " +
+                                 $"WHERE `{userinfoColumns[0]}` = '{licensenumber}' AND `{userinfoColumns[1]}` = '{charactor}'";
+        mySqlCommand.CommandText = updateCoinQuery;
+        mySqlCommand.ExecuteNonQuery();
+
+        Debug.Log("[DB] Complete private save coin data method!");
     }
 
     // 게임이 끝날때마다 user_info table에 TotalScore, TotalTime 누적

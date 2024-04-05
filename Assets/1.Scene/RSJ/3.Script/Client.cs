@@ -290,6 +290,9 @@ public class Client : MonoBehaviour
             case "[Save]calculation":
                 Debug.Log($"[Client] RequestName : {requestName}, End handling data");
                 break;
+            case "[Save]Coin":
+                Debug.Log($"[Client] RequestName : {requestName}, End handling data");
+                break;
             case "[Load]UserData":
                 HanlelLoadUserData(dataList);
                 Debug.Log($"[Client] RequestName : {requestName}, End handling data");
@@ -1212,9 +1215,18 @@ public class Client : MonoBehaviour
         Data_value datavalue = resultdata.Data[(game_type, level, step)];
 
         requestName = $"[Save]{gameName}";
-        values = $"{level}|{step}|{ClientLicenseNumber}|{ClientCharactor}|{datavalue.ReactionRate}|{datavalue.AnswersCount}|{datavalue.Answers}|{datavalue.PlayTime}|{datavalue.TotalScore}|{datavalue.StarCount}|";
+        values = $"{level}|{step}|{ClientLicenseNumber}|{ClientCharactor}|{resultdata.StarCoin}|{datavalue.ReactionRate}|{datavalue.AnswersCount}|{datavalue.Answers}|{datavalue.PlayTime}|{datavalue.TotalScore}|{datavalue.StarCount}|";
 
         requestData = $"{requestName}|{values}Finish";
+        RequestToServer(requestData);
+    }
+
+    // 코인(User_Coin) DB에 저장 
+    public void AppGame_SaveCoinToDB(int coin)
+    {
+        string requestName = "[Save]Coin";
+        string requestData = $"{requestName}|{ClientLicenseNumber}|{ClientCharactor}|{coin}|{separatorString}";
+
         RequestToServer(requestData);
     }
 
@@ -1255,7 +1267,7 @@ public class Client : MonoBehaviour
         string imagebase64 = Convert.ToBase64String(playerdb.image);
 
         // table.list[0] == user_info
-        requestData += $"{table.list[0]}|{playerdb.playerName}|{imagebase64}|{playerdb.BirthDay}|{playerdb.TotalAnswers}|{playerdb.TotalTime}|{separatorString}";
+        requestData += $"{table.list[0]}|{playerdb.playerName}|{imagebase64}|{playerdb.BirthDay}|{playerdb.TotalAnswers}|{playerdb.TotalTime}|{playerdb.StarCoin}|{separatorString}";
         // table.list[1] == rank
         // table.list[2] == crew
         // table.list[3] == lastplaygame

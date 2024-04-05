@@ -196,7 +196,7 @@ public class ProfileText : MonoBehaviour
     {   //플레이어 기록 초기화
         try
         {
-            Client.instance.ResetCharactorProfile();
+            Client.Instance.ResetCharactorProfile();
             DataBase.Instance.PlayerRecordLoad();
             CalculationPlayTime(DataBase.Instance.CharacterIndex);
             profileButtonEvent.ChangeImage_Btn(1);

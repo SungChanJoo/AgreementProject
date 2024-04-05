@@ -45,7 +45,7 @@ public class TilteManager : MonoBehaviour
     {        
         if (!name_text.text.Equals(string.Empty))
         {
-            Client.instance.RegisterCharactorName_SaveDataToDB(name_text.text);
+            Client.Instance.RegisterCharactorName_SaveDataToDB(name_text.text);
             DataBase.Instance.PlayerCharacter[DataBase.Instance.CharacterIndex].playerName = name_text.text;
             SceneManager.LoadScene("HJB_MainMenu");
         }

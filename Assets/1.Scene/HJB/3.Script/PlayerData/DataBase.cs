@@ -114,8 +114,8 @@ public class DataBase : MonoBehaviour,IDataReloading
     }
     public void PlayerRecordLoad()
     {
-        PlayerCharacter[CharacterIndex] = Client.instance.AppStart_LoadCharactorDataFromDB();
-        PlayerCharacter[CharacterIndex].analyticsProfileData = Client.instance.AppStart_LoadAnalyticsProfileDataFromDB();
+        PlayerCharacter[CharacterIndex] = Client.Instance.AppStart_LoadCharactorDataFromDB();
+        PlayerCharacter[CharacterIndex].analyticsProfileData = Client.Instance.AppStart_LoadAnalyticsProfileDataFromDB();
     }
     public void PlayerDataLoad()
     {

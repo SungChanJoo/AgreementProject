@@ -269,6 +269,9 @@ public class Server : MonoBehaviour
             case "[Save]calculation":
                 DBManager.Instance.SaveGameResultData(filterList);
                 break;
+            case "[Save]Coin":
+                DBManager.Instance.SaveCoinData(filterList);
+                break;
             case "[Load]UserData":
                 tempAllocate = DBManager.Instance.LoadUserData(clientLicenseNumber);
                 tempAllocate.ForEach(data => replyRequestData_List.Add(data));

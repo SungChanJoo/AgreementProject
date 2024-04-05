@@ -245,11 +245,11 @@ public class CollectionsManager : MonoBehaviour
     //DB에서 탐험대원 콜렉션 불러오기
     public void SetCollections()
     {
-        if (Client.instance != null)
+        if (Client.Instance != null)
             money = DataBase.Instance.PlayerCharacter[DataBase.Instance.CharacterIndex].StarCoin;
         moneyText.text = $"{money}";
         //DB에 데이터 받아서 선택된 대원과 보유한 대원 리스트 받기
-        if (Client.instance != null)
+        if (Client.Instance != null)
         {
             Collections = DataBase.Instance.playerInfo.Collections;
             Debug.Log(DataBase.Instance.playerInfo.playerName);
