@@ -7,8 +7,6 @@ using TMPro;
 public class ButtonEvent : MonoBehaviour
 {
     [SerializeField] private GameObject[] level_btn;
-    [SerializeField] private GameObject[] time_btn;
-
 
     [SerializeField] private Sprite select_img;
     [SerializeField] private Sprite Non_img;
@@ -18,16 +16,13 @@ public class ButtonEvent : MonoBehaviour
     private int level;
     private int timeSet;   
     
-    private Image[] level_img;
-    private Image[] time_img;   
+    private Image[] level_img;    
     private void Awake()
     {
-        level_img = new Image[level_btn.Length];
-        time_img = new Image[time_btn.Length];
+        level_img = new Image[level_btn.Length];        
         
         ButtonReference();
-        ChangeColor_Level();
-        ChangeColor_Time();
+        ChangeColor_Level();        
     }
     
     
@@ -35,8 +30,7 @@ public class ButtonEvent : MonoBehaviour
     {
         for (int i = 0; i < level_btn.Length; i++)
         {
-            level_img[i] = level_btn[i].GetComponent<Image>();
-            time_img[i] = time_btn[i].GetComponent<Image>();            
+            level_img[i] = level_btn[i].GetComponent<Image>();                        
         }
     }
     
@@ -49,6 +43,7 @@ public class ButtonEvent : MonoBehaviour
     public void ChangeColor_Level()
     {
         ButtonDataSet();
+        //Level 선택 시 게임에 따른 표시
         string[] venezia_text = { "한글", "영어", "한자" };
         string[] level_text = { "Lv_1", "Lv_2", "Lv_3" };
         if (StepManager.Instance.game_Type >= Game_Type.C)
@@ -58,6 +53,10 @@ public class ButtonEvent : MonoBehaviour
         else
         {
             GameTypeSelectBtn_Text(level_text);
+        }
+        if (StepManager.Instance.playMode == PlayMode.Couple)
+        {
+            return;
         }
         for (int i = 0; i < level_btn.Length; i++)
         {
@@ -71,24 +70,7 @@ public class ButtonEvent : MonoBehaviour
             }
         }        
     }
-    public void ChangeColor_Time()
-    {
-        ButtonDataSet();
-        int count = 1;
-        for (int i = 0; i < time_btn.Length; i++)
-        {        
-            
-            if (i+count == timeSet)
-            {
-                time_img[i].sprite= select_img;
-            }
-            else
-            {
-                time_img[i].sprite = Non_img;
-            }
-            count++;
-        }        
-    }
+    
 
     private void GameTypeSelectBtn_Text(string[] text)
     {

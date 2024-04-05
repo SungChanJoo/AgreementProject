@@ -49,9 +49,6 @@ public class EnterToPotal : NetworkBehaviour
     //포탈을 나갔을 때
     private void OnTriggerExit(Collider other)
     {
-/*        //버튼이 켜져있으면 끄기
-        if (MoveButton.activeSelf)
-            MoveButton.SetActive(false);*/
         if (player != null)
             player.InteractableUI(MoveButton, false);//버튼이 켜져있으면 끄기
         player = null; //초기화
@@ -73,11 +70,11 @@ public class EnterToPotal : NetworkBehaviour
 
     private void Start()
     {
-        tParam = 0f;
+        tParam = 0f; //t 매개변수
     }
-    //코루틴 한번만 수행
+    //코루틴 한번만 실행
     IEnumerator _currentPlayerMovecoroutine = null;
-    //Bezier Curve에 따라 플레이어 트랜스폼 변경
+    //Bezier Curve에 따라 플레이어 위치 변경
     IEnumerator MovePlayer(GameObject player)
     {
         Debug.Log("MovePlayerCoroutine");
@@ -96,10 +93,12 @@ public class EnterToPotal : NetworkBehaviour
         }
         tParam = 0f;
         IsMove = false;
-        CmdPlayerJumpEndAnim(player);
+        CmdPlayerJumpEndAnim(player); // 플레이어 애니메이션 동기화
         _currentPlayerMovecoroutine = null;
     }
 
+    //플레이어 애니메이션 동기화 명령
+    #region JumpAnimation
     [Command(requiresAuthority = false)]
     public void CmdPlayerJumpAnim(GameObject player)
     {
@@ -112,6 +111,7 @@ public class EnterToPotal : NetworkBehaviour
         playerAnim.SetTrigger("Jump");
         playerAnim.SetBool("JumpEnd", false);
     }
+    //점프 종료 알림 명령
     [Command(requiresAuthority = false)]
     public void CmdPlayerJumpEndAnim(GameObject player)
     {
@@ -122,7 +122,8 @@ public class EnterToPotal : NetworkBehaviour
     {
         var playerAnim = player.GetComponent<PlayerMovement>().Anim;
         playerAnim.SetBool("JumpEnd", true);
-    }
+    } 
+    #endregion
     //Bezier Curve의 라인 그리기
     private Vector3 gizomsPosition;
     private void OnDrawGizmos()
@@ -140,6 +141,5 @@ public class EnterToPotal : NetworkBehaviour
         Gizmos.DrawLine(new Vector3(routes[2].position.x, routes[2].position.y, routes[2].position.z),
                         new Vector3(routes[3].position.x, routes[3].position.y, routes[3].position.z));
     } 
-
     #endregion
 }

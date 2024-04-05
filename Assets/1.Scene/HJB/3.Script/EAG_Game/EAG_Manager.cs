@@ -21,24 +21,27 @@ public class EAG_Manager : GameSetting
     public int firstNum;
     public int secondNum;
     public int result;
-    public char _Operator;
-    
+    public char _Operator;    
 
     public float RotationPerSecond = 1;
+
+    private int step_opreator1 = 0;
+    private int step_opreator2 = 0;
 
     [SerializeField] private AudioClip[] audioClip;
 
     public void Show_Result(float result)
     {
+        //결과 출력
         resultText.text = result.ToString();
     }
     protected override void startGame()
-    {
+    {   //게임 시작 시 실행
         StartGamePooling();
     }
     private void StartGamePooling()
     {
-        ObjectPooling_H.Instance.ObjectPooling();
+        EAG_ObjectPooling.Instance.ObjectPooling();
     }
 
     public int AnswerCalculator(Operator selectedOperator)
@@ -56,7 +59,7 @@ public class EAG_Manager : GameSetting
             case Operator.Mul:
                 result = firstNum * secondNum;
                 break;
-            case Operator.Div:
+            case Operator.Div:      //0으로 나누어 떨어지는 수 조건
                 while (firstNum % secondNum != 0 || firstNum < secondNum)
                 {
                     GenerateRandomNumbers();
@@ -75,6 +78,7 @@ public class EAG_Manager : GameSetting
 
     public override void TouchSoundCheck(bool answerCheck)
     {
+        //정답 및 오답에 따른 효과음 출력
         if (answerCheck)
         {
             source.PlayOneShot(audioClip[0]);
@@ -90,25 +94,23 @@ public class EAG_Manager : GameSetting
     }
 
     protected override void Level_1(int step)
-    {
-        int step_opreator1 = 0;
-        int step_opreator2 = 0;
+    {        
         int resultMax = 20;
         switch (step)
         {
             case 1:
             case 2:
-                step_opreator1 = 0;
+                step_opreator1 = 0;         //'+' 
                 step_opreator2 = 0;
                 break;
             case 3:
             case 4:
-                step_opreator1 = 1;
+                step_opreator1 = 1;         //'-' 
                 step_opreator2 = 1;
                 break;
             case 5:
             case 6:
-                step_opreator1 = 0;
+                step_opreator1 = 0;         //'+', '-' 및 60까지 제한
                 step_opreator2 = 1;
                 resultMax = 60;
                 break;
@@ -120,30 +122,28 @@ public class EAG_Manager : GameSetting
     }
 
     protected override void Level_2(int step)
-    {
-        int step_opreator1 = 0;
-        int step_opreator2 = 0;
+    {       
         int randomSelectOper = Random.Range(0, 5);
 
         switch (step)
         {
             case 1:
             case 2:               
-                step_opreator1 = 2;
+                step_opreator1 = 2;         //'x'
                 step_opreator2 = 2;                
                 break;
             case 3:
             case 4:                
-                step_opreator1 = 3;
+                step_opreator1 = 3;         //'÷'
                 step_opreator2 = 3;
                 break;
             case 5:
             case 6:
-                step_opreator1 = 2;
+                step_opreator1 = 2;         //'x', '÷'
                 step_opreator2 = 3;
                 break;
         }
-
+        //25퍼 확률로 덧셈 뺄셈 출력
         if (randomSelectOper == 1)
         {
             step_opreator1 = 0;
@@ -162,6 +162,7 @@ public class EAG_Manager : GameSetting
 
     private Operator GetOperatorForStep(int minOperatorIndex, int maxOperatorIndex)
     {
+        //연산자 선택
         int randomOperator = Random.Range(minOperatorIndex, maxOperatorIndex + 1);
         _Operator = operators[randomOperator];
         return (Operator)randomOperator;
@@ -169,11 +170,12 @@ public class EAG_Manager : GameSetting
 
     private void EnsureResultInRange(int min, int max)
     {
-        result = AnswerCalculator(selectedOperator);        
-        while(result < min || result > max)
+        //조건에 맞는 문제 선택
+        do
         {
             result = AnswerCalculator(selectedOperator);
-        }        
+        } 
+        while (result < min || result > max);          
     }
 
 
@@ -190,14 +192,13 @@ public class EAG_Manager : GameSetting
             min = 0;
             max = 100;
         }
-
-        result = AnswerCalculator(selectedOperator);
         
-        while (result < min || result >= max)
+        //조건에 맞는 문제 선택
+        do
         {
-            result = AnswerCalculator(selectedOperator);            
-        }        
-        
+            result = AnswerCalculator(selectedOperator);
+        } 
+        while (result < min || result >= max);
     }    
 
     

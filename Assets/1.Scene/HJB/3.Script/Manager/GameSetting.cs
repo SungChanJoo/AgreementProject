@@ -28,7 +28,7 @@ public abstract class GameSetting : MonoBehaviour,ITouchEffect
 
     [HideInInspector] public bool isStop = true;
 
-    [HideInInspector] public bool settingStop = false;
+    [HideInInspector] public static bool settingStop = false;
 
     [SerializeField] private TextMeshProUGUI startTimeSet;
 
@@ -40,17 +40,13 @@ public abstract class GameSetting : MonoBehaviour,ITouchEffect
 
     public Player_Data result_data;
 
-    public Result_Printer result_Printer;
+    public ResultPrinter result_Printer;
 
     private IEnumerator UpdateDatabaseFromData_co;
 
-    public AudioSource source;    
+    public AudioSource source;
 
-
-    private void Awake()
-    {
-        //source = GetComponent<AudioSource>();        
-    }
+    private int IndexDB;
 
     private void Start()
     {
@@ -65,12 +61,13 @@ public abstract class GameSetting : MonoBehaviour,ITouchEffect
         play_mode = StepManager.Instance.playMode;
         game_Type = StepManager.Instance.game_Type;
         step = StepManager.Instance.CurrentStep;
+        level = StepManager.Instance.CurrentLevel;
         if (game_Type >= Game_Type.C)
         {
             level = 1;
         }
         
-        if(TimeSlider.Instance.gameType == GameType.Solo)
+        if(TimeSlider.Instance.GameType == GameType.Solo)
         {
             timeSet = StepManager.Instance.CurrentTime;
         }
@@ -78,9 +75,10 @@ public abstract class GameSetting : MonoBehaviour,ITouchEffect
         {
             timeSet = 60;
         }
-        TimeSlider.Instance.startTime = timeSet;
-        TimeSlider.Instance.duration = timeSet;
-        Debug.Log($"game_Type : {game_Type}, level : {level}, step: {step} ");        
+        TimeSlider.Instance.StartTime_ = timeSet;
+        TimeSlider.Instance.Duration = timeSet;
+        Debug.Log($"game_Type : {game_Type}, level : {level}, step: {step} ");
+        IndexDB = DataBase.Instance.CharacterIndex;
         
     }
     private void ResultDataSet()
@@ -135,7 +133,7 @@ public abstract class GameSetting : MonoBehaviour,ITouchEffect
 
         //현재 마지막 Step이면 버튼 비활성화
         //남은시간
-        remainingTime = TimeSlider.Instance.startTime;
+        remainingTime = TimeSlider.Instance.StartTime_;
         playTime = TimeSlider.Instance.PlayTime;
 
         //Result_Data에 게임결과 할당
@@ -205,21 +203,23 @@ public abstract class GameSetting : MonoBehaviour,ITouchEffect
     }
     private void CalculateStarCoin()
     {
-        Player_DB db = DataBase.Instance.PlayerCharacter[0];
-        int db_starCount = db.Data[(game_Type, level, step)].StarCount;
         
-        starCoin = starcount * 15;
-        Debug.Log($"현재 별의 갯수 : {starcount} 코인 : {starCoin}");
+        Player_DB db = DataBase.Instance.PlayerCharacter[IndexDB];
+        int db_starCount = db.Data[(game_Type, level, step)].StarCount;
+        //기본 StarCoin 지급
+        starCoin = starcount * 15;        
+        
+        //최초 Star를 획득 시 30개 지급
         if (db_starCount < starcount)
         {
            int count = starcount - db_starCount;
             starCoin += count * 30;
-        }
-        Debug.Log($"totalCoin : {starCoin}");
+        }        
         DataBase.Instance.PlayerCharacter[0].StarCoin += starCoin;
     }
     private int GameScoreToStarCount(int score)
     {
+        //Score 2배 후 Score에 따른 Star 반환
         score *= 2;
         if (20000 <= score)
         {
@@ -238,18 +238,18 @@ public abstract class GameSetting : MonoBehaviour,ITouchEffect
             return 0;
         }
     }
-
+    
     private IEnumerator UpdateDatabaseFromData()
-    {
-        //string day = System.DateTime.Now.ToString("dd-MM-yy");
-        Player_DB db = DataBase.Instance.PlayerCharacter[0];
+    {        
+        Player_DB db = DataBase.Instance.PlayerCharacter[IndexDB];
+        db.StarCoin = DataBase.Instance.PlayerCharacter[IndexDB].StarCoin;
         Data_value data_Value = new Data_value(reactionRate, answersCount, answers, playTime, totalScore,starcount);        
         
         //만약 totalScore가 DB에 있는 점수보다 크다면 다시 할당
         if (db.Data[(game_Type, level, step)].TotalScore < totalScore)
         {
-            db.Data[(game_Type, level, step)] = data_Value;            
-            Client.Instance.AppGame_SaveResultDataToDB(db, game_Type,level,step);
+            db.Data[(game_Type, level, step)] = data_Value;
+            Client.instance.AppGame_SaveResultDataToDB(db, game_Type,level,step);
             Debug.Log("정상적으로 DB에 저장");
         }
         else
@@ -262,7 +262,7 @@ public abstract class GameSetting : MonoBehaviour,ITouchEffect
     {        
         SettingManager.Instance.EnableSettingBtn();
 
-        settingStop = !settingStop;
+        
         if (isStop)
         {   //게임 시작 전이라면 시간에 영향받지 않는
             SettingManager.Instance.NonTemporalSetting_Btn();
@@ -271,8 +271,7 @@ public abstract class GameSetting : MonoBehaviour,ITouchEffect
         {
             //게임 시작 후라면 시간 정지에 영향 주는 
             SettingManager.Instance.Setting_Btn();
-        }       
-        
+        }        
     }
     public void Start_Btn()
     {
@@ -293,6 +292,6 @@ public abstract class GameSetting : MonoBehaviour,ITouchEffect
 
     public virtual void TouchSoundCheck(bool answerCheck)
     {
-
+        //각 게임매니저 override 
     }
 }

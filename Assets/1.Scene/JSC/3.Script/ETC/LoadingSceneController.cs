@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
+//로딩화면 컨트롤 클래스
 public class LoadingSceneController : MonoBehaviour
 {
     static string nextScene = string.Empty;
@@ -29,6 +30,7 @@ public class LoadingSceneController : MonoBehaviour
         }
     }
 
+    //로딩 스크롤바 처리
     IEnumerator LoadSceneProcess()
     {
         AsyncOperation op = SceneManager.LoadSceneAsync(nextScene);

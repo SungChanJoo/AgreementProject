@@ -15,7 +15,11 @@ public class ProfileManager : MonoBehaviour
     [SerializeField] private LoadImage profileLoad ;
 
     [SerializeField] private TMP_InputField characterName;
-    private void OnEnable()
+    private void Start()
+    {
+        profileLoad.ProfileImage_Set();
+    }
+    public void ProfileDataSet()
     {
         profileLoad.ProfileImage_Set();
     }
@@ -23,17 +27,20 @@ public class ProfileManager : MonoBehaviour
     {
         PlayerChange_panel.SetActive(!PlayerChange_panel.activeSelf);
         if(PlayerChange_panel.activeSelf)
-            GetComponent<ProfileText_M>().LoadCharacterProfile();
+        {
+            DataBase.Instance.LoadUserList();
+            GetComponent<ProfileText>().LoadCharacterProfile();
+        }
     }
 
     public void PlayerRegistration_UI()
     {
         PlayerRegistration_panel.SetActive(!PlayerRegistration_panel.activeSelf);
         if (PlayerChange_panel.activeSelf)
-            GetComponent<ProfileText_M>().Registration_InputField();
+            GetComponent<ProfileText>().Registration_InputField();
     }
     public void PlayerNameChange_UI()
-    {
+    {        
         PlayerNameChange_panel.SetActive(!PlayerNameChange_panel.activeSelf);
     }
     public void PlayerBirthDay_UI()
@@ -55,7 +62,7 @@ public class ProfileManager : MonoBehaviour
     public void AddCharacter()
     {
         //이름 등록
-        var characters = GetComponent<ProfileText_M>().Characters.
+        var characters = GetComponent<ProfileText>().Characters.
             transform.GetChild(DataBase.Instance.UserList.createdCharactorCount).gameObject;
         characters.SetActive(true);
         Debug.Log(characters.name);

@@ -10,7 +10,8 @@ using System;
 
 public class LoadImage : MonoBehaviour
 {
-    [SerializeField] private ProfileText_M profileText_;
+    public static LoadImage Instance = null;
+    [SerializeField] private ProfileText profileText_;
     [SerializeField] private GameObject content_obj;
     [SerializeField] private GameObject image_prefeb;
     [SerializeField] private Image profile_Img;
@@ -26,14 +27,22 @@ public class LoadImage : MonoBehaviour
             Debug.Log("이미지가 변경되었습니다.");
         }
     }
-
-
-
     private GameObject[] image_obj; 
     private Texture2D[] texture2Ds;
     private bool loading = false;
 
-    
+    private void Awake()
+    {
+        if (Instance == null)
+        {
+            Instance = this;
+        }
+        else
+        {
+            Destroy(gameObject);
+        }
+        gameObject.SetActive(false);
+    }
     public void ImageFileLoad()
     {
         if (!loading)
@@ -111,7 +120,8 @@ public class LoadImage : MonoBehaviour
 
     public void ProfileImage_Set()
     {
-        byte[] fileData = DataBase.Instance.PlayerCharacter[0].image;
+        int player_num = DataBase.Instance.CharacterIndex;
+        byte[] fileData = DataBase.Instance.PlayerCharacter[player_num].image;
         Texture2D texture = new Texture2D(2, 2);
         texture.LoadImage(fileData);
         Rect rect = new Rect(0, 0, texture.width, texture.height);

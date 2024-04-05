@@ -16,12 +16,6 @@ public class AudioManager : MonoBehaviour
     [SerializeField] private Slider bgm_slider;
     [SerializeField] private Slider sfx_slider;
 
-    private float masterValue;
-    private float bgmValue;
-    private float sfxValue;
-
-    private Game_Type game_Type;
-
     int currentClip=4;
 
     private void Awake()
@@ -69,7 +63,6 @@ public class AudioManager : MonoBehaviour
             case 0:
                 if (check)
                 {
-
                     Master_VolumeSet();
                     master_slider.interactable = true;
                 }

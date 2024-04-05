@@ -2,24 +2,21 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Mirror;
-
+//폭죽 클래스
 public class Firecracker : ObjInteractable
 {
     public List<GameObject> ParticleList;
-
-
     //이펙트 실행
     public override IEnumerator PlayInterctable()
     {
-        //파티클 리스트 만들어서 랜덤 파티클 해줘 todo 02.16
-        var rand = Random.Range(0, ParticleList.Count);
+        var rand = Random.Range(0, ParticleList.Count); //ParticleList에서 랜덤한 폭죽 이펙트 재생
         InteractableParticle.SetActive(false);
         ParticleList[rand].SetActive(true);
-        yield return new WaitForSeconds(PlayTime);
+        yield return new WaitForSeconds(PlayTime); //폭죽 이펙트 재생시간
         ParticleList[rand].SetActive(false);
-        yield return new WaitForSeconds(LimitTime);
-        if(player != null)
-            InteractableParticle.SetActive(true);
+        yield return new WaitForSeconds(LimitTime);//폭죽 이펙트 쿨타임
+        if (Player != null)
+            InteractableParticle.SetActive(true); // 상호작용 가능한 것을 알리기 위한 이펙트
         currentPlayInterctable = null;
     }
 }

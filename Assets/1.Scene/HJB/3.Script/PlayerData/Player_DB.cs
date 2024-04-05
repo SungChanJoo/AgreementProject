@@ -9,6 +9,7 @@ public class Player_DB
     public string BirthDay;
     public int TotalAnswers;
     public float TotalTime;
+    public int StarCoin;
     
     public Dictionary<(Game_Type, int, int), Data_value> Data = 
         new Dictionary<(Game_Type, int, int), Data_value>();
@@ -18,7 +19,6 @@ public class Player_DB
     public LastPlayData LastPlayStepData;
     public AnalyticsProfileData analyticsProfileData;
 
-    public int StarCoin = 0;
 }
 [System.Serializable]
 public class Data_value
