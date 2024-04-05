@@ -9174,7 +9174,7 @@ Transform:
   - {fileID: 1616613050}
   - {fileID: 989736900}
   m_Father: {fileID: 1242267602}
-  m_RootOrder: 6
+  m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &675293578
 PrefabInstance:
@@ -13005,7 +13005,7 @@ GameObject:
   - component: {fileID: 953525169}
   - component: {fileID: 953525173}
   m_Layer: 0
-  m_Name: PetSwitchNetworkManager
+  m_Name: CrewSwitchNetworkManager
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -16444,8 +16444,8 @@ Transform:
   - {fileID: 1365356325}
   - {fileID: 1548978557}
   - {fileID: 1650173685}
-  - {fileID: 1063805054}
   - {fileID: 650934647}
+  - {fileID: 1063805054}
   - {fileID: 26011213}
   - {fileID: 1168708289}
   - {fileID: 812279387}
