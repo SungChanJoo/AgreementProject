@@ -429,9 +429,9 @@ public class CollectionsManager : MonoBehaviour
             purchaseWindow.SetActive(false);
             purchaseBtn.GetComponent<Button>().onClick.RemoveAllListeners();
             //대원 구매 시 DB에 현재 탐험대원 도감 반영
-            if (Client.Instance != null)
+            if (Client.instance != null)
             {
-                Client.Instance.AppExit_SaveExpenditionCrewDataToDB(Collections);
+                Client.instance.AppExit_SaveExpenditionCrewDataToDB(Collections);
             }
         }
         else
