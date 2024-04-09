@@ -2103,7 +2103,6 @@ public class DBManager : MonoBehaviour
         // 오늘(today, 월요일)과 일주일전(week ago, 월요일)
         // 월요일이 오늘인 때에 실행되므로, 하루와 일주일을 뺸 요일로 이름을 저장한다.
         DateTime currentDate = DateTime.Now;
-        //currentDate = _dbStandardDay;
         currentDate = currentDate.AddDays(-1);
         string yesterday = $"{currentDate.Year.ToString().Substring(2, 2)}.{currentDate.Month:00}.{currentDate.Day:00}";
         currentDate = currentDate.AddDays(-6);

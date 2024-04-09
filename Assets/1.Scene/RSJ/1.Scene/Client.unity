@@ -4852,7 +4852,7 @@ MonoBehaviour:
     m_LineSpacing: 1
   m_Text: 'Client
 
-    Change Charactor'
+    Delete Charactor'
 --- !u!222 &1450163700
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -5603,8 +5603,6 @@ MonoBehaviour:
   server_IP: 127.0.0.1
   server_Port: 2421
   LicenseFolderPath: 
-  ServerIpObj: {fileID: 0}
-  ServerIp: {fileID: 0}
 --- !u!4 &1823038814
 Transform:
   m_ObjectHideFlags: 0

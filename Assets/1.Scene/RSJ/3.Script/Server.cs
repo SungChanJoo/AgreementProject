@@ -21,9 +21,6 @@ public class Server : MonoBehaviour
     private TcpListener server;
     private bool isServerStarted;
 
-    // 클라이언트에게 라이센스번호를 부여하기위한 변수
-    private int clientLicenseNumber;
-
     // 서버-클라이언트 string으로 data 주고받을때 구분하기 위한 문자열
     private const string separatorString = "E|";
 
@@ -342,7 +339,7 @@ public class Server : MonoBehaviour
             nextMidnight = DateTime.Today.AddDays(1);
             TimeSpan timeUntilMidnight = nextMidnight - DateTime.Now;
 
-            //// Test용
+            //// Test용_Timer 10초
             //DateTime testAfterOneMinute = DateTime.Now.AddSeconds(10);
             //timeUntilMidnight = testAfterOneMinute - DateTime.Now;
 
@@ -392,7 +389,6 @@ public class Server : MonoBehaviour
 
         // 매주 월요일이 되면 weeklyrankDB에 한주간 rank table 생성
         TimeSpan timeSpan = DateTime.Now.Date - standardDay.Date;
-        Debug.Log("[Server] Complete Create DateDB");
 
         if (timeSpan.Days == 7)
         {
