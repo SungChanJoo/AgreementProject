@@ -207,7 +207,7 @@ public abstract class GameSetting : MonoBehaviour,ITouchEffect
         Player_DB db = DataBase.Instance.PlayerCharacter[IndexDB];
         int db_starCount = db.Data[(game_Type, level, step)].StarCount;
         //기본 StarCoin 지급
-        starCoin = starcount * 15;        
+        starCoin = starcount * 15;
         
         //최초 Star를 획득 시 30개 지급
         if (db_starCount < starcount)
@@ -215,7 +215,7 @@ public abstract class GameSetting : MonoBehaviour,ITouchEffect
            int count = starcount - db_starCount;
             starCoin += count * 30;
         }        
-        DataBase.Instance.PlayerCharacter[0].StarCoin += starCoin;
+        DataBase.Instance.PlayerCharacter[IndexDB].StarCoin += starCoin;
     }
     private int GameScoreToStarCount(int score)
     {
@@ -255,6 +255,7 @@ public abstract class GameSetting : MonoBehaviour,ITouchEffect
         else
         {
             Debug.Log("최종점수가 DB에 있는 점수보다 낮아서 저장안함 ");
+            Client.Instance.AppGame_SaveCoinToDB(db.StarCoin);
         }
         yield return null;
     }

@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.4543181, g: 0.77287054, b: 0.8653661, a: 1}
+  m_IndirectSpecularColor: {r: 0.4400781, g: 0.75001, b: 0.84024215, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -1485,20 +1485,20 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2bb5cf6dadf54af499fb05a8bd93553c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  slider: {fileID: 799251394}
+  Slider: {fileID: 799251394}
   sliderVar_Image: {fileID: 1298881747}
-  slider_PlayerTwo: {fileID: 0}
+  Slider_PlayerTwo: {fileID: 799251394}
   sliderVar_Image_PlayerTwo: {fileID: 0}
-  ChangeTime: 0.4
+  changeTime: 0
   changeDuration: 10
-  gameType: 0
-  time: 0
+  GameType: 0
+  Time: 0
   PlayTime: 0
-  isStop: 0
-  isGameOver: 0
-  startTime: 6
-  duration: 6
-  startTimeTwo: 0
+  IsStop: 0
+  IsGameOver: 0
+  StartTime_: 0
+  Duration: 0
+  StartTimeTwo: 0
   Decreasetime: 0
   TimeStop: 1
 --- !u!114 &799251394
@@ -2202,8 +2202,7 @@ MonoBehaviour:
   defaultPosition: {fileID: 4418642233645562839}
   aopManager: {fileID: 2092200715}
   eag_ani: {fileID: 7151539100570712826}
-  speed: 2
-  answer: 0
+  Answer: 0
 --- !u!1 &1127719517
 GameObject:
   m_ObjectHideFlags: 0
@@ -4145,7 +4144,6 @@ MonoBehaviour:
   starcount: 0
   starCoin: 0
   isStop: 1
-  settingStop: 0
   startTimeSet: {fileID: 0}
   nextStep_Btn: {fileID: 8522782060019054123}
   timeset: 2
@@ -4939,7 +4937,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   timeSet: 5
-  cube_text: {fileID: 0}
+  cubeText: {fileID: 0}
   result: 0
   reactionRate: 0
   index: 0

@@ -34,13 +34,12 @@ public class MainMenuManager : MonoBehaviour
 
         SettingManager.Instance.EnableSettingBtn();
         AudioManager.Instance.BGM_Play(0);        
-        string net_state = DataBase.Instance.network_state ?  "연결": "연결안됨";
-        NetworkState_UI.text = net_state;
-        //플레이어 기본 정보 불러오기        
+        //연결 상태 확인
+        NetworkState_UI.text = DataBase.Instance.network_state ? "연결" : "연결안됨";        
+        Cost_UI.text = DataBase.Instance.PlayerCharacter[DataBase.Instance.CharacterIndex].StarCoin.ToString();
     }
     private void OnEnable()
     {
-        Cost_UI.text = DataBase.Instance.PlayerCharacter[DataBase.Instance.CharacterIndex].StarCoin.ToString();
     }
     public void GameScene()
     {        

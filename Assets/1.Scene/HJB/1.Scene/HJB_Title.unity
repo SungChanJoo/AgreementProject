@@ -575,8 +575,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   server_IP: 43.201.26.36
   server_Port: 2421
-  licenseFolderPath: 
-  CharactorData_FromServer: []
+  LicenseFolderPath: 
   ServerIpObj: {fileID: 760960058}
   ServerIp: {fileID: 656972339}
 --- !u!4 &427120338

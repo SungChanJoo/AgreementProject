@@ -9,6 +9,7 @@ using System.IO;
 using System.Threading.Tasks;
 using LitJson;
 using System.Linq;
+using TMPro;
 //using Unity.Android;
 
 public class Client : MonoBehaviour
@@ -50,6 +51,8 @@ public class Client : MonoBehaviour
     // 기타 데이터 처리용 Handler
     private ETCMethodHandler etcMethodHandler;
 
+    [SerializeField] private GameObject ServerIpObj;
+    [SerializeField] private TMP_InputField ServerIp;
     public Client(NetworkStream _stream)
     {
         stream = _stream;
@@ -70,12 +73,16 @@ public class Client : MonoBehaviour
             return;
         }
     }
-
-    private void Start()
+        
+    public void SetServerIp()
     {
+        server_IP = ServerIp.text;
         ETCInitSetting();
         ConnectToServer();
         ClientLoginSet();
+        DataBase.Instance.LoadUserList();
+        DataBase.Instance.PlayerDataLoad();
+        ServerIpObj.SetActive(false);
     }
 
     #region Start() Methods, Setting and Connect to Server
@@ -1225,7 +1232,7 @@ public class Client : MonoBehaviour
     public void AppGame_SaveCoinToDB(int coin)
     {
         string requestName = "[Save]Coin";
-        string requestData = $"{requestName}|{ClientLicenseNumber}|{ClientCharactor}|{coin}|{separatorString}";
+        string requestData = $"{requestName}|{ClientLicenseNumber}|{ClientCharactor}|{coin}|{separatorString}Finish";
 
         RequestToServer(requestData);
     }

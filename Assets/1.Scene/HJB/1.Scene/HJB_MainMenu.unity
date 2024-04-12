@@ -59498,6 +59498,30 @@ PrefabInstance:
       propertyPath: m_Name
       value: PlayerName_title
       objectReference: {fileID: 0}
+    - target: {fileID: 1022679586984827444, guid: 095f79abef64e1047bd7d30f48ccc1d5, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
+      value: 
+      objectReference: {fileID: 1420689191}
+    - target: {fileID: 1022679586984827444, guid: 095f79abef64e1047bd7d30f48ccc1d5, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[1].m_Target
+      value: 
+      objectReference: {fileID: 1420689192}
+    - target: {fileID: 1022679586984827444, guid: 095f79abef64e1047bd7d30f48ccc1d5, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: Venezia_Btn
+      objectReference: {fileID: 0}
+    - target: {fileID: 1022679586984827444, guid: 095f79abef64e1047bd7d30f48ccc1d5, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[1].m_MethodName
+      value: SelectGame
+      objectReference: {fileID: 0}
+    - target: {fileID: 1022679586984827444, guid: 095f79abef64e1047bd7d30f48ccc1d5, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
+      value: ChartButtonEvent, Assembly-CSharp
+      objectReference: {fileID: 0}
+    - target: {fileID: 1022679586984827444, guid: 095f79abef64e1047bd7d30f48ccc1d5, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[1].m_TargetAssemblyTypeName
+      value: AnalysisChart, Assembly-CSharp
+      objectReference: {fileID: 0}
     - target: {fileID: 1875806314596426195, guid: 095f79abef64e1047bd7d30f48ccc1d5, type: 3}
       propertyPath: m_Name
       value: ShowAnswerRate_Btn
@@ -59518,9 +59542,81 @@ PrefabInstance:
       propertyPath: m_SizeDelta.y
       value: 600
       objectReference: {fileID: 0}
+    - target: {fileID: 2647092257666336692, guid: 095f79abef64e1047bd7d30f48ccc1d5, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
+      value: 
+      objectReference: {fileID: 1420689191}
+    - target: {fileID: 2647092257666336692, guid: 095f79abef64e1047bd7d30f48ccc1d5, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[1].m_Target
+      value: 
+      objectReference: {fileID: 1420689192}
+    - target: {fileID: 2647092257666336692, guid: 095f79abef64e1047bd7d30f48ccc1d5, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: ChangeButtonChart_Level
+      objectReference: {fileID: 0}
+    - target: {fileID: 2647092257666336692, guid: 095f79abef64e1047bd7d30f48ccc1d5, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[1].m_MethodName
+      value: SelectLevel
+      objectReference: {fileID: 0}
+    - target: {fileID: 2647092257666336692, guid: 095f79abef64e1047bd7d30f48ccc1d5, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
+      value: ChartButtonEvent, Assembly-CSharp
+      objectReference: {fileID: 0}
+    - target: {fileID: 2647092257666336692, guid: 095f79abef64e1047bd7d30f48ccc1d5, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[1].m_TargetAssemblyTypeName
+      value: AnalysisChart, Assembly-CSharp
+      objectReference: {fileID: 0}
     - target: {fileID: 2647092257672530515, guid: 095f79abef64e1047bd7d30f48ccc1d5, type: 3}
       propertyPath: m_LocalPosition.z
       value: -77
+      objectReference: {fileID: 0}
+    - target: {fileID: 2647092257756381131, guid: 095f79abef64e1047bd7d30f48ccc1d5, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
+      value: 
+      objectReference: {fileID: 1420689191}
+    - target: {fileID: 2647092257756381131, guid: 095f79abef64e1047bd7d30f48ccc1d5, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[1].m_Target
+      value: 
+      objectReference: {fileID: 1420689192}
+    - target: {fileID: 2647092257756381131, guid: 095f79abef64e1047bd7d30f48ccc1d5, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: ChangeButtonChart_Gmae
+      objectReference: {fileID: 0}
+    - target: {fileID: 2647092257756381131, guid: 095f79abef64e1047bd7d30f48ccc1d5, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[1].m_MethodName
+      value: SelectGame
+      objectReference: {fileID: 0}
+    - target: {fileID: 2647092257756381131, guid: 095f79abef64e1047bd7d30f48ccc1d5, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
+      value: ChartButtonEvent, Assembly-CSharp
+      objectReference: {fileID: 0}
+    - target: {fileID: 2647092257756381131, guid: 095f79abef64e1047bd7d30f48ccc1d5, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[1].m_TargetAssemblyTypeName
+      value: AnalysisChart, Assembly-CSharp
+      objectReference: {fileID: 0}
+    - target: {fileID: 2647092257783813878, guid: 095f79abef64e1047bd7d30f48ccc1d5, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
+      value: 
+      objectReference: {fileID: 1420689191}
+    - target: {fileID: 2647092257783813878, guid: 095f79abef64e1047bd7d30f48ccc1d5, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[1].m_Target
+      value: 
+      objectReference: {fileID: 1420689192}
+    - target: {fileID: 2647092257783813878, guid: 095f79abef64e1047bd7d30f48ccc1d5, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: ChangeButtonChart_Level
+      objectReference: {fileID: 0}
+    - target: {fileID: 2647092257783813878, guid: 095f79abef64e1047bd7d30f48ccc1d5, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[1].m_MethodName
+      value: SelectLevel
+      objectReference: {fileID: 0}
+    - target: {fileID: 2647092257783813878, guid: 095f79abef64e1047bd7d30f48ccc1d5, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
+      value: ChartButtonEvent, Assembly-CSharp
+      objectReference: {fileID: 0}
+    - target: {fileID: 2647092257783813878, guid: 095f79abef64e1047bd7d30f48ccc1d5, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[1].m_TargetAssemblyTypeName
+      value: AnalysisChart, Assembly-CSharp
       objectReference: {fileID: 0}
     - target: {fileID: 2647092257967753410, guid: 095f79abef64e1047bd7d30f48ccc1d5, type: 3}
       propertyPath: m_Sprite
@@ -59529,6 +59625,30 @@ PrefabInstance:
     - target: {fileID: 2647092257975888162, guid: 095f79abef64e1047bd7d30f48ccc1d5, type: 3}
       propertyPath: m_LocalPosition.z
       value: -77
+      objectReference: {fileID: 0}
+    - target: {fileID: 2647092258075658553, guid: 095f79abef64e1047bd7d30f48ccc1d5, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
+      value: 
+      objectReference: {fileID: 1420689191}
+    - target: {fileID: 2647092258075658553, guid: 095f79abef64e1047bd7d30f48ccc1d5, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[1].m_Target
+      value: 
+      objectReference: {fileID: 1420689192}
+    - target: {fileID: 2647092258075658553, guid: 095f79abef64e1047bd7d30f48ccc1d5, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: ChangeButtonChart_Gmae
+      objectReference: {fileID: 0}
+    - target: {fileID: 2647092258075658553, guid: 095f79abef64e1047bd7d30f48ccc1d5, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[1].m_MethodName
+      value: SelectGame
+      objectReference: {fileID: 0}
+    - target: {fileID: 2647092258075658553, guid: 095f79abef64e1047bd7d30f48ccc1d5, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
+      value: ChartButtonEvent, Assembly-CSharp
+      objectReference: {fileID: 0}
+    - target: {fileID: 2647092258075658553, guid: 095f79abef64e1047bd7d30f48ccc1d5, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[1].m_TargetAssemblyTypeName
+      value: AnalysisChart, Assembly-CSharp
       objectReference: {fileID: 0}
     - target: {fileID: 2647092258102714113, guid: 095f79abef64e1047bd7d30f48ccc1d5, type: 3}
       propertyPath: m_LocalPosition.z
@@ -59642,13 +59762,85 @@ PrefabInstance:
       propertyPath: m_LocalPosition.z
       value: -77
       objectReference: {fileID: 0}
+    - target: {fileID: 2647092258597288442, guid: 095f79abef64e1047bd7d30f48ccc1d5, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
+      value: 
+      objectReference: {fileID: 1420689191}
+    - target: {fileID: 2647092258597288442, guid: 095f79abef64e1047bd7d30f48ccc1d5, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[1].m_Target
+      value: 
+      objectReference: {fileID: 1420689192}
+    - target: {fileID: 2647092258597288442, guid: 095f79abef64e1047bd7d30f48ccc1d5, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: ChangeButtonChart_Gmae
+      objectReference: {fileID: 0}
+    - target: {fileID: 2647092258597288442, guid: 095f79abef64e1047bd7d30f48ccc1d5, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[1].m_MethodName
+      value: SelectGame
+      objectReference: {fileID: 0}
+    - target: {fileID: 2647092258597288442, guid: 095f79abef64e1047bd7d30f48ccc1d5, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
+      value: ChartButtonEvent, Assembly-CSharp
+      objectReference: {fileID: 0}
+    - target: {fileID: 2647092258597288442, guid: 095f79abef64e1047bd7d30f48ccc1d5, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[1].m_TargetAssemblyTypeName
+      value: AnalysisChart, Assembly-CSharp
+      objectReference: {fileID: 0}
     - target: {fileID: 2647092258729677484, guid: 095f79abef64e1047bd7d30f48ccc1d5, type: 3}
       propertyPath: m_LocalPosition.z
       value: -77
       objectReference: {fileID: 0}
+    - target: {fileID: 2647092258935281979, guid: 095f79abef64e1047bd7d30f48ccc1d5, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
+      value: 
+      objectReference: {fileID: 1420689191}
+    - target: {fileID: 2647092258935281979, guid: 095f79abef64e1047bd7d30f48ccc1d5, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[1].m_Target
+      value: 
+      objectReference: {fileID: 1420689192}
+    - target: {fileID: 2647092258935281979, guid: 095f79abef64e1047bd7d30f48ccc1d5, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: ChangeButtonChart_Level
+      objectReference: {fileID: 0}
+    - target: {fileID: 2647092258935281979, guid: 095f79abef64e1047bd7d30f48ccc1d5, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[1].m_MethodName
+      value: SelectLevel
+      objectReference: {fileID: 0}
+    - target: {fileID: 2647092258935281979, guid: 095f79abef64e1047bd7d30f48ccc1d5, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
+      value: ChartButtonEvent, Assembly-CSharp
+      objectReference: {fileID: 0}
+    - target: {fileID: 2647092258935281979, guid: 095f79abef64e1047bd7d30f48ccc1d5, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[1].m_TargetAssemblyTypeName
+      value: AnalysisChart, Assembly-CSharp
+      objectReference: {fileID: 0}
     - target: {fileID: 2647092258976931880, guid: 095f79abef64e1047bd7d30f48ccc1d5, type: 3}
       propertyPath: m_SizeDelta.y
       value: 1000
+      objectReference: {fileID: 0}
+    - target: {fileID: 2964870694322280509, guid: 095f79abef64e1047bd7d30f48ccc1d5, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
+      value: 
+      objectReference: {fileID: 1420689191}
+    - target: {fileID: 2964870694322280509, guid: 095f79abef64e1047bd7d30f48ccc1d5, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[1].m_Target
+      value: 
+      objectReference: {fileID: 1420689192}
+    - target: {fileID: 2964870694322280509, guid: 095f79abef64e1047bd7d30f48ccc1d5, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: Venezia_Btn
+      objectReference: {fileID: 0}
+    - target: {fileID: 2964870694322280509, guid: 095f79abef64e1047bd7d30f48ccc1d5, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[1].m_MethodName
+      value: SelectGame
+      objectReference: {fileID: 0}
+    - target: {fileID: 2964870694322280509, guid: 095f79abef64e1047bd7d30f48ccc1d5, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
+      value: ChartButtonEvent, Assembly-CSharp
+      objectReference: {fileID: 0}
+    - target: {fileID: 2964870694322280509, guid: 095f79abef64e1047bd7d30f48ccc1d5, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[1].m_TargetAssemblyTypeName
+      value: AnalysisChart, Assembly-CSharp
       objectReference: {fileID: 0}
     - target: {fileID: 5485081735387739147, guid: 095f79abef64e1047bd7d30f48ccc1d5, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
@@ -59677,6 +59869,30 @@ PrefabInstance:
     - target: {fileID: 6251428349161360750, guid: 095f79abef64e1047bd7d30f48ccc1d5, type: 3}
       propertyPath: m_AnchoredPosition.y
       value: -105
+      objectReference: {fileID: 0}
+    - target: {fileID: 7178655660523280294, guid: 095f79abef64e1047bd7d30f48ccc1d5, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
+      value: 
+      objectReference: {fileID: 1420689191}
+    - target: {fileID: 7178655660523280294, guid: 095f79abef64e1047bd7d30f48ccc1d5, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[1].m_Target
+      value: 
+      objectReference: {fileID: 1420689192}
+    - target: {fileID: 7178655660523280294, guid: 095f79abef64e1047bd7d30f48ccc1d5, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: Venezia_Btn
+      objectReference: {fileID: 0}
+    - target: {fileID: 7178655660523280294, guid: 095f79abef64e1047bd7d30f48ccc1d5, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[1].m_MethodName
+      value: SelectGame
+      objectReference: {fileID: 0}
+    - target: {fileID: 7178655660523280294, guid: 095f79abef64e1047bd7d30f48ccc1d5, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
+      value: ChartButtonEvent, Assembly-CSharp
+      objectReference: {fileID: 0}
+    - target: {fileID: 7178655660523280294, guid: 095f79abef64e1047bd7d30f48ccc1d5, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[1].m_TargetAssemblyTypeName
+      value: AnalysisChart, Assembly-CSharp
       objectReference: {fileID: 0}
     - target: {fileID: 8254549996308808958, guid: 095f79abef64e1047bd7d30f48ccc1d5, type: 3}
       propertyPath: m_Sprite
