@@ -148,11 +148,15 @@ public class AnalysisChart : MonoBehaviour
     public void SelectGame(int num)
     {
         game_type = (Game_Type)num;
+        if (game_type >= Game_Type.C)
+        {
+            level_num = 1;
+        }
         ShowChartData();
     }
     public void SelectLevel(int num)
     {
-        level_num = num+1;
+        level_num = num;
         ShowChartData();
     }
     private void ShowChartData()

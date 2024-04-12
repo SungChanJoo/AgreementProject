@@ -11,18 +11,13 @@ public class ChartButtonEvent : MonoBehaviour
     [SerializeField] private Image[] venezia_btn;
 
     [SerializeField] private Sprite select_img;
-    [SerializeField] private Sprite Non_img;
+    [SerializeField] private Sprite non_img;
 
     [SerializeField] private GameObject venezia_panel;
 
     private Image[] chartlevel_img;
-    private Image[] chartGame_img;
-
+    private Image[] chartGame_img;          
    
-
-    private byte current_day;
-    private byte current_gameType;
-    private byte current_level;
     private void Awake()
     {
         ChartButtonReference();
@@ -44,8 +39,10 @@ public class ChartButtonEvent : MonoBehaviour
             chartlevel_img[i] = chartlevel_btn[i].GetComponent<Image>();
         }
     }
+    
     public void ChangeButtonChart_Level(int level)
     {
+        //level 버튼 클릭 sprite 변경
         for (int i = 0; i < chartlevel_btn.Length; i++)
         {
             if (i == (level - 1))
@@ -54,23 +51,27 @@ public class ChartButtonEvent : MonoBehaviour
             }
             else
             {
-                chartlevel_img[i].sprite = Non_img;
+                chartlevel_img[i].sprite = non_img;
             }
-        }
-        current_level = (byte)level;
+        }              
     }
     public void ChangeButtonChart_Gmae(int game)
     {
+        //Game 버튼 클릭 sprite 변경
         if (game ==3)
         {
+            //통통별 게임 버튼 활성화
             venezia_panel.SetActive(true);
+            ChangeButtonChart_Level(1);
             for (int i = 0; i < chartlevel_btn.Length; i++)
             {
+                //통통별 게임은 레벨이 없기 때문에 비활성화
                 chartlevel_img[i].gameObject.SetActive(false);
             }
         }
         else
         {
+            //통통별 게임 버튼 비활성화
             venezia_panel.SetActive(false);
             for (int i = 0; i < chartlevel_btn.Length; i++)
             {
@@ -85,10 +86,9 @@ public class ChartButtonEvent : MonoBehaviour
             }
             else
             {
-                chartGame_img[i].sprite = Non_img;
+                chartGame_img[i].sprite = non_img;
             }
-        }
-        current_gameType = (byte)game;
+        }               
     }
     public void Venezia_Btn(int game)
     {
@@ -100,10 +100,9 @@ public class ChartButtonEvent : MonoBehaviour
             }
             else
             {
-                venezia_btn[i].sprite = Non_img;
+                venezia_btn[i].sprite = non_img;
             }
-        }
-        current_gameType = (byte)game;
+        }        
     }
     
 
