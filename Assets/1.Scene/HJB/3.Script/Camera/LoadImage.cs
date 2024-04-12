@@ -53,8 +53,10 @@ public class LoadImage : MonoBehaviour
     }    
     private IEnumerator ImageFileLoad_Co()
     {
+        //이미지 파일 불러오기  파일이 1개 이상이라면
         if (content_obj.transform.childCount>0)
         {
+            //이전 오브젝트 초기화
             GameObject[] children = new GameObject[content_obj.transform.childCount];
             for (int i = 0; i < content_obj.transform.childCount; i++)
             {
@@ -65,7 +67,10 @@ public class LoadImage : MonoBehaviour
                 Destroy(child);
             }
         }
+        //접근권한 한번 더 물어보기
         SettingManager.Instance.Re_AppSetPermission();
+
+        //경로 확인 및 jpg 전부 배열에 담기
         string pathFolder = Application.persistentDataPath;
         string galleryPath = $"{pathFolder}/";
         string[] imageFiles = Directory.GetFiles(galleryPath, "*.jpg");
@@ -73,6 +78,7 @@ public class LoadImage : MonoBehaviour
         texture2Ds = new Texture2D[imageFiles.Length];
         image_obj = new GameObject[imageFiles.Length];
 
+        //불러온 이미지에 버튼 이벤트 할당 
         for (int i = 0; i < imageFiles.Length; i++)
         {
             image_obj[i] = Instantiate(image_prefeb);
@@ -101,6 +107,7 @@ public class LoadImage : MonoBehaviour
     }    
     public void Selectprofile_Change()
     {
+        //변경하기 버튼 눌렀을 시 DB에 데이터 저장
         try
         {
             Texture2D texture_save = profile_Img.sprite.texture;
@@ -120,6 +127,7 @@ public class LoadImage : MonoBehaviour
 
     public void ProfileImage_Set()
     {
+        //프로필 이미지 기본 설정값 불러오기
         int player_num = DataBase.Instance.CharacterIndex;
         byte[] fileData = DataBase.Instance.PlayerCharacter[player_num].image;
         Texture2D texture = new Texture2D(2, 2);
