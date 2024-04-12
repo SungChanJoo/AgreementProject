@@ -2457,24 +2457,24 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 016f8acf90b099a40807819b1ecf004b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Cube: {fileID: 1079827597520798626, guid: 42324beeb234f8b4b876e05c9fb72576, type: 3}
-  Pool_Position: {fileID: 788314112}
-  Pool_PositionTwo: {fileID: 962878335}
-  CubeParentObject: {fileID: 577192753}
-  CubeParentObjectTwo: {fileID: 1366681388}
-  ItemParentObject: {fileID: 1774103092}
+  cube: {fileID: 1079827597520798626, guid: 42324beeb234f8b4b876e05c9fb72576, type: 3}
+  pool_Position: {fileID: 788314112}
+  pool_PositionTwo: {fileID: 962878335}
+  cubeParentObject: {fileID: 577192753}
+  cubeParentObjectTwo: {fileID: 1366681388}
+  itemParentObject: {fileID: 1774103092}
   PlayerOne_Boom: {fileID: 1774103092}
   PlayerTwo_Boom: {fileID: 12111037}
-  MeteorPrefab: {fileID: 371837130864099498, guid: 341d2eb32cfd00e45a350a399d1fbadf, type: 3}
-  PausePrefab: {fileID: 7255894919554607050, guid: 75b3928eb8a2b994081d038c0d9042b6, type: 3}
-  BoomPrefab: {fileID: 371837130864099498, guid: 1f3a0dd8989b2a14dbcb21cdb59fcfbb, type: 3}
+  meteorPrefab: {fileID: 371837130864099498, guid: 341d2eb32cfd00e45a350a399d1fbadf, type: 3}
+  pausePrefab: {fileID: 7255894919554607050, guid: 75b3928eb8a2b994081d038c0d9042b6, type: 3}
+  boomPrefab: {fileID: 371837130864099498, guid: 1f3a0dd8989b2a14dbcb21cdb59fcfbb, type: 3}
   sprite: {fileID: 0}
-  QuestImg: {fileID: 240970841}
-  QuestTwoImg: {fileID: 1375934404}
+  questImg: {fileID: 240970841}
+  questTwoImg: {fileID: 1375934404}
   CubeCount: 1
   ItemCount: 5
-  cubePool: []
-  cubePoolTwo: []
+  CubePool: []
+  CubePoolTwo: []
   MeteorPool: []
   PausePool: []
   BoomPool: []
@@ -5021,14 +5021,14 @@ MonoBehaviour:
   result_Printer: {fileID: 0}
   source: {fileID: 0}
   veneGameOver: {fileID: 3714140056329517844}
-  CubeParent: {fileID: 577192752}
-  veneGameMode: 1
-  isGameover: 0
+  cubeParent: {fileID: 577192752}
+  VeneGameMode: 1
+  IsGameover: 0
   Quest_Img: {fileID: 240970841}
-  Quest_text: {fileID: 1885517469}
+  quest_text: {fileID: 1885517469}
   Quest2_Img: {fileID: 1375934404}
-  Quest2_text: {fileID: 1788960888}
-  sprites_K:
+  quest2_text: {fileID: 1788960888}
+  Sprites_K:
   - {fileID: 21300000, guid: 5470053b39c84334d9ca6b2dd6169183, type: 3}
   - {fileID: 21300000, guid: aaf53f4ecb353a54fbdd88f2b935b314, type: 3}
   - {fileID: 21300000, guid: 06b0b43dbad9aea40826621449848b42, type: 3}
@@ -5134,7 +5134,7 @@ MonoBehaviour:
   - {fileID: 21300000, guid: 2893db605786b454f8613e8566ba62a0, type: 3}
   - {fileID: 21300000, guid: 28bfedc144044a1489639c3d1aefcd4e, type: 3}
   - {fileID: 21300000, guid: 0f15d252779b778499c16ddf4b5237a6, type: 3}
-  sprites_E:
+  Sprites_E:
   - {fileID: 21300000, guid: 3a2527556b5ba0b4a9b4d6b2aa633e77, type: 3}
   - {fileID: 21300000, guid: fa4efdb0255d82244bd3d28b4652cd8c, type: 3}
   - {fileID: 21300000, guid: 928c29ba066e75e41a8d62869a3db830, type: 3}
@@ -5240,7 +5240,7 @@ MonoBehaviour:
   - {fileID: 21300000, guid: 5b94c8ee8dcda3a44899ccd6c01a47f4, type: 3}
   - {fileID: 21300000, guid: 6fffc10936635524ebca7efd020500ac, type: 3}
   - {fileID: 21300000, guid: 56b3f30c67b48f148a9d8da070cbfbb7, type: 3}
-  sprites_H:
+  Sprites_H:
   - {fileID: 21300000, guid: e0f40fba51567bd49af2f3506be6f1c5, type: 3}
   - {fileID: 21300000, guid: 66649f140e6678342b9483831fd0b75d, type: 3}
   - {fileID: 21300000, guid: bab3b9e61f3e9be4bb18a70b2a407129, type: 3}
@@ -9001,25 +9001,25 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 55c60b17ab30d6e4f85ec35796d1126a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GameOverUI: {fileID: 3714140056329517844}
-  LobbyBot:
+  gameOverUI: {fileID: 3714140056329517844}
+  lobbyBot:
   - {fileID: 7010603941386248315}
   - {fileID: 906009015091707393}
   - {fileID: 144978401}
   - {fileID: 826620931}
-  PlayerOneBtn:
+  playerOneBtn:
   - {fileID: 3714140055722753018}
   - {fileID: 3714140055199642081}
-  PlayerTwoBtn:
+  playerTwoBtn:
   - {fileID: 1552277996}
   - {fileID: 913627654}
   Pooling: {fileID: 299114680}
-  PlayerOneText: {fileID: 1961145466}
-  PlayerTwoText: {fileID: 2065624322}
-  PlayerOne_LoseAnim: {fileID: 5318512826633414502}
-  PlayerOne_WinAnim: {fileID: 2600624819028867356}
-  PlayerTwo_Lose_Anim: {fileID: 826620934}
-  PlayerTwo_Win_Anim: {fileID: 144978404}
+  playerOneText: {fileID: 1961145466}
+  playerTwoText: {fileID: 2065624322}
+  playerOne_LoseAnim: {fileID: 5318512826633414502}
+  playerOne_WinAnim: {fileID: 2600624819028867356}
+  playerTwo_Lose_Anim: {fileID: 826620934}
+  playerTwo_Win_Anim: {fileID: 144978404}
 --- !u!114 &3714140056354120976
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -9163,20 +9163,20 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2bb5cf6dadf54af499fb05a8bd93553c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  slider: {fileID: 1391337205}
+  Slider: {fileID: 1391337205}
   sliderVar_Image: {fileID: 773295635}
-  slider_PlayerTwo: {fileID: 823535284}
+  Slider_PlayerTwo: {fileID: 823535284}
   sliderVar_Image_PlayerTwo: {fileID: 1298824136}
-  ChangeTime: 0.2
+  changeTime: 0.2
   changeDuration: 10
-  gameType: 1
-  time: 180
+  GameType: 1
+  Time: 0
   PlayTime: 180
-  isStop: 0
-  isGameOver: 0
-  startTime: 300
-  duration: 300
-  startTimeTwo: 0
+  IsStop: 0
+  IsGameOver: 0
+  StartTime_: 0
+  Duration: 0
+  StartTimeTwo: 0
   Decreasetime: 5
   TimeStop: 1
 --- !u!4 &4351944393935554423

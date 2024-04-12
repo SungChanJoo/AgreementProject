@@ -252,7 +252,7 @@ public class CollectionsManager : MonoBehaviour
         if (Client.Instance != null)
         {
             Collections = DataBase.Instance.playerInfo.Collections;
-            Debug.Log(DataBase.Instance.playerInfo.playerName);
+            //Debug.Log(DataBase.Instance.playerInfo.playerName);
         }
         //데이터를 불러오지 못하면 초기화
         else

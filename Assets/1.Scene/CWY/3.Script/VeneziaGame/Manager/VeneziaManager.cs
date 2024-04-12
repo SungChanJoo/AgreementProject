@@ -213,6 +213,8 @@ public class VeneziaManager : GameSetting
             ObjectPooling.Instance.StartCubeOne_Pooling_co();
             ObjectPooling.Instance.StartCubeTwo_Pooling_co();
         }
+
+        ObjectPooling.Instance.CreateItem();
         
     }
     private void Update()

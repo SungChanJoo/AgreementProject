@@ -67,8 +67,7 @@ public class ObjectPooling : MonoBehaviour
 
     private void Start()
     {
-        CreateItem();
-
+        //CreateItem();
         ItemCreatForveneGameMode();
     }
 
@@ -426,9 +425,9 @@ public class ObjectPooling : MonoBehaviour
     }
 
     //아이템 생성
-    private void CreateItem()
+    public void CreateItem()
     {
-        //메테오
+        print(VeneziaManager.Instance.play_mode);
         if(VeneziaManager.Instance.play_mode== PlayMode.Solo)
         {
             for (int i = 0; i < ItemCount; i++)

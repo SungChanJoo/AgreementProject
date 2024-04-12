@@ -1039,7 +1039,10 @@ MonoBehaviour:
   - {fileID: 315485530}
   - {fileID: 810345488}
   - {fileID: 1314879240}
-  questMark: []
+  questMark:
+  - {fileID: 1727402918}
+  - {fileID: 1743723415}
+  - {fileID: 79806963}
   anim: {fileID: 0}
   canvas: {fileID: 1215284665}
   audioClip:
@@ -3093,10 +3096,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 540e29fc37ca629449514d7263d7fc3a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  target: {fileID: 1132174511}
-  speed: 8
-  dir: {x: -1, y: 0, z: 0}
-  rectTransform: {fileID: 1132174511}
+  Target: {fileID: 1132174511}
+  Speed: 20
+  Dir: {x: -1, y: 0, z: 0}
+  RectTransform: {fileID: 0}
 --- !u!114 &1132174514
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5097,10 +5100,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 540e29fc37ca629449514d7263d7fc3a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  target: {fileID: 1132174511}
-  speed: 8
-  dir: {x: -1, y: 0, z: 0}
-  rectTransform: {fileID: 1805943177}
+  Target: {fileID: 1132174511}
+  Speed: 20
+  Dir: {x: -1, y: 0, z: 0}
+  RectTransform: {fileID: 0}
 --- !u!61 &1805943181
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -5427,20 +5430,20 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2bb5cf6dadf54af499fb05a8bd93553c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  slider: {fileID: 8836855193705866061}
+  Slider: {fileID: 8836855193705866061}
   sliderVar_Image: {fileID: 8836855194716140459}
-  slider_PlayerTwo: {fileID: 0}
-  sliderVar_Image_PlayerTwo: {fileID: 0}
-  ChangeTime: 0.35
+  Slider_PlayerTwo: {fileID: 8836855193705866061}
+  sliderVar_Image_PlayerTwo: {fileID: 8836855194716140459}
+  changeTime: 0
   changeDuration: 3
-  gameType: 0
-  time: 0
+  GameType: 0
+  Time: 0
   PlayTime: 0
-  isStop: 0
-  isGameOver: 0
-  startTime: 60
-  duration: 60
-  startTimeTwo: 0
+  IsStop: 0
+  IsGameOver: 0
+  StartTime_: 0
+  Duration: 0
+  StartTimeTwo: 0
   Decreasetime: 5
   TimeStop: 1
 --- !u!222 &7739086947249468360
@@ -5504,8 +5507,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   playMode: 0
   score_text: {fileID: 7739086947249468368}
-  Firstscore_text: {fileID: 7739086947249468368}
-  Secondscore_text: {fileID: 7739086947249468368}
+  firstscore_text: {fileID: 0}
+  secondscore_text: {fileID: 0}
 --- !u!114 &7739086947249468368
 MonoBehaviour:
   m_ObjectHideFlags: 0

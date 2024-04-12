@@ -322,9 +322,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f52593c89607f3049ad235350182a564, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  veneziaItem: 1
+  VeneziaItem: 1
+  BoomType: 0
   MeteorSpeed: 5
   PauseSpeed: 0
+  BoomSpeed: 0
   Decreasetime: 0
 --- !u!1 &371837130864099500
 GameObject:
