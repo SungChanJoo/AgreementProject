@@ -12,8 +12,7 @@ public class NativeCameraManager : MonoBehaviour
 {
     
     public Image captureImage;    
-    public Texture2D captureTexture;
-    public TMP_Text a;
+    public Texture2D captureTexture;    
     
     int CaptureCounter = 0;
 
@@ -87,7 +86,7 @@ public class NativeCameraManager : MonoBehaviour
                 }
                 catch(Exception e)
                 {
-                    a.text = e.Message;
+                    Debug.Log(e);
                 }
                 ++CaptureCounter;
                 Destroy(quad, 5f);
