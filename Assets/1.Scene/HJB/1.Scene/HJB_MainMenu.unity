@@ -133490,6 +133490,10 @@ PrefabInstance:
       propertyPath: m_Sprite
       value: 
       objectReference: {fileID: 21300000, guid: b52d05547b5200946bd648ee3c8de0d2, type: 3}
+    - target: {fileID: 1186632391735615032, guid: 5eabf3b8eb3a2da4fa062bc140d5379e, type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 21300000, guid: 7236801f2826c5643b39afc121798d15, type: 3}
     - target: {fileID: 1217666083517066113, guid: 5eabf3b8eb3a2da4fa062bc140d5379e, type: 3}
       propertyPath: MultiplayerDisabled_obj.Array.size
       value: 2
@@ -133922,6 +133926,10 @@ PrefabInstance:
       propertyPath: m_fontColor32.rgba
       value: 4278190080
       objectReference: {fileID: 0}
+    - target: {fileID: 7285336188323562210, guid: 5eabf3b8eb3a2da4fa062bc140d5379e, type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 21300000, guid: f5226ebe1f88b2d40906fc008ae6944d, type: 3}
     - target: {fileID: 7626755583290488563, guid: 5eabf3b8eb3a2da4fa062bc140d5379e, type: 3}
       propertyPath: m_Sprite
       value: 
