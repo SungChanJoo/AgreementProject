@@ -7,12 +7,15 @@ using UnityEngine;
 using UnityEngine.UI;
 using System;
 using System.IO;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Linq;
 
 public class Server : MonoBehaviour
 {
     private const int port = 2421;
+
+    private Dictionary<TcpClient, Thread> thread_key = new Dictionary<TcpClient, Thread>();
 
     // 클라이언트 여러명 받을 수 있도록 리스트
     private List<TcpClient> clients;
@@ -69,6 +72,7 @@ public class Server : MonoBehaviour
 
             StartListening();
             isServerStarted = true;
+
         }
         catch (Exception e)
         {
@@ -83,11 +87,11 @@ public class Server : MonoBehaviour
         // 비동기 클라이언트 연결 / await 키워드는 비동기 호출이 완료될 때까지 대기
         TcpClient client = await server.AcceptTcpClientAsync();
         Debug.Log("[Server] Asynchronously server accept client's request");
-
         // 클라이언트가 연결되면 다음 메서드 호출
         HandleClient(client);
-    }
 
+    }
+   
     // 재귀 메서드, 클라이언트 연결되면 다시 연결요청 받음
     private void HandleClient(TcpClient client)
     {
@@ -100,8 +104,16 @@ public class Server : MonoBehaviour
         }
 
         // 연결된 클라이언트 -> 데이터받을준비
-        ReceiveRequestFromClient(client);
 
+        Thread th = new Thread(
+            ()=> { ReceiveRequestFromClient(client); }
+            );
+
+         th.Start();
+        if(th.IsAlive)
+        {
+            thread_key.Add(client, th);
+        }
         StartListening(); // 클라이언트 받고 다시 실행    
     }
 
@@ -472,6 +484,12 @@ public class Server : MonoBehaviour
         // 연결이 끊겼다면 이미 DisPose되었겠지만 또 한번 Dispose()
         client.Dispose();
         Debug.Log("[Server] cliens.Close()");
+        if(thread_key[client].ThreadState.Equals(ThreadState.Running))
+        {
+            thread_key[client].Abort();
+            thread_key[client].Join();
+
+        }
 
         // client 변수에 null 할당하여 참조 해제, 나중에 GC가 수거할 수 있도록
         client = null;
@@ -518,6 +536,25 @@ public class Server : MonoBehaviour
     // 서버 종료
     private void OnApplicationQuit()
     {
+
+        //모든 thread 종료.
+        foreach(TcpClient c in clients)
+        {
+            if (thread_key[c].IsAlive)
+            {
+                thread_key[c].Abort();
+                thread_key[c].Join();
+            }
+        }
+        foreach (TcpClient c in disconnectList)
+        {
+            if (thread_key[c].IsAlive)
+            {
+                thread_key[c].Abort();
+                thread_key[c].Join();
+            }
+        }
+
         server.Stop();
     }
 
