@@ -118,6 +118,7 @@ MonoBehaviour:
   setting: {fileID: 0}
   InGameBtn_panel: {fileID: 8048572505073883508}
   ReQuestion_panel: {fileID: 8048572505052860188}
+  kidsTimer_panel: {fileID: 0}
   on_img: []
   Off_img: []
   MasterSlider_color:
@@ -259,7 +260,7 @@ PrefabInstance:
     - target: {fileID: 437823593535951105, guid: 1a482ee4ab823c74b9a7516a65caa03c, type: 3}
       propertyPath: m_Sprite
       value: 
-      objectReference: {fileID: 21300000, guid: 0853d44b148160a4ea98021ee942cb41, type: 3}
+      objectReference: {fileID: 21300000, guid: 658c106b029169a4e963135df7c5e8ec, type: 3}
     - target: {fileID: 437823593535951106, guid: 1a482ee4ab823c74b9a7516a65caa03c, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
@@ -270,7 +271,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 437823593535951107, guid: 1a482ee4ab823c74b9a7516a65caa03c, type: 3}
       propertyPath: m_SizeDelta.y
-      value: 110
+      value: 120
       objectReference: {fileID: 0}
     - target: {fileID: 437823593561155299, guid: 1a482ee4ab823c74b9a7516a65caa03c, type: 3}
       propertyPath: m_fontSize
@@ -743,7 +744,7 @@ PrefabInstance:
     - target: {fileID: 437823595207000676, guid: 1a482ee4ab823c74b9a7516a65caa03c, type: 3}
       propertyPath: m_Sprite
       value: 
-      objectReference: {fileID: 21300000, guid: 5fbcb8cf54396784aac46d0515a80f95, type: 3}
+      objectReference: {fileID: 21300000, guid: 9f805528a1ce99341913bdc4fabbc89d, type: 3}
     - target: {fileID: 437823595207000677, guid: 1a482ee4ab823c74b9a7516a65caa03c, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
@@ -754,7 +755,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 437823595207000678, guid: 1a482ee4ab823c74b9a7516a65caa03c, type: 3}
       propertyPath: m_SizeDelta.y
-      value: 110
+      value: 120
       objectReference: {fileID: 0}
     - target: {fileID: 437823595260436217, guid: 1a482ee4ab823c74b9a7516a65caa03c, type: 3}
       propertyPath: m_fontStyle
