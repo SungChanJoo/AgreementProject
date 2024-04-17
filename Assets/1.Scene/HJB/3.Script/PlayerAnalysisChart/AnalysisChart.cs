@@ -168,7 +168,7 @@ public class AnalysisChart : MonoBehaviour
             for (int i = 1; i < 8; i++)
             {
                 reactionRate_list.Add(analyticsData.Data[(i, game_type, level_num)].reactionRate);
-                
+                answerRate_list.Add(analyticsData.Data[(i, game_type, level_num)].answerRate);
                 
                 reactionRate_list[i - 1] = Mathf.Abs((reactionRate_list[i - 1] - (reactionRate_list[i - 1] % 0.5f)) - 20f) / 20f;
                 

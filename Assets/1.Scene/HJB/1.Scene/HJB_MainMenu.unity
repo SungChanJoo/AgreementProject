@@ -59626,6 +59626,14 @@ PrefabInstance:
       propertyPath: m_Name
       value: PlayerName_title
       objectReference: {fileID: 0}
+    - target: {fileID: 725067230785842339, guid: 095f79abef64e1047bd7d30f48ccc1d5, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
+      value: 
+      objectReference: {fileID: 1420689192}
+    - target: {fileID: 725067230785842339, guid: 095f79abef64e1047bd7d30f48ccc1d5, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: ReactionRate_Btn
+      objectReference: {fileID: 0}
     - target: {fileID: 1022679586984827444, guid: 095f79abef64e1047bd7d30f48ccc1d5, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
@@ -59649,6 +59657,14 @@ PrefabInstance:
     - target: {fileID: 1022679586984827444, guid: 095f79abef64e1047bd7d30f48ccc1d5, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[1].m_TargetAssemblyTypeName
       value: AnalysisChart, Assembly-CSharp
+      objectReference: {fileID: 0}
+    - target: {fileID: 1022958741005499364, guid: 095f79abef64e1047bd7d30f48ccc1d5, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
+      value: 
+      objectReference: {fileID: 1420689192}
+    - target: {fileID: 1022958741005499364, guid: 095f79abef64e1047bd7d30f48ccc1d5, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: ReactionRate_Btn
       objectReference: {fileID: 0}
     - target: {fileID: 1875806314596426195, guid: 095f79abef64e1047bd7d30f48ccc1d5, type: 3}
       propertyPath: m_Name
