@@ -15,7 +15,7 @@ using TMPro;
 public class Client : MonoBehaviour
 {
     // IP, Port ∞Ì¡§µ 
-    [SerializeField] private string server_IP = "43.201.20.174"; // aws EC2 IP : 43.201.20.174
+    [SerializeField] private string server_IP = "43.201.26.36"; // aws EC2 IP : 43.201.26.36
     [SerializeField] private int server_Port = 2421;
 
     private bool socketReady;
@@ -73,16 +73,17 @@ public class Client : MonoBehaviour
             return;
         }
     }
-        
-    public void SetServerIp()
+    private void Start()
     {
-        server_IP = ServerIp.text;
+        SetServerIp();
+    }
+    public void SetServerIp()
+    {        
         ETCInitSetting();
         ConnectToServer();
         ClientLoginSet();
         DataBase.Instance.LoadUserList();
-        DataBase.Instance.PlayerDataLoad();
-        ServerIpObj.SetActive(false);
+        DataBase.Instance.PlayerDataLoad();        
     }
 
     #region Start() Methods, Setting and Connect to Server
