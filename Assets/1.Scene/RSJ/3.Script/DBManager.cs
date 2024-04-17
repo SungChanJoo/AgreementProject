@@ -368,7 +368,15 @@ public class DBManager : MonoBehaviour
         // game table
         string game_TableName;
 
-        string[] game_Names = { "venezia_kor", "venezia_eng", "venezia_chn", "calculation", "gugudan" };
+        //string[] game_Names = { "venezia_kor", "venezia_eng", "venezia_chn", "calculation", "gugudan" };
+        string[] game_Names =
+            { 
+            "calculation",
+            "gugudan",
+            "venezia_kor", 
+            "venezia_eng", 
+            "venezia_chn"
+            };
         int[] levels = { 1, 2, 3 };
         int[] steps = { 1, 2, 3, 4, 5, 6 };
 
@@ -927,7 +935,7 @@ public class DBManager : MonoBehaviour
         int dbPlayCount = 0;
         float dbReactionRate = 0;
         int dbAnswerRate = 0;
-
+        /*
         switch (gametype)
         {
             case Game_Type.A:
@@ -964,7 +972,51 @@ public class DBManager : MonoBehaviour
                 Debug.Log("[DB] Something wrong");
                 break;
         }
+        */
+        switch (gametype)
+        {
+            case Game_Type.A:
+               
 
+                tableColumns[0] = "Calculation_PlayCount";
+                tableColumns[1] = "Calculation_ReactionRate";
+                tableColumns[2] = "Calculation_AnswerRate";
+                lastPlayGame = "Calculation";
+                break;
+            case Game_Type.B:
+                tableColumns[0] = "Gugudan_PlayCount";
+                tableColumns[1] = "Gugudan_ReactionRate";
+                tableColumns[2] = "Gugudan_AnswerRate";
+                lastPlayGame = "Gugudan";
+               
+                break;
+            case Game_Type.C:
+                tableColumns[0] = "Venezia_Kor_PlayCount";
+                tableColumns[1] = "Venezia_Kor_ReactionRate";
+                tableColumns[2] = "Venezia_Kor_AnswerRate";
+                lastPlayGame = "Venezia_Kor";
+
+                break;
+            case Game_Type.D:
+                tableColumns[0] = "Venezia_Eng_PlayCount";
+                tableColumns[1] = "Venezia_Eng_ReactionRate";
+                tableColumns[2] = "Venezia_Eng_AnswerRate";
+                lastPlayGame = "Venezia_Eng";
+               
+                break;
+            case Game_Type.E:
+                
+
+
+                tableColumns[0] = "Venezia_Chn_PlayCount";
+                tableColumns[1] = "Venezia_Chn_ReactionRate";
+                tableColumns[2] = "Venezia_Chn_AnswerRate";
+                lastPlayGame = "Venezia_Chn";
+                break;
+            default:
+                Debug.Log("[DB] Something wrong");
+                break;
+        }
         MySqlCommand mySqlCommand = new MySqlCommand();
         mySqlCommand.Connection = connection;
 
@@ -1504,7 +1556,7 @@ public class DBManager : MonoBehaviour
     }
 
     // AnalyticsProfileData(프로필용 분석데이터) 불러오기
-    public List<string> LoadAnalyticsProfileData(int licensenumber, int charactor)
+    public List<string> LoadAnalyticsProfileData(int licensenumber, int charactor)//todo0417
     {
         Debug.Log("[DB] Come in LoadAnalyticsProfileData Method");
 
@@ -1525,7 +1577,7 @@ public class DBManager : MonoBehaviour
         mySqlCommand.Connection = connection;
 
         // 조회할 table -> analytics_level(1,2,3)_profile
-        for (int i = 0; i < 3; i++)
+        for (int i = 0; i <3; i++)
         {
             string tableName;
             string[] tableColumns;
@@ -1780,7 +1832,7 @@ public class DBManager : MonoBehaviour
 
     #region Server only use
     // DateDB 생성 / 하루가 지났을 때 _presentDB gamedata -> 요일DB 생성하고 gamedata 저장
-    public void CreateDateDB()
+    public void CreateDateDB()//todo0417
     {
         Debug.Log("[DB] Come in CreateDateDB");
 

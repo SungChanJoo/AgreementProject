@@ -1196,7 +1196,7 @@ public class Client : MonoBehaviour
         string requestName;
         string values;
         string gameName;
-
+        /*
         switch (game_type)
         {
             case Game_Type.A:
@@ -1219,7 +1219,29 @@ public class Client : MonoBehaviour
                 gameName = "error";
                 break;
         }
-
+        */
+        switch (game_type)
+        {
+            case Game_Type.A:
+                gameName = "calculation";
+                break;
+            case Game_Type.B:
+                gameName = "gugudan";
+                break;
+            case Game_Type.C:
+                gameName = "venezia_kor";
+                break;
+            case Game_Type.D:
+                gameName = "venezia_eng";
+                break;
+            case Game_Type.E:
+                gameName = "venezia_chn";
+                break;
+            default:
+                Debug.Log("[Client] Game_Type error");
+                gameName = "error";
+                break;
+        }
         Data_value datavalue = resultdata.Data[(game_type, level, step)];
 
         requestName = $"[Save]{gameName}";
