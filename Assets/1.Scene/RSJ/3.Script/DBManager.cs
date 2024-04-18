@@ -78,7 +78,7 @@ public class DBManager : MonoBehaviour
     // DB 세션에 연결할 때 필요한 정보 초기화
     private void SetStringConnection()
     {
-        string ip = "127.0.0.1";
+        string ip = "172.31.39.115";
         string db = "present";
         string uid = "root"; ;
         string pw = "12345678";
